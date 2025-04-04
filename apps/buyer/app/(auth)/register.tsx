@@ -117,9 +117,10 @@ export default function SignUp() {
         <Text style={styles.socialButtonText}> Sign up with Facebook</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/login')}>
-        <Text style={styles.link}>Already have an account? Sign In</Text>
-      </TouchableOpacity>
+      <Text style={styles.text}>
+        Already have an account?{' '}
+        <Text style={styles.link} onPress={() => router.push('/login')}>Sign in</Text>
+      </Text>
     </View>
   );
 }
@@ -150,6 +151,11 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     color: '#64748b',
+  },
+  text: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 15,
   },
   inputContainer: {
     flexDirection: 'row',

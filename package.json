@@ -2,6 +2,15 @@
   "private": true,
   "name": "monorepo",
   "version": "1.0.0",
-  "workspaces": ["apps/*", "packages/*"]
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "react-native-reanimated": "^3.17.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.20",
+    "@types/react-native": "^0.73.0"
+  }
 }
-
