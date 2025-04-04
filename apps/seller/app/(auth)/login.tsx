@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Image, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 //import { handleEmailSignIn } from '../../src/Logic/SignIn.Logic';
 import { FontAwesome } from '@expo/vector-icons';
@@ -11,6 +11,11 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
 
   const onSignInPress = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+  
     setLoading(true);
     //const success = await handleEmailSignIn(email, password);
     setLoading(false);
@@ -25,11 +30,20 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome back</Text>
+      <View style={styles.titleContainer}>
+        <Image
+          source={require('../../assets/images/logo.png')}
+          style={styles.logo}
+        />
+        <Text style={styles.title}>Welcome to The Shop</Text>
+        <Text style={styles.subtitle}>Sign in to start selling</Text>
+      </View>
+
 
       <TextInput
         style={styles.input}
         placeholder="Email address*"
+        placeholderTextColor="#64748b"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -39,6 +53,7 @@ export default function SignIn() {
       <TextInput
         style={styles.input}
         placeholder="Password*"
+        placeholderTextColor="#64748b"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -76,6 +91,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
   },
+  titleContainer: {
+    alignItems: 'center', 
+    marginBottom: 20,
+  },  
   title: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -92,6 +111,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#f7f7f7',
   },
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+  },
   button: {
     width: '100%',
     height: 50,
@@ -100,6 +125,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#64748b',
   },
   buttonText: {
     fontSize: 18,

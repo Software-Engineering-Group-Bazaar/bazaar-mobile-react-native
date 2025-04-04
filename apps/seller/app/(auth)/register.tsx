@@ -1,17 +1,43 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 //import { handleEmailSignUp, handleGoogleSignUp, handleFacebookSignUp } from '../../src/Logic/SignUp.Logic';
 
 export default function SignUp() {
   const router = useRouter();
+  const [name, setName] = useState('');
+  const [last_name, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const onSignUpPress = async () => {
+  const onSignInPress = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+  
     setLoading(true);
+    //const success = await handleEmailSignIn(email, password);
+    setLoading(false);
+
+    /*if (success) {
+      Alert.alert('Success', 'Signed in!');
+      router.replace('/(admin)/users');
+    } else {
+      Alert.alert('Error', 'Invalid email or password.');
+    }*/
+  };
+
+  const onSignUpPress = async () => {
+    if (!email.trim() || !password.trim() || !name.trim() || !last_name.trim()) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+  
+    /*setLoading(true);
+    const success = await handleEmailSignIn(email, password);
     /*const result = await handleEmailSignUp(email, password);
     setLoading(false);
     Alert.alert(result.success ? 'Success' : 'Error', result.message);
@@ -20,13 +46,42 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+      <View style={styles.titleContainer}>
+        <Image
+          source={require('../../assets/images/logo.png')}
+          style={styles.logo}
+        />
+        <Text style={styles.title}>Create Account</Text>
+      </View>
 
       <View style={styles.inputContainer}>
-        <FontAwesome name="envelope" size={20} color="#888" style={styles.inputIcon} />
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="First Name*"
+          placeholderTextColor="#64748b"
+          value={email}
+          onChangeText={setName}
+          autoCapitalize="none"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name*"
+          placeholderTextColor="#64748b"
+          value={email}
+          onChangeText={setLastName}
+          autoCapitalize="none"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+      <FontAwesome name="envelope" size={20} color="#888" style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Email address*"
+          placeholderTextColor="#64748b"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
@@ -37,7 +92,8 @@ export default function SignUp() {
         <FontAwesome name="lock" size={20} color="#888" style={styles.inputIcon} />
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder="Password*"
+          placeholderTextColor="#64748b"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -76,10 +132,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
   },
+  titleContainer: {
+    alignItems: 'center', 
+    marginBottom: 20,
+  },  
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 5,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 15,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#64748b',
   },
   inputContainer: {
     flexDirection: 'row',
