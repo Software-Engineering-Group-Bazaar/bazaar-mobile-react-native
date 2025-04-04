@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet, ActivityIndicator  } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-//import { handleEmailSignUp, handleGoogleSignUp, handleFacebookSignUp } from '../../src/Logic/SignUp.Logic';
 
 export default function SignUp() {
   const router = useRouter();
@@ -12,36 +11,37 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const onSignInPress = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Please fill in all fields.");
-      return;
-    }
-  
-    setLoading(true);
-    //const success = await handleEmailSignIn(email, password);
-    setLoading(false);
-
-    /*if (success) {
-      Alert.alert('Success', 'Signed in!');
-      router.replace('/(admin)/users');
-    } else {
-      Alert.alert('Error', 'Invalid email or password.');
-    }*/
-  };
-
   const onSignUpPress = async () => {
-    if (!email.trim() || !password.trim() || !name.trim() || !last_name.trim()) {
-      Alert.alert("Error", "Please fill in all fields.");
+    if (!name.trim() || !last_name.trim() || !email.trim() || !password.trim()) {
+      Alert.alert("Greška", "Unesite sva tražena polja.");
       return;
     }
-  
-    /*setLoading(true);
-    const success = await handleEmailSignIn(email, password);
-    /*const result = await handleEmailSignUp(email, password);
-    setLoading(false);
-    Alert.alert(result.success ? 'Success' : 'Error', result.message);
-    if (result.success) router.replace('/sign-in');*/
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('https://your-backend.com/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, last_name, email, password, role: "seller" }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        Alert.alert("Neuspješna registracija", data.message || "Neuspješno kreiranje računa.");
+        return;
+      }
+
+      Alert.alert("Uspješna registracija", "Čekajte odobrenje za kreiranje računa.");
+      router.replace('/(auth)/login');
+
+    } catch (error) {
+      console.error("Greška pri registraciji:", error);
+      Alert.alert("Error", "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,7 +59,7 @@ export default function SignUp() {
           style={styles.input}
           placeholder="First Name*"
           placeholderTextColor="#64748b"
-          value={email}
+          value={name}
           onChangeText={setName}
           autoCapitalize="none"
         />
@@ -70,7 +70,7 @@ export default function SignUp() {
           style={styles.input}
           placeholder="Last Name*"
           placeholderTextColor="#64748b"
-          value={email}
+          value={last_name}
           onChangeText={setLastName}
           autoCapitalize="none"
         />
@@ -101,8 +101,12 @@ export default function SignUp() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={onSignUpPress} disabled={loading}>
-        <FontAwesome name="user-plus" size={18} color="#fff" />
-        <Text style={styles.buttonText}>{loading ? 'Registering...' : 'Sign Up'}</Text>
+        {loading ? <ActivityIndicator color="#fff" /> : (
+          <>
+            <FontAwesome name="user-plus" size={18} color="#fff" />
+            <Text style={styles.buttonText}> Registracija</Text>
+          </>
+        )}
       </TouchableOpacity>
 
       <Text style={styles.or}>OR</Text>

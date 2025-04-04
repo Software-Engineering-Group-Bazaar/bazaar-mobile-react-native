@@ -1,31 +1,69 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-//import { handleEmailSignIn } from '../../src/Logic/SignIn.Logic';
 import { FontAwesome } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
+
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+};
 
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailValid, setEmailValid] = useState(true);
 
   const onSignInPress = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Please fill in all fields.");
+      Alert.alert("Greška", "Unesite sva tražena polja.");
       return;
     }
-  
-    setLoading(true);
-    //const success = await handleEmailSignIn(email, password);
-    setLoading(false);
 
-    /*if (success) {
-      Alert.alert('Success', 'Signed in!');
-      router.replace('/(admin)/users');
-    } else {
-      Alert.alert('Error', 'Invalid email or password.');
-    }*/
+    try {
+      setLoading(true);
+      const loginRes = await fetch('https://your-backend.com/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role: "seller" }),
+      });
+
+      const loginData = await loginRes.json();
+
+      if (!loginRes.ok) {
+        Alert.alert("Neuspješan login", loginData.message || "Pogrešni podaci.");
+        return;
+      }
+
+      const { token, id } = loginData;
+
+      const approvalRes = await fetch(`https://your-backend.com/api/user/isapproved/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const approvalData = await approvalRes.json();
+
+      if (!approvalRes.ok || approvalData.approved === false) {
+        Alert.alert("Zabranjen pristup", "Vaš račun još uvijek nije odobren.");
+        return;
+      }
+
+      await SecureStore.setItemAsync('auth_token', token);
+      router.replace('./(auth)/logout');
+
+    } catch (error) {
+      console.error("Greška pri loginu:", error);
+      Alert.alert("Error", "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    setEmailValid(isValidEmail(text)); 
   };
 
   return (
@@ -39,7 +77,6 @@ export default function SignIn() {
         <Text style={styles.subtitle}>Sign in to start selling</Text>
       </View>
 
-
       <TextInput
         style={styles.input}
         placeholder="Email address*"
@@ -49,7 +86,7 @@ export default function SignIn() {
         autoCapitalize="none"
         keyboardType="email-address"
       />
-
+      
       <TextInput
         style={styles.input}
         placeholder="Password*"
@@ -148,6 +185,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
     marginVertical: 10,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
   },
   socialButton: {
     width: '100%',
