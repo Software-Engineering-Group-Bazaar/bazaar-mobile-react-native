@@ -43,7 +43,8 @@ cd  bazaar-mobile-react-native
 ## Setup and Configuration
 
 1. Open the specific app folder
-2. To run the project locally, use the following command: `npx expo start`
+2. First run `npm install` to install the required dependencies.
+3. To run the project locally, use the following command: `npx expo start`
 
 ## Testing
  Toplevel you can trigger tests in 
