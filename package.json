@@ -8,7 +8,11 @@
   ],
   "dependencies": {
     "@react-native-google-signin/google-signin": "^13.2.0",
-    "react-native-reanimated": "^3.17.2"
+    "react-native-reanimated": "~3.16.1",
+    "@react-native/js-polyfills": "^0.78.2",
+    "i18n-js": "^4.5.1",
+    "i18next": "^24.2.3",
+    "react-i18next": "^15.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.20",

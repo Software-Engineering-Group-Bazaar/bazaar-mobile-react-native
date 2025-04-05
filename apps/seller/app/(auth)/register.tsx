@@ -1,7 +1,17 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet, ActivityIndicator  } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Alert,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUp() {
   const router = useRouter();
@@ -11,9 +21,15 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+  };
+
   const onSignUpPress = async () => {
-    if (!name.trim() || !last_name.trim() || !email.trim() || !password.trim()) {
-      Alert.alert("Greška", "Unesite sva tražena polja.");
+    if (!email.trim() || !password.trim() || !name.trim() || !last_name.trim()) {
+      Alert.alert(t('error'), t('fill_all_fields'));
       return;
     }
 
@@ -23,22 +39,21 @@ export default function SignUp() {
       const response = await fetch('https://your-backend.com/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, last_name, email, password, role: "seller" }),
+        body: JSON.stringify({ name, last_name, email, password, role: 'seller' }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        Alert.alert("Neuspješna registracija", data.message || "Neuspješno kreiranje računa.");
+        Alert.alert(t('signup_failed'), data.message || t('signup_failed_fallback'));
         return;
       }
 
-      Alert.alert("Uspješna registracija", "Čekajte odobrenje za kreiranje računa.");
+      Alert.alert(t('signup_success'), t('wait_for_approval'));
       router.replace('/(auth)/login');
-
     } catch (error) {
       console.error("Greška pri registraciji:", error);
-      Alert.alert("Error", "Something went wrong.");
+      Alert.alert(t('error'), t('something_went_wrong'));
     } finally {
       setLoading(false);
     }
@@ -46,18 +61,20 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
+        <FontAwesome name="language" size={20} color="#4E8D7C" />
+        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
+      </TouchableOpacity>
+
       <View style={styles.titleContainer}>
-        <Image
-          source={require('../../assets/images/logo.png')}
-          style={styles.logo}
-        />
-        <Text style={styles.title}>Create Account</Text>
+        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <Text style={styles.title}>{t('create_account')}</Text>
       </View>
 
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="First Name*"
+          placeholder={t('first_name')}
           placeholderTextColor="#64748b"
           value={name}
           onChangeText={setName}
@@ -68,7 +85,7 @@ export default function SignUp() {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Last Name*"
+          placeholder={t('last_name')}
           placeholderTextColor="#64748b"
           value={last_name}
           onChangeText={setLastName}
@@ -77,10 +94,10 @@ export default function SignUp() {
       </View>
 
       <View style={styles.inputContainer}>
-      <FontAwesome name="envelope" size={20} color="#888" style={styles.inputIcon} />
+        <FontAwesome name="envelope" size={20} color="#888" style={styles.inputIcon} />
         <TextInput
           style={styles.input}
-          placeholder="Email address*"
+          placeholder={t('email_placeholder')}
           placeholderTextColor="#64748b"
           value={email}
           onChangeText={setEmail}
@@ -92,7 +109,7 @@ export default function SignUp() {
         <FontAwesome name="lock" size={20} color="#888" style={styles.inputIcon} />
         <TextInput
           style={styles.input}
-          placeholder="Password*"
+          placeholder={t('password_placeholder')}
           placeholderTextColor="#64748b"
           value={password}
           onChangeText={setPassword}
@@ -101,29 +118,33 @@ export default function SignUp() {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={onSignUpPress} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : (
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
           <>
             <FontAwesome name="user-plus" size={18} color="#fff" />
-            <Text style={styles.buttonText}> Registracija</Text>
+            <Text style={styles.buttonText}>{t('sign_up')}</Text>
           </>
         )}
       </TouchableOpacity>
 
-      <Text style={styles.or}>OR</Text>
+      <Text style={styles.or}>{t('or')}</Text>
 
       <TouchableOpacity style={styles.socialButton}>
         <FontAwesome name="google" size={20} color="#DB4437" />
-        <Text style={styles.socialButtonText}> Sign up with Google</Text>
+        <Text style={styles.socialButtonText}> {t('signup_google')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.socialButton}>
         <FontAwesome name="facebook" size={20} color="#1877F2" />
-        <Text style={styles.socialButtonText}> Sign up with Facebook</Text>
+        <Text style={styles.socialButtonText}> {t('signup_facebook')}</Text>
       </TouchableOpacity>
 
       <Text style={styles.text}>
-        Already have an account?{' '}
-        <Text style={styles.link} onPress={() => router.push('/login')}>Sign in</Text>
+        {t('already_have_account')}{' '}
+        <Text style={styles.link} onPress={() => router.push('/login')}>
+          {t('sign_in')}
+        </Text>
       </Text>
     </View>
   );
@@ -138,9 +159,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   titleContainer: {
-    alignItems: 'center', 
+    alignItems: 'center',
     marginBottom: 20,
-  },  
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -221,5 +242,29 @@ const styles = StyleSheet.create({
     color: '#4E8D7C',
     fontWeight: 'bold',
     marginTop: 10,
+  },
+  languageButton: {
+    position: 'absolute',
+    top: '5%',
+    right: '5%',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#f1f5f9',
+    zIndex: 100,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  languageText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#4E8D7C',
+    marginTop: 2,
   },
 });
