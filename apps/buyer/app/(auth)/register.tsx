@@ -12,6 +12,13 @@ import {
 import { useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import {
+  AccessToken,
+  LoginButton,
+  Settings,
+  Profile,
+  LoginManager
+} from "react-native-fbsdk-next";
 
 export default function SignUp() {
   const router = useRouter();
@@ -25,6 +32,31 @@ export default function SignUp() {
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+  };
+
+  const loginWithFacebook = () => {
+    LoginManager.logInWithPermissions(["public_profile", "email"]).then(
+      function (result) {
+        if (result.isCancelled) {
+          console.log("==> Login cancelled");
+        } else {
+          console.log(result);
+          AccessToken.getCurrentAccessToken().then((data) => {
+            console.log(data);
+            getUserFBData();
+          });
+        }
+      },
+      function (error) {
+        console.log("==> Login fail with error: " + error);
+      }
+    );
+  };
+
+  const getUserFBData = () => {
+    Profile.getCurrentProfile().then((currentProfile) => {
+      console.log(currentProfile);
+    });
   };
 
   const onSignUpPress = async () => {
@@ -135,7 +167,7 @@ export default function SignUp() {
         <Text style={styles.socialButtonText}> {t('signup_google')}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.socialButton}>
+      <TouchableOpacity style={styles.socialButton} onPress={loginWithFacebook}>
         <FontAwesome name="facebook" size={20} color="#1877F2" />
         <Text style={styles.socialButtonText}> {t('signup_facebook')}</Text>
       </TouchableOpacity>
