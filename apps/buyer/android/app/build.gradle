@@ -173,4 +173,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation project(':react-native-fbsdk-next')
+    // Ensure you have the following dependencies as well
+    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
+    implementation 'com.facebook.android:facebook-core:[5,6)'
 }
