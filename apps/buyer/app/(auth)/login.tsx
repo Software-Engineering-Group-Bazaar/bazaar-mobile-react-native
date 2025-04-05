@@ -1,48 +1,66 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Image, ActivityIndicator, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Image,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-//import { handleEmailSignIn } from '../../src/Logic/SignIn.Logic';
 import { FontAwesome } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+  };
 
   const onSignInPress = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Please fill in all fields.");
+      Alert.alert(t('error'), t('fill_all_fields'));
       return;
     }
-  
+
     setLoading(true);
-    //const success = await handleEmailSignIn(email, password);
+    // const success = await handleEmailSignIn(email, password);
     setLoading(false);
 
-    /*if (success) {
-      Alert.alert('Success', 'Signed in!');
-      router.replace('/(admin)/users');
-    } else {
-      Alert.alert('Error', 'Invalid email or password.');
-    }*/
+    // if (success) {
+    //   Alert.alert(t('success'), t('signed_in'));
+    //   router.replace('/(admin)/users');
+    // } else {
+    //   Alert.alert(t('error'), t('invalid_credentials'));
+    // }
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
+        <FontAwesome name="language" size={18} color="#4E8D7C" />
+        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
+      </TouchableOpacity>
+
       <View style={styles.titleContainer}>
         <Image
           source={require('../../assets/images/logo.png')}
           style={styles.logo}
         />
-        <Text style={styles.title}>Welcome to Bazaar</Text>
-        <Text style={styles.subtitle}>Sign in to start shopping</Text>
+        <Text style={styles.title}>{t('greet')}</Text>
+        <Text style={styles.subtitle}>{t('signin_subtitle')}</Text>
       </View>
-
 
       <TextInput
         style={styles.input}
-        placeholder="Email address*"
+        placeholder={t('email_placeholder')}
         placeholderTextColor="#64748b"
         value={email}
         onChangeText={setEmail}
@@ -52,7 +70,7 @@ export default function SignIn() {
 
       <TextInput
         style={styles.input}
-        placeholder="Password*"
+        placeholder={t('password_placeholder')}
         placeholderTextColor="#64748b"
         value={password}
         onChangeText={setPassword}
@@ -60,24 +78,30 @@ export default function SignIn() {
       />
 
       <TouchableOpacity style={styles.button} onPress={onSignInPress} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Continue</Text>}
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>{t('continue')}</Text>
+        )}
       </TouchableOpacity>
 
       <Text style={styles.text}>
-        Don't have an account?{' '}
-        <Text style={styles.link} onPress={() => router.push('/register')}>Sign Up</Text>
+        {t('no_account')}{' '}
+        <Text style={styles.link} onPress={() => router.push('/register')}>
+          {t('signup')}
+        </Text>
       </Text>
 
-      <Text style={styles.or}>OR</Text>
+      <Text style={styles.or}>{t('or')}</Text>
 
       <TouchableOpacity style={styles.socialButton}>
         <FontAwesome name="google" size={20} color="#DB4437" />
-        <Text style={styles.socialButtonText}>Log in via Google</Text>
+        <Text style={styles.socialButtonText}>{t('login_google')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.socialButton}>
         <FontAwesome name="facebook" size={20} color="#1877F2" />
-        <Text style={styles.socialButtonText}>Log in via Facebook</Text>
+        <Text style={styles.socialButtonText}>{t('login_facebook')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -92,13 +116,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   titleContainer: {
-    alignItems: 'center', 
+    alignItems: 'center',
     marginBottom: 20,
-  },  
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#64748b',
   },
   input: {
     width: '100%',
@@ -112,9 +140,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f7f7f7',
   },
   logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 420,
+    height: 160,
+    borderRadius: 80,
     marginBottom: 20,
   },
   button: {
@@ -125,10 +153,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#64748b',
   },
   buttonText: {
     fontSize: 18,
@@ -165,4 +189,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
   },
+  languageButtonContainer: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 10,
+  },
+  languageButton: {
+    position: 'absolute',
+    top: '5%',
+    right: '5%',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#f1f5f9',
+    zIndex: 100,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  languageText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#4E8D7C',
+    marginTop: 2,
+  },
 });
+
+
