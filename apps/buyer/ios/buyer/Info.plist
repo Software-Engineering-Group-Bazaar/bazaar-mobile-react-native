@@ -27,7 +27,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>myapp</string>
+          <string>bazaar</string>
           <string>com.anonymous.buyer</string>
         </array>
       </dict>
@@ -57,13 +57,14 @@
     <key>FacebookClientToken</key>
     <string>9e35bd7ee13f0b63f05702e1b8e8f0a0</string>
     <key>FacebookDisplayName</key>
-    <string>Login with Facebook</string>
+    <string>bazaar</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>fbapi</string>
       <string>fb-messenger-api</string>
+      <string>fb-messenger-share-api</string>
       <string>fbauth2</string>
       <string>fbshareextension</string>
     </array>

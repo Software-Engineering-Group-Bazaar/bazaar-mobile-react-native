@@ -37,8 +37,11 @@
       },
       "permissions": [
         "android.permission.INTERNET",
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.INTERNET",
         "com.google.android.gms.permission.AD_ID"
-      ]
+      ],
+      "package": "com.anonymous.buyer"
     },
     "web": {
       "bundler": "metro",
