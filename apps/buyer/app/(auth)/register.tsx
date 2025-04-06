@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,31 +14,48 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import {
   AccessToken,
-  LoginButton,
-  Settings,
   Profile,
-  LoginManager
-} from "react-native-fbsdk-next";
+  LoginManager,
+} from 'react-native-fbsdk-next';
+
+// Import Google Sign-In functions
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+
+import * as SecureStore from 'expo-secure-store';
 
 export default function SignUp() {
   const router = useRouter();
+  const { t, i18n } = useTranslation();
+
   const [name, setName] = useState('');
   const [last_name, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { t, i18n } = useTranslation();
+  // Configure Google Signin on mount
+  useEffect(() => {
+    GoogleSignin.configure({
+      iosClientId: '792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com',
+      webClientId: '792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com',
+      profileImageSize: 150,
+    });
+  }, []);
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
 
   const loginWithFacebook = () => {
-    LoginManager.logInWithPermissions(["public_profile", "email"]).then(
+    LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       function (result) {
         if (result.isCancelled) {
-          console.log("==> Login cancelled");
+          console.log('==> Login cancelled');
         } else {
           console.log(result);
           AccessToken.getCurrentAccessToken().then((data) => {
@@ -48,7 +65,7 @@ export default function SignUp() {
         }
       },
       function (error) {
-        console.log("==> Login fail with error: " + error);
+        console.log('==> Login fail with error: ' + error);
       }
     );
   };
@@ -84,8 +101,56 @@ export default function SignUp() {
       Alert.alert(t('signup_success'), t('wait_for_approval'));
       router.replace('/(auth)/login');
     } catch (error) {
-      console.error("Greška pri registraciji:", error);
+      console.error('Error during registration:', error);
       Alert.alert(t('error'), t('something_went_wrong'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const registerWithGoogle = async () => {
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+
+      if (isSuccessResponse(response)) {
+        const { idToken } = response.data;
+        console.log('Google Sign-Up User Info:', { idToken });
+
+        // OPTIONAL: Call your backend register endpoint with the Google idToken
+        // const apiResponse = await fetch('https://your-backend.com/api/auth/register/google', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ idToken, role: 'seller' }),
+        // });
+        // const result = await apiResponse.json();
+        // if (!apiResponse.ok) {
+        //   Alert.alert(t('signup_failed'), result.message || t('signup_failed_fallback'));
+        //   return;
+        // }
+        // await SecureStore.setItemAsync('accessToken', result.accessToken);
+
+        // Navigate to home screen or any other page as needed
+        router.replace('/home');
+      } else {
+        console.log('Google Sign-Up cancelled');
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            console.log('Sign-Up in progress');
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            console.log('Play services not available');
+            break;
+          default:
+            console.log('Unhandled error code', error.code);
+        }
+      } else {
+        console.log('Unknown error during Google Sign-Up', error);
+      }
     } finally {
       setLoading(false);
     }
@@ -162,7 +227,8 @@ export default function SignUp() {
 
       <Text style={styles.or}>{t('or')}</Text>
 
-      <TouchableOpacity style={styles.socialButton}>
+      {/* Google Sign-Up Button */}
+      <TouchableOpacity style={styles.socialButton} onPress={registerWithGoogle}>
         <FontAwesome name="google" size={20} color="#DB4437" />
         <Text style={styles.socialButtonText}> {t('signup_google')}</Text>
       </TouchableOpacity>
@@ -198,21 +264,13 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 5,
-  },logo: {
+  },
+  logo: {
     width: 420,
     height: 160,
     borderRadius: 80,
     marginBottom: 0,
-    marginTop:20
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#64748b',
-  },
-  text: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 15,
+    marginTop: 20,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -269,6 +327,11 @@ const styles = StyleSheet.create({
   socialButtonText: {
     fontSize: 16,
     marginLeft: 10,
+  },
+  text: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 15,
   },
   link: {
     color: '#4E8D7C',

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,61 +8,85 @@ import {
   Image,
   ActivityIndicator,
   StyleSheet,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+} from "react-native";
+import { useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import {
   AccessToken,
   LoginButton,
   Settings,
   Profile,
-  LoginManager
+  LoginManager,
 } from "react-native-fbsdk-next";
 
 // Add Google Sign-In import
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
+
+import * as SecureStore from "expo-secure-store";
 
 export default function SignIn() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { t, i18n } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-//ovaj useeffect zamijeniti sa onim iz grupe
   useEffect(() => {
-        GoogleSignin.configure({
-          iosClientId:
-            "POSLANO U GRUPI",
-          webClientId:
-            "POSLANO U GRUPI",
-          profileImageSize: 150,
-        });
-      }, []);
+    GoogleSignin.configure({
+      iosClientId:
+        "792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com",
+      webClientId:
+        "792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com",
+      profileImageSize: 150,
+    });
+  }, []);
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
   };
-
 
   const loginWithGoogle = async () => {
     try {
       setIsSubmitting(true);
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
-
+  
       if (isSuccessResponse(response)) {
-        const { idToken, user } = response.data;
-        const { name, email, photo } = user;
-        console.log("User Info:", { name, email, photo });
-//eh sta sada??
-// ovje ide neki kod za bekend
+        const { idToken } = response.data;
+  
+        console.log("User Info:", { idToken });
+  
+        // const apiResponse = await fetch("https://localhost:7176/api/Auth/login/google", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({ idToken, app: "buyer" }), // or "seller"
+        // });
+  
+        // if (!apiResponse.ok) {
+        //   throw new Error("Failed to login with Google");
+        // }
+  
+        // const result = await apiResponse.json();
+        // const accessToken = result.accessToken;
+  
+        // console.log("Access Token from BE:", accessToken);
+
+        // await SecureStore.setItemAsync("accessToken", accessToken);
+  
+        router.replace("/home");
       } else {
         console.log("Google Sign-in cancelled");
       }
-
+  
       setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
@@ -82,9 +106,6 @@ export default function SignIn() {
       }
     }
   };
-
-
-
 
   const loginWithFacebook = () => {
     LoginManager.logInWithPermissions(["public_profile", "email"]).then(
@@ -113,7 +134,7 @@ export default function SignIn() {
 
   const onSignInPress = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert(t('error'), t('fill_all_fields'));
+      Alert.alert(t("error"), t("fill_all_fields"));
       return;
     }
 
@@ -138,16 +159,16 @@ export default function SignIn() {
 
       <View style={styles.titleContainer}>
         <Image
-          source={require('../../assets/images/logo.png')}
+          source={require("../../assets/images/logo.png")}
           style={styles.logo}
         />
-        <Text style={styles.title}>{t('greet')}</Text>
-        <Text style={styles.subtitle}>{t('signin_subtitle')}</Text>
+        <Text style={styles.title}>{t("greet")}</Text>
+        <Text style={styles.subtitle}>{t("signin_subtitle")}</Text>
       </View>
 
       <TextInput
         style={styles.input}
-        placeholder={t('email_placeholder')}
+        placeholder={t("email_placeholder")}
         placeholderTextColor="#64748b"
         value={email}
         onChangeText={setEmail}
@@ -157,38 +178,52 @@ export default function SignIn() {
 
       <TextInput
         style={styles.input}
-        placeholder={t('password_placeholder')}
+        placeholder={t("password_placeholder")}
         placeholderTextColor="#64748b"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={onSignInPress} disabled={loading}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onSignInPress}
+        disabled={loading}
+      >
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>{t('continue')}</Text>
+          <Text style={styles.buttonText}>{t("continue")}</Text>
         )}
       </TouchableOpacity>
 
       <Text style={styles.text}>
-        {t('no_account')}{' '}
-        <Text style={styles.link} onPress={() => router.push('/register')}>
-          {t('signup')}
+        {t("no_account")}{" "}
+        <Text style={styles.link} onPress={() => router.push("/register")}>
+          {t("signup")}
         </Text>
       </Text>
 
-      <Text style={styles.or}>{t('or')}</Text>
+      <Text style={styles.or}>{t("or")}</Text>
 
-      <TouchableOpacity style={styles.socialButton} onPress={() => {loginWithGoogle();}}>
+      <TouchableOpacity
+        style={styles.socialButton}
+        onPress={() => {
+          loginWithGoogle();
+        }}
+      >
         <FontAwesome name="google" size={20} color="#DB4437" />
-        <Text style={styles.socialButtonText}>{t('login_google')}</Text>
+        <Text style={styles.socialButtonText}>{t("login_google")}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.socialButton} onPress={() => {loginWithFacebook();}}>
+      <TouchableOpacity
+        style={styles.socialButton}
+        onPress={() => {
+          loginWithFacebook();
+        }}
+      >
         <FontAwesome name="facebook" size={20} color="#1877F2" />
-        <Text style={styles.socialButtonText}>{t('login_facebook')}</Text>
+        <Text style={styles.socialButtonText}>{t("login_facebook")}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -197,34 +232,34 @@ export default function SignIn() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
     paddingHorizontal: 20,
   },
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   subtitle: {
     fontSize: 18,
-    color: '#64748b',
+    color: "#64748b",
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 50,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
     paddingHorizontal: 15,
     fontSize: 16,
     marginBottom: 15,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: "#f7f7f7",
   },
   logo: {
     width: 420,
@@ -233,43 +268,43 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    backgroundColor: '#4E8D7C',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#4E8D7C",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 8,
     marginBottom: 10,
   },
   buttonText: {
     fontSize: 18,
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
   },
   text: {
     fontSize: 14,
-    color: '#333',
+    color: "#333",
     marginBottom: 15,
   },
   link: {
-    color: '#4E8D7C',
-    fontWeight: 'bold',
+    color: "#4E8D7C",
+    fontWeight: "bold",
   },
   or: {
     fontSize: 16,
-    color: '#999',
+    color: "#999",
     marginVertical: 10,
   },
   socialButton: {
-    width: '100%',
+    width: "100%",
     height: 50,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
     marginBottom: 10,
   },
   socialButtonText: {
@@ -277,35 +312,33 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   languageButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
     zIndex: 10,
   },
   languageButton: {
-    position: 'absolute',
-    top: '5%',
-    right: '5%',
+    position: "absolute",
+    top: "5%",
+    right: "5%",
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: "#f1f5f9",
     zIndex: 100,
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
   },
   languageText: {
     fontSize: 10,
-    fontWeight: '600',
-    color: '#4E8D7C',
+    fontWeight: "600",
+    color: "#4E8D7C",
     marginTop: 2,
   },
 });
-
-

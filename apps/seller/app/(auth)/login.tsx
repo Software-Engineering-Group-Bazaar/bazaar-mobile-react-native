@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,11 +15,17 @@ import * as SecureStore from 'expo-secure-store';
 import { useTranslation } from 'react-i18next';
 import {
   AccessToken,
-  LoginButton,
-  Settings,
   Profile,
-  LoginManager
-} from "react-native-fbsdk-next";
+  LoginManager,
+} from 'react-native-fbsdk-next';
+
+// Google Sign-In imports
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -28,21 +34,31 @@ const isValidEmail = (email: string): boolean => {
 
 export default function SignIn() {
   const router = useRouter();
+  const { t, i18n } = useTranslation();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailValid, setEmailValid] = useState(true);
-  const { t, i18n } = useTranslation();
+
+  // Configure Google Signin on mount
+  useEffect(() => {
+    GoogleSignin.configure({
+      iosClientId: 'YOUR_IOS_CLIENT_ID', // Replace with your iOS client ID
+      webClientId: 'YOUR_WEB_CLIENT_ID', // Replace with your web client ID
+      profileImageSize: 150,
+    });
+  }, []);
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
 
   const loginWithFacebook = () => {
-    LoginManager.logInWithPermissions(["public_profile", "email"]).then(
+    LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       function (result) {
         if (result.isCancelled) {
-          console.log("==> Login cancelled");
+          console.log('==> Login cancelled');
         } else {
           console.log(result);
           AccessToken.getCurrentAccessToken().then((data) => {
@@ -52,7 +68,7 @@ export default function SignIn() {
         }
       },
       function (error) {
-        console.log("==> Login fail with error: " + error);
+        console.log('==> Login fail with error: ' + error);
       }
     );
   };
@@ -100,8 +116,56 @@ export default function SignIn() {
       await SecureStore.setItemAsync('auth_token', token);
       router.replace('./(auth)/logout');
     } catch (error) {
-      console.error("Login error:", error);
+      console.error('Login error:', error);
       Alert.alert(t('error'), t('something_went_wrong'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Google Sign-In logic
+  const loginWithGoogle = async () => {
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+
+      if (isSuccessResponse(response)) {
+        const { idToken } = response.data;
+        console.log('Google Sign-In User Info:', { idToken });
+
+        // OPTIONAL: Call your backend login endpoint with the Google idToken
+        // const apiResponse = await fetch('https://your-backend.com/api/auth/login/google', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ idToken, role: 'seller' }),
+        // });
+        // const result = await apiResponse.json();
+        // if (!apiResponse.ok) {
+        //   Alert.alert(t('login_failed'), result.message || t('invalid_credentials'));
+        //   return;
+        // }
+        // Optionally store token: await SecureStore.setItemAsync('auth_token', result.token);
+
+        router.replace('./(auth)/logout');
+      } else {
+        console.log('Google Sign-In cancelled');
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            console.log('Sign-In in progress');
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            console.log('Play services not available');
+            break;
+          default:
+            console.log('Unhandled error code', error.code);
+        }
+      } else {
+        console.log('Unknown error during Google Sign-In', error);
+      }
     } finally {
       setLoading(false);
     }
@@ -162,7 +226,8 @@ export default function SignIn() {
 
       <Text style={styles.or}>{t('or')}</Text>
 
-      <TouchableOpacity style={styles.socialButton}>
+      {/* Google Sign-In Button */}
+      <TouchableOpacity style={styles.socialButton} onPress={loginWithGoogle}>
         <FontAwesome name="google" size={20} color="#DB4437" />
         <Text style={styles.socialButtonText}>{t('login_google')}</Text>
       </TouchableOpacity>
