@@ -40,7 +40,23 @@ export default function SignIn() {
           console.log(result);
           AccessToken.getCurrentAccessToken().then((data) => {
             console.log(data);
-            getUserFBData();
+            if (data && data.accessToken) {
+              // Call the API endpoint with the access token
+              fetch('http://localhost/login/external/facebook', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accessToken: data.accessToken }),
+              })
+                .then(response => response.json())
+                .then(apiData => {
+                  console.log("API response:", apiData);
+                  // Optionally, process the API response here
+                  getUserFBData();
+                })
+                .catch(error => {
+                  console.error("Error calling the Facebook login API:", error);
+                });
+            }
           });
         }
       },
