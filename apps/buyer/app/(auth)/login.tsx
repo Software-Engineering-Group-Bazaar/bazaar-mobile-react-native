@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,16 +20,71 @@ import {
   LoginManager
 } from "react-native-fbsdk-next";
 
+// Add Google Sign-In import
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { t, i18n } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+//ovaj useeffect zamijeniti sa onim iz grupe
+  useEffect(() => {
+        GoogleSignin.configure({
+          iosClientId:
+            "POSLANO U GRUPI",
+          webClientId:
+            "POSLANO U GRUPI",
+          profileImageSize: 150,
+        });
+      }, []);
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
+
+
+  const loginWithGoogle = async () => {
+    try {
+      setIsSubmitting(true);
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+
+      if (isSuccessResponse(response)) {
+        const { idToken, user } = response.data;
+        const { name, email, photo } = user;
+        console.log("User Info:", { name, email, photo });
+//eh sta sada??
+// ovje ide neki kod za bekend
+      } else {
+        console.log("Google Sign-in cancelled");
+      }
+
+      setIsSubmitting(false);
+    } catch (error) {
+      setIsSubmitting(false);
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            console.log("Sign-in in progress");
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            console.log("Play services not available");
+            break;
+          default:
+            console.log("Unhandled error code", error.code);
+        }
+      } else {
+        console.log("Unknown error during sign-in", error);
+      }
+    }
+  };
+
+
+
 
   const loginWithFacebook = () => {
     LoginManager.logInWithPermissions(["public_profile", "email"]).then(
@@ -126,7 +181,7 @@ export default function SignIn() {
 
       <Text style={styles.or}>{t('or')}</Text>
 
-      <TouchableOpacity style={styles.socialButton}>
+      <TouchableOpacity style={styles.socialButton} onPress={() => {loginWithGoogle();}}>
         <FontAwesome name="google" size={20} color="#DB4437" />
         <Text style={styles.socialButtonText}>{t('login_google')}</Text>
       </TouchableOpacity>
