@@ -2,7 +2,7 @@
   "expo": {
     "name": "buyer",
     "slug": "buyer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -73,6 +73,12 @@
           "iosUserTrackingPermission": "This identifier will be used to deliver personalized ads to you."
         }
       ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.792696522665-dvhgjia0avus08gcni5rbvift7eki3qt"
+        }
+      ],
       "expo-tracking-transparency"
     ],
     "experiments": {
@@ -83,7 +89,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "3edf673d-6342-4074-85bf-1c091dd73139"
+        "projectId": "1081b26e-b6e5-4538-a5ec-9cbfb02ffde3"
       }
     }
   }
