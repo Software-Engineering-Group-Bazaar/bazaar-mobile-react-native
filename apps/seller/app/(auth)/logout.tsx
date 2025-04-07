@@ -47,7 +47,6 @@ const handleLogout = async () => {
       );
 
       if (response.status === 200) {
-        // Successfully logged out from the backend
         await SecureStore.deleteItemAsync('auth_token');
         Alert.alert(t('logout_title'), t('logout_message'));
         router.replace('/(auth)/login');
@@ -66,3 +65,42 @@ const handleLogout = async () => {
     Alert.alert(t('error'), t('something_went_wrong'));
   }
 };
+
+const YourScreen = () => {
+  return (
+    <View style={styles.container}>
+      {/* Other components or content */}
+
+      {/* Logout Button */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>{t('logout')}</Text>
+      </TouchableOpacity>
+
+      {/* Other components or content */}
+    </View>
+  );
+};
+
+// Styles for the logout button
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  logoutButton: {
+    backgroundColor: '#4E8D7C', // Set the background color for the button
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
+export default YourScreen;

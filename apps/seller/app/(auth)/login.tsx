@@ -56,8 +56,10 @@ export default function SignIn() {
   };
 
   const loginWithFacebook = () => {
+    
     LoginManager.logInWithPermissions(["public_profile", "email"]).then(
       function (result) {
+        console.log("drugi");
         if (result.isCancelled) {
           console.log("==> Login cancelled");
         } else {
@@ -65,8 +67,9 @@ export default function SignIn() {
           AccessToken.getCurrentAccessToken().then((data) => {
             console.log(data);
             if (data && data.accessToken) {
+              console.log("dosao")
               // Call the API endpoint with the access token
-              fetch('http://10.0.2.2:5054/api/FacebookAuth/login', {
+              fetch('http://13.48.30.146/api/FacebookAuth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accessToken: data.accessToken }),
@@ -122,14 +125,14 @@ export default function SignIn() {
            return;
          }
   
-         /*const result = await apiResponse.json();
+         const result = await apiResponse.json();
          const accessToken = result.accessToken;
   
          console.log("Access Token from BE:", accessToken);
 
-         await SecureStore.setItemAsync("accessToken", accessToken);*/
+         await SecureStore.setItemAsync("accessToken", accessToken);
   
-         router.replace("/home");
+         router.replace("/(auth)/login");
       } else {
         console.log("Google Sign-in cancelled");
       }
@@ -182,19 +185,20 @@ export default function SignIn() {
         return;
       }
   
-      // Step 2: Get the token and id from login response
-      const { token, isapproved } = loginData;
-  
-      if (isapproved === false) {
+      // Step 3: Destructure the token and approval status from loginData
+      const { token, mail } = loginData;
+
+      // Step 4: Check if the account is approved
+      if (mail === false) {
         Alert.alert(t('access_denied'), t('account_not_approved'));
         return;
       }
-  
-      // Step 4: Store the token securely
+
+      // Step 5: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
-  
-      // Step 5: Redirect to logout screen or dashboard as appropriate
-      router.replace('./(auth)/logout');
+      console.log("dodje");
+      // Step 6: Redirect to the logout screen or dashboard
+      router.replace('/(auth)/logout');
   
     } catch (error) {
       console.error("Login error:", error);

@@ -96,31 +96,35 @@ export default function SignUp() {
       return;
     }
   
-    const username = `${name} ${last_name}`;
+    const username = `${name}${last_name}`;
     setLoading(true);
   
     try {
-      // Make the API call to register the user with the concatenated username, email, and password
-      fetch('http://10.0.2.2:5054/api/Auth/register', {
+      const response = await fetch('http://10.0.2.2:5054/api/Auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }), // Send username, email, and password
+        body: JSON.stringify({ username, email, password }),
       });
   
-      // Alert user that the request is being processed
-      Alert.alert(t('signup_success'), t('wait_for_approval'));
+      const data = await response.json(); // Get the JSON from the response
   
-      // Redirect to the login screen
+      if (!response.ok) {
+        // If status is not 200–299
+        console.error("Registration failed:", data);
+        Alert.alert(t('error'), data.message || t('something_went_wrong'));
+        return;
+      }
+  
+      Alert.alert(t('signup_success'), t('wait_for_approval'));
       router.replace('/(auth)/login');
+  
     } catch (error) {
-      // Handle errors and display appropriate alert
       console.error('Error during registration:', error);
       Alert.alert(t('error'), t('something_went_wrong'));
     } finally {
-      // Set loading state to false once the request is completed
       setLoading(false);
     }
-  };
+  };  
 
   // Google Sign-Up logic
   const registerWithGoogle = async () => {
