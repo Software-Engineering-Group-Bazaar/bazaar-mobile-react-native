@@ -60,7 +60,7 @@ export default function SignUp() {
             console.log(data);
             if (data && data.accessToken) {
               // Call the API endpoint with the access token
-              fetch('http://10.0.2.2:5054/api/FacebookAuth/login', {
+              fetch('http://bazaar-system.duckdns.org/api/FacebookAuth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accessToken: data.accessToken }),
@@ -100,7 +100,7 @@ export default function SignUp() {
     setLoading(true);
   
     try {
-      const response = await fetch('http://10.0.2.2:5054/api/Auth/register', {
+      const response = await fetch('http://bazaar-system.duckdns.org/api/Auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
@@ -138,7 +138,7 @@ export default function SignUp() {
         console.log('Google Sign-Up User Info:', { idToken });
 
         // OPTIONAL: Call your backend register endpoint with the Google idToken
-         const apiResponse = await fetch('http://10.0.2.2:5054/api/Auth/login/google', {
+         const apiResponse = await fetch('http://bazaar-system.duckdns.org/api/Auth/login/google', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
            body: JSON.stringify({ idToken, role: 'seller' }),

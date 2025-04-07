@@ -63,7 +63,7 @@ export default function SignIn() {
   
         console.log("User Info:", { idToken });
   
-         const apiResponse = await fetch("http://10.0.2.2:5054/api/Auth/login/google", {
+         const apiResponse = await fetch("http://bazaar-system.duckdns.org/api/Auth/login/google", {
            method: "POST",
            headers: {
              "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export default function SignIn() {
             console.log(data);
             if (data && data.accessToken) {
               // Call the API endpoint with the access token
-              fetch('http://10.0.2.2:5054/api/FacebookAuth/login', {
+              fetch('http://bazaar-system.duckdns.org/api/FacebookAuth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accessToken: data.accessToken }),
@@ -158,7 +158,7 @@ export default function SignIn() {
       setLoading(true);
   
       // Step 1: Send login request
-      const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
+      const loginRes = await fetch('http://bazaar-system.duckdns.org/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }), 
@@ -171,19 +171,19 @@ export default function SignIn() {
         return;
       }
   
-      // Step 2: Get the token and id from login response
-      const { token, isapproved } = loginData;
-  
-      if (isapproved === false) {
+      // Step 3: Destructure the token and approval status from loginData
+      const { token, mail } = loginData;
+
+      // Step 4: Check if the account is approved
+      if (mail === false) {
         Alert.alert(t('access_denied'), t('account_not_approved'));
         return;
       }
-  
-      // Step 4: Store the token securely
+
+      // Step 5: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
-  
-      // Step 5: Redirect to logout screen or dashboard as appropriate
-      router.replace('./(auth)/logout');
+      // Step 6: Redirect to the logout screen or dashboard
+      router.replace('/(auth)/logout');
   
     } catch (error) {
       console.error("Login error:", error);
@@ -191,7 +191,7 @@ export default function SignIn() {
     } finally {
       setLoading(false);
     }
-  };  
+  }; 
 
   return (
     <View style={styles.container}>

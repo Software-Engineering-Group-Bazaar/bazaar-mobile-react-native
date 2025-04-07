@@ -112,7 +112,7 @@ export default function SignIn() {
   
         console.log("User Info:", { idToken });
   
-         const apiResponse = await fetch("http://10.0.2.2:5054/api/Auth/login/google", {
+         const apiResponse = await fetch("http://bazaar-system.duckdns.org/api/Auth/login/google", {
            method: "POST",
            headers: {
              "Content-Type": "application/json",
@@ -172,7 +172,7 @@ export default function SignIn() {
       setLoading(true);
   
       // Step 1: Send login request
-      const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
+      const loginRes = await fetch('http://bazaar-system.duckdns.org/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }), 

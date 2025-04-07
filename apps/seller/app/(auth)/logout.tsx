@@ -37,7 +37,7 @@ const handleLogout = async () => {
     if (token) {
       // Send POST request to the logout endpoint
       const response = await axios.post(
-        `http://10.0.2.2:5054/api/Auth/logout`,
+        `http://bazaar-system.duckdns.org/api/Auth/logout`,
         {},
         {
           headers: {
