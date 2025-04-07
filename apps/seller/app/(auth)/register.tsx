@@ -40,8 +40,8 @@ export default function SignUp() {
   // Configure Google Signin on mount
   useEffect(() => {
     GoogleSignin.configure({
-      iosClientId: 'YOUR_IOS_CLIENT_ID', // Replace with your iOS client ID
-      webClientId: 'YOUR_WEB_CLIENT_ID', // Replace with your web client ID
+      iosClientId: '792696522665-vp6dhutocq45q7mq237hjppufmu8pvoj.apps.googleusercontent.com', // Replace with your iOS client ID
+      webClientId: '792696522665-33mv7gd0b3ipnjbpj45711o9ifsoeno9.apps.googleusercontent.com', // Replace with your web client ID
       profileImageSize: 150,
     });
   }, []);

@@ -52,6 +52,12 @@
       ],
       "expo-secure-store",
       [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.792696522665-vp6dhutocq45q7mq237hjppufmu8pvoj"
+        }
+      ],
+      [
         "react-native-fbsdk-next",
         {
           "appID": "4026643390957060",
@@ -74,7 +80,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "c9a52e60-e25c-4c1f-ab5d-a02f9b6c5147"
+        "projectId": "aa08a850-3c8d-4920-8617-89157d12b4ff"
       }
     }
   }
