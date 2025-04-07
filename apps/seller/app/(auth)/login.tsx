@@ -15,17 +15,18 @@ import * as SecureStore from 'expo-secure-store';
 import { useTranslation } from 'react-i18next';
 import {
   AccessToken,
+  LoginButton,
+  Settings,
   Profile,
-  LoginManager,
-} from 'react-native-fbsdk-next';
-
-// Google Sign-In imports
+  LoginManager
+} from "react-native-fbsdk-next";
+import axios from 'axios';
 import {
   GoogleSignin,
   isErrorWithCode,
   isSuccessResponse,
   statusCodes,
-} from '@react-native-google-signin/google-signin';
+} from "@react-native-google-signin/google-signin";
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -34,12 +35,12 @@ const isValidEmail = (email: string): boolean => {
 
 export default function SignIn() {
   const router = useRouter();
-  const { t, i18n } = useTranslation();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailValid, setEmailValid] = useState(true);
+  const { t, i18n } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Configure Google Signin on mount
   useEffect(() => {
@@ -55,17 +56,17 @@ export default function SignIn() {
   };
 
   const loginWithFacebook = () => {
-    LoginManager.logInWithPermissions(['public_profile', 'email']).then(
+    LoginManager.logInWithPermissions(["public_profile", "email"]).then(
       function (result) {
         if (result.isCancelled) {
-          console.log('==> Login cancelled');
+          console.log("==> Login cancelled");
         } else {
           console.log(result);
           AccessToken.getCurrentAccessToken().then((data) => {
             console.log(data);
             if (data && data.accessToken) {
               // Call the API endpoint with the access token
-              fetch('http://localhost/login/external/facebook', {
+              fetch('http://10.0.2.2:5054/api/FacebookAuth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accessToken: data.accessToken }),
@@ -84,7 +85,7 @@ export default function SignIn() {
         }
       },
       function (error) {
-        console.log('==> Login fail with error: ' + error);
+        console.log("==> Login fail with error: " + error);
       }
     );
   };
@@ -95,97 +96,113 @@ export default function SignIn() {
     });
   };
 
+  const loginWithGoogle = async () => {
+    try {
+
+      setIsSubmitting(true);
+
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+  
+      if (isSuccessResponse(response)) {
+        const { idToken } = response.data;
+  
+        console.log("User Info:", { idToken });
+  
+         const apiResponse = await fetch("http://10.0.2.2:5054/api/Auth/login/google", {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json",
+           },
+           body: JSON.stringify({ idToken, app: "seller" }), 
+         });
+  
+         if (apiResponse.status != 200) {
+           Alert.alert(t('login_failed'), t('invalid_credentials'));
+           return;
+         }
+  
+         /*const result = await apiResponse.json();
+         const accessToken = result.accessToken;
+  
+         console.log("Access Token from BE:", accessToken);
+
+         await SecureStore.setItemAsync("accessToken", accessToken);*/
+  
+         router.replace("/home");
+      } else {
+        console.log("Google Sign-in cancelled");
+      }
+  
+      setIsSubmitting(false);
+    } catch (error) {
+      setIsSubmitting(false);
+      if (isErrorWithCode(error)) {
+      switch (error.code) {
+        case statusCodes.SIGN_IN_CANCELLED:
+          console.log("User cancelled the sign-in");
+          break;
+        case statusCodes.IN_PROGRESS:
+          console.log("Sign-in in progress");
+          break;
+        case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+          console.log("Play services not available or outdated");
+          break;
+        default:
+          console.warn("Unhandled Google Sign-in error code:", error.code);
+          Alert.alert("Google Sign-in Error", error.message || "Unknown error occurred.");
+      }
+    } else {
+      console.log("Unknown sign-in error", error);
+      Alert.alert("Sign-in Error", "Something went wrong during Google sign-in.");
+    }
+    }
+  };
+
   const onSignInPress = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert(t('error'), t('fill_all_fields'));
       return;
     }
-
+  
     try {
       setLoading(true);
-      const loginRes = await fetch('https://your-backend.com/api/auth/login', {
+  
+      // Step 1: Send login request
+      const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role: 'seller' }),
+        body: JSON.stringify({ email, password }), 
       });
-
-      const loginData = await loginRes.json();
-
-      if (!loginRes.ok) {
-        Alert.alert(t('login_failed'), loginData.message || t('invalid_credentials'));
+  
+      const loginData: any = await loginRes.json();
+  
+      if (loginRes.status != 200) {
+        Alert.alert(t('login_failed'), t('invalid_credentials'));
         return;
       }
-
-      const { token, id } = loginData;
-
-      const approvalRes = await fetch(`https://your-backend.com/api/user/isapproved/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const approvalData = await approvalRes.json();
-
-      if (!approvalRes.ok || approvalData.approved === false) {
+  
+      // Step 2: Get the token and id from login response
+      const { token, isapproved } = loginData;
+  
+      if (isapproved === false) {
         Alert.alert(t('access_denied'), t('account_not_approved'));
         return;
       }
-
+  
+      // Step 4: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
+  
+      // Step 5: Redirect to logout screen or dashboard as appropriate
       router.replace('./(auth)/logout');
+  
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       Alert.alert(t('error'), t('something_went_wrong'));
     } finally {
       setLoading(false);
     }
-  };
-
-  // Google Sign-In logic
-  const loginWithGoogle = async () => {
-    try {
-      setLoading(true);
-      await GoogleSignin.hasPlayServices();
-      const response = await GoogleSignin.signIn();
-
-      if (isSuccessResponse(response)) {
-        const { idToken } = response.data;
-        console.log('Google Sign-In User Info:', { idToken });
-
-        // OPTIONAL: Call your backend login endpoint with the Google idToken
-        // const apiResponse = await fetch('https://your-backend.com/api/auth/login/google', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ idToken, role: 'seller' }),
-        // });
-        // const result = await apiResponse.json();
-        // if (!apiResponse.ok) {
-        //   Alert.alert(t('login_failed'), result.message || t('invalid_credentials'));
-        //   return;
-        // }
-        // Optionally store token: await SecureStore.setItemAsync('auth_token', result.token);
-
-        router.replace('./(auth)/logout');
-      } else {
-        console.log('Google Sign-In cancelled');
-      }
-    } catch (error) {
-      if (isErrorWithCode(error)) {
-        switch (error.code) {
-          case statusCodes.IN_PROGRESS:
-            console.log('Sign-In in progress');
-            break;
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            console.log('Play services not available');
-            break;
-          default:
-            console.log('Unhandled error code', error.code);
-        }
-      } else {
-        console.log('Unknown error during Google Sign-In', error);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  };  
 
   return (
     <View style={styles.container}>
@@ -242,7 +259,6 @@ export default function SignIn() {
 
       <Text style={styles.or}>{t('or')}</Text>
 
-      {/* Google Sign-In Button */}
       <TouchableOpacity style={styles.socialButton} onPress={loginWithGoogle}>
         <FontAwesome name="google" size={20} color="#DB4437" />
         <Text style={styles.socialButtonText}>{t('login_google')}</Text>

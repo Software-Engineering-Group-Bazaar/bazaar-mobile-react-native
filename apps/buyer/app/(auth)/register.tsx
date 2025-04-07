@@ -97,29 +97,29 @@ export default function SignUp() {
       Alert.alert(t('error'), t('fill_all_fields'));
       return;
     }
-
+  
+    const username = `${name} ${last_name}`;
     setLoading(true);
-
+  
     try {
-      const response = await fetch('https://your-backend.com/api/auth/register', {
+      // Make the API call to register the user with the concatenated username, email, and password
+      fetch('http://10.0.2.2:5054/api/Auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, last_name, email, password, role: 'seller' }),
+        body: JSON.stringify({ username, email, password }), // Send username, email, and password
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        Alert.alert(t('signup_failed'), data.message || t('signup_failed_fallback'));
-        return;
-      }
-
+  
+      // Alert user that the request is being processed
       Alert.alert(t('signup_success'), t('wait_for_approval'));
+  
+      // Redirect to the login screen
       router.replace('/(auth)/login');
     } catch (error) {
+      // Handle errors and display appropriate alert
       console.error('Error during registration:', error);
       Alert.alert(t('error'), t('something_went_wrong'));
     } finally {
+      // Set loading state to false once the request is completed
       setLoading(false);
     }
   };
@@ -135,17 +135,17 @@ export default function SignUp() {
         console.log('Google Sign-Up User Info:', { idToken });
 
         // OPTIONAL: Call your backend register endpoint with the Google idToken
-        // const apiResponse = await fetch('https://your-backend.com/api/auth/register/google', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ idToken, role: 'seller' }),
-        // });
-        // const result = await apiResponse.json();
-        // if (!apiResponse.ok) {
-        //   Alert.alert(t('signup_failed'), result.message || t('signup_failed_fallback'));
-        //   return;
-        // }
-        // await SecureStore.setItemAsync('accessToken', result.accessToken);
+         const apiResponse = await fetch('http://10.0.2.2:5054/api/Auth/login/google', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ idToken, role: 'seller' }),
+         });
+         const result = await apiResponse.json();
+         if (!apiResponse.ok) {
+           Alert.alert(t('signup_failed'), result.message || t('signup_failed_fallback'));
+           return;
+         }
+         await SecureStore.setItemAsync('accessToken', result.accessToken);
 
         // Navigate to home screen or any other page as needed
         router.replace('/home');

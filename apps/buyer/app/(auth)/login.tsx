@@ -63,24 +63,24 @@ export default function SignIn() {
   
         console.log("User Info:", { idToken });
   
-        // const apiResponse = await fetch("https://localhost:7176/api/Auth/login/google", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({ idToken, app: "buyer" }), // or "seller"
-        // });
+         const apiResponse = await fetch("http://10.0.2.2:5054/api/Auth/login/google", {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json",
+           },
+           body: JSON.stringify({ idToken, app: "buyer" }), // or "seller"
+         });
   
-        // if (!apiResponse.ok) {
-        //   throw new Error("Failed to login with Google");
-        // }
+         if (!apiResponse.ok) {
+           throw new Error("Failed to login with Google");
+         }
   
-        // const result = await apiResponse.json();
-        // const accessToken = result.accessToken;
+         const result = await apiResponse.json();
+         const accessToken = result.accessToken;
   
-        // console.log("Access Token from BE:", accessToken);
+         console.log("Access Token from BE:", accessToken);
 
-        // await SecureStore.setItemAsync("accessToken", accessToken);
+         await SecureStore.setItemAsync("accessToken", accessToken);
   
         router.replace("/home");
       } else {
@@ -118,7 +118,7 @@ export default function SignIn() {
             console.log(data);
             if (data && data.accessToken) {
               // Call the API endpoint with the access token
-              fetch('http://localhost/login/external/facebook', {
+              fetch('http://10.0.2.2:5054/api/FacebookAuth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accessToken: data.accessToken }),
@@ -150,21 +150,48 @@ export default function SignIn() {
 
   const onSignInPress = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert(t("error"), t("fill_all_fields"));
+      Alert.alert(t('error'), t('fill_all_fields'));
       return;
     }
-
-    setLoading(true);
-    // const success = await handleEmailSignIn(email, password);
-    setLoading(false);
-
-    // if (success) {
-    //   Alert.alert(t('success'), t('signed_in'));
-    //   router.replace('/(admin)/users');
-    // } else {
-    //   Alert.alert(t('error'), t('invalid_credentials'));
-    // }
-  };
+  
+    try {
+      setLoading(true);
+  
+      // Step 1: Send login request
+      const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }), 
+      });
+  
+      const loginData: any = await loginRes.json();
+  
+      if (loginRes.status != 200) {
+        Alert.alert(t('login_failed'), t('invalid_credentials'));
+        return;
+      }
+  
+      // Step 2: Get the token and id from login response
+      const { token, isapproved } = loginData;
+  
+      if (isapproved === false) {
+        Alert.alert(t('access_denied'), t('account_not_approved'));
+        return;
+      }
+  
+      // Step 4: Store the token securely
+      await SecureStore.setItemAsync('auth_token', token);
+  
+      // Step 5: Redirect to logout screen or dashboard as appropriate
+      router.replace('./(auth)/logout');
+  
+    } catch (error) {
+      console.error("Login error:", error);
+      Alert.alert(t('error'), t('something_went_wrong'));
+    } finally {
+      setLoading(false);
+    }
+  };  
 
   return (
     <View style={styles.container}>
