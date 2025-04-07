@@ -2,6 +2,22 @@
   "private": true,
   "name": "monorepo",
   "version": "1.0.0",
-  "workspaces": ["apps/*", "packages/*"]
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "@react-native-google-signin/google-signin": "^13.2.0",
+    "@react-native/js-polyfills": "^0.78.2",
+    "expo-web-browser": "^14.0.2",
+    "i18n-js": "^4.5.1",
+    "i18next": "^24.2.3",
+    "react-i18next": "^15.4.1",
+    "react-native-reanimated": "~3.16.1",
+    "expo-dev-client": "~5.0.19"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.20",
+    "@types/react-native": "^0.73.0"
+  }
 }
-
