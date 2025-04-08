@@ -66,7 +66,7 @@ export default function SignUp() {
       if (data?.accessToken) {
         // call your backend
         const response = await fetch(
-          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          'http://127.0.0.1:5054/api/Auth/login/facebook',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -140,17 +140,17 @@ export default function SignUp() {
         console.log('Google Sign-Up User Info:', { idToken });
 
         // OPTIONAL: Call your backend register endpoint with the Google idToken
-         const apiResponse = await fetch('https://bazaar-system.duckdns.org/api/Auth/login/google', {
+         const apiResponse = await fetch('http://127.0.0.1:5054/api/Auth/login/google', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ idToken, role: 'seller' }),
+           body: JSON.stringify({ idToken: idToken, app: "buyer" }),
          });
-         const result = await apiResponse.json();
+         const token = await apiResponse.text();
          if (!apiResponse.ok) {
-           Alert.alert(t('signup_failed'), result.message || t('signup_failed_fallback'));
+           Alert.alert(t('signup_failed'), token || t('signup_failed_fallback'));
            return;
          }
-         await SecureStore.setItemAsync('accessToken', result.accessToken);
+         await SecureStore.setItemAsync('accessToken', token);
 
         // Navigate to home screen or any other page as needed
         router.replace('/home');

@@ -63,20 +63,22 @@ export default function SignIn() {
   
         console.log("User Info:", { idToken });
   
-         const apiResponse = await fetch("https://bazaar-system.duckdns.org/api/Auth/login/google", {
+         const apiResponse = await fetch("http://127.0.0.1:5054/api/Auth/login/google", {
            method: "POST",
            headers: {
              "Content-Type": "application/json",
+             "Accept": "text/plain",
            },
-           body: JSON.stringify({ idToken, app: "buyer" }), // or "seller"
+           body: JSON.stringify({ idToken: idToken, app: "buyer" }), // or "seller"
          });
   
          if (!apiResponse.ok) {
            throw new Error("Failed to login with Google");
          }
   
-         const result = await apiResponse.json();
-         const accessToken = result.accessToken;
+         const result = await apiResponse.text();
+         console.log(result)
+         const accessToken = result;
   
          console.log("Access Token from BE:", accessToken);
 
@@ -122,7 +124,7 @@ export default function SignIn() {
       if (data?.accessToken) {
         // call your backend
         const response = await fetch(
-          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          'http://127.0.0.1:5054/api/Auth/login/facebook',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
