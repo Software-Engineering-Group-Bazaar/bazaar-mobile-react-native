@@ -99,7 +99,7 @@ export default function SignIn() {
             console.log("Play services not available");
             break;
           default:
-            console.log("Unhandled error code", error.code);
+            console.log("Unhandled error code", error.code, error);
         }
       } else {
         console.log("Unknown error during sign-in", error);
@@ -122,7 +122,7 @@ export default function SignIn() {
       if (data?.accessToken) {
         // call your backend
         const response = await fetch(
-          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          'http://127.0.0.1:5054/api/Auth/login/facebook',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -133,7 +133,7 @@ export default function SignIn() {
         const apiData = await response.json();
         console.log("API response:", apiData);
   
-        await SecureStore.setItemAsync("accessToken", apiData.accessToken);
+        await SecureStore.setItemAsync("accessToken", apiData.message);
         router.replace("/home");
         getUserFBData();
       }
