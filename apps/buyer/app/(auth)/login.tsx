@@ -122,7 +122,7 @@ export default function SignIn() {
       if (data?.accessToken) {
         // call your backend
         const response = await fetch(
-          'http://127.0.0.1:5054/api/Auth/login/facebook',
+          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
