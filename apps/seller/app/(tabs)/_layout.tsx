@@ -13,19 +13,20 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+    screenOptions={{
+      tabBarActiveTintColor: '#4E8D7C', // ista zelena kao dugme
+      headerShown: false,
+      tabBarButton: HapticTab,
+      tabBarBackground: TabBarBackground,
+      tabBarStyle: Platform.select({
+        ios: {
+          position: 'absolute',
+        },
+        default: {},
+      }),
+    }}
+  >
+  
       <Tabs.Screen
         name="index"
         options={{
@@ -40,6 +41,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
+      <Tabs.Screen
+      name="postavke_prodavnice"
+      options={{
+        title: 'Postavke prodavnice',
+        tabBarIcon: ({ color }) =>   <IconSymbol size={28} name="storefront" color={color} />,
+  }}
+/>
     </Tabs>
   );
 }

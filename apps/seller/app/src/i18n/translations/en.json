@@ -35,6 +35,18 @@
   "logged_in_as_seller": "You are logged in as a seller",
   "logout_button": "Logout",
   "logout_title": "Logout",
-  "logout_message": "You have been successfully logged out."
+  "logout_message": "You have been successfully logged out.",
+  "create_store": "Create Store",
+  "store_settings": "Store Settings",
+  "store_name": "Store Name",
+  "address": "Address",
+  "description": "Description",
+  "category": "Category",
+  "save_changes": "Save Changes",
+  "upload_image": "Upload image",
+  "store_updated": "Store updated successfully.",
+  "select_category": "Select category"
+
+
   }
   

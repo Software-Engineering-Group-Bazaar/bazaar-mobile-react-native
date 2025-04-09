@@ -35,6 +35,17 @@
   "logged_in_as_seller": "Ulogovani ste kao prodavač",
   "logout_button": "Odjava",
   "logout_title": "Odjava",
-  "logout_message": "Uspješno ste odjavljeni."
+  "logout_message": "Uspješno ste odjavljeni.",
+  "create_store": "Kreiraj prodavnicu",
+  "store_settings": "Postavke prodavnice",
+  "store_name": "Naziv prodavnice",
+  "address": "Adresa",
+  "description": "Opis",
+  "category": "Kategorija",
+  "save_changes": "Sačuvaj promjene",
+  "upload_image": "Dodaj sliku",
+  "store_updated": "Podaci su uspješno ažurirani.",
+  "select_category": "Odaberi kategoriju"
+
   }
   
