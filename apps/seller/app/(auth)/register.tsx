@@ -142,16 +142,19 @@ export default function SignUp() {
          const apiResponse = await fetch('https://bazaar-system.duckdns.org/api/Auth/login/google', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ idToken, role: 'seller' }),
+           body: JSON.stringify({ idToken: idToken, role: 'seller' }),
          });
-         const result = await apiResponse.json();
+         
          if (!apiResponse.ok) {
-           Alert.alert(t('signup_failed'), result.message || t('signup_failed_fallback'));
+           Alert.alert(t('signup_failed'), t('signup_failed_fallback'));
            return;
          }
-        // Optionally store token: await SecureStore.setItemAsync('accessToken', result.accessToken);
+        
+         const result = await apiResponse.text();
+          const accessToken = result;
+          console.log("Access Token from BE:", accessToken);
+          await SecureStore.setItemAsync("accessToken", accessToken);
 
-        // Navigate to login or home as needed
         router.replace('/(auth)/logout');
       } else {
         console.log('Google Sign-Up cancelled');

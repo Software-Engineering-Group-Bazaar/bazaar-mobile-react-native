@@ -115,7 +115,7 @@ export default function SignIn() {
            headers: {
              "Content-Type": "application/json",
            },
-           body: JSON.stringify({ idToken, app: "seller" }), 
+           body: JSON.stringify({ idToken: idToken, app: "seller" }), 
          });
   
          if (apiResponse.status != 200) {
@@ -123,8 +123,8 @@ export default function SignIn() {
            return;
          }
   
-         const result = await apiResponse.json();
-         const accessToken = result.accessToken;
+         const result = await apiResponse.text();
+         const accessToken = result;
   
          console.log("Access Token from BE:", accessToken);
 
