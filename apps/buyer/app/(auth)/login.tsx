@@ -135,7 +135,7 @@ export default function SignIn() {
         const apiData = await response.json();
         console.log("API response:", apiData);
   
-        await SecureStore.setItemAsync("accessToken", apiData.message);
+        await SecureStore.setItemAsync("accessToken", apiData.token);
         router.replace("/home");
         getUserFBData();
       }
