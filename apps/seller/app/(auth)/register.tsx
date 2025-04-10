@@ -49,40 +49,41 @@ export default function SignUp() {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
 
-  const loginWithFacebook = () => {
-    LoginManager.logInWithPermissions(['public_profile', 'email']).then(
-      function (result) {
-        if (result.isCancelled) {
-          console.log('==> Login cancelled');
-        } else {
-          console.log(result);
-          AccessToken.getCurrentAccessToken().then((data) => {
-            console.log(data);
-            if (data && data.accessToken) {
-              // Call the API endpoint with the access token
-              fetch('http://bazaar-system.duckdns.org/api/FacebookAuth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ accessToken: data.accessToken }),
-              })
-                .then(response => response.json())
-                .then(apiData => {
-                  console.log("API response:", apiData);
-                  // Optionally, process the API response here
-                  getUserFBData();
-                })
-                .catch(error => {
-                  console.error("Error calling the Facebook login API:", error);
-                });
-            }
-          });
-        }
-      },
-      function (error) {
-        console.log('==> Login fail with error: ' + error);
+  const loginWithFacebook = async () => {
+    try {
+      const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+      if (result.isCancelled) {
+        console.log("==> Login cancelled");
+        return;
       }
-    );
+      console.log(result);
+  
+      const data = await AccessToken.getCurrentAccessToken();
+      console.log(data);
+  
+      if (data?.accessToken) {
+        // call your backend
+        const response = await fetch(
+          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken: data.accessToken, app: "seller" }),
+          }
+        );
+  
+        const apiData = await response.json();
+        console.log("API response:", apiData);
+  
+        await SecureStore.setItemAsync("accessToken", apiData.token);
+        router.replace("/home");
+        getUserFBData();
+      }
+    } catch (error) {
+      console.error("Facebook login flow failed:", error);
+    }
   };
+  
 
   const getUserFBData = () => {
     Profile.getCurrentProfile().then((currentProfile) => {
@@ -100,7 +101,7 @@ export default function SignUp() {
     setLoading(true);
   
     try {
-      const response = await fetch('http://bazaar-system.duckdns.org/api/Auth/register', {
+      const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
@@ -138,19 +139,22 @@ export default function SignUp() {
         console.log('Google Sign-Up User Info:', { idToken });
 
         // OPTIONAL: Call your backend register endpoint with the Google idToken
-         const apiResponse = await fetch('http://bazaar-system.duckdns.org/api/Auth/login/google', {
+         const apiResponse = await fetch('https://bazaar-system.duckdns.org/api/Auth/login/google', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ idToken, role: 'seller' }),
+           body: JSON.stringify({ idToken: idToken, role: 'seller' }),
          });
-         const result = await apiResponse.json();
+         
          if (!apiResponse.ok) {
-           Alert.alert(t('signup_failed'), result.message || t('signup_failed_fallback'));
+           Alert.alert(t('signup_failed'), t('signup_failed_fallback'));
            return;
          }
-        // Optionally store token: await SecureStore.setItemAsync('accessToken', result.accessToken);
+        
+         const result = await apiResponse.text();
+          const accessToken = result;
+          console.log("Access Token from BE:", accessToken);
+          await SecureStore.setItemAsync("accessToken", accessToken);
 
-        // Navigate to login or home as needed
         router.replace('/(auth)/logout');
       } else {
         console.log('Google Sign-Up cancelled');

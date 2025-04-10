@@ -55,43 +55,41 @@ export default function SignIn() {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
 
-  const loginWithFacebook = () => {
-    
-    LoginManager.logInWithPermissions(["public_profile", "email"]).then(
-      function (result) {
-        console.log("drugi");
-        if (result.isCancelled) {
-          console.log("==> Login cancelled");
-        } else {
-          console.log(result);
-          AccessToken.getCurrentAccessToken().then((data) => {
-            console.log(data);
-            if (data && data.accessToken) {
-              console.log("dosao")
-              // Call the API endpoint with the access token
-              fetch('http://13.48.30.146/api/FacebookAuth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ accessToken: data.accessToken }),
-              })
-                .then(response => response.json())
-                .then(apiData => {
-                  console.log("API response:", apiData);
-                  // Optionally, process the API response here
-                  getUserFBData();
-                })
-                .catch(error => {
-                  console.error("Error calling the Facebook login API:", error);
-                });
-            }
-          });
-        }
-      },
-      function (error) {
-        console.log("==> Login fail with error: " + error);
+  const loginWithFacebook = async () => {
+    try {
+      const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+      if (result.isCancelled) {
+        console.log("==> Login cancelled");
+        return;
       }
-    );
+      console.log(result);
+  
+      const data = await AccessToken.getCurrentAccessToken();
+      console.log(data);
+  
+      if (data?.accessToken) {
+        // call your backend
+        const response = await fetch(
+          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken: data.accessToken, app: "seller" }),
+          }
+        );
+  
+        const apiData = await response.json();
+        console.log("API response:", apiData);
+  
+        await SecureStore.setItemAsync("accessToken", apiData.token);
+        router.replace("/home");
+        getUserFBData();
+      }
+    } catch (error) {
+      console.error("Facebook login flow failed:", error);
+    }
   };
+  
 
   const getUserFBData = () => {
     Profile.getCurrentProfile().then((currentProfile) => {
@@ -112,12 +110,12 @@ export default function SignIn() {
   
         console.log("User Info:", { idToken });
   
-         const apiResponse = await fetch("http://bazaar-system.duckdns.org/api/Auth/login/google", {
+         const apiResponse = await fetch("https://bazaar-system.duckdns.org/api/Auth/login/google", {
            method: "POST",
            headers: {
              "Content-Type": "application/json",
            },
-           body: JSON.stringify({ idToken, app: "seller" }), 
+           body: JSON.stringify({ idToken: idToken, app: "seller" }), 
          });
   
          if (apiResponse.status != 200) {
@@ -125,8 +123,8 @@ export default function SignIn() {
            return;
          }
   
-         const result = await apiResponse.json();
-         const accessToken = result.accessToken;
+         const result = await apiResponse.text();
+         const accessToken = result;
   
          console.log("Access Token from BE:", accessToken);
 
@@ -172,7 +170,7 @@ export default function SignIn() {
       setLoading(true);
   
       // Step 1: Send login request
-      const loginRes = await fetch('http://bazaar-system.duckdns.org/api/Auth/login', {
+      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }), 
