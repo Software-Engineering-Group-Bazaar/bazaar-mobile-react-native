@@ -45,8 +45,21 @@
   "save_changes": "Save Changes",
   "upload_image": "Upload image",
   "store_updated": "Store updated successfully.",
-  "select_category": "Select category"
-
-
+  "select_category": "Select category",
+  "add_a_product": "Add a new product",
+  "product_name": "Product name",
+  "enter_product_name": "Enter product name",
+  "price": "Price (KM)",
+  "enter_price": "Enter price",
+  "weight": "Weight",
+  "enter_weight": "Enter weight",
+  "volume": "Volume",
+  "enter_volume": "Enter volume",
+  "images": "Images",
+  "select_images": "Select images",
+  "my_stores": "My stores",
+  "add_a_new_store": "Set up a new store",
+  "store_overview": "Store overview",
+  "view_all_products": "View all products"
   }
   

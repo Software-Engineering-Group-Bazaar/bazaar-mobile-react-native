@@ -196,9 +196,8 @@ export default function SignIn() {
 
       // Step 5: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
-      console.log("dodje");
       // Step 6: Redirect to the logout screen or dashboard
-      router.replace('/(auth)/logout');
+      router.replace('/(tabs)/home');
   
     } catch (error) {
       console.error("Login error:", error);
@@ -277,23 +276,18 @@ export default function SignIn() {
      
       { /* === POČETAK TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
 
-      {/*  <TouchableOpacity
+      { <TouchableOpacity
           style={[styles.socialButton, { borderColor: '#4E8D7C' }]}
-          onPress={() => router.replace('/(tabs)/postavke_prodavnice')}
+          onPress={() => router.replace('/(tabs)/home')}
         >
           <FontAwesome name="cogs" size={20} color="#4E8D7C" />
           <Text style={[styles.socialButtonText, { color: '#4E8D7C' }]}>
             TEST UI: Postavke prodavnice
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity> }
         
         {/* === KRAJ TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
       
-
-
-
-
-
     </View>
   );
 }

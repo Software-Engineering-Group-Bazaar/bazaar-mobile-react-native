@@ -45,7 +45,21 @@
   "save_changes": "Sačuvaj promjene",
   "upload_image": "Dodaj sliku",
   "store_updated": "Podaci su uspješno ažurirani.",
-  "select_category": "Odaberi kategoriju"
-
-  }
+  "select_category": "Odaberi kategoriju",
+  "add_a_product": "Dodaj novi proizvod",
+  "product_name": "Ime proizvoda",
+  "enter_product_name": "Unesite ime proizvoda",
+  "price": "Cijena (KM)",
+  "enter_price": "Unesite cijenu",
+  "weight": "Težina",
+  "enter_weight": "Unesite težinu",
+  "volume": "Zapremina",
+  "enter_volume": "Unesite zapreminu",
+  "images": "Slike",
+  "select_images": "Odaberite slike",
+  "my_stores": "Moje prodavnice",
+  "add_a_new_store": "Kreiraj novu prodavnicu",
+  "store_overview": "Pregled prodavnice",
+  "view_all_products": "Pregled svih proizvoda"
+   }
   

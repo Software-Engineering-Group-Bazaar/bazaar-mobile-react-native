@@ -14,6 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { useNavigation } from '@react-navigation/native';
 
 // TODO: Kad backend bude spreman, otkomentarisati ove pozive
 // import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
@@ -57,6 +58,14 @@ export default function PostavkeProdavnice() {
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: 'Postavke prodavnice', 
+    });
+  }, [navigation]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -281,7 +290,7 @@ const styles = StyleSheet.create({
   },
   languageButton: {
     position: 'absolute',
-    top: 40,
+    top: 20,
     right: 20,
     width: 50,
     height: 50,
