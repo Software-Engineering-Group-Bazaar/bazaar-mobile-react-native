@@ -2,6 +2,8 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
+#import <GoogleSignIn/GoogleSignIn.h>
+
 
 @implementation AppDelegate
 
@@ -30,9 +32,10 @@
 #endif
 }
 
+
 // Linking API
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-  return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
+  return [GIDSignIn.sharedInstance handleURL:url] || [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
 }
 
 // Universal Links

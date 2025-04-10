@@ -63,20 +63,22 @@ export default function SignIn() {
   
         console.log("User Info:", { idToken });
   
-         const apiResponse = await fetch("http://bazaar-system.duckdns.org/api/Auth/login/google", {
+         const apiResponse = await fetch("https://bazaar-system.duckdns.org/api/Auth/login/google", {
            method: "POST",
            headers: {
              "Content-Type": "application/json",
+             "Accept": "text/plain",
            },
-           body: JSON.stringify({ idToken, app: "buyer" }), // or "seller"
+           body: JSON.stringify({ idToken: idToken, app: "buyer" }), // or "seller"
          });
   
          if (!apiResponse.ok) {
            throw new Error("Failed to login with Google");
          }
   
-         const result = await apiResponse.json();
-         const accessToken = result.accessToken;
+         const result = await apiResponse.text();
+         console.log(result)
+         const accessToken = result;
   
          console.log("Access Token from BE:", accessToken);
 
@@ -99,7 +101,7 @@ export default function SignIn() {
             console.log("Play services not available");
             break;
           default:
-            console.log("Unhandled error code", error.code);
+            console.log("Unhandled error code", error.code, error);
         }
       } else {
         console.log("Unknown error during sign-in", error);
@@ -107,40 +109,41 @@ export default function SignIn() {
     }
   };
 
-  const loginWithFacebook = () => {
-    LoginManager.logInWithPermissions(["public_profile", "email"]).then(
-      function (result) {
-        if (result.isCancelled) {
-          console.log("==> Login cancelled");
-        } else {
-          console.log(result);
-          AccessToken.getCurrentAccessToken().then((data) => {
-            console.log(data);
-            if (data && data.accessToken) {
-              // Call the API endpoint with the access token
-              fetch('http://bazaar-system.duckdns.org/api/FacebookAuth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ accessToken: data.accessToken }),
-              })
-                .then(response => response.json())
-                .then(apiData => {
-                  console.log("API response:", apiData);
-                  // Optionally, process the API response here
-                  getUserFBData();
-                })
-                .catch(error => {
-                  console.error("Error calling the Facebook login API:", error);
-                });
-            }
-          });
-        }
-      },
-      function (error) {
-        console.log("==> Login fail with error: " + error);
+  const loginWithFacebook = async () => {
+    try {
+      const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+      if (result.isCancelled) {
+        console.log("==> Login cancelled");
+        return;
       }
-    );
+      console.log(result);
+  
+      const data = await AccessToken.getCurrentAccessToken();
+      console.log(data);
+  
+      if (data?.accessToken) {
+        // call your backend
+        const response = await fetch(
+          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accessToken: data.accessToken, app: "buyer" }),
+          }
+        );
+  
+        const apiData = await response.json();
+        console.log("API response:", apiData);
+  
+        await SecureStore.setItemAsync("accessToken", apiData.token);
+        router.replace("/home");
+        getUserFBData();
+      }
+    } catch (error) {
+      console.error("Facebook login flow failed:", error);
+    }
   };
+  
 
   const getUserFBData = () => {
     Profile.getCurrentProfile().then((currentProfile) => {
@@ -158,7 +161,7 @@ export default function SignIn() {
       setLoading(true);
   
       // Step 1: Send login request
-      const loginRes = await fetch('http://bazaar-system.duckdns.org/api/Auth/login', {
+      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }), 
