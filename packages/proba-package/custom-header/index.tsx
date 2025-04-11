@@ -2,16 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { usePathname } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { t } from 'i18next';
 
 const CustomHeader = () => {
   const pathname = usePathname();
 
   const getTitle = () => {
-    if (pathname.startsWith('/stores/products')) return 'Store Products';
-    if (pathname.startsWith('/stores')) return 'Stores';
-    if (pathname.startsWith('/search')) return 'Search';
-    if (pathname.startsWith('/home')) return 'Home';
-    if (pathname.startsWith('/profil')) return 'Profile';
+    if (pathname.startsWith('/stores/products')) return t('store-products');
+    if (pathname.startsWith('/stores')) return t('stores');
+    if (pathname.startsWith('/search')) return t('search');
+    if (pathname.startsWith('/home')) return t('home');
+    if (pathname.startsWith('/profil')) return t('profile');
     return 'Bazaar';
   };
 
