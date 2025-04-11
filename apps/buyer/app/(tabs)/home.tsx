@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet } from "react-native";
+import { t } from 'i18next';
 
 export default function Home() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🎉 Welcome!</Text>
-      <Text style={styles.subtitle}>This is Bazar buyer app.</Text>
+      <Text style={styles.title}>🎉 {t('welcome')}</Text>
+      <Text style={styles.subtitle}>{t('home-text')}</Text>
     </View>
   );
 }

@@ -9,6 +9,7 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
 import CustomHeader from 'proba-package/custom-header/index'; 
+import { t } from 'i18next';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -28,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
+          title: t('home'),
           tabBarIcon: ({ color }) => (
             <FontAwesome name="home" size={28} color={color} />
           ),
@@ -37,7 +38,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stores"
         options={{
-          title: 'Stores',
+          title: t('stores'),
           tabBarIcon: ({ color }) => (
             <FontAwesome name="shopping-bag" size={28} color={color} />
           ),
@@ -46,14 +47,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
+          title: t('search'),
           tabBarIcon: ({ color }) => (<FontAwesome size={28} name="search" color={color} />)
         }}
       />
       <Tabs.Screen
         name="profil"
         options={{
-          title: 'Profile',
+          title: t('profile'),
           tabBarIcon: ({ color }) => (
             <FontAwesome name="user-circle" size={28} color={color} />
           ),
