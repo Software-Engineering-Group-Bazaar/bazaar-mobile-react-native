@@ -60,6 +60,10 @@
   "my_stores": "My stores",
   "add_a_new_store": "Set up a new store",
   "store_overview": "Store overview",
-  "view_all_products": "View all products"
+  "view_all_products": "View all products",
+  "tab_home": "Home",
+  "tab_stores": "My Stores",
+  "tab_products": "My Products",
+  "products_overview": "Product Overview"
   }
   

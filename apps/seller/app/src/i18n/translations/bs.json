@@ -60,6 +60,12 @@
   "my_stores": "Moje prodavnice",
   "add_a_new_store": "Kreiraj novu prodavnicu",
   "store_overview": "Pregled prodavnice",
-  "view_all_products": "Pregled svih proizvoda"
+  "view_all_products": "Pregled svih proizvoda",
+  "tab_home": "Početna",
+  "tab_stores": "Moje prodavnice",
+  "tab_products": "Moji proizvodi",
+  "products_overview": "Pregled proizvoda"
+
+  
    }
   

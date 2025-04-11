@@ -109,6 +109,7 @@ export default function AddProductScreen() {
 
       <Text style={styles.title}>{t('add_a_product')}</Text>
 
+
       <View style={styles.form}>
         <Text style={styles.label}>{t('product_name')}</Text>
         <TextInput

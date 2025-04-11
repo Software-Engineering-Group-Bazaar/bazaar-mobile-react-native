@@ -1,63 +1,56 @@
 import { View, Text, Image, ActivityIndicator, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { mockStores, Store } from '../data/mockStores';
 
-interface Store {
-  id: string;
-  name: string;
-  address: string;
-  description?: string;
-  image: string;
-}
-  
-// Mock data for stores
-const Store =
-  {
-    id: '1',
-    name: 'Green Market',
-    address: '123 Main Street, City',
-    description: 'Fresh organic produce and local goods.',
-    categoryLabel: 'Market',
-    image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=500&q=80',
-  }
+export const options = {
+  title: 'Pregled proizvoda',
+};
 
 export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const navigation = useNavigation();
+  const { id } = useLocalSearchParams(); // ➕ uzimamo ID iz URL-a
   const [loading, setLoading] = useState(false);
+
+  const store = mockStores.find((s) => s.id === id);
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: t('store_overview'),
+    });
+  }, [i18n.language, navigation]);
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
 
   const handleSave = () => {
-    router.push('../(CRUD)/dodaj_proizvod'); 
+    router.push('../(CRUD)/pregled_proizvoda');
   };
 
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: 'Pregled prodavnice', 
-    });
-  }, [navigation]);
+  if (!store) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16 }}>{t('store_not_found') || 'Prodavnica nije pronađena'}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
-
         <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
           <FontAwesome name="language" size={18} color="#4E8D7C" />
           <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>{t('store_overview')}</Text>
-
-        {Store.image ? (
-          <Image source={{ uri: Store.image }} style={styles.image} />
+        {store.image ? (
+          <Image source={{ uri: store.image }} style={styles.image} />
         ) : (
           <View style={styles.placeholderImage}>
             <FontAwesome name="image" size={40} color="#ccc" />
@@ -67,36 +60,34 @@ export default function PregledProdavnice() {
         <View style={styles.infoBox}>
           <FontAwesome5 name="store" size={18} color="#4E8D7C" />
           <Text style={styles.label}>{t('store_name')}:</Text>
-          <Text style={styles.value}>{Store.name}</Text>
+          <Text style={styles.value}>{store.name}</Text>
         </View>
 
         <View style={styles.infoBox}>
           <FontAwesome name="map-marker" size={18} color="#4E8D7C" />
           <Text style={styles.label}>{t('address')}:</Text>
-          <Text style={styles.value}>{Store.address}</Text>
+          <Text style={styles.value}>{store.address}</Text>
         </View>
 
         <View style={styles.infoBox}>
           <FontAwesome name="tag" size={18} color="#4E8D7C" />
           <Text style={styles.label}>{t('category')}:</Text>
-          <Text style={styles.value}>{Store.categoryLabel}</Text>
+          <Text style={styles.value}>{store.categoryLabel}</Text>
         </View>
 
         <View style={styles.infoBox}>
           <FontAwesome name="file-text" size={18} color="#4E8D7C" />
           <Text style={styles.label}>{t('description')}:</Text>
-          <Text style={styles.value}>{Store.description}</Text>
+          <Text style={styles.value}>{store.description}</Text>
         </View>
 
         <TouchableOpacity style={styles.imageButton} onPress={handleSave} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
             <Text style={styles.buttonText}> {t('view_all_products')}</Text>
-          </>
-        )}
-      </TouchableOpacity>
+          )}
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -150,13 +141,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#4E8D7C',
     marginTop: 2,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#4E8D7C',
-    marginBottom: 30,
-    textAlign: 'center',
   },
   image: {
     width: 220,
