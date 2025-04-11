@@ -4,61 +4,69 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { router, useRouter } from 'expo-router';
-import { t } from 'i18next';
+import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
-
-const handleLogout = async () => {
-  try {
-    const token = await SecureStore.getItemAsync('auth_token');
-
-    if (token) {
-      const response = await axios.post(
-        `http://bazaar-system.duckdns.org/api/Auth/logout`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        await SecureStore.deleteItemAsync('auth_token');
-        Alert.alert(t('logout_title'), t('logout_message'));
-        router.replace('/(auth)/login');
-      } else {
-        // Handle logout failure if necessary
-        Alert.alert(t('error'), t('logout_failed'));
-      }
-    } else {
-      // If no token found, proceed with local logout
-      await SecureStore.deleteItemAsync('auth_token');
-      Alert.alert(t('logout_title'), t('logout_message'));
-      router.replace('/(auth)/login');
-    }
-  } catch (error) {
-    console.error("Logout error:", error);
-    Alert.alert(t('error'), t('something_went_wrong'));
-  }
-};
-
-const HomeScreen = () => {
+export default function HomeScreen() {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
+
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
+
+  const handleLogout = async () => {
+    try {
+      const token = await SecureStore.getItemAsync('auth_token');
+
+      if (token) {
+        const response = await axios.post(
+          'http://bazaar-system.duckdns.org/api/Auth/logout',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          await SecureStore.deleteItemAsync('auth_token');
+          Alert.alert(t('logout_title'), t('logout_message'));
+          router.replace('/(auth)/login');
+        } else {
+          Alert.alert(t('error'), t('logout_failed'));
+        }
+      } else {
+        await SecureStore.deleteItemAsync('auth_token');
+        Alert.alert(t('logout_title'), t('logout_message'));
+        router.replace('/(auth)/login');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      Alert.alert(t('error'), t('something_went_wrong'));
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <FontAwesome name="language" size={18} color="#4E8D7C" />
         <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
       </TouchableOpacity>
+
+      {/* Dodan logo */}
+      <Image
+        source={require('../../assets/images/logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
       <Text style={styles.welcomeText}>{t('greet')}</Text>
       <Text style={styles.subtitle}>{t('slogan')}</Text>
 
@@ -67,7 +75,7 @@ const HomeScreen = () => {
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -76,6 +84,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  logo: {
+    width: 140,
+    height: 140,
+    marginBottom: 20,
+  },
   logoutButton: {
     backgroundColor: '#4E8D7C',
     paddingVertical: 12,
@@ -83,7 +96,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 20,
   },
-  logoutButtonText: {
+  logoutText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
@@ -99,11 +112,6 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     marginBottom: 40,
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
   languageButton: {
     position: 'absolute',
@@ -130,5 +138,3 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
-
-export default HomeScreen;

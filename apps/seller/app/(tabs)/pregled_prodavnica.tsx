@@ -32,7 +32,8 @@ export default function StoresScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: 40 }]}>
+    <View style={{ flex: 1 }}>
+      {/* Fiksirano dugme za jezik */}
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <FontAwesome name="language" size={18} color="#4E8D7C" />
         <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
@@ -43,32 +44,33 @@ export default function StoresScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={true}
       >
-        <View style={styles.titleSpacing} />
-        <Text style={styles.title}>{t('my_stores')}</Text>
+        <View style={[styles.container, { paddingTop: 40 }]}>
+          <View style={styles.titleSpacing} />
+          <Text style={styles.title}>{t('my_stores')}</Text>
 
-        {/* ➕ Novo manji i elegantniji button */}
-        <TouchableOpacity 
-          style={styles.createButton} 
-          onPress={handleSave} 
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <FontAwesome name="plus" size={14} color="#fff" style={{ marginRight: 6 }} />
-              <Text style={styles.createButtonText}>{t('add_a_new_store')}</Text>
-            </>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.createButton} 
+            onPress={handleSave} 
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <FontAwesome name="plus" size={14} color="#fff" style={{ marginRight: 6 }} />
+                <Text style={styles.createButtonText}>{t('add_a_new_store')}</Text>
+              </>
+            )}
+          </TouchableOpacity>
 
-        <FlatList
-          data={mockStores}
-          renderItem={renderStoreCard}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]} 
-          scrollEnabled={false}
-        />
+          <FlatList
+            data={mockStores}
+            renderItem={renderStoreCard}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]} 
+            scrollEnabled={false}
+          />
+        </View>
       </ScrollView>
     </View>
   );
