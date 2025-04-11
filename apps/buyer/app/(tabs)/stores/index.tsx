@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   gridItem: {
     flex: 0.5,
     padding: 5,
-  },
+  }
 });
 
 export default StoresScreen;

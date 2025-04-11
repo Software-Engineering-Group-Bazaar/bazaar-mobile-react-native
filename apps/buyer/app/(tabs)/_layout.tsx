@@ -8,6 +8,7 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
+import CustomHeader from '@/components/CustomHeader'; 
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -22,7 +23,7 @@ export default function TabLayout() {
       },
       tabBarActiveTintColor: '#00796B',
       tabBarInactiveTintColor: '#6B7280',
-      headerShown: false
+      header: () => <CustomHeader />
     }}>
       <Tabs.Screen
         name="home"

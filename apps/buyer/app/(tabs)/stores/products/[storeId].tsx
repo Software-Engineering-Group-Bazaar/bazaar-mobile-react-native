@@ -76,7 +76,6 @@ const StoreProductsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Store Products</Text>
       <View style={styles.listContainer}>
       <FlatList
         data={products}
@@ -97,14 +96,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 25,
-    color: '#1b5e20', 
-    textAlign: 'center',
-    fontFamily: 'sans-serif-medium', 
   },
   listContainer: {
     backgroundColor: '#ffc1a6', 
