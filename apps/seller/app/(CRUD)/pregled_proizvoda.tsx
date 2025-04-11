@@ -3,7 +3,8 @@ import { Link, useRouter /*, useLocalSearchParams */ } from 'expo-router'; // �
 import { mockProducts, Product } from '../data/mockProducts'; /// OVO ĆEŠ IZBACITI
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
-import React, { useState /*, useEffect */ } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 // 🔁 BACKEND: koristi pravu tipizaciju ako imaš /services/api.ts
 // import { apiGetProductsByStoreId } from '../services/api';
@@ -16,6 +17,7 @@ const ITEM_WIDTH = (width - COLUMN_GAP * (NUM_COLUMNS + 1)) / NUM_COLUMNS;
 export default function ProductsScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
+  const navigation = useNavigation();
 
   const [loading, setLoading] = useState(false);
 
@@ -50,6 +52,12 @@ export default function ProductsScreen() {
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
+  
+  useEffect(() => {
+    navigation.setOptions({
+      title: 'Pregled proizvoda', 
+    });
+  }, [navigation]);
 
   /*
   // 🔁 BACKEND: prikaz greške

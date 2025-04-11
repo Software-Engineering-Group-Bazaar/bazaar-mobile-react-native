@@ -3,9 +3,11 @@ import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import { mockProducts } from '../data/mockProducts'; /// OVO ĆEŠ IZBACITI
-import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+
+export const options = {
+  title: 'Pregled proizvoda',
+};
 
 // 🔁 BACKEND: kad spojiš sa backendom, koristi stvarnu funkciju
 // import { apiGetProductById } from '../services/api';
@@ -13,7 +15,6 @@ import { FontAwesome } from '@expo/vector-icons';
 
 export default function ProductScreen() {
   const { id } = useLocalSearchParams();
-  const { t, i18n } = useTranslation();
   const router = useRouter();
 
   /// OVO ĆEŠ IZBACITI
@@ -43,10 +44,6 @@ export default function ProductScreen() {
     fetchProduct();
   }, [id]);
   */
-
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
-  };
 
   /*
   // 🔁 BACKEND: fallback ako ne postoji proizvod
@@ -109,10 +106,6 @@ export default function ProductScreen() {
         }}
       />
       <ScrollView style={styles.container}>
-        <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-          <FontAwesome name="language" size={18} color="#4E8D7C" />
-          <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-        </TouchableOpacity>
 
         <View style={styles.imageContainer}>
           <Image
@@ -172,7 +165,6 @@ export default function ProductScreen() {
     </>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

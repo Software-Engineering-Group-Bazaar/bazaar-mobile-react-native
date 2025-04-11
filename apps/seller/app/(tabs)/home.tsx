@@ -48,8 +48,8 @@ const handleLogout = async () => {
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome, Seller!</Text>
-      <Text style={styles.subtitle}>Manage your stores and products with ease.</Text>
+      <Text style={styles.welcomeText}>{t('greet')}</Text>
+      <Text style={styles.subtitle}>{t('slogan')}</Text>
       
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>

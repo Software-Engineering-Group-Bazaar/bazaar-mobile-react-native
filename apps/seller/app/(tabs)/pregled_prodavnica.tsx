@@ -6,14 +6,10 @@ import styles from '../styles';
 import React, { useState } from 'react';
 import { mockStores, Store } from '../data/mockStores';
 
-
-
 export default function StoresScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
-
-
 
   const renderStoreCard = ({ item }: { item: Store }) => (
     <TouchableOpacity

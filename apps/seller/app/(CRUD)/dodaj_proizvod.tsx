@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
@@ -19,22 +9,21 @@ import { useNavigation } from '@react-navigation/native';
 
 const weightUnits = ['g', 'kg', 'oz', 'lb'];
 const volumeUnits = ['ml', 'L', 'fl oz'];
-const categories = ['Fruits', 'Vegetables', 'Dairy', 'Meat', 'Bakery', 'Beverages', 'Other'];
 
 export default function AddProductScreen() {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [weight, setWeight] = useState('');
   const [weightUnit, setWeightUnit] = useState(weightUnits[0]);
   const [volume, setVolume] = useState('');
   const [volumeUnit, setVolumeUnit] = useState(volumeUnits[0]);
-  const [category, setCategory] = useState(categories[0]);
+  const [categories, setCategories] = useState<string[]>([]); // array of strings
+  const [category, setCategory] = useState<string>('');       // selected category
   const [loading, setLoading] = useState(false);
-
   const [images, setImages] = useState<string[]>([]);
 
+  /////////// Fja za odabir vise slika
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -47,6 +36,25 @@ export default function AddProductScreen() {
     }
   };
 
+  /////////////// API pozivi za dohvacanje kategorija
+  const apiFetchCategoriesAsync = async () => {
+    try {
+      const response = await fetch('http://10.0.2.2:5054/api/Store/categories');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data: { id: string; name: string }[] = await response.json();
+      const names = data.map(category => category.name);
+      setCategories(names);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
+
+  apiFetchCategoriesAsync();
+
+  //////////// POST zahtjev za dodavanje proizvoda
   const handleSave = async () => {
       if (!name.trim() || !price.trim() || !weight.trim() || !volume) {
         Alert.alert(t('error'), t('fill_all_fields'));
@@ -78,26 +86,18 @@ export default function AddProductScreen() {
       }
     };
 
-  const handleBack = () => {
-    router.back();
-  };
+    // Za ispravan ispis labele
+    const navigation = useNavigation();
+    useEffect(() => {
+      navigation.setOptions({
+        title: 'Kreiraj novi proizvod', 
+      });
+    }, [navigation]);
 
-  const navigation = useNavigation();
-  
-  useEffect(() => {
-    navigation.setOptions({
-      title: 'Kreiraj novi proizvod', 
-    });
-  }, [navigation]);
-
-  const handleChangeLanguage = () => {
-    // Implement language change logic here
-    alert('Change Language');
-  };
-
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
-  };
+    // Za promjenu jezika
+    const toggleLanguage = () => {
+      i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+    };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -108,7 +108,6 @@ export default function AddProductScreen() {
       </TouchableOpacity>
 
       <Text style={styles.title}>{t('add_a_product')}</Text>
-
 
       <View style={styles.form}>
         <Text style={styles.label}>{t('product_name')}</Text>
@@ -173,11 +172,19 @@ export default function AddProductScreen() {
           <Picker
             selectedValue={category}
             onValueChange={setCategory}>
+
+            <Picker.Item
+              label={t('select_category')}
+              value=""
+              enabled={false}
+              color="#555" 
+            />
+
             {categories.map(cat => (
               <Picker.Item key={cat} label={cat} value={cat} />
             ))}
           </Picker>
-        </View>      
+        </View>
 
         <Text style={styles.label}>{t('images')}</Text>
         <TouchableOpacity style={styles.imageButton} onPress={pickImages}>
@@ -211,10 +218,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     paddingBottom: 40,
-    paddingTop: 80, // Space for top buttons
+    paddingTop: 80, 
   },
   topSpace: {
-    height: 80, // Height adjusted for buttons
+    height: 80, 
     justifyContent: 'center',
   },
   topButtonsContainer: {
@@ -249,7 +256,7 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: 16,
-    marginTop: 20, // Space below top buttons
+    marginTop: 20, 
   },
   label: {
     fontSize: 16,

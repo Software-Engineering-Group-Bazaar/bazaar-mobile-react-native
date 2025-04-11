@@ -45,7 +45,7 @@
   "save_changes": "Sačuvaj promjene",
   "upload_image": "Dodaj sliku",
   "store_updated": "Podaci su uspješno ažurirani.",
-  "select_category": "Odaberi kategoriju",
+  "select_category": "Odaberite kategoriju",
   "add_a_product": "Dodaj novi proizvod",
   "product_name": "Ime proizvoda",
   "enter_product_name": "Unesite ime proizvoda",
@@ -64,8 +64,7 @@
   "tab_home": "Početna",
   "tab_stores": "Moje prodavnice",
   "tab_products": "Moji proizvodi",
-  "products_overview": "Pregled proizvoda"
-
-  
+  "products_overview": "Pregled proizvoda",
+  "slogan": "Upravljajte svojim prodavnicama i proizvodima jednostavno."
    }
   
