@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1b5e20',
   },
   headerContainer: {
-    paddingVertical: 15,
+    paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#1b5e20',

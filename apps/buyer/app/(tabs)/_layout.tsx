@@ -8,7 +8,7 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
-import CustomHeader from '@/components/CustomHeader'; 
+import CustomHeader from 'proba-package/custom-header/index'; 
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
