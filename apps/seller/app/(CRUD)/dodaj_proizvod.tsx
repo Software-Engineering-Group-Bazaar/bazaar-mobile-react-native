@@ -56,49 +56,48 @@ export default function AddProductScreen() {
 
   //////////// POST zahtjev za dodavanje proizvoda
   const handleSave = async () => {
-      if (!name.trim() || !price.trim() || !weight.trim() || !volume) {
-        Alert.alert(t('error'), t('fill_all_fields'));
-        return;
-      }
+    if (!name.trim() || !price.trim() || !weight.trim() || !volume) {
+      Alert.alert(t('error'), t('fill_all_fields'));
+      return;
+    }
 
-      setLoading(true);
+    setLoading(true);
 
-      try {
-        // 👇 OVDJE DOLAZI POZIV NA BACKEND - API /api/store #44
-        // const payload = {
-        //   name,
-        //   address,
-        //   description,
-        //   storeCategoryId: selectedCategoryId,
-        //   imageBase64: image, // ako backend podržava slanje slike kao base64
-        // };
-        // const response = await apiCreateStoreAsync(payload);
-        // Alert.alert(t('success'), t('store_created_successfully'));
-      
+    try {
+      // 👇 OVDJE DOLAZI POZIV NA BACKEND - API /api/store #44
+      // const payload = {
+      //   name,
+      //   address,
+      //   description,
+      //   storeCategoryId: selectedCategoryId,
+      //   imageBase64: image, // ako backend podržava slanje slike kao base64
+      // };
+      // const response = await apiCreateStoreAsync(payload);
+      // Alert.alert(t('success'), t('store_created_successfully'));
 
-        ///pr umjesto ovog iznad
-        Alert.alert(t('success'), t('store_updated'));
-      } catch (error) {
-        console.error(error);
-        Alert.alert(t('error'), t('something_went_wrong'));
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    // Za ispravan ispis labele
-    const navigation = useNavigation();
-    useEffect(() => {
-      navigation.setOptions({
-        title: 'Kreiraj novi proizvod', 
-      });
-    }, [navigation]);
+      ///pr umjesto ovog iznad
+      Alert.alert(t('success'), t('store_updated'));
+    } catch (error) {
+      console.error(error);
+      Alert.alert(t('error'), t('something_went_wrong'));
+    } finally {
+      setLoading(false);
+    }
+  };
+  const navigation = useNavigation();
 
-    // Za promjenu jezika
-    const toggleLanguage = () => {
-      i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
-    };
+  // Za promjenu jezika
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+  };
 
+  // Za ispravan ispis labele
+  useEffect(() => {
+    navigation.setOptions({
+      title: t('add_a_product'),
+    });
+  }, [i18n.language, navigation]);
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
 
@@ -177,7 +176,7 @@ export default function AddProductScreen() {
               label={t('select_category')}
               value=""
               enabled={false}
-              color="#555" 
+              color="#555"
             />
 
             {categories.map(cat => (
@@ -218,10 +217,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     paddingBottom: 40,
-    paddingTop: 80, 
+    paddingTop: 80,
   },
   topSpace: {
-    height: 80, 
+    height: 80,
     justifyContent: 'center',
   },
   topButtonsContainer: {
@@ -256,7 +255,7 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: 16,
-    marginTop: 20, 
+    marginTop: 20,
   },
   label: {
     fontSize: 16,

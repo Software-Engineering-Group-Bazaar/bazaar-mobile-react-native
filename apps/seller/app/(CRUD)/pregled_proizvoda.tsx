@@ -52,12 +52,13 @@ export default function ProductsScreen() {
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
-  
   useEffect(() => {
     navigation.setOptions({
-      title: 'Pregled proizvoda', 
+      title: t('products_overview'),
     });
-  }, [navigation]);
+  }, [i18n.language, navigation]);
+
+
 
   /*
   // 🔁 BACKEND: prikaz greške
