@@ -9,7 +9,7 @@ interface Store {
   name: string;
   address: string;
   description?: string;
-  logoUrl?: string; 
+  logoUrl?: string;
 }
 
 interface StoreItemProps {
@@ -19,23 +19,28 @@ interface StoreItemProps {
 
 const StoreItem: React.FC<StoreItemProps> = ({ store, onPress }) => {
   const { name, address, description, active, logoUrl } = store;
-  const city = address ? address.split(',').pop()?.trim() : ''; 
+  const city = address ? address.split(',').pop()?.trim() : '';
+  const shortDescription = description?.substring(0, 50) + (description?.length > 50 ? '...' : '');
 
   return (
     <TouchableOpacity style={styles.container} onPress={() => onPress && onPress(store)}>
       {logoUrl && (
-        <Image source={{ uri: logoUrl }} style={styles.logo} />
+        <View style={styles.logoContainer}>
+          <Image source={{ uri: logoUrl }} style={styles.logo} />
+        </View>
       )}
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{name}</Text>
-        {description && <Text style={styles.description}>{description}</Text>}
+        {shortDescription && <Text style={styles.description}>{shortDescription}</Text>}
         {city && <Text style={styles.city}>{city}</Text>}
-        <Text style={[
-          styles.status,
-          active ? styles.statusActive : styles.statusInactive,
-        ]}>
-          {active ? 'Aktivna' : 'Neaktivna'}
-        </Text>
+        <View style={styles.statusContainer}>
+          <Text style={[
+            styles.status,
+            active ? styles.statusActive : styles.statusInactive,
+          ]}>
+            {active ? 'Active' : 'Inactive'}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -43,8 +48,7 @@ const StoreItem: React.FC<StoreItemProps> = ({ store, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flex: 1,
     backgroundColor: 'white',
     borderRadius: 8,
     shadowColor: '#000',
@@ -53,42 +57,50 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     padding: 16,
-    marginBottom: 10,
+    alignItems: 'center',
+    borderWidth: 2, 
+    borderColor: '#ffc1a6', 
+  },
+  logoContainer: {
+    alignItems: 'center', 
+    marginBottom: 12,
   },
   logo: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    marginRight: 16,
   },
   infoContainer: {
     flex: 1,
+    alignItems: 'center', 
   },
   name: {
     fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 8,
-    textAlign: 'left',
+    fontSize: 16,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   description: {
-    fontSize: 14,
+    fontSize: 12,
     color: 'gray',
-    marginBottom: 8,
-    textAlign: 'left',
+    marginBottom: 6,
+    textAlign: 'center', 
   },
   city: {
-    fontSize: 14,
+    fontSize: 12,
     color: 'gray',
     marginBottom: 8,
-    textAlign: 'left',
+    textAlign: 'center',
+  },
+  statusContainer: {
+    alignItems: 'center',
+    marginTop: 8,
   },
   status: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 100,
     fontSize: 10,
-    marginTop: 8,
-    alignSelf: 'flex-start',
   },
   statusActive: {
     backgroundColor: '#f0fff4',

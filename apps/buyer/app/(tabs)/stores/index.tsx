@@ -13,7 +13,7 @@ interface Store {
   logoUrl?: string;
 }
 
-const USE_DUMMY_DATA = true; // Postavi na false za korištenje pravog API-ja
+const USE_DUMMY_DATA = true; // Postavit na false za korištenje pravog API-ja
 
 const DUMMY_STORES: Store[] = [
   { id: 1, active: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },
@@ -39,7 +39,7 @@ const StoresScreen = () => {
       }
 
       try {
-        const response = await fetch('http://bazaar-system.duckdns.org/api/store');
+        const response = await fetch('https://bazaar-system.duckdns.org/api/store');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -64,7 +64,7 @@ const StoresScreen = () => {
   }
 
   if (error) {
-    return <Text>Došlo je do greške pri učitavanju prodavnica.</Text>;
+    return <Text>Error fetching stores</Text>;
   }
 
   return (
