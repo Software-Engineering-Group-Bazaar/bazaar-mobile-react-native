@@ -4,11 +4,11 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface Store {
   id: number;
-  active: boolean;
-  categoryid: number;
   name: string;
   address: string;
   description?: string;
+  isActive: boolean;
+  categoryid: number;
   logoUrl?: string;
 }
 
@@ -18,7 +18,7 @@ interface StoreItemProps {
 }
 
 const StoreItem: React.FC<StoreItemProps> = ({ store, onPress }) => {
-  const { name, address, description, active, logoUrl } = store;
+  const { name, address, description, isActive, logoUrl } = store;
   const city = address ? address.split(',').pop()?.trim() : '';
   const shortDescription = description?.substring(0, 50) + (description?.length > 50 ? '...' : '');
 
@@ -36,9 +36,9 @@ const StoreItem: React.FC<StoreItemProps> = ({ store, onPress }) => {
         <View style={styles.statusContainer}>
           <Text style={[
             styles.status,
-            active ? styles.statusActive : styles.statusInactive,
+            isActive ? styles.statusActive : styles.statusInactive,
           ]}>
-            {active ? 'Active' : 'Inactive'}
+            {isActive ? 'Active' : 'Inactive'}
           </Text>
         </View>
       </View>

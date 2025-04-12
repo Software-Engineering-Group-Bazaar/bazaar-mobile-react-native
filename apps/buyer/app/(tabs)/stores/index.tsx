@@ -3,6 +3,7 @@ import { View, FlatList, ActivityIndicator, Text, StyleSheet } from 'react-nativ
 import { useRouter } from 'expo-router';
 import StoreItem from 'proba-package/store-item/index'; 
 import { t } from 'i18next';
+import * as SecureStore from 'expo-secure-store';
 
 interface Store {
   id: number;
@@ -14,7 +15,7 @@ interface Store {
   logoUrl?: string;
 }
 
-const USE_DUMMY_DATA = true; // Postavit na false za korištenje pravog API-ja
+const USE_DUMMY_DATA = false; // Postavit na false za korištenje pravog API-ja
 
 const DUMMY_STORES: Store[] = [
   { id: 1, active: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },
@@ -40,10 +41,18 @@ const StoresScreen = () => {
       }
 
       try {
-        const response = await fetch('https://bazaar-system.duckdns.org/api/store');
+        const authToken = await SecureStore.getItemAsync('auth_token');
+        // const response = await fetch('https://bazaar-system.duckdns.org/api/store');
+        const response = await fetch('http://192.168.0.25:5054/api/Stores', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        console.log(response);
         const data: Store[] = await response.json();
         setStores(data);
         setLoading(false);

@@ -17,7 +17,8 @@ export default function ForgotPasswordScreen() {
 
     setLoading(true);
     try {
-      const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/resetpassword', {
+      // const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/resetpassword', {
+      const response = await fetch('http://192.168.0.25:5054/api/PasswordReset/request-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,7 +29,7 @@ export default function ForgotPasswordScreen() {
       if (response.ok) {
         Alert.alert(t('success'), t('password_reset_email_sent')); 
         // ako je email bio validan i poslan onda preusmjeravanje na ekran za unos koda
-        router.push('/(auth)/confirm_reset');
+        router.push('/(auth)/new_password');
       } else {
         const errorData = await response.json();
         Alert.alert(t('error'), errorData.message || t('reset_password_failed')); 
