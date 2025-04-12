@@ -37,7 +37,6 @@
     "logout_button": "Logout",
     "logout_title": "Logout",
     "logout_message": "You have been successfully logged out.",
-    "search_products_placeholder": "Search products"
     "home":"Home",
     "stores":"Stores",
     "profile":"Profile",
@@ -45,6 +44,25 @@
     "home-text":"This is Bazar buyer app.",
     "welcome":"Welcome",
     "fetch-error":"Error fetching data",
-    "store-products":"Store products"
+    "store-products":"Store products",
+    "forgot_question":"Forgot your password?",
+    "reset_password":"Reset password",
+    "back_to_login":"Back to login",
+    "enter_email":"Enter your email!",
+    "password_reset_email_sent":"A password reset email has been sent to your inbox.",
+    "enter_verification_code": "Enter the verification code",
+    "invalid_verification_code": "Invalid verification code",
+    "enter_verification_code_title": "Verify your identity",
+    "verification_code_placeholder": "Enter code",
+    "confirm_code_button": "Confirm Code",
+    "back":"Back",
+    "enter_new_password": "Enter new password",
+    "passwords_do_not_match": "Passwords do not match",
+    "password_reset_successful": "Password reset successful",
+    "reset_password_failed": "Password reset failed",
+    "set_new_password_title": "Set a new password",
+    "new_password_placeholder": "Enter new password",
+    "confirm_new_password_placeholder": "Confirm new password",
+    "set_new_password_button": "Set New Password",
+    "search_products_placeholder": "Search products"
 }
-  

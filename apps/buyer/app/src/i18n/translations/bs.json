@@ -37,7 +37,6 @@
     "logout_button": "Odjava",
     "logout_title": "Odjava",
     "logout_message": "Uspješno ste odjavljeni.",
-    "search_products_placeholder": "Pretraži proizvode"
     "home":"Početna",
     "stores":"Prodavnice",
     "profile":"Profil",
@@ -46,6 +45,26 @@
     "home-text":"Ovo je Bazaar buyer aplikacija",
     "welcome":"Dobrodošli",
     "fetch-error":"Greška prilikom dohvaćanja podataka",
-    "store-products":"Proizvodi prodavnice"
-  }
+    "store-products":"Proizvodi prodavnice",
+    "forgot_question":"Zaboravili ste lozinku?",
+    "reset_password":"Resetuj lozinku",
+    "back_to_login":"Nazad na prijavu",
+    "enter_email":"Unesi svoj email!",
+    "password_reset_email_sent":"Email za resetovanje lozinke je poslan na vašu inbox adresu.",
+    "enter_verification_code": "Unesite verifikacijski kod",
+    "invalid_verification_code": "Neispravan verifikacijski kod",
+    "enter_verification_code_title": "Potvrdite svoj identitet",
+    "verification_code_placeholder": "Unesite kod",
+    "confirm_code_button": "Potvrdi kod",
+    "back":"Nazad",
+    "enter_new_password": "Unesite novu lozinku",
+    "passwords_do_not_match": "Lozinke se ne podudaraju",
+    "password_reset_successful": "Lozinka je uspješno resetovana",
+    "reset_password_failed": "Resetovanje lozinke nije uspjelo",
+    "set_new_password_title": "Postavite novu lozinku",
+    "new_password_placeholder": "Unesite novu lozinku",
+    "confirm_new_password_placeholder": "Potvrdite novu lozinku",
+    "set_new_password_button": "Postavite novu lozinku",
+    "search_products_placeholder": "Pretraži proizvode"
+}
   
