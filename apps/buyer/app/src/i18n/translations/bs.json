@@ -36,6 +36,15 @@
   "logged_in_as_seller": "Ulogovani ste kao prodavač",
   "logout_button": "Odjava",
   "logout_title": "Odjava",
-  "logout_message": "Uspješno ste odjavljeni."
+  "logout_message": "Uspješno ste odjavljeni.",
+   "home":"Početna",
+  "stores":"Prodavnice",
+  "profile":"Profil",
+  "search":"Pretraga",
+  "profile-screen":"Profil ekran",
+  "home-text":"Ovo je Bazaar buyer aplikacija",
+  "welcome":"Dobrodošli",
+  "fetch-error":"Greška prilikom dohvaćanja podataka",
+  "store-products":"Proizvodi prodavnice"
   }
   

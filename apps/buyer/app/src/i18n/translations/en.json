@@ -36,6 +36,14 @@
   "logged_in_as_seller": "You are logged in as a seller",
   "logout_button": "Logout",
   "logout_title": "Logout",
-  "logout_message": "You have been successfully logged out."
+  "logout_message": "You have been successfully logged out.",
+  "home":"Home",
+  "stores":"Stores",
+  "profile":"Profile",
+  "search":"Search",
+  "home-text":"This is Bazar buyer app.",
+  "welcome":"Welcome",
+  "fetch-error":"Error fetching data",
+  "store-products":"Store products"
   }
   
