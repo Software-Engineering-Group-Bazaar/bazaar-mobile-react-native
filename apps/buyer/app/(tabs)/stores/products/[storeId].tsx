@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import ProductItem from 'proba-package/product-item/index'; 
+import { t } from 'i18next';
 
 interface Product {
   id: number;
@@ -71,7 +72,7 @@ const StoreProductsScreen = () => {
   }
 
   if (error) {
-    return <Text>Error fetching data</Text>;
+    return <Text>{t('fetch-error')}</Text>;
   }
 
   return (
