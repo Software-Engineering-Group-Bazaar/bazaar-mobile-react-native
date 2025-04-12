@@ -16,17 +16,20 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
 import { apiFetchAllCategoriesAsync } from '../api/storeApi';
+import api from '../api/defaultApi';
+import { useRouter } from 'expo-router';
 
 // TODO: Kad backend bude spreman, otkomentarisati ove pozive
 // import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
 
 export default function PostavkeProdavnice() {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState<string | null>(null);
+  //const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
@@ -66,37 +69,38 @@ export default function PostavkeProdavnice() {
     }
   };*/
 
-  const handleSave = async () => {
-    if (!name.trim() || !address.trim() || !description.trim() || !selectedCategoryId || !image) {
-      Alert.alert(t('error'), t('fill_all_fields'));
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // 👇 OVDJE DOLAZI POZIV NA BACKEND - API /api/store #44
-      // const payload = {
-      //   name,
-      //   address,
-      //   description,
-      //   storeCategoryId: selectedCategoryId,
-      //   imageBase64: image, // ako backend podržava slanje slike kao base64
-      // };
-      // const response = await apiCreateStoreAsync(payload);
-      // Alert.alert(t('success'), t('store_created_successfully'));
-     
-
-      ///pr umjesto ovog iznad
-      Alert.alert(t('success'), t('store_updated'));
-    } catch (error) {
-      console.error(error);
-      Alert.alert(t('error'), t('something_went_wrong'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  const handleSave = async () => { 
+    if (!name.trim() || !address.trim() || !description.trim() || !selectedCategoryId) { 
+      console.log(name.trim())
+      console.log(address.trim() )
+      console.log(description.trim())
+      console.log(selectedCategoryId)
+      Alert.alert(t('error'), t('fill_all_fields')); 
+      return; 
+    } 
+     setLoading(true); 
+     try { 
+      const payload = { 
+        name: name.trim(), 
+        categoryId: selectedCategoryId, 
+        address: address.trim(), 
+        description: description.trim(), 
+      }; 
+      const response = await api.post('/Stores', payload); 
+      if (response.status === 200 || response.status === 201) { 
+       Alert.alert(t('success'), t('store_updated')); 
+       router.replace('../(tabs)/pregled_prodavnica');
+     } else { 
+       throw new Error('Unexpected response status: ' + response.status); 
+     } 
+   } catch (error) { 
+     console.error('Greška prilikom slanja zahtjeva:', error); 
+     Alert.alert(t('error'), t('something_went_wrong')); 
+   } finally { 
+     setLoading(false); 
+   } 
+ }; 
+ 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>

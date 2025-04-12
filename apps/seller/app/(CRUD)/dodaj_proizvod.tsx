@@ -152,6 +152,7 @@ export default function AddProductScreen() {
               placeholder={t('select_unit')}
               style={styles.dropdown}
               dropDownContainerStyle={styles.dropdownContainer}
+              listMode="SCROLLVIEW"
             />
           </View>
 
@@ -168,6 +169,7 @@ export default function AddProductScreen() {
               placeholder={t('select_unit')}
               style={styles.dropdown}
               dropDownContainerStyle={styles.dropdownContainer}
+              listMode="SCROLLVIEW"
             />
           </View>
 
@@ -183,6 +185,7 @@ export default function AddProductScreen() {
               placeholder={t('select_category')}
               style={styles.dropdown}
               dropDownContainerStyle={styles.dropdownContainer}
+              listMode="SCROLLVIEW"
             />
           </View>
 
