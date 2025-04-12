@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import { mockProducts } from '../data/mockProducts'; /// OVO ĆEŠ IZBACITI
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 export const options = {
   title: 'Pregled proizvoda',
@@ -16,6 +17,8 @@ export const options = {
 export default function ProductScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const navigation = useNavigation();
+  const { t, i18n } = useTranslation();
 
   /// OVO ĆEŠ IZBACITI
   const product = mockProducts.find((p) => p.id === id); // koristiš mock podatke
@@ -92,19 +95,14 @@ export default function ProductScreen() {
     );
   };
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: product.name,
+    });
+  }, [i18n.language, navigation]);
+
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()}>
-              <ArrowLeft size={24} color="#007AFF" />
-            </Pressable>
-          ),
-          title: product.name,
-        }}
-      />
       <ScrollView style={styles.container}>
 
         <View style={styles.imageContainer}>

@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
+import api from '../defaultApi'
 
 // TODO: Kad backend bude spreman, otkomentarisati ove pozive
 // import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
@@ -30,29 +31,27 @@ export default function PostavkeProdavnice() {
 
   const [open, setOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [categoryItems, setCategoryItems] = useState<any[]>([]);
 
-  /////////////////////////// privremeno tu
-  const [categoryItems, setCategoryItems] = useState([
-    { label: 'Pekara', value: '1' },
-    { label: 'Zdrava hrana', value: '2' },
-    { label: 'Mini market', value: '3' },
-  ]);
-  /////////////////////////// privremeno tu
-
-
+  // API poziv za dohvacanje kategorija prodavnica
   useEffect(() => {
-    //  OVDJE DOLAZI POZIV NA BACKEND - API #45 za dohvat kategorija
-    // async function fetchCategories() {
-    //   try {
-    //     const data = await apiGetStoreCategoriesAsync();
-    //     const formatted = data.map(cat => ({ label: cat.name, value: cat.id }));
-    //     setCategoryItems(formatted);
-    //   } catch (error) {
-    //     console.error('Error fetching categories:', error);
-    //     Alert.alert(t('error'), t('something_went_wrong'));
-    //   }
-    // }
-    // fetchCategories();
+    async function apiFetchCategoriesAsync() {
+      try {
+        const response = await api.get('/Stores/Categories');
+        console.log(response);
+        const data = response.data;
+        
+        const formatted = data.map((cat: any) => ({
+          label: cat.name,
+          value: cat.id,
+        }));
+        console.log(formatted);
+        setCategoryItems(formatted);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    }
+    apiFetchCategoriesAsync();
   }, []);
 
   const toggleLanguage = () => {

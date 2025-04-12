@@ -32,10 +32,6 @@ export default function AddProductScreen() {
     volumeUnits.map((unit) => ({ label: unit, value: unit }))
   );
 
-  const [categoryOpen, setCategoryOpen] = useState(false);
-  const [category, setCategory] = useState(null);
-  const [categories, setCategories] = useState<any[]>([]);
-
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -46,22 +42,6 @@ export default function AddProductScreen() {
       setImages(result.assets.map(asset => asset.uri));
     }
   };
-
-  const apiFetchCategoriesAsync = async () => {
-    try {
-      const response = await fetch('http://10.0.2.2:5054/api/Store/categories');
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
-      const formatted = data.map((cat: any) => ({ label: cat.name, value: cat.name }));
-      setCategories(formatted);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-    }
-  };
-
-  useEffect(() => {
-    apiFetchCategoriesAsync();
-  }, []);
 
   const handleSave = async () => {
     if (!name.trim() || !price.trim() || !weight.trim() || !volume) {

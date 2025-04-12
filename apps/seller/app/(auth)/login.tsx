@@ -99,22 +99,17 @@ export default function SignIn() {
 
   const loginWithGoogle = async () => {
     try {
-
       setIsSubmitting(true);
-
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
   
       if (isSuccessResponse(response)) {
         const { idToken } = response.data;
-  
         console.log("User Info:", { idToken });
   
          const apiResponse = await fetch("https://bazaar-system.duckdns.org/api/Auth/login/google", {
            method: "POST",
-           headers: {
-             "Content-Type": "application/json",
-           },
+           headers: { "Content-Type": "application/json", },
            body: JSON.stringify({ idToken: idToken, app: "seller" }), 
          });
   
@@ -168,20 +163,27 @@ export default function SignIn() {
   
     try {
       setLoading(true);
+      console.log("dodje1");
   
       // Step 1: Send login request
-      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/Auth/login', {
+      console.log("dodje2");
+      const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }), 
       });
+      console.log("dodje2.5");
   
       const loginData: any = await loginRes.json();
+      console.log("dodje3");
+
+      console.log(loginRes.status)
   
       if (loginRes.status != 200) {
         Alert.alert(t('login_failed'), t('invalid_credentials'));
         return;
       }
+      console.log("dodje4");
   
       // Step 3: Destructure the token and approval status from loginData
       const { token, mail } = loginData;
@@ -193,9 +195,10 @@ export default function SignIn() {
       }
 
       // Step 5: Store the token securely
-      await SecureStore.setItemAsync('auth_token', token);
+      await SecureStore.setItemAsync('accessToken', token);
+      console.log("dodje");
       // Step 6: Redirect to the logout screen or dashboard
-      router.replace('/(tabs)/home');
+      router.replace('../(tabs)/home');
   
     } catch (error) {
       console.error("Login error:", error);
@@ -269,23 +272,6 @@ export default function SignIn() {
         <FontAwesome name="facebook" size={20} color="#1877F2" />
         <Text style={styles.socialButtonText}>{t('login_facebook')}</Text>
       </TouchableOpacity>
-    
-
-     
-      { /* === POČETAK TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
-
-      { <TouchableOpacity
-          style={[styles.socialButton, { borderColor: '#4E8D7C' }]}
-          onPress={() => router.replace('/(tabs)/home')}
-        >
-          <FontAwesome name="cogs" size={20} color="#4E8D7C" />
-          <Text style={[styles.socialButtonText, { color: '#4E8D7C' }]}>
-            TEST UI: Postavke prodavnice
-          </Text>
-        </TouchableOpacity> }
-        
-        {/* === KRAJ TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
-      
     </View>
   );
 }
