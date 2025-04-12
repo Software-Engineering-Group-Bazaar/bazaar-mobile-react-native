@@ -167,11 +167,11 @@ export default function SignIn() {
       const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }), 
+        body: JSON.stringify({ email, password, app: 'seller' }), 
       });
   
       const loginData: any = await loginRes.json();
-  
+
       if (loginRes.status != 200) {
         Alert.alert(t('login_failed'), t('invalid_credentials'));
         return;

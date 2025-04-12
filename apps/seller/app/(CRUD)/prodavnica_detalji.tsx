@@ -18,9 +18,13 @@ export default function PregledProdavnice() {
   };
 
   const handleSave = () => {
-    router.push('../(CRUD)/pregled_proizvoda');
+    if (store) {
+        router.push(`../(CRUD)/pregled_proizvoda?storeId=${store.id}`);
+    } else {
+        console.error('Store ID is missing');
+    }
   };
-
+  
   if (!store) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

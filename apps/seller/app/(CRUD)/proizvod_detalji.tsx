@@ -2,86 +2,20 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Pressable,
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
-import { mockProducts } from '../data/mockProducts'; /// OVO ĆEŠ IZBACITI
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-
-export const options = {
-  title: 'Pregled proizvoda',
-};
-
-// 🔁 BACKEND: kad spojiš sa backendom, koristi stvarnu funkciju
-// import { apiGetProductById } from '../services/api';
-// import { Product } from '../types';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function ProductScreen() {
-  const { id } = useLocalSearchParams();
+  const params = useLocalSearchParams();
   const router = useRouter();
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
 
-  /// OVO ĆEŠ IZBACITI
-  const product = mockProducts.find((p) => p.id === id); // koristiš mock podatke
-  /// OVO IZNAD ĆEŠ IZBACITI
-
-  // 🔁 BACKEND: koristićeš ovaj state za pravi proizvod
-  /*
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const data = await apiGetProductById(id as string); // dohvati proizvod po ID-u
-        setProduct(data);
-        setError(null);
-      } catch (err) {
-        setError('Greška pri dohvaćanju proizvoda');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
-  */
-
-  /*
-  // 🔁 BACKEND: fallback ako ne postoji proizvod
-  if (loading) {
-    return (
-      <View style={styles.errorContainer}>
-        <ActivityIndicator size="large" color="#4E8D7C" />
-      </View>
-    );
-  }
-
-  if (error || !product) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error || 'Proizvod nije pronađen'}</Text>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Nazad</Text>
-        </Pressable>
-      </View>
-    );
-  }
-  */
+  const productString = Array.isArray(params.product) ? params.product[0] : params.product;
+  const product = productString ? JSON.parse(productString) : null;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  if (!product) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Product not found</Text>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Go Back</Text>
-        </Pressable>
-      </View>
-    );
-  }
 
   const nextImage = () => {
     setCurrentImageIndex((prev) =>
@@ -95,72 +29,76 @@ export default function ProductScreen() {
     );
   };
 
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+  };
+
   useEffect(() => {
     navigation.setOptions({
       title: product.name,
     });
   }, [i18n.language, navigation]);
 
+  if (!product) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Product not found</Text>
+        <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>Go Back</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
   return (
-    <>
-      <ScrollView style={styles.container}>
+    <View style={{ flex: 1 }}>
+      {/* Fixed Language Toggle Button */}
+      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
+        <FontAwesome name="language" size={20} color="#fff" />
+        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
+      </TouchableOpacity>
 
-        <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: product.imageUrls[currentImageIndex] }}
-            style={styles.image}
-          />
-          {currentImageIndex > 0 && (
-            <Pressable style={[styles.imageNav, styles.imageNavLeft]} onPress={previousImage}>
-              <ChevronLeft size={24} color="#FFFFFF" />
-            </Pressable>
-          )}
-          {currentImageIndex < product.imageUrls.length - 1 && (
-            <Pressable style={[styles.imageNav, styles.imageNavRight]} onPress={nextImage}>
-              <ChevronRight size={24} color="#FFFFFF" />
-            </Pressable>
-          )}
-          <View style={styles.imageDots}>
-            {product.imageUrls.map((_: string, index: number) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  index === currentImageIndex && styles.activeDot,
-                ]}
-              />
-            ))}
+    <ScrollView style={styles.container}>
+
+      {/* Product Image Section */}
+      <View style={styles.imageContainer}>
+        {product.photos?.length > 0 ? (
+          <Image source={{ uri: product.photos[0] }} style={styles.image} />
+        ) : (
+          <View style={styles.placeholderImage}>
+            <Text style={styles.placeholderText}>{t('No Image Available')}</Text>
           </View>
+        )}
+      </View>
+
+      {/* Product Info Section */}
+      <View style={styles.infoContainer}>
+        <Text style={styles.name}>{product.name}</Text>
+        <Text style={styles.category}>{t('Category')}: {product.productCategory.name}</Text>
+        
+        {/* Price Section */}
+        <View style={styles.priceContainer}>
+          <Text style={styles.price}>{t('Price')}: {product.wholesalePrice}</Text>
         </View>
 
-        <View style={styles.infoContainer}>
-          <View style={styles.header}>
-            <View>
-              <Text style={styles.name}>{product.name}</Text>
-              <Text style={styles.category}>{product.category}</Text>
-            </View>
-            <Text style={styles.price}>{product.price}</Text>
-          </View>
-
-          <View style={styles.detailsContainer}>
+        {/* Weight & Volume */}
+        <View style={styles.detailsContainer}>
+          {product.weight && (
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Weight/Volume</Text>
-              <Text style={styles.detailValue}>{product.weight}</Text>
+              <Text style={styles.detailLabel}>{t('Weight')}:</Text>
+              <Text style={styles.detailValue}>{product.weight} {product.weightUnit}</Text>
             </View>
-            <View style={styles.divider} />
+          )}
+          {product.volume && (
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Category</Text>
-              <Text style={styles.detailValue}>{product.category}</Text>
+              <Text style={styles.detailLabel}>{t('Volume')}:</Text>
+              <Text style={styles.detailValue}>{product.volume} {product.volumeUnit}</Text>
             </View>
-          </View>
-
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionTitle}>Description</Text>
-            <Text style={styles.description}>{product.description}</Text>
-          </View>
+          )}
         </View>
-      </ScrollView>
-    </>
+      </View>
+    </ScrollView>
+    </View>
   );
 }
 
@@ -168,155 +106,113 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+    paddingBottom: 20,
   },
-  errorContainer: {
-    flex: 1,
+  languageButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    backgroundColor: '#4E8D7C',
+    padding: 10,
+    borderRadius: 20,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
   },
-  errorText: {
-    fontSize: 18,
-    color: '#FF3B30',
-    marginBottom: 16,
+  errorContainer: { 
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: 16, 
+  }, 
+  errorText: { 
+    fontSize: 18, 
+    color: '#FF3B30', 
+    marginBottom: 16, 
   },
-  backButton: {
-    padding: 12,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+  languageText: {
+    fontSize: 12,
     fontWeight: '600',
+    color: '#fff',
+    marginLeft: 8,
   },
   imageContainer: {
-    height: 300,
-    position: 'relative',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  backButton: { 
+    padding: 12, 
+    backgroundColor: '#007AFF', 
+    borderRadius: 8, 
+  }, 
+  backButtonText: { 
+    color: '#FFFFFF', 
+    fontSize: 16, 
+    fontWeight: '600', 
   },
   image: {
-    width: Dimensions.get('window').width,
-    height: 300,
-    resizeMode: 'cover',
+    width: '90%',
+    height: 250,
+    borderRadius: 10,
   },
-  imageNav: {
-    position: 'absolute',
-    top: '50%',
-    transform: [{ translateY: -20 }],
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 20,
-    padding: 8,
-  },
-  imageNavLeft: {
-    left: 16,
-  },
-  imageNavRight: {
-    right: 16,
-  },
-  imageDots: {
-    position: 'absolute',
-    bottom: 16,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
+  placeholderImage: {
+    width: '90%',
+    height: 250,
     justifyContent: 'center',
-    gap: 8,
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-  },
-  activeDot: {
-    backgroundColor: '#FFFFFF',
-  },
-  infoContainer: {
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 24,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#1C1C1E',
-    marginBottom: 4,
-  },
-  category: {
+  placeholderText: {
     fontSize: 16,
     color: '#8E8E93',
   },
+  infoContainer: {
+    paddingHorizontal: 20,
+  },
+  name: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  category: {
+    fontSize: 18,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  priceContainer: {
+    backgroundColor: '#E8F5E9',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
   price: {
-    fontSize: 24,
-    color: '#007AFF',
-    fontWeight: '600',
+    fontSize: 20,
+    color: '#2E7D32',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   detailsContainer: {
     backgroundColor: '#F2F2F7',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
+    padding: 15,
+    marginBottom: 15,
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingVertical: 8,
   },
   detailLabel: {
     fontSize: 16,
-    color: '#8E8E93',
+    fontWeight: '500',
+    color: '#777',
   },
   detailValue: {
     fontSize: 16,
-    color: '#1C1C1E',
-    fontWeight: '500',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#E5E5EA',
-    marginVertical: 8,
-  },
-  descriptionContainer: {
-    marginBottom: 24,
-  },
-  descriptionTitle: {
-    fontSize: 18,
     fontWeight: '600',
-    color: '#1C1C1E',
-    marginBottom: 8,
+    color: '#333',
   },
-  description: {
-    fontSize: 16,
-    color: '#3C3C43',
-    lineHeight: 24,
-  },
-  languageButton: {
-    position: 'absolute',
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#f1f5f9',
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#4E8D7C',
-    marginTop: 2,
-  },
-  
 });

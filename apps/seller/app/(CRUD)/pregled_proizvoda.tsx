@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, FlatList, Image, ActivityIndicator, Pressable, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
-import { Link, useRouter /*, useLocalSearchParams */ } from 'expo-router'; // 🔁 BACKEND: odkomentariši useLocalSearchParams kad budeš koristila ID prodavnice
-import { mockProducts, Product } from '../data/mockProducts'; /// OVO ĆEŠ IZBACITI
+import { Link, useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { apiFetchAllProductsForStore } from '../api/productApi';
+
+import { Product } from '../types/proizvod';
 
 const { width, height } = Dimensions.get('window');
 const COLUMN_GAP = 16;
@@ -15,12 +17,11 @@ export default function ProductsScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  const storeId = params.storeId ? Number(params.storeId) : null;
 
   const [loading, setLoading] = useState(false);
-
-  /// OVO ĆEŠ IZBACITI
-  const products = mockProducts;
-  /// OVO IZNAD ĆEŠ IZBACITI
+  const [products, setProducts] = useState<Product[]>([]);
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
@@ -32,19 +33,53 @@ export default function ProductsScreen() {
     });
   }, [i18n.language, navigation]);
 
-  const renderItem = ({ item }: { item: Product }) => (
-    <Link href={`/product/${item.id}`} asChild>
-      <Pressable style={styles.productCard}>
-        <Image source={{ uri: item.imageUrls[0] }} style={styles.productImage} />
+  useEffect(() => {
+    async function loadProducts() {
+        if (!storeId) return;
+        setLoading(true);
+        try {
+            const fetchedProducts = await apiFetchAllProductsForStore(storeId);
+            setProducts(fetchedProducts); 
+        } catch (error) {
+            console.error("Failed to fetch products:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+        loadProducts();
+    }, [storeId]);
+
+
+    const renderProductCard = ({ item }: { item: Product }) => (
+      <TouchableOpacity 
+        style={styles.productCard} 
+        onPress={() => router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)}
+      >
+        {/* Display product image if available */}
+        {item.photos?.length > 0 && (
+          <Image source={{ uri: item.photos[0] }} style={styles.productImage} />
+        )}
+    
         <View style={styles.productInfo}>
           <Text style={styles.productName}>{item.name}</Text>
-          <Text style={styles.productPrice}>{item.price}</Text>
-          <Text style={styles.productCategory}>{item.category}</Text>
+          <Text style={styles.productPrice}>{t('Price')}: {item.wholesalePrice}</Text>
+          <Text style={styles.productCategory}>{t('Category')}: {item.productCategory.name}</Text>
+    
+          {/* Display weight and volume if available */}
+          {item.weight && (
+            <Text style={styles.productCategory}>
+              {t('Weight')}: {item.weight} {item.weightUnit || ''}
+            </Text>
+          )}
+          {item.volume && (
+            <Text style={styles.productCategory}>
+              {t('Volume')}: {item.volume} {item.volumeUnit || ''}
+            </Text>
+          )}
         </View>
-      </Pressable>
-    </Link>
-  );
-
+      </TouchableOpacity>
+    );
+    
   return (
     <View style={{ flex: 1 }}>
       {/* Fiksirano dugme za promjenu jezika */}
@@ -71,8 +106,8 @@ export default function ProductsScreen() {
 
         <FlatList
           data={products}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          renderItem={renderProductCard}
+          keyExtractor={(item: Product) => item.id.toString()}
           numColumns={2}
           contentContainerStyle={styles.listContainer}
           columnWrapperStyle={styles.columnWrapper}

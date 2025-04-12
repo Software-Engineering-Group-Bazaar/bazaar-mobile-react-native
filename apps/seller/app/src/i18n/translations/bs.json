@@ -65,6 +65,11 @@
   "tab_stores": "Moje prodavnice",
   "tab_products": "Moji proizvodi",
   "products_overview": "Pregled proizvoda",
-  "slogan": "Upravljajte svojim prodavnicama i proizvodima jednostavno."
+  "slogan": "Upravljajte svojim prodavnicama i proizvodima jednostavno.",
+  "Price": "Cijena",
+  "Category": "Kategorija",
+  "Weight": "Težina",
+  "Volume": "Zapremina",
+  "No Image Available": "Proizvod nema sliku"
    }
   

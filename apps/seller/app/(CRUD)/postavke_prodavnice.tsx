@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
-import api from '../defaultApi'
+import { apiFetchAllCategoriesAsync } from '../api/storeApi';
 
 // TODO: Kad backend bude spreman, otkomentarisati ove pozive
 // import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
@@ -31,29 +31,16 @@ export default function PostavkeProdavnice() {
 
   const [open, setOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [categoryItems, setCategoryItems] = useState<any[]>([]);
+  const [categoryItems, setCategoryItems] = useState<{ label: string; value: number }[]>([]);
   
   const navigation = useNavigation();
 
-  // API poziv za dohvacanje kategorija prodavnica
   useEffect(() => {
-    async function apiFetchCategoriesAsync() {
-      try {
-        const response = await api.get('/Stores/Categories');
-        console.log(response);
-        const data = response.data;
-
-        const formatted = data.map((cat: any) => ({
-          label: cat.name,
-          value: cat.id,
-        }));
-        console.log(formatted);
-        setCategoryItems(formatted);
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
+    async function fetchCategories() {
+        const categories = await apiFetchAllCategoriesAsync();
+        setCategoryItems(categories);
     }
-    apiFetchCategoriesAsync();
+    fetchCategories();
   }, []);
 
   const toggleLanguage = () => {

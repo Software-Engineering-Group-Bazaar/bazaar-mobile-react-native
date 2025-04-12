@@ -142,7 +142,7 @@ export default function SignUp() {
          const apiResponse = await fetch('https://bazaar-system.duckdns.org/api/Auth/login/google', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ idToken: idToken, role: 'seller' }),
+           body: JSON.stringify({ idToken: idToken, app: 'seller' }),
          });
          
          if (!apiResponse.ok) {

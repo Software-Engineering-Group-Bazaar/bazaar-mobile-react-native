@@ -4,46 +4,28 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import styles from '../styles';
 import React, { useState, useEffect } from 'react';
-import api from '../defaultApi'
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { apiFetchActiveStores } from '../api/storeApi';
 
-interface Store {
-  id: number;
-  name: string;
-  address: string;
-  description: string;
-  isActive: boolean;
-  categoryName: string;
-}
+import { Store } from '../types/prodavnica';
 
 type RootStackParamList = {
   '../(CRUD)/prodavnica_detalji': { store: Store };
 };
 
 export default function StoresScreen() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [stores, setStores] = useState([]);
+  const [stores, setStores] = useState<Store[]>([]);
 
-  // API za dohvacanje svih prodavnica
   useEffect(() => {
-    async function fetchStores() {
-      try {
-        const response = await api.get('/Stores'); 
-        console.log(response);
-        // filtrira samo aktivne
-        const activeStores = response.data.filter((store: Store) => store.isActive === true);
-        setStores(activeStores); 
-      } catch (error) {
-        console.error('Error fetching stores:', error); 
-      } finally {
-        setLoading(false); 
-      }
+    async function getStores() {
+        setLoading(true);
+        const activeStores = await apiFetchActiveStores();
+        setStores(activeStores);
+        setLoading(false);
     }
-
-    fetchStores();
+    getStores();
   }, []);
 
   const renderStoreCard = ({ item }: { item: Store }) => (

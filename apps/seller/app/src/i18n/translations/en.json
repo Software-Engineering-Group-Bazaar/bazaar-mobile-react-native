@@ -65,6 +65,11 @@
   "tab_stores": "My Stores",
   "tab_products": "My Products",
   "products_overview": "Product Overview",
-  "slogan": "Manage your stores and products with ease."
+  "slogan": "Manage your stores and products with ease.",
+  "Price": "Price",
+  "Category": "Category",
+  "Weight": "Weight",
+  "Volume": "Volume",
+  "No Image Available": "No image available"
   }
   
