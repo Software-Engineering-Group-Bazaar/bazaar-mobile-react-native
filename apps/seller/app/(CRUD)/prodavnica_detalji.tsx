@@ -2,28 +2,16 @@ import { View, Text, Image, ActivityIndicator, StyleSheet, ScrollView, Touchable
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { mockStores, Store } from '../data/mockStores';
-
-export const options = {
-  title: 'Pregled proizvoda',
-};
+import { useState } from 'react';
 
 export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const navigation = useNavigation();
-  const { id } = useLocalSearchParams(); // ➕ uzimamo ID iz URL-a
+  const params = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
 
-  const store = mockStores.find((s) => s.id === id);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: t('store_overview'),
-    });
-  }, [i18n.language, navigation]);
+  const storeString = Array.isArray(params.store) ? params.store[0] : params.store;
+  const store = storeString ? JSON.parse(storeString) : null;
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
@@ -49,14 +37,6 @@ export default function PregledProdavnice() {
           <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
         </TouchableOpacity>
 
-        {store.image ? (
-          <Image source={{ uri: store.image }} style={styles.image} />
-        ) : (
-          <View style={styles.placeholderImage}>
-            <FontAwesome name="image" size={40} color="#ccc" />
-          </View>
-        )}
-
         <View style={styles.infoBox}>
           <FontAwesome5 name="store" size={18} color="#4E8D7C" />
           <Text style={styles.label}>{t('store_name')}:</Text>
@@ -72,7 +52,7 @@ export default function PregledProdavnice() {
         <View style={styles.infoBox}>
           <FontAwesome name="tag" size={18} color="#4E8D7C" />
           <Text style={styles.label}>{t('category')}:</Text>
-          <Text style={styles.value}>{store.categoryLabel}</Text>
+          <Text style={styles.value}>{store.categoryName}</Text>
         </View>
 
         <View style={styles.infoBox}>

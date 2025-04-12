@@ -22,11 +22,11 @@ export default function HomeScreen() {
 
   const handleLogout = async () => {
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
+      const token = await SecureStore.getItemAsync('accessToken');
 
       if (token) {
         const response = await axios.post(
-          'http://bazaar-system.duckdns.org/api/Auth/logout',
+          'http://10.0.2.2:5054/api/Auth/logout',
           {},
           {
             headers: {
@@ -36,14 +36,14 @@ export default function HomeScreen() {
         );
 
         if (response.status === 200) {
-          await SecureStore.deleteItemAsync('auth_token');
+          await SecureStore.deleteItemAsync('accessToken');
           Alert.alert(t('logout_title'), t('logout_message'));
           router.replace('/(auth)/login');
         } else {
           Alert.alert(t('error'), t('logout_failed'));
         }
       } else {
-        await SecureStore.deleteItemAsync('auth_token');
+        await SecureStore.deleteItemAsync('accessToken');
         Alert.alert(t('logout_title'), t('logout_message'));
         router.replace('/(auth)/login');
       }

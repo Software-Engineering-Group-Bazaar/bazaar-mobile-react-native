@@ -3,21 +3,56 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import styles from '../styles';
-import React, { useState } from 'react';
-import { mockStores, Store } from '../data/mockStores';
+import React, { useState, useEffect } from 'react';
+import api from '../defaultApi'
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
+interface Store {
+  id: number;
+  name: string;
+  address: string;
+  description: string;
+  isActive: boolean;
+  categoryName: string;
+}
+
+type RootStackParamList = {
+  '../(CRUD)/prodavnica_detalji': { store: Store };
+};
 
 export default function StoresScreen() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [stores, setStores] = useState([]);
+
+  // API za dohvacanje svih prodavnica
+  useEffect(() => {
+    async function fetchStores() {
+      try {
+        const response = await api.get('/Stores'); 
+        console.log(response);
+        // filtrira samo aktivne
+        const activeStores = response.data.filter((store: Store) => store.isActive === true);
+        setStores(activeStores); 
+      } catch (error) {
+        console.error('Error fetching stores:', error); 
+      } finally {
+        setLoading(false); 
+      }
+    }
+
+    fetchStores();
+  }, []);
 
   const renderStoreCard = ({ item }: { item: Store }) => (
-    <TouchableOpacity
-      style={styles.storeCard}
-      onPress={() => router.push(`/stores/${item.id}`)}>
-      <Image source={{ uri: item.image }} style={styles.storeImage} />
+  <TouchableOpacity style={styles.storeCard} onPress={() => router.push(`/(CRUD)/prodavnica_detalji?store=${JSON.stringify(item)}`)}>
+      {/*<Image source={{ uri: item.image }} style={styles.storeImage} />*/}
       <View style={styles.storeInfo}>
         <Text style={styles.storeName}>{item.name}</Text>
+        <Text style={styles.storeAddress}>{item.categoryName}</Text>
+        <Text style={styles.storeAddress}>{item.description}</Text>
         <Text style={styles.storeAddress}>{item.address}</Text>
       </View>
     </TouchableOpacity>
@@ -64,9 +99,9 @@ export default function StoresScreen() {
           </TouchableOpacity>
 
           <FlatList
-            data={mockStores}
+            data={stores}
             renderItem={renderStoreCard}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item: Store) => item.id.toString()}
             contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]} 
             scrollEnabled={false}
           />

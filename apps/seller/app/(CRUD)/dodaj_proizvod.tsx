@@ -32,6 +32,10 @@ export default function AddProductScreen() {
     volumeUnits.map((unit) => ({ label: unit, value: unit }))
   );
 
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [category, setCategory] = useState(null);
+  const [categories, setCategories] = useState<any[]>([]);
+
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,

@@ -32,6 +32,8 @@ export default function PostavkeProdavnice() {
   const [open, setOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [categoryItems, setCategoryItems] = useState<any[]>([]);
+  
+  const navigation = useNavigation();
 
   // API poziv za dohvacanje kategorija prodavnica
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function PostavkeProdavnice() {
         const response = await api.get('/Stores/Categories');
         console.log(response);
         const data = response.data;
-        
+
         const formatted = data.map((cat: any) => ({
           label: cat.name,
           value: cat.id,
@@ -57,8 +59,6 @@ export default function PostavkeProdavnice() {
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     navigation.setOptions({

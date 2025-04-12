@@ -82,7 +82,7 @@ export default function SignIn() {
         console.log("API response:", apiData);
   
         await SecureStore.setItemAsync("accessToken", apiData.token);
-        router.replace("/home");
+        router.replace('../(tabs)/home');
         getUserFBData();
       }
     } catch (error) {
@@ -90,7 +90,6 @@ export default function SignIn() {
     }
   };
   
-
   const getUserFBData = () => {
     Profile.getCurrentProfile().then((currentProfile) => {
       console.log(currentProfile);
@@ -125,7 +124,7 @@ export default function SignIn() {
 
          await SecureStore.setItemAsync("accessToken", accessToken);
   
-         router.replace("/(auth)/login");
+         router.replace('../(tabs)/home');
       } else {
         console.log("Google Sign-in cancelled");
       }
@@ -163,27 +162,20 @@ export default function SignIn() {
   
     try {
       setLoading(true);
-      console.log("dodje1");
   
       // Step 1: Send login request
-      console.log("dodje2");
       const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }), 
       });
-      console.log("dodje2.5");
   
       const loginData: any = await loginRes.json();
-      console.log("dodje3");
-
-      console.log(loginRes.status)
   
       if (loginRes.status != 200) {
         Alert.alert(t('login_failed'), t('invalid_credentials'));
         return;
       }
-      console.log("dodje4");
   
       // Step 3: Destructure the token and approval status from loginData
       const { token, mail } = loginData;
@@ -196,10 +188,8 @@ export default function SignIn() {
 
       // Step 5: Store the token securely
       await SecureStore.setItemAsync('accessToken', token);
-      console.log("dodje");
       // Step 6: Redirect to the logout screen or dashboard
       router.replace('../(tabs)/home');
-  
     } catch (error) {
       console.error("Login error:", error);
       Alert.alert(t('error'), t('something_went_wrong'));

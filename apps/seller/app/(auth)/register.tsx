@@ -76,7 +76,8 @@ export default function SignUp() {
         console.log("API response:", apiData);
   
         await SecureStore.setItemAsync("accessToken", apiData.token);
-        router.replace("/home");
+        Alert.alert(t('signup_success'), t('wait_for_approval'));
+        router.replace('/(auth)/login');
         getUserFBData();
       }
     } catch (error) {
@@ -138,7 +139,6 @@ export default function SignUp() {
         const { idToken } = response.data;
         console.log('Google Sign-Up User Info:', { idToken });
 
-        // OPTIONAL: Call your backend register endpoint with the Google idToken
          const apiResponse = await fetch('https://bazaar-system.duckdns.org/api/Auth/login/google', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
@@ -150,12 +150,13 @@ export default function SignUp() {
            return;
          }
         
-         const result = await apiResponse.text();
+          const result = await apiResponse.text();
           const accessToken = result;
           console.log("Access Token from BE:", accessToken);
           await SecureStore.setItemAsync("accessToken", accessToken);
 
-        router.replace('/(auth)/logout');
+          Alert.alert(t('signup_success'), t('wait_for_approval'));
+          router.replace('/(auth)/login');
       } else {
         console.log('Google Sign-Up cancelled');
       }
