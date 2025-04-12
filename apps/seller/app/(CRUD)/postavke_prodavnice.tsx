@@ -53,7 +53,7 @@ export default function PostavkeProdavnice() {
     });
   }, [navigation]);
 
-  const pickImage = async () => {
+  /*const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -64,7 +64,7 @@ export default function PostavkeProdavnice() {
     if (!result.canceled && result.assets?.[0]?.uri) {
       setImage(result.assets[0].uri);
     }
-  };
+  };*/
 
   const handleSave = async () => {
     if (!name.trim() || !address.trim() || !description.trim() || !selectedCategoryId || !image) {
@@ -107,7 +107,7 @@ export default function PostavkeProdavnice() {
       <View style={styles.container}>
         <Text style={styles.title}>{t('store_settings')}</Text>
 
-        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+        {/*<TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
           {image ? (
             <Image source={{ uri: image }} style={styles.imagePreview} />
           ) : (
@@ -116,7 +116,7 @@ export default function PostavkeProdavnice() {
               <Text style={styles.imagePickerText}>{t('upload_image')}</Text>
             </>
           )}
-        </TouchableOpacity>
+        </TouchableOpacity>*/}
 
         <View style={styles.inputContainer}>
           <FontAwesome5 name="store" size={20} color="#888" style={styles.inputIcon} />

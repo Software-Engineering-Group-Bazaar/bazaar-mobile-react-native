@@ -7,6 +7,8 @@ import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import api from '../api/defaultApi';
+import { apiFetchCategories } from '../api/productApi'; // Adjust path as needed
 
 const weightUnits = ['g', 'kg', 'oz', 'lb'];
 const volumeUnits = ['ml', 'L', 'fl oz'];
@@ -18,7 +20,6 @@ export default function AddProductScreen() {
   const [weight, setWeight] = useState('');
   const [volume, setVolume] = useState('');
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
 
   const [weightOpen, setWeightOpen] = useState(false);
   const [weightUnit, setWeightUnit] = useState(weightUnits[0]);
@@ -35,6 +36,8 @@ export default function AddProductScreen() {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [category, setCategory] = useState(null);
   const [categories, setCategories] = useState<any[]>([]);
+  const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  const formData = new FormData();
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -42,18 +45,67 @@ export default function AddProductScreen() {
       allowsMultipleSelection: true,
       quality: 1,
     });
+  
     if (!result.canceled) {
-      setImages(result.assets.map(asset => asset.uri));
+      images.forEach((image, index) => {
+        formData.append("slicica", {
+          uri: image.uri,
+          name: `photo_${index}.jpg`,
+          type: 'image/jpeg',
+        } as any); 
+      });
     }
   };
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await apiFetchCategories();
+      const formattedCategories = data.map((cat: { id: number; name: string }) => ({
+        label: cat.name,
+        value: cat.id,
+      }));
+
+      setCategories(formattedCategories);
+      console.log("Fetched categories:", formattedCategories);
+    };
+  
+    fetchCategories();
+  }, []);
+
+  /*const uploadImages = async (images: ImagePicker.ImagePickerAsset[]) => {
+    const formData = new FormData();
+  
+    images.forEach((image, index) => {
+      formData.append("slicica", {
+        uri: image.uri,
+        name: `photo_${index}.jpg`,
+        type: 'image/jpeg',
+      } as any); 
+    });
+  
+    try {
+      const response = await api.post('/TestS3/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      console.log('Upload Success:', response.data);
+      setImages([...images]);
+      images.forEach(image => console.log("Image URI:", image.uri));
+    } catch (error) {
+      console.error('Upload Error:', error);
+    }
+  };*/
+
   const handleSave = async () => {
-    if (!name.trim() || !price.trim() || !weight.trim() || !volume) {
+    if (!name.trim() || !price.trim() || !weight.trim() || !volume.trim()) {
       Alert.alert(t('error'), t('fill_all_fields'));
       return;
     }
     setLoading(true);
     try {
+      ////// OVDJE API POZIV ZA POST PROIZVOD
       Alert.alert(t('success'), t('store_updated'));
     } catch (error) {
       console.error(error);
@@ -140,9 +192,15 @@ export default function AddProductScreen() {
           </TouchableOpacity>
 
           <View style={styles.imagePreviewContainer}>
-            {images.map((uri, index) => (
-              <Image key={index} source={{ uri }} style={styles.imagePreview} />
-            ))}
+          {images.length > 0 ? (
+            <View style={styles.imagePreviewContainer}>
+              {images.map((image, index) => (
+                <Image key={index} source={{ uri: image.uri }} style={styles.imagePreview} />
+              ))}
+            </View>
+          ) : (
+            <Text>{t('No Images Selected')}</Text>
+          )}
           </View>
 
           <TouchableOpacity style={styles.button} onPress={handleSave} disabled={loading}>
@@ -293,11 +351,14 @@ const styles = StyleSheet.create({
   imagePreviewContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'center',
+    padding: 10,
   },
   imagePreview: {
     width: 100,
     height: 100,
-    borderRadius: 8,
+    margin: 5,
+    borderRadius: 10,
   },
   submitButton: {
     backgroundColor: '#4E8D7C',

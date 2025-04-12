@@ -12,13 +12,6 @@ export async function apiFetchCategories(): Promise<{ id: number; name: string }
     }
 }
 
-// Dohvaca id kategorije po imenu
-export async function apiGetCategoryIdByName(categoryName: string): Promise<number | null> {
-    const categories = await apiFetchCategories();
-    const category = categories.find((cat) => cat.name === categoryName);
-    return category ? category.id : null;
-}
-
 // Dohvaca sve proizvode iz prodavnice
 export async function apiFetchAllProductsForStore(storeId: number): Promise<Product[]> {
     try {
