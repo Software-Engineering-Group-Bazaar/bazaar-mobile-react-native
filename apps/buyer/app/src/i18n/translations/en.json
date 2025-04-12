@@ -36,6 +36,7 @@
   "logged_in_as_seller": "You are logged in as a seller",
   "logout_button": "Logout",
   "logout_title": "Logout",
-  "logout_message": "You have been successfully logged out."
+  "logout_message": "You have been successfully logged out.",
+  "search_products_placeholder": "Search products"
   }
   

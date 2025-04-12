@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
 import ProductItem from 'proba-package/product-item/index';
+import { useTranslation } from 'react-i18next';
 
 interface Product {
   id: number;
@@ -41,6 +42,7 @@ const DUMMY_PRODUCTS: Product[] = [
 
 
 const SearchProductsScreen = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -91,7 +93,7 @@ const SearchProductsScreen = () => {
     <View style={styles.container}>
       <TextInput
         style={styles.searchInput}
-        placeholder="Search for products..."
+        placeholder={t('search_products_placeholder')}
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
