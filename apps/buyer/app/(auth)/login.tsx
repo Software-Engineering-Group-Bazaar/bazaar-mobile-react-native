@@ -231,6 +231,13 @@ export default function SignIn() {
         secureTextEntry
       />
 
+      <Text style={styles.text}>
+        {t("forgot_question")}{" "}
+      <Text style={styles.link} onPress={() => router.push("/(auth)/forgot_password")}>
+        {t("reset_password")}
+      </Text>
+      </Text>
+
       <TouchableOpacity
         style={styles.button}
         onPress={onSignInPress}
