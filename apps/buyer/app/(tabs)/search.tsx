@@ -85,7 +85,7 @@ const SearchProductsScreen = () => {
 
         // API endpoint - provjerite da li je ovo tačan endpoint za pretragu
         // Čini se da `searchTerm` treba da bude sam upit, a ne `search?query=...`
-        const endpoint = `http://192.168.0.25:5054/api/Catalog/search?searchTerm=${encodeURIComponent(searchQuery)}`;
+        const endpoint = `https://bazaar-system.duckdns.org/api/Catalog/search?searchTerm=${encodeURIComponent(searchQuery)}`;
 
         const response = await fetch(endpoint, {
           method: 'GET',
@@ -133,7 +133,7 @@ const SearchProductsScreen = () => {
   if (loading && products.length === 0) { // Prikazi indikator samo pri inicijalnom učitavanju
     return (
         <View style={styles.centered}>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size="large" color="#4e8d7c"/>
         </View>
     );
   }
@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f8f8f8',
   },
   errorText: {
       color: 'red',
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1, // Osigurava da lista zauzme preostali prostor
-    backgroundColor: '#ffc1a6', // Originalna boja pozadine liste
+    backgroundColor: '#f8f8f8', // Originalna boja pozadine liste
     borderRadius: 10,
     padding: 10,
     shadowColor: '#000',

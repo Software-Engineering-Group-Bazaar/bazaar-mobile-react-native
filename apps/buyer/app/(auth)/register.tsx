@@ -104,8 +104,8 @@ export default function SignUp() {
   
     try {
       console.log("Udje?")
-      // const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/register', {
-      const response = await fetch('http://192.168.0.25:5054/api/Auth/register', {
+      // const response = await fetch('http://192.168.0.25:5054/api/Auth/register', {
+      const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password, app: "buyer"}),

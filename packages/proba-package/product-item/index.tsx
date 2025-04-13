@@ -30,6 +30,7 @@ interface ProductItemProps {
 const ProductItem: React.FC<ProductItemProps> = ({ product, onPress }) => {
   // Destrukturiranje svojstava iz novog Product objekta
   const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit } = product;
+  // <Image source={{ uri: "http://192.168.0.25:5054" + firstImageUrl }} style={styles.image} />
 
   // Dohvaćanje prve slike iz niza 'photos', ako postoji
   const firstImageUrl = photos && photos.length > 0 ? photos[0] : undefined;
@@ -37,7 +38,7 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onPress }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={() => onPress && onPress(product)}>
       {firstImageUrl && (
-        <Image source={{ uri: "http://192.168.0.25:5054" + firstImageUrl }} style={styles.image} />
+        <Image source={{ uri: firstImageUrl }} style={styles.image} />
       )}
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{name}</Text>

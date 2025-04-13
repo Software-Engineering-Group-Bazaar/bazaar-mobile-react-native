@@ -87,10 +87,10 @@ const StoreProductsScreen = () => {
         // if (!authToken) {
         //   throw new Error(t('auth_token_not_found') || 'Authentication token not found.');
         // }
-        console.log(`http://192.168.0.25:5054/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`);
+        // console.log(`http://192.168.0.25:5054/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`);
         // Proveri da li ovaj endpoint zaista vraća proizvode za SPECIFIČNI storeId i u NOVOM formatu
         // const response = await fetch(`https://bazaar-system.duckdns.org/api/catalog/store/${storeId}/products`, {
-        const response = await fetch(`http://192.168.0.25:5054/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
+        const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
           // Dodaj method i headers ako je potrebno (posebno Authorization)
           method: 'GET',
           headers: {
@@ -130,7 +130,7 @@ const StoreProductsScreen = () => {
   if (loading) {
     return (
         <View style={styles.centered}>
-            <ActivityIndicator size="large" color="#0000ff" />
+            <ActivityIndicator size="large" color="#4e8d7c" />
         </View>
     );
   }
@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#f8f8f8',
   },
   errorText: {
       color: 'red',
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1, // Da zauzme dostupan prostor
-    backgroundColor: '#ffc1a6', // Originalna boja pozadine liste
+    backgroundColor: '#f8f8f8', // Originalna boja pozadine liste
     borderRadius: 10,
     paddingTop: 10, // Dodaj malo paddinga gore
     paddingHorizontal: 10, // Padding sa strane

@@ -20,9 +20,9 @@ export default function TabLayout() {
       tabBarStyle: { 
         backgroundColor: '#FFFFFF',
         borderTopWidth: 1,
-        borderTopColor: '#E5E7EB'
+        borderColor: '#b6d6ce'
       },
-      tabBarActiveTintColor: '#00796B',
+      tabBarActiveTintColor: '#4e8d7c',
       tabBarInactiveTintColor: '#6B7280',
       header: () => <CustomHeader />
     }}>

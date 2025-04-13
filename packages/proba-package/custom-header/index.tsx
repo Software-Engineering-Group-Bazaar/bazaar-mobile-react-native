@@ -27,13 +27,13 @@ const CustomHeader = () => {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#1b5e20',
+    backgroundColor: '#4e8d7c',
   },
   headerContainer: {
     paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1b5e20',
+    backgroundColor: '#4e8d7c',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

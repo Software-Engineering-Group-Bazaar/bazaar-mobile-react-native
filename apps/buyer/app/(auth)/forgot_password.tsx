@@ -18,7 +18,7 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       // const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/resetpassword', {
-      const response = await fetch('http://192.168.0.25:5054/api/PasswordReset/request-reset', {
+      const response = await fetch('https://bazaar-system.duckdns.org/api/PasswordReset/request-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
