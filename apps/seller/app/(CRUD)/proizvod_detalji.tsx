@@ -14,6 +14,7 @@ export default function ProductScreen() {
 
   const productString = Array.isArray(params.product) ? params.product[0] : params.product;
   const product = productString ? JSON.parse(productString) : null;
+  console.log(product);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 

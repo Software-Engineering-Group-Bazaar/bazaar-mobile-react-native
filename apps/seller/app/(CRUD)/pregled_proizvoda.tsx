@@ -55,25 +55,21 @@ export default function ProductsScreen() {
         style={styles.productCard} 
         onPress={() => router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)}
       >
-        {/* Display product image if available */}
-        {item.photos?.length > 0 && (
-          <Image source={{ uri: item.photos[0] }} style={styles.productImage} />
-        )}
     
         <View style={styles.productInfo}>
           <Text style={styles.productName}>{item.name}</Text>
-          <Text style={styles.productPrice}>{t('Price')}: {item.wholesalePrice}</Text>
+          <Text style={styles.productPrice}>{t('Price')}: {item.wholesalePrice.toString()}</Text>
           <Text style={styles.productCategory}>{t('Category')}: {item.productCategory.name}</Text>
     
           {/* Display weight and volume if available */}
           {item.weight && (
             <Text style={styles.productCategory}>
-              {t('Weight')}: {item.weight} {item.weightUnit || ''}
+              {t('Weight')}: {item.weight.toString()} {item.weightUnit || ''}
             </Text>
           )}
           {item.volume && (
             <Text style={styles.productCategory}>
-              {t('Volume')}: {item.volume} {item.volumeUnit || ''}
+              {t('Volume')}: {item.volume.toString()} {item.volumeUnit || ''}
             </Text>
           )}
         </View>
@@ -85,13 +81,13 @@ export default function ProductsScreen() {
       {/* Fiksirano dugme za promjenu jezika */}
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
+        <Text style={styles.languageText}>{String(i18n.language).toUpperCase()}</Text>
       </TouchableOpacity>
 
       <ScrollView style={styles.scrollWrapper} contentContainerStyle={styles.scrollContent}>
         <TouchableOpacity 
           style={styles.createButton} 
-          onPress={() => router.push('/(CRUD)/dodaj_proizvod')}
+          onPress={() => router.push(`/(CRUD)/dodaj_proizvod/?storeId=${storeId}`)}
           disabled={loading}
         >
           {loading ? (
