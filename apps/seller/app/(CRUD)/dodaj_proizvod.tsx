@@ -10,9 +10,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useLocalSearchParams } from 'expo-router';
 import { apiFetchCategories } from '../api/productApi'; 
 import api from '../api/defaultApi'
+import * as FileSystem from 'expo-file-system';
 
-const weightUnits = ['g', 'kg', 'oz', 'lb'];
-const volumeUnits = ['ml', 'L', 'fl oz'];
+const weightUnits = ["kg", "g", "lbs"];
+const volumeUnits = ["L", "ml", "oz"];
 
 export default function AddProductScreen() {
   const { t, i18n } = useTranslation();
@@ -42,6 +43,17 @@ export default function AddProductScreen() {
   const router = useRouter();
   const { storeId } = useLocalSearchParams();
 
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    weight: "",
+    weightunit: "kg",
+    volume: "",
+    volumeunit: "L",
+    productcategoryid: "",
+    photos: [],
+  });
+
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -69,47 +81,85 @@ export default function AddProductScreen() {
     fetchCategories();
   }, []);
 
+  async function prepareImage(imageUri: string) {
+    const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 });
+    return `data:image/jpeg;base64,${base64}`;
+  }
+  
   const handleSave = async () => {
     if (!name.trim() || !price.trim() || !weight.trim() || !volume.trim()) {
-      Alert.alert(t('error'), t('fill_all_fields'));
+      Alert.alert(t("error"), t("fill_all_fields"));
       return;
     }
-    const formData = new FormData();
 
-    formData.append("Name", name);
-    formData.append("ProductCategoryId", category.toString());
-    formData.append("RetailPrice", parseFloat(price).toString());
-    formData.append("WholesalePrice", parseFloat(price).toString());
-    formData.append("Weight", parseFloat(weight).toString());
-    formData.append("WeightUnit", weightUnit);
-    formData.append("Volume", parseFloat(volume).toString());
-    formData.append("VolumeUnit", volumeUnit);
-    formData.append("StoreId", storeId.toString());
-    
-    images.forEach((image, index) => {
-      const file = {
+    /*setFormData((prevData) => ({
+      ...prevData, 
+      name: name, 
+      ProductCategoryId: category,
+      RetailPrice: price,
+      WholesalePrice: price,
+      Weight: weight,
+      WeightUnit: weightUnit,
+      Volume: volume,
+      VolumeUnit: volumeUnit,
+      StoreId: storeId
+    }));    
+
+    for (const image of images) {
+      const base64Image = await prepareImage(image.uri);
+      formData.append("Files", base64Image);
+    }*/
+    // ✅ Construct JSON object
+    /*const productPayload = {
+      Name: name,
+      ProductCategoryId: category,
+      RetailPrice: parseFloat(price),
+      WholesalePrice: parseFloat(price),
+      Weight: parseFloat(weight),
+      WeightUnit: weightUnit,
+      Volume: parseFloat(volume),
+      VolumeUnit: volumeUnit,
+      StoreId: storeId,
+      Files: images.map((image, index) => ({
         uri: image.uri,
         name: `photo_${index}.jpg`,
         type: "image/jpeg",
-      };
-    
-      formData.append("Files", file as any);
+      })), 
+    };*/
+    const formData = new FormData();
+    formData.append("Name", name);
+    formData.append("ProductCategoryId", category.toString());
+    formData.append("RetailPrice", price.toString());
+    formData.append("WholesalePrice", price.toString());
+    formData.append("Weight", weight.toString());
+    formData.append("WeightUnit", weightUnit);
+    formData.append("Volume", volume.toString());
+    formData.append("VolumeUnit", volumeUnit);
+    formData.append("StoreId", storeId.toString());
+
+    images.forEach((image, index) => {
+      formData.append("Files", {
+        uri: image.uri,
+        type: "image/jpeg",
+        name: `photo_${index}.jpg`,
+      } as any);
     });
 
+    console.log("Payload to send:", formData);
+  
     try {
-    setLoading(true);
-    const response = await api.post("/Catalog/products", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-
+      setLoading(true);
+      const response = await api.post("/Catalog/products/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
       console.log("Upload Success:", response.data);
       Alert.alert(t("success"), t("store_updated"));
-      router.push(`./pregled_proizvoda?storeId=${storeId}`);
-    } catch (error) {
-      console.error("Upload Error:", error);
+      router.back();
+    } catch (error: any) {
+      console.error("Upload Error:", error.response?.data || error.message);
       Alert.alert(t("error"), t("something_went_wrong"));
     } finally {
       setLoading(false);
