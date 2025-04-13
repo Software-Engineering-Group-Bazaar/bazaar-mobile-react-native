@@ -33,24 +33,19 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onPress }) => {
 
   // Dohvaćanje prve slike iz niza 'photos', ako postoji
   const firstImageUrl = photos && photos.length > 0 ? photos[0] : undefined;
-
+  console.log(JSON.stringify(product))
   return (
     <TouchableOpacity style={styles.container} onPress={() => onPress && onPress(product)}>
-      {/* Prikaz prve slike ako postoji */}
       {firstImageUrl && (
-        <Image source={{ uri: firstImageUrl }} style={styles.image} />
+        <Image source={{ uri: "http://192.168.0.25:5054" + firstImageUrl }} style={styles.image} />
       )}
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{name}</Text>
-        {/* Prikaz maloprodajne cijene */}
         <Text style={styles.price}>KM {retailPrice.toFixed(2)}</Text>
-        {/* Prikaz težine ako postoji */}
-        {weight && weightUnit && (
-          <Text style={styles.details}>{weight} {weightUnit}</Text>
-        )}
-        {/* Prikaz volumena ako postoji */}
-        {volume && volumeUnit && (
-          <Text style={styles.details}>{volume} {volumeUnit}</Text>
+        {typeof weight === 'number' && weight > 0 && weightUnit && 
+        (<Text style={styles.details}>{`${weight} ${weightUnit}`}</Text>)}
+        {typeof volume === 'number' && volume > 0 && volumeUnit && (
+          <Text style={styles.details}>{`${volume} ${volumeUnit}`}</Text>
         )}
       </View>
     </TouchableOpacity>
