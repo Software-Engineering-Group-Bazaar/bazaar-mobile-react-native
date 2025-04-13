@@ -19,13 +19,11 @@ export default function ProductScreen() {
 
 
  // kada backend bude spreman:
- const baseUrl = "http://10.0.2.2:5054";
+ const baseUrl = "https://bazaar-system.duckdns.org";
  const photos = product?.photos || [];
  const formattedPhotos = photos.map((photo: string) => `${baseUrl}${photo}`);
 
-
  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
 
  const nextImage = () => {
    //  zamijeni mockPhotos sa photos
