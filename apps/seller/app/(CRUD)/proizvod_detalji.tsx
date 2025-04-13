@@ -17,17 +17,13 @@ export default function ProductScreen() {
  const productString = Array.isArray(params.product) ? params.product[0] : params.product;
  const product = productString ? JSON.parse(productString) : null;
 
-
- // kada backend bude spreman:
- const baseUrl = "https://bazaar-system.duckdns.org";
  const photos = product?.photos || [];
- const formattedPhotos = photos.map((photo: string) => `${baseUrl}${photo}`);
 
  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
  const nextImage = () => {
    //  zamijeni mockPhotos sa photos
-   if (currentImageIndex < formattedPhotos.length - 1 /* photos.length - 1 */) {
+   if (currentImageIndex < photos.length - 1 /* photos.length - 1 */) {
      setCurrentImageIndex(prev => prev + 1);
    }
  };
@@ -76,7 +72,7 @@ export default function ProductScreen() {
      {/* Sekcija sa slikama i strelicama */}
      <View style={styles.imageSection}>
        {/*BACKEND: koristi photos.length > 0 */}
-       {formattedPhotos.length > 0 && (
+       {photos.length > 0 && (
          <>
            <TouchableOpacity
              style={[styles.navArrow, styles.leftArrow]}
@@ -88,7 +84,7 @@ export default function ProductScreen() {
 
 
            <Image
-             source={{ uri: formattedPhotos[currentImageIndex] /* photos[currentImageIndex] */ }}
+             source={{ uri: photos[currentImageIndex] /* photos[currentImageIndex] */ }}
              style={styles.productImage}
            />
 
@@ -96,9 +92,9 @@ export default function ProductScreen() {
            <TouchableOpacity
              style={[styles.navArrow, styles.rightArrow]}
              onPress={nextImage}
-             disabled={currentImageIndex === formattedPhotos.length - 1 /* photos.length - 1 */}
+             disabled={currentImageIndex === photos.length - 1 /* photos.length - 1 */}
            >
-             <ChevronRight size={40} color={currentImageIndex === formattedPhotos.length - 1 ? '#ccc' : '#000'} />
+             <ChevronRight size={40} color={currentImageIndex === photos.length - 1 ? '#ccc' : '#000'} />
            </TouchableOpacity>
          </>
        )}
