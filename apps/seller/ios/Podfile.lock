@@ -9,12 +9,9 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXConstants (17.0.8):
     - ExpoModulesCore
-<<<<<<< HEAD
-=======
   - EXImageLoader (5.0.0):
     - ExpoModulesCore
     - React-Core
->>>>>>> origin/feature/ui-postavka-prodavnice
   - EXJSONUtils (0.14.0)
   - EXManifests (0.15.8):
     - ExpoModulesCore
@@ -250,6 +247,8 @@ PODS:
   - ExpoImagePicker (16.0.6):
     - ExpoModulesCore
   - ExpoKeepAwake (14.0.3):
+    - ExpoModulesCore
+  - ExpoLinearGradient (14.0.2):
     - ExpoModulesCore
   - ExpoLinking (7.0.5):
     - ExpoModulesCore
@@ -2238,10 +2237,7 @@ DEPENDENCIES:
   - boost (from `../../../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXConstants (from `../../../node_modules/expo-constants/ios`)
-<<<<<<< HEAD
-=======
   - EXImageLoader (from `../../../node_modules/expo-image-loader/ios`)
->>>>>>> origin/feature/ui-postavka-prodavnice
   - EXJSONUtils (from `../../../node_modules/expo-json-utils/ios`)
   - EXManifests (from `../../../node_modules/expo-manifests/ios`)
   - Expo (from `../../../node_modules/expo`)
@@ -2252,19 +2248,20 @@ DEPENDENCIES:
   - ExpoAdapterFBSDKNext (from `../../../node_modules/react-native-fbsdk-next/ios`)
   - "ExpoAdapterGoogleSignIn (from `../../../node_modules/@react-native-google-signin/google-signin/expo/ios`)"
   - ExpoAsset (from `../../../node_modules/expo-asset/ios`)
-  - ExpoBlur (from `../node_modules/expo-blur/ios`)
+  - ExpoBlur (from `../../../node_modules/expo-blur/ios`)
   - ExpoFileSystem (from `../../../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../../../node_modules/expo-font/ios`)
-  - ExpoHaptics (from `../node_modules/expo-haptics/ios`)
+  - ExpoHaptics (from `../../../node_modules/expo-haptics/ios`)
   - ExpoHead (from `../../../node_modules/expo-router/ios`)
   - ExpoImagePicker (from `../../../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../node_modules/expo-keep-awake/ios`)
+  - ExpoLinearGradient (from `../../../node_modules/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../node_modules/expo-linking/ios`)
   - ExpoModulesCore (from `../../../node_modules/expo-modules-core`)
   - ExpoSecureStore (from `../../../node_modules/expo-secure-store/ios`)
-  - ExpoSplashScreen (from `../node_modules/expo-splash-screen/ios`)
-  - ExpoSymbols (from `../node_modules/expo-symbols/ios`)
-  - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
+  - ExpoSplashScreen (from `../../../node_modules/expo-splash-screen/ios`)
+  - ExpoSymbols (from `../../../node_modules/expo-symbols/ios`)
+  - ExpoSystemUI (from `../../../node_modules/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../node_modules/expo-tracking-transparency/ios`)
   - ExpoWebBrowser (from `../../../node_modules/expo-web-browser/ios`)
   - EXUpdatesInterface (from `../../../node_modules/expo-updates-interface/ios`)
@@ -2364,11 +2361,8 @@ EXTERNAL SOURCES:
     :podspec: "../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXConstants:
     :path: "../../../node_modules/expo-constants/ios"
-<<<<<<< HEAD
-=======
   EXImageLoader:
     :path: "../../../node_modules/expo-image-loader/ios"
->>>>>>> origin/feature/ui-postavka-prodavnice
   EXJSONUtils:
     :path: "../../../node_modules/expo-json-utils/ios"
   EXManifests:
@@ -2390,19 +2384,21 @@ EXTERNAL SOURCES:
   ExpoAsset:
     :path: "../../../node_modules/expo-asset/ios"
   ExpoBlur:
-    :path: "../node_modules/expo-blur/ios"
+    :path: "../../../node_modules/expo-blur/ios"
   ExpoFileSystem:
     :path: "../../../node_modules/expo-file-system/ios"
   ExpoFont:
     :path: "../../../node_modules/expo-font/ios"
   ExpoHaptics:
-    :path: "../node_modules/expo-haptics/ios"
+    :path: "../../../node_modules/expo-haptics/ios"
   ExpoHead:
     :path: "../../../node_modules/expo-router/ios"
   ExpoImagePicker:
     :path: "../../../node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
     :path: "../../../node_modules/expo-keep-awake/ios"
+  ExpoLinearGradient:
+    :path: "../../../node_modules/expo-linear-gradient/ios"
   ExpoLinking:
     :path: "../../../node_modules/expo-linking/ios"
   ExpoModulesCore:
@@ -2410,11 +2406,11 @@ EXTERNAL SOURCES:
   ExpoSecureStore:
     :path: "../../../node_modules/expo-secure-store/ios"
   ExpoSplashScreen:
-    :path: "../node_modules/expo-splash-screen/ios"
+    :path: "../../../node_modules/expo-splash-screen/ios"
   ExpoSymbols:
-    :path: "../node_modules/expo-symbols/ios"
+    :path: "../../../node_modules/expo-symbols/ios"
   ExpoSystemUI:
-    :path: "../node_modules/expo-system-ui/ios"
+    :path: "../../../node_modules/expo-system-ui/ios"
   ExpoTrackingTransparency:
     :path: "../../../node_modules/expo-tracking-transparency/ios"
   ExpoWebBrowser:
@@ -2572,10 +2568,7 @@ SPEC CHECKSUMS:
   boost: 1dca942403ed9342f98334bf4c3621f011aa7946
   DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   EXConstants: fcfc75800824ac2d5c592b5bc74130bad17b146b
-<<<<<<< HEAD
-=======
   EXImageLoader: e5da974e25b13585c196b658a440720c075482d5
->>>>>>> origin/feature/ui-postavka-prodavnice
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: a19d50504b8826546a4782770317bc83fffec87d
   Expo: e8f11c8e0290deca7be9254569e23f884b95a777
@@ -2593,6 +2586,7 @@ SPEC CHECKSUMS:
   ExpoHead: cee2d16ef197aaadb0ac481cf221a663636eb074
   ExpoImagePicker: 24e5ba8da111f74519b1e6dc556e0b438b2b8464
   ExpoKeepAwake: b0171a73665bfcefcfcc311742a72a956e6aa680
+  ExpoLinearGradient: 35ebd83b16f80b3add053a2fd68cc328ed927f60
   ExpoLinking: 8d12bee174ba0cdf31239706578e29e74a417402
   ExpoModulesCore: c25d77625038b1968ea1afefc719862c0d8dd993
   ExpoSecureStore: 9a3665d7161dd1031be386e278bffd623658f316

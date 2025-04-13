@@ -2,13 +2,17 @@ import { View, Text, Image, ActivityIndicator, StyleSheet, ScrollView, Touchable
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+
 
 export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+
 
   const storeString = Array.isArray(params.store) ? params.store[0] : params.store;
   const store = storeString ? JSON.parse(storeString) : null;
@@ -16,7 +20,13 @@ export default function PregledProdavnice() {
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
   };
-
+  useEffect(() => {
+    navigation.setOptions({
+      title: t('store_overview'),
+    });
+  }, [i18n.language, navigation]);
+ 
+ 
   const handleSave = () => {
     if (store) {
         router.push(`../(CRUD)/pregled_proizvoda?storeId=${store.id}`);
