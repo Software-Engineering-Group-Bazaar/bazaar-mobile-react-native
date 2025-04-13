@@ -1,40 +1,52 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
+// Definicija za kategoriju proizvoda (ugniježđeni objekt)
+interface ProductCategory {
+  id: number;
+  name: string;
+}
+
+// Nova Product interface prema zadatom formatu
 interface Product {
   id: number;
   name: string;
-  productcategoryid: number;
-  price: number;
-  wieght?: number;
-  wieghtunit?: string;
+  productCategory: ProductCategory; // Promijenjeno iz productcategoryid
+  retailPrice: number;             // Promijenjeno iz price (koristit ćemo maloprodajnu cijenu)
+  wholesalePrice: number;         // Dodano
+  weight?: number;                 // Promijenjeno iz wieght (ispravljen typo)
+  weightUnit?: string;             // Promijenjeno iz wieghtunit (ispravljen typo)
   volume?: number;
-  volumeunit?: string;
-  storeID: number;
-  imageUrl?: string; //polje za URL slike proizvoda
+  volumeUnit?: string;
+  storeId: number;                 // Promijenjeno iz storeID (usklađeno s formatom)
+  photos: string[];                // Promijenjeno iz imageUrl u niz stringova
 }
 
 interface ProductItemProps {
   product: Product;
-  onPress?: (product: Product) => void;
+  onPress?: (product: Product) => void; // Proslijeđuje cijeli (novi) Product objekt
 }
 
 const ProductItem: React.FC<ProductItemProps> = ({ product, onPress }) => {
-  const { name, price, imageUrl, wieght, wieghtunit, volume, volumeunit } = product;
+  // Destrukturiranje svojstava iz novog Product objekta
+  const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit } = product;
+  // <Image source={{ uri: "http://192.168.0.25:5054" + firstImageUrl }} style={styles.image} />
 
+  // Dohvaćanje prve slike iz niza 'photos', ako postoji
+  const firstImageUrl = photos && photos.length > 0 ? photos[0] : undefined;
+  console.log(JSON.stringify(product))
   return (
     <TouchableOpacity style={styles.container} onPress={() => onPress && onPress(product)}>
-      {imageUrl && (
-        <Image source={{ uri: imageUrl }} style={styles.image} />
+      {firstImageUrl && (
+        <Image source={{ uri: firstImageUrl }} style={styles.image} />
       )}
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.price}>KM {price.toFixed(2)}</Text>
-        {wieght && (
-          <Text style={styles.details}>{wieght} {wieghtunit}</Text>
-        )}
-        {volume && (
-          <Text style={styles.details}>{volume} {volumeunit}</Text>
+        <Text style={styles.price}>KM {retailPrice.toFixed(2)}</Text>
+        {typeof weight === 'number' && weight > 0 && weightUnit && 
+        (<Text style={styles.details}>{`${weight} ${weightUnit}`}</Text>)}
+        {typeof volume === 'number' && volume > 0 && volumeUnit && (
+          <Text style={styles.details}>{`${volume} ${volumeUnit}`}</Text>
         )}
       </View>
     </TouchableOpacity>
@@ -43,7 +55,7 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     backgroundColor: 'white',
     borderRadius: 8,
     shadowColor: '#000',
@@ -53,16 +65,18 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 10,
     marginBottom: 10,
-    alignItems: 'center', 
+    alignItems: 'center',
   },
   image: {
     width: 100,
     height: 80,
     borderRadius: 8,
     marginRight: 15,
+    // Opcionalno: dodati boju pozadine dok se slika učitava ili ako nema slike
+    // backgroundColor: '#eee',
   },
   infoContainer: {
-    flex: 1, 
+    flex: 1,
     justifyContent: 'center',
   },
   name: {

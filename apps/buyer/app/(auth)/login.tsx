@@ -160,11 +160,13 @@ export default function SignIn() {
     try {
       setLoading(true);
   
+      console.log(JSON.stringify({ email, password, app:"buyer" }));
+
       // Step 1: Send login request
       const loginRes = await fetch('https://bazaar-system.duckdns.org/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }), 
+        body: JSON.stringify({ email, password, app:"buyer" }) 
       });
   
       const loginData: any = await loginRes.json();
@@ -173,6 +175,7 @@ export default function SignIn() {
         Alert.alert(t('login_failed'), t('invalid_credentials'));
         return;
       }
+
   
       // Step 3: Destructure the token and approval status from loginData
       const { token, mail } = loginData;
@@ -186,7 +189,7 @@ export default function SignIn() {
       // Step 5: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
       // Step 6: Redirect to the logout screen or dashboard
-      router.replace('/(auth)/logout');
+      router.replace('/(tabs)/home');
   
     } catch (error) {
       console.error("Login error:", error);
