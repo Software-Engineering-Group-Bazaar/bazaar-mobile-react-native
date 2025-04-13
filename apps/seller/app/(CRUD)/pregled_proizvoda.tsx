@@ -58,7 +58,7 @@ export default function ProductsScreen() {
     
         <View style={styles.productInfo}>
           <Text style={styles.productName}>{item.name}</Text>
-          <Text style={styles.productPrice}>{t('Price')}: {item.wholesalePrice.toString()}</Text>
+          <Text style={styles.productPrice}>{t('Price')}: {item.wholesalePrice.toString()} KM</Text>
           <Text style={styles.productCategory}>{t('Category')}: {item.productCategory.name}</Text>
     
           {/* Display weight and volume if available */}
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 14,
-    color: '#007AFF',
+    color: '#4E8D7C',
     fontWeight: '500',
     marginBottom: 4,
   },
