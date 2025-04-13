@@ -16,19 +16,15 @@ export default function ProductScreen() {
   const product = productString ? JSON.parse(productString) : null;
 
   // kada backend bude spreman:
-  // const photos = product?.photos || [];
-
-  // MOCK slike dok backend ne proradi
-  const mockPhotos = [
-    'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800',
-    'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800'
-  ];
+  const baseUrl = "http://10.0.2.2:5054";
+  const photos = product?.photos || [];
+  const formattedPhotos = photos.map((photo: string) => `${baseUrl}${photo}`);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = () => {
     //  zamijeni mockPhotos sa photos
-    if (currentImageIndex < mockPhotos.length - 1 /* photos.length - 1 */) {
+    if (currentImageIndex < formattedPhotos.length - 1 /* photos.length - 1 */) {
       setCurrentImageIndex(prev => prev + 1);
     }
   };
@@ -71,7 +67,7 @@ export default function ProductScreen() {
       {/* Sekcija sa slikama i strelicama */}
       <View style={styles.imageSection}>
         {/*BACKEND: koristi photos.length > 0 */}
-        {mockPhotos.length > 0 && (
+        {formattedPhotos.length > 0 && (
           <>
             <TouchableOpacity 
               style={[styles.navArrow, styles.leftArrow]} 
@@ -82,16 +78,16 @@ export default function ProductScreen() {
             </TouchableOpacity>
 
             <Image 
-              source={{ uri: mockPhotos[currentImageIndex] /* photos[currentImageIndex] */ }} 
+              source={{ uri: formattedPhotos[currentImageIndex] /* photos[currentImageIndex] */ }} 
               style={styles.productImage} 
             />
 
             <TouchableOpacity 
               style={[styles.navArrow, styles.rightArrow]} 
               onPress={nextImage}
-              disabled={currentImageIndex === mockPhotos.length - 1 /* photos.length - 1 */}
+              disabled={currentImageIndex === formattedPhotos.length - 1 /* photos.length - 1 */}
             >
-              <ChevronRight size={40} color={currentImageIndex === mockPhotos.length - 1 ? '#ccc' : '#000'} />
+              <ChevronRight size={40} color={currentImageIndex === formattedPhotos.length - 1 ? '#ccc' : '#000'} />
             </TouchableOpacity>
           </>
         )}
