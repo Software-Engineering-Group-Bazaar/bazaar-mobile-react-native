@@ -1,5 +1,18 @@
 {
-  "plugins": [
-    "expo-tracking-transparency"
-  ]
+  "expo": {
+    "name": "theshop",
+    "slug": "theshop",
+    "scheme": "theshop",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "plugins": [
+        "expo-tracking-transparency"
+      ]
+    },
+    "android": {
+      "plugins": [
+        "expo-tracking-transparency"
+      ]
+    }
+  }
 }

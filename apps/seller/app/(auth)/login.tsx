@@ -82,7 +82,7 @@ export default function SignIn() {
         console.log("API response:", apiData);
   
         await SecureStore.setItemAsync("accessToken", apiData.token);
-        router.replace("/home");
+        router.replace('../(tabs)/home');
         getUserFBData();
       }
     } catch (error) {
@@ -90,7 +90,6 @@ export default function SignIn() {
     }
   };
   
-
   const getUserFBData = () => {
     Profile.getCurrentProfile().then((currentProfile) => {
       console.log(currentProfile);
@@ -99,22 +98,17 @@ export default function SignIn() {
 
   const loginWithGoogle = async () => {
     try {
-
       setIsSubmitting(true);
-
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
   
       if (isSuccessResponse(response)) {
         const { idToken } = response.data;
-  
         console.log("User Info:", { idToken });
   
          const apiResponse = await fetch("https://bazaar-system.duckdns.org/api/Auth/login/google", {
            method: "POST",
-           headers: {
-             "Content-Type": "application/json",
-           },
+           headers: { "Content-Type": "application/json", },
            body: JSON.stringify({ idToken: idToken, app: "seller" }), 
          });
   
@@ -130,7 +124,7 @@ export default function SignIn() {
 
          await SecureStore.setItemAsync("accessToken", accessToken);
   
-         router.replace("/(auth)/login");
+         router.replace('../(tabs)/home');
       } else {
         console.log("Google Sign-in cancelled");
       }
@@ -173,11 +167,11 @@ export default function SignIn() {
       const loginRes = await fetch('https://bazaar-system.duckdns.org/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }), 
+        body: JSON.stringify({ email, password, app: 'seller' }), 
       });
   
       const loginData: any = await loginRes.json();
-  
+
       if (loginRes.status != 200) {
         Alert.alert(t('login_failed'), t('invalid_credentials'));
         return;
@@ -193,11 +187,9 @@ export default function SignIn() {
       }
 
       // Step 5: Store the token securely
-      await SecureStore.setItemAsync('auth_token', token);
-      console.log("dodje");
+      await SecureStore.setItemAsync('accessToken', token);
       // Step 6: Redirect to the logout screen or dashboard
-      router.replace('/(auth)/logout');
-  
+      router.replace('../(tabs)/home');
     } catch (error) {
       console.error("Login error:", error);
       Alert.alert(t('error'), t('something_went_wrong'));
