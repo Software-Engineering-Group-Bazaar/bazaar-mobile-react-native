@@ -26,7 +26,7 @@ export default function HomeScreen() {
 
       if (token) {
         const response = await axios.post(
-          'http://127.0.0.1:5054/api/Auth/logout',
+          'http://10.0.2.2:5054/api/Auth/logout',
           {},
           {
             headers: {

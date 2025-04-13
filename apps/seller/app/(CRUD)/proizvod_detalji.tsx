@@ -19,7 +19,7 @@ export default function ProductScreen() {
 
 
  // kada backend bude spreman:
- const baseUrl = "http://127.0.0.1:5054";
+ const baseUrl = "http://10.0.2.2:5054";
  const photos = product?.photos || [];
  const formattedPhotos = photos.map((photo: string) => `${baseUrl}${photo}`);
 

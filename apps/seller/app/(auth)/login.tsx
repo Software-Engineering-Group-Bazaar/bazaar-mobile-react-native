@@ -164,7 +164,7 @@ export default function SignIn() {
       setLoading(true);
   
       // Step 1: Send login request
-      const loginRes = await fetch('http://127.0.0.1:5054/api/Auth/login', {
+      const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, app: 'seller' }), 

@@ -6,21 +6,17 @@ import styles from '../styles';
 import React, { useState, useEffect } from 'react';
 import { apiFetchActiveStores } from '../api/storeApi';
 
-
 import { Store } from '../types/prodavnica';
-
 
 type RootStackParamList = {
  '../(CRUD)/prodavnica_detalji': { store: Store };
 };
-
 
 export default function StoresScreen() {
  const router = useRouter();
  const { t, i18n } = useTranslation();
  const [loading, setLoading] = useState(false);
  const [stores, setStores] = useState<Store[]>([]);
-
 
  useEffect(() => {
    async function getStores() {
@@ -54,7 +50,6 @@ export default function StoresScreen() {
  const toggleLanguage = () => {
    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
  };
-
 
  return (
    <View style={{ flex: 1 }}>
@@ -92,7 +87,6 @@ export default function StoresScreen() {
              )}
            </TouchableOpacity>
          )}
-
 
          <FlatList
            data={stores}
