@@ -50,7 +50,7 @@
     "reset_password":"Resetuj lozinku",
     "back_to_login":"Nazad na prijavu",
     "enter_email":"Unesi svoj email!",
-    "password_reset_email_sent":"Email za resetovanje lozinke je poslan na vašu inbox adresu.",
+    "password_reset_email_sent":"Ukoliko imate profil, poslat ćemo Vam email sa kodom za ponovno postavljanje lozinke. Provjerite u folderu neželjene pošte.",
     "enter_verification_code": "Unesite verifikacijski kod",
     "invalid_verification_code": "Neispravan verifikacijski kod",
     "enter_verification_code_title": "Potvrdite svoj identitet",
@@ -65,6 +65,10 @@
     "new_password_placeholder": "Unesite novu lozinku",
     "confirm_new_password_placeholder": "Potvrdite novu lozinku",
     "set_new_password_button": "Postavite novu lozinku",
-    "search_products_placeholder": "Pretraži proizvode"
+    "search_products_placeholder": "Pretraži proizvode",
+    "no_products_in_store": "Prodavnica nema proizvoda",
+    "code_placeholder": "Kod iz mail-a",
+    "profile_title": "Profil",
+    "profile_subtitle": "Upravljajte svojim profilom"
 }
   
