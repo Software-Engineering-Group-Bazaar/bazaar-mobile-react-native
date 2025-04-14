@@ -66,5 +66,7 @@
     "set_new_password_button": "Set New Password",
     "search_products_placeholder": "Search products",
     "no_products_in_store": "No products in store",
-    "code_placeholder": "Code from mail"
+    "code_placeholder": "Code from mail",
+    "profile_title": "Profile",
+    "profile_subtitle": "Manage your profile"
 }

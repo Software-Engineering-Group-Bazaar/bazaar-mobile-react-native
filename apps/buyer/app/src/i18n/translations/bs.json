@@ -67,6 +67,8 @@
     "set_new_password_button": "Postavite novu lozinku",
     "search_products_placeholder": "Pretraži proizvode",
     "no_products_in_store": "Prodavnica nema proizvoda",
-    "code_placeholder": "Kod iz mail-a"
+    "code_placeholder": "Kod iz mail-a",
+    "profile_title": "Profil",
+    "profile_subtitle": "Upravljajte svojim profilom"
 }
   
