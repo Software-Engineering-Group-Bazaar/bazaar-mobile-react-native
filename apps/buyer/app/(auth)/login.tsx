@@ -82,7 +82,7 @@ export default function SignIn() {
   
          console.log("Access Token from BE:", accessToken);
 
-         await SecureStore.setItemAsync("accessToken", accessToken);
+         await SecureStore.setItemAsync("auth_token", accessToken);
   
         router.replace("/home");
       } else {
@@ -135,7 +135,7 @@ export default function SignIn() {
         const apiData = await response.json();
         console.log("API response:", apiData);
   
-        await SecureStore.setItemAsync("accessToken", apiData.token);
+        await SecureStore.setItemAsync("auth_token", apiData.token);
         router.replace("/home");
         getUserFBData();
       }
