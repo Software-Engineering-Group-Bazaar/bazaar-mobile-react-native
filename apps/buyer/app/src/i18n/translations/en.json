@@ -49,7 +49,7 @@
     "reset_password":"Reset password",
     "back_to_login":"Back to login",
     "enter_email":"Enter your email!",
-    "password_reset_email_sent":"A password reset email has been sent to your inbox.",
+    "password_reset_email_sent":"If you have an account, we'll send you an email with a code to reset your password. Please check your spam folder.",
     "enter_verification_code": "Enter the verification code",
     "invalid_verification_code": "Invalid verification code",
     "enter_verification_code_title": "Verify your identity",
@@ -64,5 +64,7 @@
     "new_password_placeholder": "Enter new password",
     "confirm_new_password_placeholder": "Confirm new password",
     "set_new_password_button": "Set New Password",
-    "search_products_placeholder": "Search products"
+    "search_products_placeholder": "Search products",
+    "no_products_in_store": "No products in store",
+    "code_placeholder": "Code from mail"
 }
