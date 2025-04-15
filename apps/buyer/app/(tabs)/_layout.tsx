@@ -7,37 +7,57 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome } from '@expo/vector-icons';
+import CustomHeader from 'proba-package/custom-header/index'; 
+import { t } from 'i18next';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+    screenOptions={{
+      tabBarStyle: { 
+        backgroundColor: '#FFFFFF',
+        borderTopWidth: 1,
+        borderColor: '#b6d6ce'
+      },
+      tabBarActiveTintColor: '#4e8d7c',
+      tabBarInactiveTintColor: '#6B7280',
+      header: () => <CustomHeader />
+    }}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: t('home'),
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="home" size={28} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="stores"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: t('stores'),
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="shopping-bag" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: t('search'),
+          tabBarIcon: ({ color }) => (<FontAwesome size={28} name="search" color={color} />)
+        }}
+      />
+      <Tabs.Screen
+        name="profil"
+        options={{
+          title: t('profile'),
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="user-circle" size={28} color={color} />
+          ),
         }}
       />
     </Tabs>

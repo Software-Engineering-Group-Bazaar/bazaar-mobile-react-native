@@ -2,20 +2,46 @@
   "expo": {
     "name": "buyer",
     "slug": "buyer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.buyer",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.INTERNET",
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.INTERNET",
+        "com.google.android.gms.permission.AD_ID"
+      ],
+      "package": "com.anonymous.buyer"
     },
     "web": {
       "bundler": "metro",
@@ -23,6 +49,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "@react-native-google-signin/google-signin",
       "expo-router",
       [
         "expo-splash-screen",
@@ -32,10 +59,38 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "4026643390957060",
+          "clientToken": "9e35bd7ee13f0b63f05702e1b8e8f0a0",
+          "displayName": "bazaar",
+          "scheme": "fb4026643390957060",
+          "advertiserIDCollectionEnabled": false,
+          "autoLogAppEventsEnabled": false,
+          "isAutoInitEnabled": true,
+          "iosUserTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.792696522665-dvhgjia0avus08gcni5rbvift7eki3qt"
+        }
+      ],
+      "expo-tracking-transparency"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "1081b26e-b6e5-4538-a5ec-9cbfb02ffde3"
+      }
     }
   }
 }
