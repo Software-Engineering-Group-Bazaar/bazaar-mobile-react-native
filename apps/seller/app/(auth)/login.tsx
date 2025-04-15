@@ -70,7 +70,8 @@ export default function SignIn() {
       if (data?.accessToken) {
         // call your backend
         const response = await fetch(
-          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+         // 'http://127.0.0.1:5054/api/Auth/login/facebook', //za ios
+         'http://10.0.2.2:5054/api/Auth/login/facebook', //za android emulator
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -106,7 +107,10 @@ export default function SignIn() {
         const { idToken } = response.data;
         console.log("User Info:", { idToken });
   
-         const apiResponse = await fetch("https://bazaar-system.duckdns.org/api/Auth/login/google", {
+
+        
+         const apiResponse = await fetch("http://10.0.2.2:5054/api/Auth/login/google", {
+       //   const apiResponse = await fetch("http://127.0.0.1:5054/api/Auth/login/google", {
            method: "POST",
            headers: { "Content-Type": "application/json", },
            body: JSON.stringify({ idToken: idToken, app: "seller" }), 
@@ -164,7 +168,8 @@ export default function SignIn() {
       setLoading(true);
   
       // Step 1: Send login request
-      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/Auth/login', {
+     // const loginRes = await fetch('http://127.0.0.1:5054/api/Auth/login', {
+      const loginRes = await fetch('http://10.0.2.2:5054/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, app: 'seller' }), 
@@ -262,6 +267,27 @@ export default function SignIn() {
         <FontAwesome name="facebook" size={20} color="#1877F2" />
         <Text style={styles.socialButtonText}>{t('login_facebook')}</Text>
       </TouchableOpacity>
+
+      
+
+      { /* === POČETAK TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
+
+{ <TouchableOpacity
+   style={[styles.socialButton, { borderColor: '#4E8D7C' }]}
+   onPress={() => router.replace('/(tabs)/home')}
+ >
+   <FontAwesome name="cogs" size={20} color="#4E8D7C" />
+   <Text style={[styles.socialButtonText, { color: '#4E8D7C' }]}>
+     TEST UI: Postavke prodavnice
+   </Text>
+ </TouchableOpacity> }
+  {/* === KRAJ TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
+
+
+
+
+
+
     </View>
   );
 }
