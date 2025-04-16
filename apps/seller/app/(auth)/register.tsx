@@ -26,6 +26,7 @@ import { registerApi } from "../api/auth/registerApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
+import { fbLoginApi } from "../api/auth/loginApi";
 //------------------------------------------------------------------
 
 export default function SignUp() {
@@ -61,12 +62,6 @@ export default function SignUp() {
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
-  };
-
-  const getUserFBData = () => {
-    Profile.getCurrentProfile().then((currentProfile) => {
-      console.log(currentProfile);
-    });
   };
 
   const onSignUpPress = async () => {
