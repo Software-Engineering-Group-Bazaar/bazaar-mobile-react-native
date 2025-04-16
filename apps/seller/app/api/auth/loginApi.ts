@@ -2,7 +2,7 @@ import { Alert } from "react-native";
 import api from "../defaultApi";
 import { t } from "i18next";
 
-export const apiLogin = async (email: string, password: string) => {
+const apiLogin = async (email: string, password: string) => {
   try {
     const loginRes = await api.post(
       "/Auth/login",
@@ -41,3 +41,5 @@ export const apiLogin = async (email: string, password: string) => {
     throw error; // or handle it differently
   }
 };
+
+export default apiLogin;

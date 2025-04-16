@@ -14,19 +14,13 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { useTranslation } from "react-i18next";
 import {
-  AccessToken,
-  LoginButton,
-  Settings,
-  Profile,
-  LoginManager,
-} from "react-native-fbsdk-next";
-import {
   GoogleSignin,
   isErrorWithCode,
   isSuccessResponse,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
-import { apiLogin } from "../api/auth/loginApi";
+import apiLogin from "../api/auth/loginApi";
+import fbLoginApi from "../api/auth/fbAuthApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
@@ -63,49 +57,13 @@ export default function SignIn() {
 
   const loginWithFacebook = async () => {
     try {
-      const result = await LoginManager.logInWithPermissions([
-        "public_profile",
-        "email",
-      ]);
-      if (result.isCancelled) {
-        console.log("==> Login cancelled");
-        return;
-      }
-      console.log(result);
+      const apiData = await fbLoginApi();
 
-      const data = await AccessToken.getCurrentAccessToken();
-      console.log(data);
-
-      if (data?.accessToken) {
-        // call your backend
-        const response = await fetch(
-          "https://bazaar-system.duckdns.org/api/Auth/login/facebook",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              accessToken: data.accessToken,
-              app: "seller",
-            }),
-          }
-        );
-
-        const apiData = await response.json();
-        console.log("API response:", apiData);
-
-        await SecureStore.setItemAsync("accessToken", apiData.token);
-        router.replace("../(tabs)/home");
-        getUserFBData();
-      }
+      await SecureStore.setItemAsync("accessToken", apiData.token);
+      router.replace("../(tabs)/home");
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
-  };
-
-  const getUserFBData = () => {
-    Profile.getCurrentProfile().then((currentProfile) => {
-      console.log(currentProfile);
-    });
   };
 
   const loginWithGoogle = async () => {
