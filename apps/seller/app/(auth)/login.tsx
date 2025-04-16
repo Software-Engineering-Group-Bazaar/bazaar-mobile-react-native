@@ -20,13 +20,13 @@ import {
   Profile,
   LoginManager,
 } from "react-native-fbsdk-next";
-import axios from "axios";
 import {
   GoogleSignin,
   isErrorWithCode,
   isSuccessResponse,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
+import { apiLogin } from "../api/auth/loginApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
@@ -183,32 +183,7 @@ export default function SignIn() {
 
     try {
       setLoading(true);
-
-      // Step 1: Send login request
-      const loginRes = await fetch(
-        "https://bazaar-system.duckdns.org/api/Auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, app: "seller" }),
-        }
-      );
-
-      const loginData: any = await loginRes.json();
-
-      if (loginRes.status != 200) {
-        Alert.alert(t("login_failed"), t("invalid_credentials"));
-        return;
-      }
-
-      // Step 3: Destructure the token and approval status from loginData
-      const { token, mail } = loginData;
-
-      // Step 4: Check if the account is approved
-      if (mail === false) {
-        Alert.alert(t("access_denied"), t("account_not_approved"));
-        return;
-      }
+      const token = await apiLogin(email, password);
 
       // Step 5: Store the token securely
       await SecureStore.setItemAsync("accessToken", token);
