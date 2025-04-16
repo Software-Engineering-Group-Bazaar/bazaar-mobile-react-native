@@ -19,8 +19,7 @@ import {
   isSuccessResponse,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
-import apiLogin from "../api/auth/loginApi";
-import fbLoginApi from "../api/auth/fbAuthApi";
+import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";

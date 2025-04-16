@@ -22,6 +22,7 @@ import {
   statusCodes,
 } from "@react-native-google-signin/google-signin";
 import * as SecureStore from "expo-secure-store";
+import { registerApi } from "../api/auth/registerApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
@@ -53,41 +54,10 @@ export default function SignUp() {
 
   const loginWithFacebook = async () => {
     try {
-      const result = await LoginManager.logInWithPermissions([
-        "public_profile",
-        "email",
-      ]);
-      if (result.isCancelled) {
-        console.log("==> Login cancelled");
-        return;
-      }
-      console.log(result);
+      const apiData = await fbLoginApi();
 
-      const data = await AccessToken.getCurrentAccessToken();
-      console.log(data);
-
-      if (data?.accessToken) {
-        // call your backend
-        const response = await fetch(
-          "https://bazaar-system.duckdns.org/api/Auth/login/facebook",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              accessToken: data.accessToken,
-              app: "seller",
-            }),
-          }
-        );
-
-        const apiData = await response.json();
-        console.log("API response:", apiData);
-
-        await SecureStore.setItemAsync("accessToken", apiData.token);
-        Alert.alert(t("signup_success"), t("wait_for_approval"));
-        router.replace("/(auth)/login");
-        getUserFBData();
-      }
+      await SecureStore.setItemAsync("accessToken", apiData.token);
+      router.replace("../(tabs)/home");
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
@@ -114,25 +84,7 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "https://bazaar-system.duckdns.org/api/Auth/register",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, email, password }),
-        }
-      );
-
-      const data = await response.json(); // Get the JSON from the response
-
-      if (!response.ok) {
-        // If status is not 200–299
-        console.error("Registration failed:", data);
-        Alert.alert(t("error"), data.message || t("something_went_wrong"));
-        return;
-      }
-
-      Alert.alert(t("signup_success"), t("wait_for_approval"));
+      registerApi(username, email, password);
       router.replace("/(auth)/login");
     } catch (error) {
       console.error("Error during registration:", error);
