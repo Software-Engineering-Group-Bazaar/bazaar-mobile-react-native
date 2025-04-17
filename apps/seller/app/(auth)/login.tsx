@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Alert,
   Image,
@@ -20,11 +19,10 @@ import {
   statusCodes,
 } from "@react-native-google-signin/google-signin";
 import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
-
+import InputField from "@/components/ui/input/InputField";
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
-import InputField from "@/components/ui/input/InputField";
-//------------------------------------------------------------------
+import LanguageButton from "@/components/ui/LanguageButton";
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -50,10 +48,6 @@ export default function SignIn() {
       profileImageSize: 150,
     });
   }, []);
-
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
-  };
 
   const loginWithFacebook = async () => {
     try {
@@ -156,10 +150,7 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-      </TouchableOpacity>
+      <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
       <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -174,21 +165,8 @@ export default function SignIn() {
         <Text style={styles.subtitle}>{t("signin_subtitle")}</Text>
       </View>
 
-      {/* <TextInput
-        style={styles.input}
-        placeholder={t("email_placeholder")}
-        placeholderTextColor="#64748b"
-        value={email}
-        onChangeText={(text) => {
-          setEmail(text);
-          setEmailValid(isValidEmail(text));
-        }}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      /> */}
-
       <InputField
-        placeholder={"Test"}
+        placeholder={t("email_placeholder")}
         value={email}
         onChangeText={(text) => {
           setEmail(text);
@@ -260,17 +238,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#64748b",
   },
-  input: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    marginBottom: 15,
-    backgroundColor: "#f7f7f7",
-  },
   logo: {
     width: 120,
     height: 120,
@@ -320,29 +287,5 @@ const styles = StyleSheet.create({
   socialButtonText: {
     fontSize: 16,
     marginLeft: 10,
-  },
-  languageButton: {
-    position: "absolute",
-    top: "5%",
-    right: "5%",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 100,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
   },
 });

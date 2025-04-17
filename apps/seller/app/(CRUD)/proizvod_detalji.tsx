@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { FontAwesome } from "@expo/vector-icons";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
+import LanguageButton from "@/components/ui/LanguageButton";
 
 export default function ProductScreen() {
   const params = useLocalSearchParams();
@@ -43,10 +44,6 @@ export default function ProductScreen() {
     }
   };
 
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
-  };
-
   useEffect(() => {
     navigation.setOptions({
       title: product?.name || "",
@@ -67,12 +64,7 @@ export default function ProductScreen() {
   return (
     <ScrollView style={styles.container}>
       {/* Dugme za promjenu jezika */}
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>
-          {String(i18n.language).toUpperCase()}
-        </Text>
-      </TouchableOpacity>
+      <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
       <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -159,30 +151,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  languageButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
   },
   imageSection: {
     position: "relative",

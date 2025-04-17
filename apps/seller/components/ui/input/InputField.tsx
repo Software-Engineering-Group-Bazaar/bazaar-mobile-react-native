@@ -15,13 +15,13 @@ interface InputFieldProps extends TextInputProps {
 const InputField: React.FC<InputFieldProps> = ({
   isValid = true,
   errorText,
-  style,
   ...rest
 }) => {
   return (
     <View style={styles.container}>
       <TextInput
-        style={[styles.input, !isValid && styles.inputError, style]}
+        style={[styles.input, !isValid && styles.inputError]}
+        placeholderTextColor="#64748b"
         {...rest}
       />
       {!isValid && errorText ? (

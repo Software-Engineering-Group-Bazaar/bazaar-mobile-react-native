@@ -22,10 +22,9 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { registerApi } from "../api/auth/registerApi";
 import { fbLoginApi } from "../api/auth/loginApi";
-
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
-//------------------------------------------------------------------
+import LanguageButton from "@/components/ui/LanguageButton";
 
 export default function SignUp() {
   const router = useRouter();
@@ -46,10 +45,6 @@ export default function SignUp() {
       profileImageSize: 150,
     });
   }, []);
-
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
-  };
 
   const loginWithFacebook = async () => {
     try {
@@ -144,10 +139,7 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={20} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-      </TouchableOpacity>
+      <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
       <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -346,29 +338,5 @@ const styles = StyleSheet.create({
     color: "#4E8D7C",
     fontWeight: "bold",
     marginTop: 10,
-  },
-  languageButton: {
-    position: "absolute",
-    top: "5%",
-    right: "5%",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 100,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
   },
 });

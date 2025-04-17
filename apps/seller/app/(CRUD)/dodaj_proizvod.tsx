@@ -22,7 +22,9 @@ import { useLocalSearchParams } from "expo-router";
 import { apiFetchCategories } from "../api/productApi";
 import api from "../api/defaultApi";
 import * as FileSystem from "expo-file-system";
+//-------------------Route Explorer---------------------------------
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
+import LanguageButton from "@/components/ui/LanguageButton";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -183,8 +185,6 @@ export default function AddProductScreen() {
   };
 
   const navigation = useNavigation();
-  const toggleLanguage = () =>
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
 
   useEffect(() => {
     navigation.setOptions({ title: t("add_a_product") });
@@ -195,10 +195,7 @@ export default function AddProductScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-      </TouchableOpacity>
+      <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
       <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -382,24 +379,6 @@ const styles = StyleSheet.create({
     color: "#374151",
     marginBottom: 8,
   },
-  languageButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
   screenExplorerButton: {
     position: "absolute",
     top: 40,
@@ -471,12 +450,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
   },
   imagePreviewContainer: {
     flexDirection: "row",
