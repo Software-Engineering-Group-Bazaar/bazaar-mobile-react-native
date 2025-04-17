@@ -22,7 +22,13 @@ import { useLocalSearchParams } from "expo-router";
 import { apiFetchCategories } from "../api/productApi";
 import api from "../api/defaultApi";
 import * as FileSystem from "expo-file-system";
+//-------------------Route Explorer---------------------------------
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
+import LanguageButton from "@/components/ui/LanguageButton";
+import InputField from "@/components/ui/input/InputField";
+import SubmitButton from "@/components/ui/input/SubmitButton";
+import ImagePreviewList from "@/components/ui/ImagePreviewList";
+import DropdownPicker from "@/components/ui/input/DropdownPicker";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -183,8 +189,6 @@ export default function AddProductScreen() {
   };
 
   const navigation = useNavigation();
-  const toggleLanguage = () =>
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
 
   useEffect(() => {
     navigation.setOptions({ title: t("add_a_product") });
@@ -195,10 +199,7 @@ export default function AddProductScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-      </TouchableOpacity>
+      <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
       <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -211,70 +212,58 @@ export default function AddProductScreen() {
         <Text style={styles.title}>{t("add_a_product")}</Text>
 
         <View style={[styles.form, { zIndex: 0 }]}>
-          <Text style={styles.label}>{t("product_name")}</Text>
-          <TextInput
-            style={styles.input}
+          <InputField
+            label={t("product_name")}
             value={name}
             onChangeText={setName}
             placeholder={t("enter_product_name")}
           />
 
-          <Text style={styles.label}>{t("price")}</Text>
-          <TextInput
-            style={styles.input}
+          <InputField
+            label={t("price")}
             value={price}
             onChangeText={setPrice}
             placeholder={t("enter_price")}
             keyboardType="decimal-pad"
           />
 
-          <Text style={styles.label}>{t("weight")}</Text>
-          <TextInput
-            style={styles.input}
+          <InputField
+            label={t("weight")}
             value={weight}
             onChangeText={setWeight}
             placeholder={t("enter_weight")}
             keyboardType="decimal-pad"
           />
-          <View style={{ zIndex: 3000 }}>
-            <DropDownPicker
-              open={weightOpen}
-              value={weightUnit}
-              items={weightItems}
-              setOpen={setWeightOpen}
-              setValue={setWeightUnit}
-              setItems={setWeightItems}
-              placeholder={t("select_unit")}
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              listMode="SCROLLVIEW"
-            />
-          </View>
 
-          <Text style={styles.label}>{t("volume")}</Text>
-          <TextInput
-            style={styles.input}
+          <DropdownPicker
+            open={weightOpen}
+            value={weightUnit}
+            items={weightItems}
+            setOpen={setWeightOpen}
+            setValue={setWeightUnit}
+            setItems={setWeightItems}
+            placeholder={t("select-unit")}
+          />
+
+          <InputField
+            label={t("volume")}
             value={volume}
             onChangeText={setVolume}
             placeholder={t("enter_volume")}
             keyboardType="decimal-pad"
           />
-          <View style={{ zIndex: 2000 }}>
-            <DropDownPicker
-              open={volumeOpen}
-              value={volumeUnit}
-              items={volumeItems}
-              setOpen={setVolumeOpen}
-              setValue={setVolumeUnit}
-              setItems={setVolumeItems}
-              placeholder={t("select_unit")}
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              listMode="SCROLLVIEW"
-            />
-          </View>
 
-          <Text style={styles.label}>{t("category")}</Text>
+          <DropdownPicker
+            open={volumeOpen}
+            value={volumeUnit}
+            items={volumeItems}
+            setOpen={setVolumeOpen}
+            setValue={setVolumeUnit}
+            setItems={setVolumeItems}
+            placeholder={t("select-unit")}
+          />
+
+          {/* <Text style={styles.label}>{t("category")}</Text>
           <View style={{ zIndex: 1000 }}>
             <DropDownPicker
               open={categoryOpen}
@@ -288,43 +277,31 @@ export default function AddProductScreen() {
               dropDownContainerStyle={styles.dropdownContainer}
               listMode="SCROLLVIEW"
             />
-          </View>
+          </View> */}
 
-          <Text style={styles.label}>{t("images")}</Text>
-          <TouchableOpacity style={styles.imageButton} onPress={pickImages}>
-            <Text style={styles.imageButtonText}>{t("select_images")}</Text>
-          </TouchableOpacity>
+          <DropdownPicker
+            open={categoryOpen}
+            value={category}
+            items={categories}
+            setOpen={setCategoryOpen}
+            setValue={setCategory}
+            setItems={setCategories}
+            placeholder={t("select_category")}
+          />
 
-          <View style={styles.imagePreviewContainer}>
-            {images.length > 0 ? (
-              <View style={styles.imagePreviewContainer}>
-                {images.map((image, index) => (
-                  <Image
-                    key={index}
-                    source={{ uri: image.uri }}
-                    style={styles.imagePreview}
-                  />
-                ))}
-              </View>
-            ) : (
-              <Text>{t("No Images Selected")}</Text>
-            )}
-          </View>
+          <SubmitButton
+            label={t("images")}
+            onPress={pickImages}
+            buttonText={t("select_images")}
+          />
 
-          <TouchableOpacity
-            style={styles.button}
+          <ImagePreviewList images={images} />
+
+          <SubmitButton
             onPress={handleSave}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <>
-                <FontAwesome name="save" size={18} color="#fff" />
-                <Text style={styles.buttonText}> {t("save_changes")}</Text>
-              </>
-            )}
-          </TouchableOpacity>
+            loading={loading}
+            buttonText={t("save_changes")}
+          />
         </View>
       </KeyboardAwareScrollView>
     </KeyboardAvoidingView>
@@ -338,39 +315,12 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 80,
   },
-  topSpace: {
-    height: 80,
-    justifyContent: "center",
-  },
-  topButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-  topRightButtons: {
-    flexDirection: "row",
-    gap: 10,
-  },
   title: {
     fontSize: 26,
     fontWeight: "bold",
     color: "#4E8D7C",
     textAlign: "center",
     marginTop: 20,
-  },
-  topButton: {
-    backgroundColor: "#22C55E",
-    padding: 8,
-    borderRadius: 8,
-  },
-  topButtonText: {
-    color: "#fff",
-    fontSize: 14,
   },
   form: {
     padding: 16,
@@ -381,126 +331,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#374151",
     marginBottom: 8,
-  },
-  languageButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  screenExplorerButton: {
-    position: "absolute",
-    top: 40,
-    right: 80,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  input: {
-    backgroundColor: "#F3F4F6",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: "#4E8D7C",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 20,
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "100%",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 10,
-  },
-  row: {
-    flexDirection: "row",
-    marginBottom: 16,
-    gap: 12,
-  },
-  flex1: {
-    flex: 1,
-  },
-  picker: {
-    backgroundColor: "#F3F4F6",
-    borderRadius: 8,
-    width: "30%",
-    height: "75%",
-  },
-  pickerFull: {
-    backgroundColor: "#F3F4F6",
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  imageButton: {
-    backgroundColor: "#4E8D7C",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  imageButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
-  },
-  imagePreviewContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    padding: 10,
-  },
-  imagePreview: {
-    width: 100,
-    height: 100,
-    margin: 5,
-    borderRadius: 10,
-  },
-  submitButton: {
-    backgroundColor: "#4E8D7C",
-    padding: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 16,
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
   },
   dropdown: {
     borderRadius: 8,

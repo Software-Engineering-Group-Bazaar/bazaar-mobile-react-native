@@ -1,16 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  Alert,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, Image, Alert, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 // Google Sign-In imports
 import {
@@ -22,10 +12,11 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { registerApi } from "../api/auth/registerApi";
 import { fbLoginApi } from "../api/auth/loginApi";
-
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
-//------------------------------------------------------------------
+import LanguageButton from "@/components/ui/LanguageButton";
+import InputField from "@/components/ui/input/InputField";
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 export default function SignUp() {
   const router = useRouter();
@@ -46,10 +37,6 @@ export default function SignUp() {
       profileImageSize: 150,
     });
   }, []);
-
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
-  };
 
   const loginWithFacebook = async () => {
     try {
@@ -144,10 +131,7 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={20} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-      </TouchableOpacity>
+      <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
       <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -161,92 +145,56 @@ export default function SignUp() {
         <Text style={styles.title}>{t("create_account")}</Text>
       </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder={t("first_name")}
-          placeholderTextColor="#64748b"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="none"
-        />
-      </View>
+      <InputField
+        placeholder={t("first_name")}
+        value={name}
+        onChangeText={setName}
+      />
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder={t("last_name")}
-          placeholderTextColor="#64748b"
-          value={last_name}
-          onChangeText={setLastName}
-          autoCapitalize="none"
-        />
-      </View>
+      <InputField
+        placeholder={t("last_name")}
+        value={last_name}
+        onChangeText={setLastName}
+      />
 
-      <View style={styles.inputContainer}>
-        <FontAwesome
-          name="envelope"
-          size={20}
-          color="#888"
-          style={styles.inputIcon}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder={t("email_placeholder")}
-          placeholderTextColor="#64748b"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
-      </View>
+      <InputField
+        placeholder={t("email_placeholder")}
+        value={email}
+        onChangeText={setEmail}
+        icon="envelope"
+        keyboardType="email-address"
+      />
 
-      <View style={styles.inputContainer}>
-        <FontAwesome
-          name="lock"
-          size={20}
-          color="#888"
-          style={styles.inputIcon}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder={t("password_placeholder")}
-          placeholderTextColor="#64748b"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-      </View>
+      <InputField
+        icon="lock"
+        placeholder={t("password_placeholder")}
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
 
-      <TouchableOpacity
-        style={styles.button}
+      <SubmitButton
+        loading={loading}
+        buttonText={t("continue")}
         onPress={onSignUpPress}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <>
-            <FontAwesome name="user-plus" size={18} color="#fff" />
-            <Text style={styles.buttonText}>{t("sign_up")}</Text>
-          </>
-        )}
-      </TouchableOpacity>
+        icon="user-plus"
+      />
 
       <Text style={styles.or}>{t("or")}</Text>
 
-      {/* Google Sign-Up Button */}
-      <TouchableOpacity
-        style={styles.socialButton}
+      <SubmitButton
+        buttonText={t("login_google")}
+        social={true}
+        icon="google"
         onPress={registerWithGoogle}
-      >
-        <FontAwesome name="google" size={20} color="#DB4437" />
-        <Text style={styles.socialButtonText}> {t("signup_google")}</Text>
-      </TouchableOpacity>
+      />
 
-      <TouchableOpacity style={styles.socialButton} onPress={loginWithFacebook}>
-        <FontAwesome name="facebook" size={20} color="#1877F2" />
-        <Text style={styles.socialButtonText}> {t("signup_facebook")}</Text>
-      </TouchableOpacity>
+      <SubmitButton
+        buttonText={t("login_facebook")}
+        social={true}
+        icon="facebook"
+        onPress={loginWithFacebook}
+      />
 
       <Text style={styles.text}>
         {t("already_have_account")}{" "}
@@ -281,61 +229,10 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 15,
   },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: "#f7f7f7",
-    marginBottom: 15,
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: 50,
-    backgroundColor: "#4E8D7C",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  buttonText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "600",
-    marginLeft: 10,
-  },
   or: {
     fontSize: 16,
     color: "#999",
     marginVertical: 10,
-  },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    marginBottom: 10,
-  },
-  socialButtonText: {
-    fontSize: 16,
-    marginLeft: 10,
   },
   text: {
     fontSize: 14,
@@ -346,29 +243,5 @@ const styles = StyleSheet.create({
     color: "#4E8D7C",
     fontWeight: "bold",
     marginTop: 10,
-  },
-  languageButton: {
-    position: "absolute",
-    top: "5%",
-    right: "5%",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 100,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
   },
 });
