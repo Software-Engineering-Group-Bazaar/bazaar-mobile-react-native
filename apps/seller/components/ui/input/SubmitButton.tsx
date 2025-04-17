@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   TouchableOpacityProps,
+  View,
 } from "react-native";
 
 type FontAwesomeIconName = React.ComponentProps<typeof FontAwesome>["name"];
@@ -15,6 +16,7 @@ interface SubmitButtonProps extends TouchableOpacityProps {
   social?: boolean;
   icon?: FontAwesomeIconName;
   small?: boolean;
+  label?: string;
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -23,6 +25,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   social = false,
   icon,
   small = false,
+  label,
   ...rest
 }) => {
   const iconColors: Record<string, string> = {
@@ -33,42 +36,53 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   const iconColor = icon ? iconColors[icon] ?? "#ffffff" : "#ffffff";
 
   return (
-    <TouchableOpacity
-      style={[
-        styles.button,
-        social && styles.socialButton,
-        small && styles.smallButton,
-      ]}
-      disabled={loading}
-      {...rest}
-    >
-      {loading ? (
-        <ActivityIndicator color="#fff" />
-      ) : (
-        <>
-          {icon && (
-            <FontAwesome
-              name={icon}
-              size={20}
-              color={iconColor}
-              style={styles.icon}
-            />
+    <View style={styles.mainContainer}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <View style={styles.innerContainer}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            social && styles.socialButton,
+            small && styles.smallButton,
+          ]}
+          disabled={loading}
+          {...rest}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              {icon && (
+                <FontAwesome
+                  name={icon}
+                  size={20}
+                  color={iconColor}
+                  style={styles.icon}
+                />
+              )}
+              <Text
+                style={[
+                  small ? styles.smallText : styles.buttonText,
+                  social && styles.socialButtonText,
+                ]}
+              >
+                {buttonText}
+              </Text>
+            </>
           )}
-          <Text
-            style={[
-              small ? styles.smallText : styles.buttonText,
-              social && styles.socialButtonText,
-            ]}
-          >
-            {buttonText}
-          </Text>
-        </>
-      )}
-    </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flexDirection: "column",
+  },
+  innerContainer: {
+    flexDirection: "row",
+  },
   button: {
     flexDirection: "row",
     width: "100%",
@@ -111,6 +125,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
     fontWeight: "thin",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 8,
   },
 });
 
