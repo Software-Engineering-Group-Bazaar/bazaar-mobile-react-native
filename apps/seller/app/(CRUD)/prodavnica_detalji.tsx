@@ -13,6 +13,7 @@ import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
+import LanguageButton from "@/components/ui/LanguageButton";
 
 export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
@@ -26,9 +27,6 @@ export default function PregledProdavnice() {
     : params.store;
   const store = storeString ? JSON.parse(storeString) : null;
 
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
-  };
   useEffect(() => {
     navigation.setOptions({
       title: t("store_overview"),
@@ -56,13 +54,7 @@ export default function PregledProdavnice() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
-        <TouchableOpacity
-          onPress={toggleLanguage}
-          style={styles.languageButton}
-        >
-          <FontAwesome name="language" size={18} color="#4E8D7C" />
-          <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-        </TouchableOpacity>
+        <LanguageButton />
 
         {/*---------------------Screen Explorer Button----------------------*/}
         <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -132,30 +124,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 16,
-  },
-  languageButton: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
   },
   image: {
     width: 220,

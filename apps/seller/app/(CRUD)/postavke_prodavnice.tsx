@@ -19,6 +19,7 @@ import { apiFetchAllCategoriesAsync } from "../api/storeApi";
 import api from "../api/defaultApi";
 import { useRouter } from "expo-router";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
+import LanguageButton from "@/components/ui/LanguageButton";
 
 // TODO: Kad backend bude spreman, otkomentarisati ove pozive
 // import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
@@ -48,10 +49,6 @@ export default function PostavkeProdavnice() {
     }
     fetchCategories();
   }, []);
-
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
-  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -111,10 +108,7 @@ export default function PostavkeProdavnice() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-      </TouchableOpacity>
+      <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
       <ScreenExplorer route="../(tabs)/screen_explorer" />
@@ -308,29 +302,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     marginLeft: 10,
-  },
-  languageButton: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#f1f5f9",
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
   },
 });
