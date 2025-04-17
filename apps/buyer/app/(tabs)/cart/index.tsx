@@ -148,13 +148,6 @@ const CartScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder={t('search_products_placeholder')}
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        clearButtonMode="while-editing" // Dodaje dugme za brisanje teksta (iOS)
-      />
        {loading && <ActivityIndicator style={styles.loadingMoreIndicator} size="small" />}
       <View style={styles.listContainer}>
         {products.length === 0 && !loading ? (
