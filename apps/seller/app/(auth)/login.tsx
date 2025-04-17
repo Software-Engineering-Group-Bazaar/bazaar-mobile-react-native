@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  Image,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Alert, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { FontAwesome } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { useTranslation } from "react-i18next";
 import {
@@ -198,15 +190,19 @@ export default function SignIn() {
 
       <Text style={styles.or}>{t("or")}</Text>
 
-      <TouchableOpacity style={styles.socialButton} onPress={loginWithGoogle}>
-        <FontAwesome name="google" size={20} color="#DB4437" />
-        <Text style={styles.socialButtonText}>{t("login_google")}</Text>
-      </TouchableOpacity>
+      <SubmitButton
+        buttonText={t("login_google")}
+        social={true}
+        icon="google"
+        onPress={loginWithGoogle}
+      />
 
-      <TouchableOpacity style={styles.socialButton} onPress={loginWithFacebook}>
-        <FontAwesome name="facebook" size={20} color="#1877F2" />
-        <Text style={styles.socialButtonText}>{t("login_facebook")}</Text>
-      </TouchableOpacity>
+      <SubmitButton
+        buttonText={t("login_facebook")}
+        social={true}
+        icon="facebook"
+        onPress={loginWithFacebook}
+      />
     </View>
   );
 }
@@ -251,21 +247,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#999",
     marginVertical: 10,
-  },
-  socialButton: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    marginBottom: 10,
-  },
-  socialButtonText: {
-    fontSize: 16,
-    marginLeft: 10,
   },
 });

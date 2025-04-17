@@ -1,4 +1,4 @@
-import { t } from "i18next";
+import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import {
   StyleSheet,
@@ -10,20 +10,42 @@ import {
 
 interface SubmitButtonProps extends TouchableOpacityProps {
   buttonText: string;
-  loading: boolean;
+  loading?: boolean;
+  social?: boolean;
+  icon?: string;
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({
-  loading,
+  loading = false,
   buttonText,
+  social = false,
+  icon,
   ...rest
 }) => {
+  const iconName: "google" | "facebook" | "question" =
+    icon === "google" || icon === "facebook" ? icon : "question";
+
   return (
-    <TouchableOpacity style={styles.button} disabled={loading} {...rest}>
+    <TouchableOpacity
+      style={[styles.button, social && styles.socialButton]}
+      disabled={loading}
+      {...rest}
+    >
       {loading ? (
         <ActivityIndicator color="#fff" />
       ) : (
-        <Text style={styles.buttonText}>{buttonText}</Text>
+        <>
+          {social && (
+            <FontAwesome
+              name={iconName}
+              size={20}
+              color={icon === "facebook" ? "#1877F" : "#DB4437"}
+            />
+          )}
+          <Text style={social ? styles.socialButtonText : styles.buttonText}>
+            {buttonText}
+          </Text>
+        </>
       )}
     </TouchableOpacity>
   );
@@ -43,6 +65,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#fff",
     fontWeight: "600",
+  },
+  socialButton: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    flexDirection: "row",
+    backgroundColor: "#fff",
+  },
+  socialButtonText: {
+    fontSize: 16,
+    marginLeft: 10,
   },
 });
 
