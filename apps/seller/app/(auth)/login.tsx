@@ -23,6 +23,7 @@ import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
+import InputField from "@/components/ui/input/InputField";
 //------------------------------------------------------------------
 
 const isValidEmail = (email: string): boolean => {
@@ -60,7 +61,6 @@ export default function SignIn() {
 
       await SecureStore.setItemAsync("accessToken", apiData.token);
       router.replace("../(tabs)/home");
-        
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
@@ -174,7 +174,7 @@ export default function SignIn() {
         <Text style={styles.subtitle}>{t("signin_subtitle")}</Text>
       </View>
 
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder={t("email_placeholder")}
         placeholderTextColor="#64748b"
@@ -185,12 +185,21 @@ export default function SignIn() {
         }}
         autoCapitalize="none"
         keyboardType="email-address"
+      /> */}
+
+      <InputField
+        placeholder={"Test"}
+        value={email}
+        onChangeText={(text) => {
+          setEmail(text);
+          setEmailValid(isValidEmail(text));
+        }}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
 
-      <TextInput
-        style={styles.input}
+      <InputField
         placeholder={t("password_placeholder")}
-        placeholderTextColor="#64748b"
         value={password}
         onChangeText={setPassword}
         secureTextEntry

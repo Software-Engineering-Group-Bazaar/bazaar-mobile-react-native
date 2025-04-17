@@ -9,9 +9,9 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import axios from "axios";
 import { useTranslation } from "react-i18next";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
+import { logoutApi } from "../api/auth/logoutApi";
 
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
@@ -25,29 +25,17 @@ export default function HomeScreen() {
     try {
       const token = await SecureStore.getItemAsync("accessToken");
 
-      if (token) {
-        const response = await axios.post(
-          "https://bazaar-system.duckdns.org/api/Auth/logout",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      const response = await logoutApi(token);
 
-        if (response.status === 200) {
-          await SecureStore.deleteItemAsync("accessToken");
-          Alert.alert(t("logout_title"), t("logout_message"));
-          router.replace("/(auth)/login");
-        } else {
-          Alert.alert(t("error"), t("logout_failed"));
-        }
-      } else {
+      if (response === 200) {
         await SecureStore.deleteItemAsync("accessToken");
         Alert.alert(t("logout_title"), t("logout_message"));
         router.replace("/(auth)/login");
+      } else {
+        Alert.alert(t("error"), t("logout_failed"));
+        return;
       }
+      router.replace("/(auth)/login");
     } catch (error) {
       console.error("Logout error:", error);
       Alert.alert(t("error"), t("something_went_wrong"));
