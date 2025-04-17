@@ -4,6 +4,7 @@ import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput } from '
 import ProductItem from 'proba-package/product-item/index';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
+import { useRouter } from 'expo-router';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
 interface ProductCategory {
@@ -26,7 +27,7 @@ interface Product {
   photos: string[];                // Umjesto imageUrl
 }
 
-const USE_DUMMY_DATA = false; // Postavite na true za testiranje sa dummy podacima
+const USE_DUMMY_DATA = true; // Postavite na true za testiranje sa dummy podacima
 
 // AŽURIRANI DUMMY_PRODUCTS prema novom formatu
 const DUMMY_PRODUCTS: Product[] = [
@@ -53,6 +54,7 @@ const DUMMY_PRODUCTS: Product[] = [
 
 
 const SearchProductsScreen = () => {
+  const router = useRouter();
   const { t } = useTranslation();
   // Stanje sada koristi AŽURIRANI Product interface
   const [products, setProducts] = useState<Product[]>([]);
@@ -124,10 +126,9 @@ const SearchProductsScreen = () => {
 
   }, [searchQuery]); // useEffect se pokreće samo kada se searchQuery promijeni
 
-  // handleProductPress sada prima Product u NOVOM formatu
+  // otvaranje detalja za proizvod
   const handleProductPress = (product: Product) => {
-    console.log('Product pressed:', product.name, product.id, product.retailPrice);
-    // Ovdje možete dodati logiku za navigaciju na detalje proizvoda, itd.
+    router.push(`/search/details/${product.id}`);
   };
 
   if (loading && products.length === 0) { // Prikazi indikator samo pri inicijalnom učitavanju
