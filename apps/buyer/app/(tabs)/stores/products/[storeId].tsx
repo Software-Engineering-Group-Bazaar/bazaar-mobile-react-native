@@ -30,7 +30,7 @@ interface Product {
 }
 
 // Postavite na false za korištenje pravog API-ja
-const USE_DUMMY_DATA = false;
+const USE_DUMMY_DATA = true;
 
 // AŽURIRANI DUMMY_PRODUCTS prema novom formatu
 // Dodao sam wholesalePrice i primere za weight/volume gde ima smisla

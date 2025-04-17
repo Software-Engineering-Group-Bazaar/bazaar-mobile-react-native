@@ -52,7 +52,7 @@ const DUMMY_PRODUCTS: Product[] = [
 ];
 
 
-const SearchProductsScreen = () => {
+const CartScreen = () => {
   const { t } = useTranslation();
   // Stanje sada koristi AŽURIRANI Product interface
   const [products, setProducts] = useState<Product[]>([]);
@@ -228,4 +228,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchProductsScreen;
+export default CartScreen;

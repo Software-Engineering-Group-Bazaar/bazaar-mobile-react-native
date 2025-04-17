@@ -68,5 +68,6 @@
     "no_products_in_store": "No products in store",
     "code_placeholder": "Code from mail",
     "profile_title": "Profile",
-    "profile_subtitle": "Manage your profile"
+    "profile_subtitle": "Manage your profile",
+    "cart": "Cart"
 }
