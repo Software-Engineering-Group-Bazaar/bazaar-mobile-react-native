@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Alert,
   Image,
-  ActivityIndicator,
   StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -23,6 +22,7 @@ import InputField from "@/components/ui/input/InputField";
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -183,17 +183,11 @@ export default function SignIn() {
         secureTextEntry
       />
 
-      <TouchableOpacity
-        style={styles.button}
+      <SubmitButton
+        loading={loading}
+        buttonText={t("continue")}
         onPress={onSignInPress}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>{t("continue")}</Text>
-        )}
-      </TouchableOpacity>
+      />
 
       <Text style={styles.text}>
         {t("no_account")}{" "}
@@ -243,20 +237,6 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginBottom: 20,
-  },
-  button: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#4E8D7C",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  buttonText: {
-    fontSize: 18,
-    color: "#fff",
-    fontWeight: "600",
   },
   text: {
     fontSize: 14,
