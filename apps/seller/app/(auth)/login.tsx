@@ -14,19 +14,12 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { useTranslation } from "react-i18next";
 import {
-  AccessToken,
-  LoginButton,
-  Settings,
-  Profile,
-  LoginManager,
-} from "react-native-fbsdk-next";
-import axios from "axios";
-import {
   GoogleSignin,
   isErrorWithCode,
   isSuccessResponse,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
+import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
@@ -63,49 +56,14 @@ export default function SignIn() {
 
   const loginWithFacebook = async () => {
     try {
-      const result = await LoginManager.logInWithPermissions([
-        "public_profile",
-        "email",
-      ]);
-      if (result.isCancelled) {
-        console.log("==> Login cancelled");
-        return;
-      }
-      console.log(result);
+      const apiData = await fbLoginApi();
 
-      const data = await AccessToken.getCurrentAccessToken();
-      console.log(data);
-
-      if (data?.accessToken) {
-        // call your backend
-        const response = await fetch(
-          "https://bazaar-system.duckdns.org/api/Auth/login/facebook",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              accessToken: data.accessToken,
-              app: "seller",
-            }),
-          }
-        );
-
-        const apiData = await response.json();
-        console.log("API response:", apiData);
-
-        await SecureStore.setItemAsync("accessToken", apiData.token);
-        router.replace("../(tabs)/home");
-        getUserFBData();
-      }
+      await SecureStore.setItemAsync("accessToken", apiData.token);
+      router.replace("../(tabs)/home");
+        
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
-  };
-
-  const getUserFBData = () => {
-    Profile.getCurrentProfile().then((currentProfile) => {
-      console.log(currentProfile);
-    });
   };
 
   const loginWithGoogle = async () => {
@@ -183,33 +141,7 @@ export default function SignIn() {
 
     try {
       setLoading(true);
-
-      // Step 1: Send login request
-      const loginRes = await fetch(
-        "https://bazaar-system.duckdns.org/api/Auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, app: "seller" }),
-        }
-      );
-
-      const loginData: any = await loginRes.json();
-
-      if (loginRes.status != 200) {
-        Alert.alert(t("login_failed"), t("invalid_credentials"));
-        return;
-      }
-
-      // Step 3: Destructure the token and approval status from loginData
-      const { token, mail } = loginData;
-
-      // Step 4: Check if the account is approved
-      if (mail === false) {
-        Alert.alert(t("access_denied"), t("account_not_approved"));
-        return;
-      }
-
+      const token = await apiLogin(email, password);
       // Step 5: Store the token securely
       await SecureStore.setItemAsync("accessToken", token);
       // Step 6: Redirect to the logout screen or dashboard
