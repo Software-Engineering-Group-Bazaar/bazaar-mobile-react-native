@@ -15,7 +15,7 @@ interface Store {
   logoUrl?: string;
 }
 
-const USE_DUMMY_DATA = true; // Postavit na false za korištenje pravog API-ja
+const USE_DUMMY_DATA = true; // Postavite na true za testiranje sa dummy podacima
 
 const DUMMY_STORES: Store[] = [
   { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },
@@ -29,57 +29,63 @@ const DUMMY_STORES: Store[] = [
 const StoresScreen = () => {
   const router = useRouter();
   const [stores, setStores] = useState<Store[]>([]);
-  const [filteredStores, setFilteredStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchStores = async () => {
+      setLoading(true);
+      setError(null);
+
       if (USE_DUMMY_DATA) {
-        setStores(DUMMY_STORES);
-        setFilteredStores(DUMMY_STORES);
+        const filtered = DUMMY_STORES.filter(store =>
+          store.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setStores(filtered);
         setLoading(false);
         return;
       }
 
       try {
         const authToken = await SecureStore.getItemAsync('auth_token');
-        // const response = await fetch('https://bazaar-system.duckdns.org/api/store');
-        const response = await fetch(`https://bazaar-system.duckdns.org/api/stores/search?searchTerm=${encodeURIComponent(searchQuery)}`, {
+        if (!authToken) {
+          throw new Error('Authentication token not found.');
+        }
+
+        const endpoint = `https://bazaar-system.duckdns.org/api/stores/search?searchTerm=${encodeURIComponent(searchQuery)}`;
+
+        const response = await fetch(endpoint, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${authToken}`
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
           }
-        });        
+        });
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
         }
-        console.log(response);
+
         const data: Store[] = await response.json();
         setStores(data);
-        setFilteredStores(data);
-        setLoading(false);
       } catch (e: any) {
-        setError(e);
+        console.error("Error fetching stores:", e);
+        setError(e instanceof Error ? e : new Error('An unknown error occurred'));
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchStores();
-  }, []);
+    // Debounce search
+    const debounceFetch = setTimeout(() => {
+      fetchStores();
+    }, 500);
 
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredStores(stores);
-    } else {
-      const filtered = stores.filter(store => 
-        store.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        store.isActive
-      );
-      setFilteredStores(filtered);
-    }
-  }, [searchQuery, stores]);
+    return () => clearTimeout(debounceFetch);
+
+  }, [searchQuery]);
 
   const handleProductPress = (store: Store) => {
     router.push(`/stores/products/${store.id}`);
@@ -87,14 +93,18 @@ const StoresScreen = () => {
 
   if (loading) {
     return (
-        <View style={styles.centered}>
-            <ActivityIndicator size="large" color="#4e8d7c" />
-        </View>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#4e8d7c" />
+      </View>
     );
   }
 
   if (error) {
-    return <Text>{t('fetch-error')}</Text>;
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{t('fetch-error')}: {error.message}</Text>
+      </View>
+    );
   }
 
   return (
@@ -106,13 +116,13 @@ const StoresScreen = () => {
         onChangeText={setSearchQuery}
         clearButtonMode="while-editing"
       />
-      {filteredStores.length === 0 && !loading && (
+      {stores.length === 0 && !loading && (
         <Text style={styles.emptyListText}>
           {t('no_stores_found')}
         </Text>
       )}
       <FlatList
-        data={filteredStores}
+        data={stores}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.gridItem}>
@@ -131,9 +141,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     padding: 10,
   },
-  gridItem: {
-    flex: 0.5,
-    padding: 5,
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f8f8f8',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginHorizontal: 20,
   },
   searchInput: {
     height: 45,
@@ -145,12 +163,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontSize: 16,
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f8f8f8',
+  gridItem: {
+    flex: 0.5,
+    padding: 5,
   },
   emptyListText: {
     textAlign: 'center',
