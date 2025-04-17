@@ -8,11 +8,12 @@ import {
   TouchableOpacityProps,
 } from "react-native";
 
+type FontAwesomeIconName = React.ComponentProps<typeof FontAwesome>["name"];
 interface SubmitButtonProps extends TouchableOpacityProps {
   buttonText: string;
   loading?: boolean;
   social?: boolean;
-  icon?: string;
+  icon?: FontAwesomeIconName;
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -22,8 +23,12 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   icon,
   ...rest
 }) => {
-  const iconName: "google" | "facebook" | "question" =
-    icon === "google" || icon === "facebook" ? icon : "question";
+  const iconColors: Record<string, string> = {
+    facebook: "#1877F2",
+    google: "#DB4437",
+  };
+
+  const iconColor = icon ? iconColors[icon] ?? "#ffffff" : "#ffffff";
 
   return (
     <TouchableOpacity
@@ -35,11 +40,12 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
         <ActivityIndicator color="#fff" />
       ) : (
         <>
-          {social && (
+          {icon && (
             <FontAwesome
-              name={iconName}
+              name={icon}
               size={20}
-              color={icon === "facebook" ? "#1877F" : "#DB4437"}
+              color={iconColor}
+              style={styles.icon}
             />
           )}
           <Text style={social ? styles.socialButtonText : styles.buttonText}>
@@ -53,6 +59,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
+    flexDirection: "row",
     width: "100%",
     height: 50,
     backgroundColor: "#4E8D7C",
@@ -66,6 +73,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
+  icon: {
+    marginRight: 10,
+  },
   socialButton: {
     borderWidth: 1,
     borderColor: "#ddd",
@@ -74,7 +84,6 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     fontSize: 16,
-    marginLeft: 10,
   },
 });
 
