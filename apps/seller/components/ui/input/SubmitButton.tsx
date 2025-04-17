@@ -14,6 +14,7 @@ interface SubmitButtonProps extends TouchableOpacityProps {
   loading?: boolean;
   social?: boolean;
   icon?: FontAwesomeIconName;
+  small?: boolean;
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -21,6 +22,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   buttonText,
   social = false,
   icon,
+  small = false,
   ...rest
 }) => {
   const iconColors: Record<string, string> = {
@@ -32,7 +34,11 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.button, social && styles.socialButton]}
+      style={[
+        styles.button,
+        social && styles.socialButton,
+        small && styles.smallButton,
+      ]}
       disabled={loading}
       {...rest}
     >
@@ -48,7 +54,12 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
               style={styles.icon}
             />
           )}
-          <Text style={social ? styles.socialButtonText : styles.buttonText}>
+          <Text
+            style={[
+              small ? styles.smallText : styles.buttonText,
+              social && styles.socialButtonText,
+            ]}
+          >
             {buttonText}
           </Text>
         </>
@@ -68,10 +79,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
+  smallButton: {
+    width: "auto",
+    height: "auto",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginTop: 20,
+    marginBottom: 0,
+  },
   buttonText: {
     fontSize: 18,
     color: "#fff",
     fontWeight: "600",
+  },
+  smallText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
   },
   icon: {
     marginRight: 10,
@@ -84,6 +109,8 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     fontSize: 16,
+    color: "black",
+    fontWeight: "thin",
   },
 });
 

@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import { logoutApi } from "../api/auth/logoutApi";
 import LanguageButton from "@/components/ui/LanguageButton";
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
@@ -57,9 +58,7 @@ export default function HomeScreen() {
       <Text style={styles.welcomeText}>{t("greet")}</Text>
       <Text style={styles.subtitle}>{t("slogan")}</Text>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
+      <SubmitButton small={true} buttonText="Logout" onPress={handleLogout} />
     </View>
   );
 }
@@ -75,18 +74,6 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     marginBottom: 20,
-  },
-  logoutButton: {
-    backgroundColor: "#4E8D7C",
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  logoutText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   welcomeText: {
     fontSize: 24,
