@@ -28,6 +28,7 @@ import LanguageButton from "@/components/ui/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
+import DropdownPicker from "@/components/ui/input/DropdownPicker";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -234,20 +235,15 @@ export default function AddProductScreen() {
             keyboardType="decimal-pad"
           />
 
-          <View style={{ zIndex: 3000 }}>
-            <DropDownPicker
-              open={weightOpen}
-              value={weightUnit}
-              items={weightItems}
-              setOpen={setWeightOpen}
-              setValue={setWeightUnit}
-              setItems={setWeightItems}
-              placeholder={t("select_unit")}
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              listMode="SCROLLVIEW"
-            />
-          </View>
+          <DropdownPicker
+            open={weightOpen}
+            value={weightUnit}
+            items={weightItems}
+            setOpen={setWeightOpen}
+            setValue={setWeightUnit}
+            setItems={setWeightItems}
+            placeholder={t("select-unit")}
+          />
 
           <InputField
             label={t("volume")}
@@ -257,22 +253,17 @@ export default function AddProductScreen() {
             keyboardType="decimal-pad"
           />
 
-          <View style={{ zIndex: 2000 }}>
-            <DropDownPicker
-              open={volumeOpen}
-              value={volumeUnit}
-              items={volumeItems}
-              setOpen={setVolumeOpen}
-              setValue={setVolumeUnit}
-              setItems={setVolumeItems}
-              placeholder={t("select_unit")}
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              listMode="SCROLLVIEW"
-            />
-          </View>
+          <DropdownPicker
+            open={volumeOpen}
+            value={volumeUnit}
+            items={volumeItems}
+            setOpen={setVolumeOpen}
+            setValue={setVolumeUnit}
+            setItems={setVolumeItems}
+            placeholder={t("select-unit")}
+          />
 
-          <Text style={styles.label}>{t("category")}</Text>
+          {/* <Text style={styles.label}>{t("category")}</Text>
           <View style={{ zIndex: 1000 }}>
             <DropDownPicker
               open={categoryOpen}
@@ -286,7 +277,17 @@ export default function AddProductScreen() {
               dropDownContainerStyle={styles.dropdownContainer}
               listMode="SCROLLVIEW"
             />
-          </View>
+          </View> */}
+
+          <DropdownPicker
+            open={categoryOpen}
+            value={category}
+            items={categories}
+            setOpen={setCategoryOpen}
+            setValue={setCategory}
+            setItems={setCategories}
+            placeholder={t("select_category")}
+          />
 
           <SubmitButton
             label={t("images")}
