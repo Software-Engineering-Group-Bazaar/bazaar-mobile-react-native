@@ -60,6 +60,7 @@ export default function SignIn() {
 
       await SecureStore.setItemAsync("accessToken", apiData.token);
       router.replace("../(tabs)/home");
+        
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
@@ -141,7 +142,6 @@ export default function SignIn() {
     try {
       setLoading(true);
       const token = await apiLogin(email, password);
-
       // Step 5: Store the token securely
       await SecureStore.setItemAsync("accessToken", token);
       // Step 6: Redirect to the logout screen or dashboard

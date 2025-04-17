@@ -26,7 +26,6 @@ import { registerApi } from "../api/auth/registerApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
-import { fbLoginApi } from "../api/auth/loginApi";
 //------------------------------------------------------------------
 
 export default function SignUp() {
