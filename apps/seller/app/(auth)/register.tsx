@@ -12,8 +12,6 @@ import {
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { AccessToken, Profile, LoginManager } from "react-native-fbsdk-next";
-
 // Google Sign-In imports
 import {
   GoogleSignin,
@@ -23,6 +21,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import * as SecureStore from "expo-secure-store";
 import { registerApi } from "../api/auth/registerApi";
+import { fbLoginApi } from "../api/auth/loginApi";
 
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "../../components/debug/ScreenExplorer";
