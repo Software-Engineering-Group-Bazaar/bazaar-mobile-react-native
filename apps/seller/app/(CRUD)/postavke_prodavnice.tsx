@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import {
   View,
   Text,
@@ -27,8 +28,11 @@ export default function PostavkeProdavnice() {
   const router = useRouter();
 
   const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
+  const [streetAndNumber, setStreetAndNumber] = useState(''); // << DODANO
+  const [city, setCity] = useState(''); // << DODANO
+  const [municipality, setMunicipality] = useState(''); // << DODANO
   const [description, setDescription] = useState('');
+
   //const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -54,7 +58,7 @@ export default function PostavkeProdavnice() {
     navigation.setOptions({
       title: 'Postavke prodavnice', 
     });
-  }, [navigation]);
+  }, [navigation,i18n.language]);// i18n.language dodala
 
   /*const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -70,21 +74,24 @@ export default function PostavkeProdavnice() {
   };*/
 
   const handleSave = async () => { 
-    if (!name.trim() || !address.trim() || !description.trim() || !selectedCategoryId) { 
-      console.log(name.trim())
-      console.log(address.trim() )
-      console.log(description.trim())
-      console.log(selectedCategoryId)
-      Alert.alert(t('error'), t('fill_all_fields')); 
-      return; 
-    } 
+    if (!name.trim() || !streetAndNumber.trim() || !city.trim() || !municipality.trim() || !description.trim() || !selectedCategoryId) {
+      console.log('Ime:', name.trim());
+      console.log('Ulica i broj:', streetAndNumber.trim());
+      console.log('Grad:', city.trim());
+      console.log('Opština:', municipality.trim());
+      console.log('Opis:', description.trim());
+      console.log('Kategorija ID:', selectedCategoryId);
+      Alert.alert(t('error'), t('fill_all_fields'));
+      return;
+    }
      setLoading(true); 
      try { 
       const payload = { 
         name: name.trim(), 
-        categoryId: selectedCategoryId, 
-        address: address.trim(), 
-        description: description.trim(), 
+        streetAndNumber: streetAndNumber.trim(), // Dodato novo polje
+        city: city.trim(),                       //  Dodato novo polje
+        municipality: municipality.trim(),       //  Dodato novo polje
+        description: description.trim(),
       }; 
       const response = await api.post('/Stores', payload); 
       if (response.status === 200 || response.status === 201) { 
@@ -132,15 +139,38 @@ export default function PostavkeProdavnice() {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <FontAwesome name="map-marker" size={20} color="#888" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder={t('address')}
-            value={address}
-            onChangeText={setAddress}
-          />
-        </View>
+        {/* Input za Ulicu i Broj */}
+    <View style={styles.inputContainer}>
+      <FontAwesome5 name="map-marker" size={20} color="#888" style={styles.inputIcon} />
+      <TextInput
+        style={styles.input}
+        placeholder={t('street_and_number')} 
+        value={streetAndNumber}
+        onChangeText={setStreetAndNumber}
+      />
+    </View>
+
+    {/* Input za Grad */}
+    <View style={styles.inputContainer}>
+      <FontAwesome5 name="location-city" size={20} color="#888" style={styles.inputIcon} />
+      <TextInput
+        style={styles.input}
+        placeholder={t('city')} 
+        value={city}
+        onChangeText={setCity}
+      />
+    </View>
+
+    {/* Input za Opštinu */}
+    <View style={styles.inputContainer}>
+      <FontAwesome5 name="map-marked-alt" size={20} color="#888" style={styles.inputIcon} />
+      <TextInput
+        style={styles.input}
+        placeholder={t('municipality')} 
+        value={municipality}
+        onChangeText={setMunicipality}
+      />
+    </View>
 
         <View style={styles.dropdownWrapper}>
           <DropDownPicker

@@ -71,6 +71,25 @@
 "Weight": "Weight",
 "Volume": "Volume",
 "No Image Available": "No image available",
-"select_unit": "Select unit"
+"select_unit": "Select unit",
+"street_and_number": "Ulica i broj",  
+"city": "Grad",                  
+"municipality": "Opština",   
+"store_created_successfully": "Prodavnica uspješno kreirana!",
+"retail_price": "Maloprodajna Cijena",
+"enter_retail_price ": "Unesite maloprodajnu cijenu",
+"wholesale_threshold": "Prag za Veleprodaju (Količina)",
+"enter_wholesale_threshold": "Unesite prag za veleprodaju",
+"wholesale_price":"Veleprodajna Cijena",
+"enter_wholesale_price": "Unesite veleprodajnu cijenu",
+"product_created_successfully": "Proizvod uspješno kreiran!",
+ "error_weight_or_volume_required": "Please enter either Weight or Volume.",
+ "is_available": "Available",
+ "availability": "Availability",
+ "available": "Available",
+ "unavailable": "Unavailable",
+ "Product not found": "Product not found", 
+ "Go Back": "Go Back"
 }
+
 

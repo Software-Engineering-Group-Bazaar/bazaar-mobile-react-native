@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 
 
+
 export default function ProductScreen() {
  const params = useLocalSearchParams();
  const router = useRouter();
@@ -45,7 +46,7 @@ export default function ProductScreen() {
    navigation.setOptions({
      title: product?.name || '',
    });
- }, [product, navigation]);
+ }, [product, navigation,i18n.language]);
 
 
  if (!product) {
@@ -107,7 +108,35 @@ export default function ProductScreen() {
        <Text style={styles.price}>{product.wholesalePrice} KM</Text>
       
        <View style={styles.detailsSection}>
+          {/* Maloprodajna Cena */}
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{t('retail_price')}:</Text>
+      <Text style={styles.detailValue}>{product.retailPrice} KM</Text>
+    </View>
+
+    {/* Prag za Veleprodaju (prikazi samo ako postoji) */}
+    {product.wholesaleThreshold != null && ( // Provera za null ili undefined
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>{t('wholesale_threshold')}:</Text>
+        <Text style={styles.detailValue}>{product.wholesaleThreshold}</Text> {/* Dodaj "kom" ili jedinicu ako treba */}
+      </View>
+    )}
+
+    {/* Veleprodajna Cena (prikazi samo ako postoji) */}
+    {product.wholesalePrice != null && ( // Provera za null ili undefined
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>{t('wholesale_price')}:</Text>
+        <Text style={styles.detailValue}>{product.wholesalePrice} KM</Text>
+      </View>
+    )}
+
+    {/* Kategorija */}
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{t('Category')}:</Text>
+      <Text style={styles.detailValue}>{product.productCategory.name}</Text>
+    </View>
          <View style={styles.detailRow}>
+          
            <Text style={styles.detailLabel}>{t('Category')}:</Text>
            <Text style={styles.detailValue}>{product.productCategory.name}</Text>
          </View>
@@ -125,7 +154,14 @@ export default function ProductScreen() {
              <Text style={styles.detailValue}>{product.volume} {product.volumeUnit}</Text>
            </View>
          )}
+         <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{t('availability')}:</Text>
+            <Text style={[styles.detailValue, { color: product.isAvailable ? '#10b981' : '#ef4444', fontWeight: 'bold' }]}>
+              {product.isAvailable ? t('available') : t('unavailable')}
+            </Text>
+          </View> 
        </View>
+       
      </View>
    </ScrollView>
  );
@@ -155,6 +191,17 @@ const styles = StyleSheet.create({
    alignItems: 'center',
    flexDirection: 'column',
  },
+ noImageContainer: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+},
+noImageText: {
+   fontSize: 16,
+   color: '#6b7280',
+   fontStyle: 'italic',
+},
+
  languageText: {
    fontSize: 10,
    fontWeight: '600',

@@ -62,15 +62,14 @@ export default function ProductsScreen() {
 
 
 
-   const renderProductCard = ({ item }: { item: Product }) => (
-     <TouchableOpacity
-       style={styles.productCard}
-       onPress={() => router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)}
-     >
-  
+ const renderProductCard = ({ item }: { item: Product }) => (
+  <TouchableOpacity
+    style={styles.productCard}
+    onPress={() => router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)}
+  >
        <View style={styles.productInfo}>
          <Text style={styles.productName}>{item.name}</Text>
-         <Text style={styles.productPrice}>{t('Price')}: {item.wholesalePrice.toString()} KM</Text>
+         <Text style={styles.productPrice}>{t('Price')}: {item.retailPrice.toString()} KM</Text>
          <Text style={styles.productCategory}>{t('Category')}: {item.productCategory.name}</Text>
   
          {/* Display weight and volume if available */}
