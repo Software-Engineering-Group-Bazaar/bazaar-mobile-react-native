@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import StoreItem from 'proba-package/store-item/index'; 
+import StoreItem from 'proba-package/store-item/index';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
 
@@ -15,7 +15,7 @@ interface Store {
   logoUrl?: string;
 }
 
-const USE_DUMMY_DATA = false; // Postavit na false za korištenje pravog API-ja
+const USE_DUMMY_DATA = true; // Postavit na false za korištenje pravog API-ja
 
 const DUMMY_STORES: Store[] = [
   { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },
@@ -29,13 +29,16 @@ const DUMMY_STORES: Store[] = [
 const StoresScreen = () => {
   const router = useRouter();
   const [stores, setStores] = useState<Store[]>([]);
+  const [filteredStores, setFilteredStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchStores = async () => {
       if (USE_DUMMY_DATA) {
         setStores(DUMMY_STORES);
+        setFilteredStores(DUMMY_STORES);
         setLoading(false);
         return;
       }
@@ -43,18 +46,19 @@ const StoresScreen = () => {
       try {
         const authToken = await SecureStore.getItemAsync('auth_token');
         // const response = await fetch('https://bazaar-system.duckdns.org/api/store');
-        const response = await fetch('https://bazaar-system.duckdns.org/api/Stores', {
+        const response = await fetch(`https://bazaar-system.duckdns.org/api/stores/search?searchTerm=${encodeURIComponent(searchQuery)}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authToken}`
           }
-        });
+        });        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         console.log(response);
         const data: Store[] = await response.json();
         setStores(data);
+        setFilteredStores(data);
         setLoading(false);
       } catch (e: any) {
         setError(e);
@@ -64,6 +68,18 @@ const StoresScreen = () => {
 
     fetchStores();
   }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredStores(stores);
+    } else {
+      const filtered = stores.filter(store => 
+        store.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        store.isActive
+      );
+      setFilteredStores(filtered);
+    }
+  }, [searchQuery, stores]);
 
   const handleProductPress = (store: Store) => {
     router.push(`/stores/products/${store.id}`);
@@ -83,18 +99,27 @@ const StoresScreen = () => {
 
   return (
     <View style={styles.container}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder={t('search-stores')}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        clearButtonMode="while-editing"
+      />
+      {filteredStores.length === 0 && !loading && (
+        <Text style={styles.emptyListText}>
+          {t('no_stores_found')}
+        </Text>
+      )}
       <FlatList
-        data={stores}
+        data={filteredStores}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.gridItem}>
-            <StoreItem
-              store={item}
-              onPress={handleProductPress}
-            />
+            <StoreItem store={item} onPress={handleProductPress} />
           </View>
         )}
-        numColumns={2} 
+        numColumns={2}
       />
     </View>
   );
@@ -110,13 +135,28 @@ const styles = StyleSheet.create({
     flex: 0.5,
     padding: 5,
   },
-  centered: { // Za centriranje indikatora ili poruke o grešci
+  searchInput: {
+    height: 45,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingLeft: 15,
+    marginBottom: 15,
+    backgroundColor: '#fff',
+    fontSize: 16,
+  },
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#f8f8f8',
-  }
+  },
+  emptyListText: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#555',
+  },
 });
 
 export default StoresScreen;
