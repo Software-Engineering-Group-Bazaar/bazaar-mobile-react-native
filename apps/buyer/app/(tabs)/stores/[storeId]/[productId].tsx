@@ -4,7 +4,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface ProductCategory {
   id: number;
@@ -146,7 +145,7 @@ const ProductDetailsScreen = () => {
               onPress={previousImage}
               disabled={currentImageIndex === 0}
             >
-              <Icon name="chevron-left" size={40} color={currentImageIndex === 0 ? '#ccc' : '#000'} />
+              <FontAwesome name="chevron-left" size={40} color={currentImageIndex === 0 ? '#ccc' : '#000'} />
             </TouchableOpacity>
 
             <Image
@@ -159,7 +158,7 @@ const ProductDetailsScreen = () => {
               onPress={nextImage}
               disabled={currentImageIndex === product.photos.length - 1}
             >
-              <Icon name="chevron-right" size={40} color={currentImageIndex === product.photos.length - 1 ? '#ccc' : '#000'} />
+              <FontAwesome name="chevron-right" size={40} color={currentImageIndex === product.photos.length - 1 ? '#ccc' : '#000'} />
             </TouchableOpacity>
           </>
         )}

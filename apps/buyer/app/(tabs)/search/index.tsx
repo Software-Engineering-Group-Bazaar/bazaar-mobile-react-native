@@ -1,37 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
-// Pretpostavka da ova putanja vodi do AŽURIRANE ProductItem komponente
 import ProductItem from 'proba-package/product-item/index';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 
-// Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
 interface ProductCategory {
   id: number;
   name: string;
 }
 
-// AŽURIRANA Product interface prema novom formatu
 interface Product {
   id: number;
   name: string;
-  productCategory: ProductCategory; // Umjesto productcategoryid
-  retailPrice: number;             // Umjesto price
-  wholesalePrice: number;         // Dodano
-  weight?: number;                 // Ispravljen typo
-  weightUnit?: string;             // Ispravljen typo
+  productCategory: ProductCategory;
+  retailPrice: number;
+  wholesalePrice: number;
+  weight?: number;
+  weightUnit?: string;
   volume?: number;
   volumeUnit?: string;
-  storeId: number;                 // Umjesto storeID
-  photos: string[];                // Umjesto imageUrl
+  storeId: number;
+  photos: string[];
   isAvailable: boolean;
   wholesaleThreshold?: number;
 }
 
-const USE_DUMMY_DATA = true; // Postavite na true za testiranje sa dummy podacima
+interface Store {
+  id: number;
+  name: string;
+  address: string;
+  description?: string;
+  isActive: boolean;
+  categoryid: number;
+  logoUrl?: string;
+}
 
-// AŽURIRANI DUMMY_PRODUCTS prema novom formatu
+interface StoreWithProducts {
+  Store: Store;
+  Products: Product[];
+}
+
+const USE_DUMMY_DATA = true; // Postavite na true za testiranje s dummy podacima
+
 const DUMMY_PRODUCTS: Product[] = [
   { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 1, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isAvailable: true, wholesaleThreshold: 10 },
   { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 1, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isAvailable: true },
@@ -54,27 +65,47 @@ const DUMMY_PRODUCTS: Product[] = [
   { id: 119, name: 'Knjiga "1984"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 10.00, wholesalePrice: 8.00, storeId: 4, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isAvailable: true, wholesaleThreshold: 50 },
 ];
 
+const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
+  {
+    Store: { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },
+    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 1),
+  },
+  {
+    Store: { id: 2, isActive: false, categoryid: 202, name: 'Elektronika Centar', address: 'Sporedna ulica 5, Tuzla', description: 'Najnovija elektronika po povoljnim cijenama', logoUrl: 'https://via.placeholder.com/150/2196F3/FFFFFF?Text=LogoE' },
+    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 2),
+  },
+  {
+    Store: { id: 4, isActive: true, categoryid: 303, name: 'Knjižara Z', address: 'Pored rijeke 15, Banja Luka', description: 'Širok asortiman knjiga i uredskog materijala', logoUrl: 'https://via.placeholder.com/150/9C27B0/FFFFFF?Text=LogoK' },
+    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 4),
+  },
+  {
+    Store: { id: 5, isActive: true, categoryid: 101, name: 'Pekara Mlin', address: 'Novo Sarajevo 1', description: 'Svježi kruh i peciva', logoUrl: 'https://via.placeholder.com/150/FF9800/FFFFFF?Text=LogoP' },
+    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 5),
+  },
+];
+
 
 const SearchProductsScreen = () => {
   const router = useRouter();
   const { t } = useTranslation();
-  // Stanje sada koristi AŽURIRANI Product interface
-  const [products, setProducts] = useState<Product[]>([]);
+  const [storesWithProducts, setStoresWithProducts] = useState<StoreWithProducts[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null); // Eksplicitno tipiziranje greške
+  const [error, setError] = useState<Error | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchStoreProducts = async () => {
-      setLoading(true); // Postavi loading na true na početku svakog fetcha
-      setError(null);   // Resetuj grešku
+      setLoading(true);
+      setError(null);
 
       if (USE_DUMMY_DATA) {
-        // Filtriranje radi na osnovu 'name', što je isto u oba formata
-        const filteredProducts = DUMMY_PRODUCTS.filter(product =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setProducts(filteredProducts);
+        const filteredStores = DUMMY_STORES_WITH_PRODUCTS.map(storeWithProducts => ({
+          ...storeWithProducts,
+          Products: storeWithProducts.Products.filter(product =>
+            product.name.toLowerCase().includes(searchQuery.toLowerCase())
+          ),
+        })).filter(storeWithProducts => storeWithProducts.Products.length > 0);
+        setStoresWithProducts(filteredStores);
         setLoading(false);
         return;
       }
@@ -82,70 +113,65 @@ const SearchProductsScreen = () => {
       try {
         const authToken = await SecureStore.getItemAsync('auth_token');
         if (!authToken) {
-            // Opcionalno: Rukovanje slučajem kada token nije pronađen
-            // Možete preusmjeriti na login ili prikazati poruku
-            throw new Error('Authentication token not found.');
+          throw new Error('Authentication token not found.');
         }
 
-        // API endpoint - provjerite da li je ovo tačan endpoint za pretragu
-        // Čini se da `searchTerm` treba da bude sam upit, a ne `search?query=...`
-        const endpoint = `https://bazaar-system.duckdns.org/api/Catalog/search?searchTerm=${encodeURIComponent(searchQuery)}`;
+        const body = {
+          place: '', // Za sada ignorišemo
+          municipality: '', // Za sada ignorišemo
+          category: '', // Za sada ignorišemo
+          searchQuery: searchQuery,
+        };
 
-        const response = await fetch(endpoint, {
+        const response = await fetch('https://bazaar-system.duckdns.org/api/Catalog/filter', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json' // Dobra praksa je dodati Content-Type
-          }
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
         });
 
         if (!response.ok) {
-          // Pokušaj pročitati tijelo odgovora za više detalja o grešci
           const errorBody = await response.text();
           throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
         }
 
-        // Očekujemo niz Product objekata u novom formatu
-        const data: Product[] = await response.json();
-        setProducts(data);
+        const data: StoreWithProducts[] = await response.json();
+        setStoresWithProducts(data);
 
       } catch (e: any) {
-        console.error("Error fetching products:", e); // Loguj grešku za debug
+        console.error("Error fetching products:", e);
         setError(e instanceof Error ? e : new Error('An unknown error occurred'));
       } finally {
-         setLoading(false); // Uvijek postavi loading na false na kraju
+        setLoading(false);
       }
     };
 
-    // Debounce search - opcionalno, ali poboljšava performanse
-    // Ceka 500ms nakon prestanka kucanja prije pokretanja fetcha
     const debounceFetch = setTimeout(() => {
-        fetchStoreProducts();
+      fetchStoreProducts();
     }, 500);
 
-    // Ocisti timeout ako se searchQuery promijeni prije isteka 500ms
     return () => clearTimeout(debounceFetch);
+  }, [searchQuery]);
 
-  }, [searchQuery]); // useEffect se pokreće samo kada se searchQuery promijeni
-
-  // otvaranje detalja za proizvod
   const handleProductPress = (product: Product) => {
     router.push(`/search/details/${product.id}`);
   };
 
-  if (loading && products.length === 0) { // Prikazi indikator samo pri inicijalnom učitavanju
+  if (loading && storesWithProducts.length === 0) {
     return (
-        <View style={styles.centered}>
-            <ActivityIndicator size="large" color="#4e8d7c"/>
-        </View>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#4e8d7c" />
+      </View>
     );
   }
 
   if (error) {
     return (
-        <View style={styles.centered}>
-             <Text style={styles.errorText}>{t('error_fetching_data')}: {error.message}</Text>
-        </View>
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{t('error_fetching_data')}: {error.message}</Text>
+      </View>
     );
   }
 
@@ -156,33 +182,53 @@ const SearchProductsScreen = () => {
         placeholder={t('search_products_placeholder')}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        clearButtonMode="while-editing" // Dodaje dugme za brisanje teksta (iOS)
+        clearButtonMode="while-editing"
       />
-       {loading && <ActivityIndicator style={styles.loadingMoreIndicator} size="small" />}
-      <View style={styles.listContainer}>
-        {products.length === 0 && !loading ? (
-            <Text style={styles.noResultsText}>{t('no_products_found')}</Text>
-        ) : (
-            <FlatList
-            data={products}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-                // Sada 'item' (koji je tipa Product) odgovara onome što ProductItem očekuje
-                // handleProductPress također odgovara očekivanom tipu za onPress
-                <ProductItem product={item} onPress={handleProductPress} />
-            )}
-            // Opcionalno: Poboljšanja za FlatList
-            // initialNumToRender={10}
-            // maxToRenderPerBatch={10}
-            // windowSize={10}
-            />
-        )}
-      </View>
+      {loading && <ActivityIndicator style={styles.loadingMoreIndicator} size="small" />}
+      {storesWithProducts.length === 0 && !loading ? (
+        <Text style={styles.noResultsText}>{t('no_products_found')}</Text>
+      ) : (
+        <FlatList
+          data={storesWithProducts}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.storeContainer}>
+              <Text style={styles.storeName}>{item.Store.name}</Text>
+              {item.Products.length > 0 ? (
+                <FlatList
+                  data={item.Products}
+                  keyExtractor={(product) => product.id.toString()}
+                  renderItem={({ item: product }) => (
+                    <View style={styles.productWrapper}>
+                      <ProductItem product={product} onPress={() => handleProductPress(product)} />
+                    </View>
+                  )}
+                />
+              ) : (
+                <Text style={styles.noProductsInStore}>{t('no_products_in_store')}</Text>
+              )}
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  storeContainer: {
+    backgroundColor: '#fff', // Bijela pozadina za svaki kontejner prodavnice
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2, // Za Android sjenu
+    borderColor: '#4e8d7c',
+    borderWidth: 2
+  },
   container: {
     flex: 1,
     padding: 10,
@@ -228,6 +274,30 @@ const styles = StyleSheet.create({
       marginTop: 20,
       fontSize: 16,
       color: '#555',
+  },
+  storeGroup: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  storeName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  productWrapper: {
+    marginRight: 10,
+  },
+  noProductsInStore: {
+    fontStyle: 'italic',
+    color: '#777',
+    marginTop: 5,
   }
 });
 
