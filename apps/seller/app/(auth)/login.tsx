@@ -268,22 +268,6 @@ export default function SignIn() {
         <Text style={styles.socialButtonText}>{t('login_facebook')}</Text>
       </TouchableOpacity>
 
-      
-
-      { /* === POČETAK TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
-
-{ <TouchableOpacity
-   style={[styles.socialButton, { borderColor: '#4E8D7C' }]}
-   onPress={() => router.replace('/(tabs)/home')}
- >
-   <FontAwesome name="cogs" size={20} color="#4E8D7C" />
-   <Text style={[styles.socialButtonText, { color: '#4E8D7C' }]}>
-     TEST UI: Postavke prodavnice
-   </Text>
- </TouchableOpacity> }
-  {/* === KRAJ TEST DUGMETA ZA POSTAVKE PRODAVNICE (OBRISATI KASNIJE) === */}
-
-
 
 
 
