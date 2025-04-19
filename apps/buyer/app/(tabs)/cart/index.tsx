@@ -83,7 +83,7 @@ const CartScreen = () => {
             <Text style={styles.totalText}>
               Ukupno: KM {totalPrice.toFixed(2)}
             </Text>
-            <Button color={'#4e8d7c'} title="Podnesi narudžbu" onPress={() => {/* checkout */}} />
+            <Button color={'#4e8d7c'} title="Podnesi narudžbu" onPress={() => {console.log(cartItems)}} />
           </View>
         </>
       )}

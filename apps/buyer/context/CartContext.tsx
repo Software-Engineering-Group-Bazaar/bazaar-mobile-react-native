@@ -40,7 +40,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } else {
       setCartItems(prev => [...prev, {product, qty: 1}]);
     }
-    console.log("cartItems: ", cartItems)
+    console.log("cartItems: ", cartItems);
   };
 
   const removeFromCart = (productId: number) => {
@@ -52,6 +52,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     else
       setCartItems(prev => prev.filter(item => item.product.id !== productId));
+
+    console.log("cartItems: ", cartItems);
   };
 
   const clearCart = () => setCartItems([]);
@@ -67,6 +69,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           i.product.id === product.id ? { ...i, qty: newQty } : i
         );
       }
+      console.log("cartItems: ", cartItems);
       return [...items, { product, qty: newQty }];
     });
   };
