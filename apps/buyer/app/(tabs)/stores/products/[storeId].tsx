@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 // Importuj ažurirani ProductItem koji očekuje novi format
-import ProductItem from 'proba-package/product-item/index';
+import ProductItem from 'proba-package/product-item-buyer/index';
 // Pretpostavljam da koristite i18next za t funkciju
 import { useTranslation } from 'react-i18next';
 // Importuj SecureStore ako planirate da koristite token za pravi API poziv

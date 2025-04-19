@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import ProductItem from '../product-item'; 
+import { useCart } from '../../../apps/buyer/context/CartContext';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt)
 interface ProductCategory {
@@ -26,21 +27,23 @@ interface Product {
 interface CartItemProps {
   product: Product;
   quantity: number;
-  onQuantityChange: (product: Product, newQty: number) => void;
   onPress?: (product: Product) => void;
 }
 
 const CartItem: React.FC<CartItemProps> = ({
   product,
   quantity,
-  onQuantityChange,
   onPress,
 }) => {
+  const { cartItems, removeFromCart, handleQuantityChange } = useCart()
   // Funkcije za + i –
-  const increment = () => onQuantityChange(product, quantity + 1);
+  const increment = () => handleQuantityChange(product, quantity + 1);
   const decrement = () => {
     if (quantity > 1) {
-      onQuantityChange(product, quantity - 1);
+      handleQuantityChange(product, quantity - 1);
+    }
+    else {
+      removeFromCart(product.id);
     }
   };
 

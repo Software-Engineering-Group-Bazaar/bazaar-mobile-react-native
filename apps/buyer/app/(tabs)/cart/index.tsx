@@ -5,6 +5,7 @@ import CartItem from 'proba-package/cart-item/index';
 import ProductItem from 'proba-package/product-item/index';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
+import { useCart } from '@/context/CartContext';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
 interface ProductCategory {
@@ -53,22 +54,7 @@ const DUMMY_PRODUCTS: Product[] = [
 ];
 
 const CartScreen = () => {
-  const [cartItems, setCartItems] = useState<{ product: Product; qty: number }[]>(DUMMY_PRODUCTS.map(product => ({ product, qty: 1 })));
-
-  const handleQuantityChange = (product: Product, newQty: number) => {
-    setCartItems(items => {
-      const exists = items.find(i => i.product.id === product.id);
-      if (exists) {
-        if (newQty <= 0) {
-          return items.filter(i => i.product.id !== product.id);
-        }
-        return items.map(i =>
-          i.product.id === product.id ? { ...i, qty: newQty } : i
-        );
-      }
-      return [...items, { product, qty: newQty }];
-    });
-  };
+  const { cartItems, handleQuantityChange } = useCart();
 
   const totalPrice = cartItems.reduce(
     (sum, { product, qty }) => sum + product.retailPrice * qty,
@@ -90,7 +76,6 @@ const CartScreen = () => {
               <CartItem
                 product={item.product}
                 quantity={item.qty}
-                onQuantityChange={handleQuantityChange}
               />
             )}
           />
