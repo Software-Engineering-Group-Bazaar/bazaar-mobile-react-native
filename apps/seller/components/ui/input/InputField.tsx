@@ -67,6 +67,8 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
+    flex: 1,
+    height: "100%",
   },
   inputError: {
     borderColor: "#dc2626",

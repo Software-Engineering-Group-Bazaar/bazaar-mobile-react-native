@@ -6,7 +6,7 @@ interface DropdownPickerProps {
   open: boolean;
   value: any;
   placeholder: string;
-  items: { label: string; value: string }[];
+  items: { label: any; value: any }[];
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setValue: React.Dispatch<React.SetStateAction<any>>;
   setItems: React.Dispatch<React.SetStateAction<{ label: any; value: any }[]>>;
@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     borderColor: "#ccc",
     backgroundColor: "#fff",
-    zIndex: 1000,
   },
 });
 

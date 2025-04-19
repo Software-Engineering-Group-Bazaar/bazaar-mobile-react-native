@@ -1,25 +1,18 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-} from "react-native";
+import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import DropDownPicker from "react-native-dropdown-picker";
 import { useNavigation } from "@react-navigation/native";
-import { apiFetchAllCategoriesAsync } from "../api/storeApi";
-import api from "../api/defaultApi";
+import {
+  apiFetchAllCategoriesAsync,
+  apiCreateNewStoreAsync,
+  apiGetRegionsAsync,
+} from "../api/storeApi";
 import { useRouter } from "expo-router";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
+import DropdownPicker from "@/components/ui/input/DropdownPicker";
 
 // TODO: Kad backend bude spreman, otkomentarisati ove pozive
 // import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
@@ -30,13 +23,18 @@ export default function PostavkeProdavnice() {
   const [name, setName] = useState("");
   const [streetAndNumber, setStreetAndNumber] = useState(""); // << DODANO
   const [city, setCity] = useState(""); // << DODANO
-  const [municipality, setMunicipality] = useState(""); // << DODANO
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [open, setOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [categoryItems, setCategoryItems] = useState<
+    { label: string; value: number }[]
+  >([]);
+  const [municipalityListOpen, setMunicipalityListOpen] = useState(false);
+  const [selectedMunicipality, setSelectedMunicipality] = useState<
+    number | null
+  >(null); // << DODANO
+  const [municipalities, setMunicipalities] = useState<
     { label: string; value: number }[]
   >([]);
 
@@ -47,6 +45,21 @@ export default function PostavkeProdavnice() {
       const categories = await apiFetchAllCategoriesAsync();
       setCategoryItems(categories);
     }
+
+    const loadMunicipalities = async () => {
+      try {
+        const data = await apiGetRegionsAsync();
+        const mapped = data.map((region) => ({
+          label: region.name,
+          value: region.id,
+        }));
+        setMunicipalities(mapped);
+      } catch (error) {
+        console.error("Failed to fetch regions", error);
+      }
+    };
+
+    loadMunicipalities();
     fetchCategories();
   }, []);
 
@@ -61,14 +74,14 @@ export default function PostavkeProdavnice() {
       !name.trim() ||
       !streetAndNumber.trim() ||
       !city.trim() ||
-      !municipality.trim() ||
-      !description.trim() ||
-      !selectedCategoryId
+      !selectedMunicipality ||
+      !description.trim()
+      // !selectedCategoryId
     ) {
       console.log("Ime:", name.trim());
       console.log("Ulica i broj:", streetAndNumber.trim());
       console.log("Grad:", city.trim());
-      console.log("Opština:", municipality.trim());
+      console.log("Opština:", selectedMunicipality);
       console.log("Opis:", description.trim());
       console.log("Kategorija ID:", selectedCategoryId);
       Alert.alert(t("error"), t("fill_all_fields"));
@@ -80,16 +93,12 @@ export default function PostavkeProdavnice() {
         name: name.trim(),
         streetAndNumber: streetAndNumber.trim(), // Dodato novo polje
         city: city.trim(), //  Dodato novo polje
-        municipality: municipality.trim(), //  Dodato novo polje
+        municipality: selectedMunicipality, //  Dodato novo polje
         description: description.trim(),
+        categoryId: selectedCategoryId,
       };
-      const response = await api.post("/Stores", payload);
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert(t("success"), t("store_updated"));
-        router.replace("../(tabs)/pregled_prodavnica");
-      } else {
-        throw new Error("Unexpected response status: " + response.status);
-      }
+      const response = await apiCreateNewStoreAsync(payload);
+      response && router.replace("../(tabs)/pregled_prodavnica");
     } catch (error) {
       console.error("Greška prilikom slanja zahtjeva:", error);
       Alert.alert(t("error"), t("something_went_wrong"));
@@ -133,15 +142,21 @@ export default function PostavkeProdavnice() {
         />
 
         {/* Input za Opštinu */}
-        <InputField
-          icon="map-marked-alt"
-          placeholder={t("municipality")}
-          value={municipality}
-          onChangeText={setMunicipality}
-        />
+        {/* Ovaj View je lose rjesenje*/}
+        <View style={{ zIndex: 2000 }}>
+          <DropdownPicker
+            open={municipalityListOpen}
+            value={selectedMunicipality}
+            items={municipalities}
+            setOpen={setMunicipalityListOpen}
+            setValue={setSelectedMunicipality}
+            setItems={setMunicipalities}
+            placeholder={t("municipality")}
+          />
+        </View>
 
-        <View style={styles.dropdownWrapper}>
-          <DropDownPicker
+        <View style={{ zIndex: 1000 }}>
+          <DropdownPicker
             open={open}
             value={selectedCategoryId}
             items={categoryItems}
@@ -149,10 +164,6 @@ export default function PostavkeProdavnice() {
             setValue={setSelectedCategoryId}
             setItems={setCategoryItems}
             placeholder={t("select_category")}
-            style={styles.dropdown}
-            dropDownContainerStyle={styles.dropdownContainer}
-            placeholderStyle={styles.dropdownPlaceholder}
-            listMode="SCROLLVIEW"
           />
         </View>
 
@@ -191,81 +202,5 @@ const styles = StyleSheet.create({
     color: "#4E8D7C",
     textAlign: "center",
     marginBottom: 30,
-  },
-  imagePickerButton: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderStyle: "dashed",
-    backgroundColor: "#f7f7f7",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  imagePreview: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 10,
-  },
-  imagePickerText: {
-    marginTop: 10,
-    color: "#4E8D7C",
-    fontSize: 16,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    minHeight: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: "#f7f7f7",
-    marginBottom: 15,
-    zIndex: 1,
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: "#333",
-  },
-  dropdownWrapper: {
-    width: "100%",
-    zIndex: 1000,
-    marginBottom: 15,
-  },
-  dropdown: {
-    borderRadius: 8,
-    borderColor: "#ccc",
-    backgroundColor: "#f7f7f7",
-  },
-  dropdownContainer: {
-    borderRadius: 8,
-    borderColor: "#ccc",
-  },
-  dropdownPlaceholder: {
-    color: "#999",
-  },
-  button: {
-    backgroundColor: "#4E8D7C",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 20,
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "100%",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 10,
   },
 });
