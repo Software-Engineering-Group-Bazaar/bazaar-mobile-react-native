@@ -1,4 +1,4 @@
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import {
   TextInput,
@@ -8,12 +8,12 @@ import {
   TextInputProps,
 } from "react-native";
 
-type FontAwesomeIconName = React.ComponentProps<typeof FontAwesome>["name"];
+type FontAwesome5IconName = React.ComponentProps<typeof FontAwesome5>["name"];
 interface InputFieldProps extends TextInputProps {
   isValid?: boolean;
   errorText?: string;
   label?: string;
-  icon?: FontAwesomeIconName;
+  icon?: FontAwesome5IconName;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -28,7 +28,7 @@ const InputField: React.FC<InputFieldProps> = ({
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={styles.textInputContainer}>
         {icon && (
-          <FontAwesome
+          <FontAwesome5
             name={icon}
             size={20}
             style={styles.inputIcon}
@@ -52,11 +52,11 @@ const InputField: React.FC<InputFieldProps> = ({
 const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: "column",
+    width: "100%",
   },
   textInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
     height: 50,
     borderWidth: 1,
     borderColor: "#ccc",
@@ -66,8 +66,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   input: {
-    width: "100%",
-    height: 50,
     fontSize: 16,
   },
   inputError: {

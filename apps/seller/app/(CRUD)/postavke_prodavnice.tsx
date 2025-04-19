@@ -4,13 +4,11 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Image,
   Alert,
   StyleSheet,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -20,6 +18,8 @@ import api from "../api/defaultApi";
 import { useRouter } from "expo-router";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
+import InputField from "@/components/ui/input/InputField";
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 // TODO: Kad backend bude spreman, otkomentarisati ove pozive
 // import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
@@ -27,12 +27,11 @@ import LanguageButton from "@/components/ui/LanguageButton";
 export default function PostavkeProdavnice() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [streetAndNumber, setStreetAndNumber] = useState(''); // << DODANO
-  const [city, setCity] = useState(''); // << DODANO
-  const [municipality, setMunicipality] = useState(''); // << DODANO
-  const [description, setDescription] = useState('');
-  //const [image, setImage] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [streetAndNumber, setStreetAndNumber] = useState(""); // << DODANO
+  const [city, setCity] = useState(""); // << DODANO
+  const [municipality, setMunicipality] = useState(""); // << DODANO
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
@@ -55,55 +54,49 @@ export default function PostavkeProdavnice() {
     navigation.setOptions({
       title: "Postavke prodavnice",
     });
-  }, [navigation,i18n.language]);// i18n.language dodala
+  }, [navigation, i18n.language]); // i18n.language dodala
 
-  /*const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.7,
-      aspect: [1, 1],
-    });
-
-    if (!result.canceled && result.assets?.[0]?.uri) {
-      setImage(result.assets[0].uri);
-    }
-  };*/
-
-  const handleSave = async () => { 
-    if (!name.trim() || !streetAndNumber.trim() || !city.trim() || !municipality.trim() || !description.trim() || !selectedCategoryId) {
-      console.log('Ime:', name.trim());
-      console.log('Ulica i broj:', streetAndNumber.trim());
-      console.log('Grad:', city.trim());
-      console.log('Opština:', municipality.trim());
-      console.log('Opis:', description.trim());
-      console.log('Kategorija ID:', selectedCategoryId);
-      Alert.alert(t('error'), t('fill_all_fields'));
+  const handleSave = async () => {
+    if (
+      !name.trim() ||
+      !streetAndNumber.trim() ||
+      !city.trim() ||
+      !municipality.trim() ||
+      !description.trim() ||
+      !selectedCategoryId
+    ) {
+      console.log("Ime:", name.trim());
+      console.log("Ulica i broj:", streetAndNumber.trim());
+      console.log("Grad:", city.trim());
+      console.log("Opština:", municipality.trim());
+      console.log("Opis:", description.trim());
+      console.log("Kategorija ID:", selectedCategoryId);
+      Alert.alert(t("error"), t("fill_all_fields"));
       return;
     }
-     setLoading(true); 
-     try { 
-      const payload = { 
-        name: name.trim(), 
+    setLoading(true);
+    try {
+      const payload = {
+        name: name.trim(),
         streetAndNumber: streetAndNumber.trim(), // Dodato novo polje
-        city: city.trim(),                       //  Dodato novo polje
-        municipality: municipality.trim(),       //  Dodato novo polje
+        city: city.trim(), //  Dodato novo polje
+        municipality: municipality.trim(), //  Dodato novo polje
         description: description.trim(),
-      }; 
-      const response = await api.post('/Stores', payload); 
-      if (response.status === 200 || response.status === 201) { 
-       Alert.alert(t('success'), t('store_updated')); 
-       router.replace('../(tabs)/pregled_prodavnica');
-     } else { 
-       throw new Error('Unexpected response status: ' + response.status); 
-     } 
-   } catch (error) { 
-     console.error('Greška prilikom slanja zahtjeva:', error); 
-     Alert.alert(t('error'), t('something_went_wrong')); 
-   } finally { 
-     setLoading(false); 
-   } 
- }; 
+      };
+      const response = await api.post("/Stores", payload);
+      if (response.status === 200 || response.status === 201) {
+        Alert.alert(t("success"), t("store_updated"));
+        router.replace("../(tabs)/pregled_prodavnica");
+      } else {
+        throw new Error("Unexpected response status: " + response.status);
+      }
+    } catch (error) {
+      console.error("Greška prilikom slanja zahtjeva:", error);
+      Alert.alert(t("error"), t("something_went_wrong"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -116,64 +109,36 @@ export default function PostavkeProdavnice() {
       <View style={styles.container}>
         <Text style={styles.title}>{t("store_settings")}</Text>
 
-        {/*<TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-          {image ? (
-            <Image source={{ uri: image }} style={styles.imagePreview} />
-          ) : (
-            <>
-              <FontAwesome name="camera" size={24} color="#4E8D7C" />
-              <Text style={styles.imagePickerText}>{t('upload_image')}</Text>
-            </>
-          )}
-        </TouchableOpacity>*/}
-
-        <View style={styles.inputContainer}>
-          <FontAwesome5
-            name="store"
-            size={20}
-            color="#888"
-            style={styles.inputIcon}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder={t("store_name")}
-            value={name}
-            onChangeText={setName}
-          />
-        </View>
+        <InputField
+          icon="store"
+          placeholder={t("store_name")}
+          value={name}
+          onChangeText={setName}
+        />
 
         {/* Input za Ulicu i Broj */}
-    <View style={styles.inputContainer}>
-      <FontAwesome5 name="map-marker" size={20} color="#888" style={styles.inputIcon} />
-      <TextInput
-        style={styles.input}
-        placeholder={t('street_and_number')} 
-        value={streetAndNumber}
-        onChangeText={setStreetAndNumber}
-      />
-    </View>
+        <InputField
+          icon="map-marker"
+          placeholder={t("street_and_number")}
+          value={streetAndNumber}
+          onChangeText={setStreetAndNumber}
+        />
 
-    {/* Input za Grad */}
-    <View style={styles.inputContainer}>
-      <FontAwesome5 name="location-city" size={20} color="#888" style={styles.inputIcon} />
-      <TextInput
-        style={styles.input}
-        placeholder={t('city')} 
-        value={city}
-        onChangeText={setCity}
-      />
-    </View>
+        {/* Input za Grad */}
+        <InputField
+          icon="city"
+          placeholder={t("city")}
+          value={city}
+          onChangeText={setCity}
+        />
 
-    {/* Input za Opštinu */}
-    <View style={styles.inputContainer}>
-      <FontAwesome5 name="map-marked-alt" size={20} color="#888" style={styles.inputIcon} />
-      <TextInput
-        style={styles.input}
-        placeholder={t('municipality')} 
-        value={municipality}
-        onChangeText={setMunicipality}
-      />
-    </View>
+        {/* Input za Opštinu */}
+        <InputField
+          icon="map-marked-alt"
+          placeholder={t("municipality")}
+          value={municipality}
+          onChangeText={setMunicipality}
+        />
 
         <View style={styles.dropdownWrapper}>
           <DropDownPicker
@@ -191,36 +156,19 @@ export default function PostavkeProdavnice() {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <FontAwesome
-            name="file-text"
-            size={20}
-            color="#888"
-            style={styles.inputIcon}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder={t("description")}
-            value={description}
-            onChangeText={setDescription}
-            multiline
-          />
-        </View>
+        <InputField
+          icon="align-left"
+          placeholder={t("description")}
+          value={description}
+          onChangeText={setDescription}
+        />
 
-        <TouchableOpacity
-          style={styles.button}
+        <SubmitButton
           onPress={handleSave}
           disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <FontAwesome name="save" size={18} color="#fff" />
-              <Text style={styles.buttonText}> {t("save_changes")}</Text>
-            </>
-          )}
-        </TouchableOpacity>
+          icon="file"
+          buttonText={t("save_changes")}
+        />
       </View>
     </ScrollView>
   );
