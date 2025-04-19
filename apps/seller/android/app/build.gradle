@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: 'com.google.gms.google-services'
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
@@ -178,4 +179,7 @@ dependencies {
     // Ensure you have the following dependencies as well
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
     implementation 'com.facebook.android:facebook-core:[5,6)'
+
+    implementation platform('com.google.firebase:firebase-bom:32.3.1') // Firebase BOM
+    implementation 'com.google.firebase:firebase-messaging'
 }

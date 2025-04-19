@@ -17,6 +17,8 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-firebase/analytics": "^21.14.0",
+    "@react-native-firebase/app": "^21.14.0",
     "@react-native-google-signin/google-signin": "^13.2.0",
     "@react-native-picker/picker": "^2.11.0",
     "@react-native/js-polyfills": "^0.78.2",
