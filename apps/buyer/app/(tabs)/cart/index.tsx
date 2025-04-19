@@ -98,7 +98,7 @@ const CartScreen = () => {
             <Text style={styles.totalText}>
               Ukupno: KM {totalPrice.toFixed(2)}
             </Text>
-            <Button title="Podnesi narudžbu" onPress={() => {/* checkout */}} />
+            <Button color={'#4e8d7c'} title="Podnesi narudžbu" onPress={() => {/* checkout */}} />
           </View>
         </>
       )}
@@ -120,12 +120,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-  },
-  quantityWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,            // ← adds 12pt of space above the quantity controls
-    /* ...other styles */
   }  
 });
 
