@@ -22,7 +22,7 @@ type RootStackParamList = {
 
 export default function StoresScreen() {
   const router = useRouter();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [stores, setStores] = useState<Store[]>([]);
 
@@ -36,30 +36,46 @@ export default function StoresScreen() {
     getStores();
   }, []);
 
-  const renderStoreCard = ({ item }: { item: Store }) => (
-    <TouchableOpacity
-      style={styles.storeCard}
-      onPress={() =>
-        router.push(`/(CRUD)/prodavnica_detalji?store=${JSON.stringify(item)}`)
-      }
-    >
-      {/* <Image source={{ uri: item.image }} style={styles.storeImage} /> */}
-      <View style={styles.storeInfo}>
-        <Text style={styles.storeName}>{item.name}</Text>
-        <Text style={styles.storeAddress}>{item.categoryName}</Text>
-        <Text style={styles.storeAddress}>{item.description}</Text>
-        <Text style={styles.storeAddress}>{item.address}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
   const handleCreateStore = () => {
     router.push("../(CRUD)/postavke_prodavnice");
   };
 
+  const handleViewOrders = () => {
+    router.push("../(CRUD)/pregled_narudzbi");
+  };
+
+  const renderStoreCard = ({ item }: { item: Store }) => (
+    <>
+      <TouchableOpacity
+      style={styles.section}
+      onPress={() =>
+        router.push(`/(CRUD)/prodavnica_detalji?store=${JSON.stringify(item)}`)
+        }
+        >
+          <View style={styles.storeInfo}>
+            <Text style={styles.storeName}>{item.name}</Text>
+            <Text style={styles.storeAddress}>{item.categoryName}</Text>
+            <Text style={styles.storeAddress}>{item.description}</Text>
+            {/* <Text style={styles.storeAddress}>{item.address}</Text> */}
+          </View>
+      </TouchableOpacity>
+
+      {/* Sekcija: Pregled narudžbi */}
+      <View style={styles.section}>
+        <TouchableOpacity style={styles.storeCard} onPress={handleViewOrders}>
+          <View style={styles.storeInfo}>
+            <Text style={styles.storeName}>{t('view_orders')}</Text>
+            <Text style={styles.storeAddress}>
+              {t('view_orders_description') || 'View all orders for this store'}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+
   return (
     <View style={{ flex: 1 }}>
-      {/* Dugme za promjenu jezika */}
       <LanguageButton />
 
       <ScrollView
@@ -71,7 +87,6 @@ export default function StoresScreen() {
           <View style={styles.titleSpacing} />
           <Text style={styles.title}>{t("my_stores")}</Text>
 
-          {/* Prikazuj dugme samo ako nema nijedne prodavnice */}
           {stores.length === 0 && (
             <TouchableOpacity
               style={styles.createButton}

@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+      //  justifyContent: 'center',
         backgroundColor: '#fff',
     },
     listContainer: {
@@ -13,11 +13,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderRadius: 12,
       marginBottom: 16,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
       overflow: 'hidden',
     },
     storeImage: {
@@ -267,6 +262,25 @@ const styles = StyleSheet.create({
       color: '#4E8D7C',
       marginTop: 3,
     },
+    section: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: 12,
+      padding: 16,
+      marginTop: 16,
+      marginBottom: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 }, // povećano
+      shadowOpacity: 0.12,
+      shadowRadius: 5,
+      elevation: 5, // Android sjena
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#1C1C1E',
+      marginBottom: 12,
+    },
+  
     
   });
-export default styles; 
+export default styles;
