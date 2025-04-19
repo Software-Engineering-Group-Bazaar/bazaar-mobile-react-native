@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import * as SecureStore from 'expo-secure-store';
 
 interface ProductCategory {
   id: number;
@@ -32,6 +33,35 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<{ product: Product; qty: number }[]>([]);
 
+  const saveCartToStorage = async (cartItems: { product: Product; qty: number }[]) => {
+    try {
+      const jsonValue = JSON.stringify(cartItems);
+      await SecureStore.setItemAsync('cart_items', jsonValue);
+    } catch (e) {
+      console.error('Greška pri spremanju korpe', e);
+    }
+  };
+  
+  const loadCartFromStorage = async () => {
+    try {
+      const jsonValue = await SecureStore.getItemAsync('cart_items');
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (e) {
+      console.error('Greška pri učitavanju korpe', e);
+      return [];
+    }
+  };
+  
+  // Hook za loadanje kada komponenta mounta
+  useEffect(() => {
+    loadCartFromStorage().then(setCartItems);
+  }, []);
+  
+  // Hook za auto-spremanje pri svakoj promjeni korpe
+  useEffect(() => {
+    saveCartToStorage(cartItems);
+  }, [cartItems]);
+  
   const addToCart = (product: Product, qty?: number) => {
     if (!qty) qty = 1;
     // Check if the product is already in the cart
