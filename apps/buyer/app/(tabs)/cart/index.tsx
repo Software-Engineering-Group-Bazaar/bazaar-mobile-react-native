@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button } from 'react-native';
+import CartItem from 'proba-package/cart-item/index';
 // Pretpostavka da ova putanja vodi do AŽURIRANE ProductItem komponente
 import ProductItem from 'proba-package/product-item/index';
 import { useTranslation } from 'react-i18next';
@@ -51,174 +52,81 @@ const DUMMY_PRODUCTS: Product[] = [
   { id: 119, name: 'Knjiga "1984"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 10.00, wholesalePrice: 8.00, storeId: 999, photos: ['https://via.placeholder.com/150/FF6347/FFFFFF?Text=Knjiga'] },
 ];
 
-
 const CartScreen = () => {
-  const { t } = useTranslation();
-  // Stanje sada koristi AŽURIRANI Product interface
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null); // Eksplicitno tipiziranje greške
-  const [searchQuery, setSearchQuery] = useState('');
+  const [cartItems, setCartItems] = useState<{ product: Product; qty: number }[]>(DUMMY_PRODUCTS.map(product => ({ product, qty: 1 })));
 
-  useEffect(() => {
-    const fetchStoreProducts = async () => {
-      setLoading(true); // Postavi loading na true na početku svakog fetcha
-      setError(null);   // Resetuj grešku
-
-      if (USE_DUMMY_DATA) {
-        // Filtriranje radi na osnovu 'name', što je isto u oba formata
-        const filteredProducts = DUMMY_PRODUCTS.filter(product =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleQuantityChange = (product: Product, newQty: number) => {
+    setCartItems(items => {
+      const exists = items.find(i => i.product.id === product.id);
+      if (exists) {
+        if (newQty <= 0) {
+          return items.filter(i => i.product.id !== product.id);
+        }
+        return items.map(i =>
+          i.product.id === product.id ? { ...i, qty: newQty } : i
         );
-        setProducts(filteredProducts);
-        setLoading(false);
-        return;
       }
-
-      try {
-        const authToken = await SecureStore.getItemAsync('auth_token');
-        if (!authToken) {
-            // Opcionalno: Rukovanje slučajem kada token nije pronađen
-            // Možete preusmjeriti na login ili prikazati poruku
-            throw new Error('Authentication token not found.');
-        }
-
-        // API endpoint - provjerite da li je ovo tačan endpoint za pretragu
-        // Čini se da `searchTerm` treba da bude sam upit, a ne `search?query=...`
-        const endpoint = `https://bazaar-system.duckdns.org/api/Catalog/search?searchTerm=${encodeURIComponent(searchQuery)}`;
-
-        const response = await fetch(endpoint, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json' // Dobra praksa je dodati Content-Type
-          }
-        });
-
-        if (!response.ok) {
-          // Pokušaj pročitati tijelo odgovora za više detalja o grešci
-          const errorBody = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
-        }
-
-        // Očekujemo niz Product objekata u novom formatu
-        const data: Product[] = await response.json();
-        setProducts(data);
-
-      } catch (e: any) {
-        console.error("Error fetching products:", e); // Loguj grešku za debug
-        setError(e instanceof Error ? e : new Error('An unknown error occurred'));
-      } finally {
-         setLoading(false); // Uvijek postavi loading na false na kraju
-      }
-    };
-
-    // Debounce search - opcionalno, ali poboljšava performanse
-    // Ceka 500ms nakon prestanka kucanja prije pokretanja fetcha
-    const debounceFetch = setTimeout(() => {
-        fetchStoreProducts();
-    }, 500);
-
-    // Ocisti timeout ako se searchQuery promijeni prije isteka 500ms
-    return () => clearTimeout(debounceFetch);
-
-  }, [searchQuery]); // useEffect se pokreće samo kada se searchQuery promijeni
-
-  // handleProductPress sada prima Product u NOVOM formatu
-  const handleProductPress = (product: Product) => {
-    console.log('Product pressed:', product.name, product.id, product.retailPrice);
-    // Ovdje možete dodati logiku za navigaciju na detalje proizvoda, itd.
+      return [...items, { product, qty: newQty }];
+    });
   };
 
-  if (loading && products.length === 0) { // Prikazi indikator samo pri inicijalnom učitavanju
-    return (
-        <View style={styles.centered}>
-            <ActivityIndicator size="large" color="#4e8d7c"/>
-        </View>
-    );
-  }
-
-  if (error) {
-    return (
-        <View style={styles.centered}>
-             <Text style={styles.errorText}>{t('error_fetching_data')}: {error.message}</Text>
-        </View>
-    );
-  }
+  const totalPrice = cartItems.reduce(
+    (sum, { product, qty }) => sum + product.retailPrice * qty,
+    0
+  );
 
   return (
     <View style={styles.container}>
-       {loading && <ActivityIndicator style={styles.loadingMoreIndicator} size="small" />}
-      <View style={styles.listContainer}>
-        {products.length === 0 && !loading ? (
-            <Text style={styles.noResultsText}>{t('no_products_found')}</Text>
-        ) : (
-            <FlatList
-            data={products}
-            keyExtractor={(item) => item.id.toString()}
+      {cartItems.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Tvoja korpa je prazna.</Text>
+        </View>
+      ) : (
+        <>
+          <FlatList
+            data={cartItems}
+            keyExtractor={item => item.product.id.toString()}
             renderItem={({ item }) => (
-                // Sada 'item' (koji je tipa Product) odgovara onome što ProductItem očekuje
-                // handleProductPress također odgovara očekivanom tipu za onPress
-                <ProductItem product={item} onPress={handleProductPress} />
+              <CartItem
+                product={item.product}
+                quantity={item.qty}
+                onQuantityChange={handleQuantityChange}
+              />
             )}
-            // Opcionalno: Poboljšanja za FlatList
-            // initialNumToRender={10}
-            // maxToRenderPerBatch={10}
-            // windowSize={10}
-            />
-        )}
-      </View>
+          />
+          <View style={styles.summary}>
+            <Text style={styles.totalText}>
+              Ukupno: KM {totalPrice.toFixed(2)}
+            </Text>
+            <Button title="Podnesi narudžbu" onPress={() => {/* checkout */}} />
+          </View>
+        </>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1, padding: 10, backgroundColor: '#f8f8f8' },
+  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { fontSize: 18, color: '#555' },
+  summary: {
     padding: 10,
-    backgroundColor: '#f8f8f8', // Malo neutralnija pozadina
-  },
-  centered: { // Stil za centriranje indikatora/greške
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8f8f8',
-  },
-  errorText: {
-      color: 'red',
-      textAlign: 'center',
-      marginHorizontal: 20,
-  },
-  searchInput: {
-    height: 45, // Malo viši input
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8, // Zaobljeniji rubovi
-    paddingLeft: 15,
-    marginBottom: 15, // Veći razmak
+    borderTopWidth: 1,
+    borderColor: '#ddd',
     backgroundColor: '#fff',
-    fontSize: 16,
   },
-  loadingMoreIndicator: {
-      marginVertical: 10,
+  totalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
-  listContainer: {
-    flex: 1, // Osigurava da lista zauzme preostali prostor
-    backgroundColor: '#f8f8f8', // Originalna boja pozadine liste
-    borderRadius: 10,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  noResultsText: {
-      textAlign: 'center',
-      marginTop: 20,
-      fontSize: 16,
-      color: '#555',
-  }
+  quantityWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,            // ← adds 12pt of space above the quantity controls
+    /* ...other styles */
+  }  
 });
 
 export default CartScreen;
