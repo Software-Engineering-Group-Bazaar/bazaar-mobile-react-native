@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CartProvider } from '@/context/CartContext';
@@ -30,6 +31,8 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+
+      <GestureHandlerRootView>
       <CartProvider>
       <Stack>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -37,6 +40,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       </CartProvider>
+      </GestureHandlerRootView>
       <StatusBar style="auto" />
     </ThemeProvider>
   );

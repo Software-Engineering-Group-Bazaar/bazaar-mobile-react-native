@@ -74,12 +74,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     console.log("cartItems: ", cartItems);
   };
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: number, qty?: number) => {
     // if the quantity is >1 decrease, otherwise remove from cart
+    if (!qty) qty = 1;
     
     const exists = cartItems.find(item => item.product.id === productId);
-    if (exists && exists.qty > 1) {
-      setCartItems(prev => prev.map(item => item.product.id === productId ? {...item, qty: item.qty - 1} : item));
+    if (exists && exists.qty > 1 && qty) {
+      setCartItems(prev => prev.map(item => item.product.id === productId ? {...item, qty: item.qty - qty} : item));
     }
     else
       setCartItems(prev => prev.filter(item => item.product.id !== productId));

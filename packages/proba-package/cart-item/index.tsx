@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import ProductItem from '../product-item'; 
 import { useCart } from '../../../apps/buyer/context/CartContext';
+import { Swipeable } from 'react-native-gesture-handler';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt)
 interface ProductCategory {
@@ -22,6 +23,8 @@ interface Product {
   volumeUnit?: string;
   storeId: number;                 // Promijenjeno iz storeID (usklađeno s formatom)
   photos: string[];                // Promijenjeno iz imageUrl u niz stringova
+  isAvailable: boolean;
+  wholesaleThreshold?: number;
 }
 
 interface CartItemProps {
@@ -35,7 +38,7 @@ const CartItem: React.FC<CartItemProps> = ({
   quantity,
   onPress,
 }) => {
-  const { cartItems, removeFromCart, handleQuantityChange } = useCart()
+  const { cartItems, removeFromCart, handleQuantityChange } = useCart();
   // Funkcije za + i –
   const increment = () => handleQuantityChange(product, quantity + 1);
   const decrement = () => {
@@ -47,13 +50,32 @@ const CartItem: React.FC<CartItemProps> = ({
     }
   };
 
+  const renderRightActions = (_: any, dragX: Animated.AnimatedInterpolation<number>) => {
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <TouchableOpacity onPress={() => {handleQuantityChange(product,0); removeFromCart(product.id)}}>
+        <Animated.View style={[styles.deleteButton, { transform: [{ scale }] }]}>
+          <Text style={styles.deleteButtonText}>Ukloni</Text>
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
+
+
   return (
     <View style={styles.cartItemContainer}>
       {/* Iskoristi postojeći ProductItem za prikaz osnovnih podataka */}
+      <Swipeable renderRightActions={renderRightActions}>
       <ProductItem
         product={product}
         onPress={onPress}
       />
+      </Swipeable>
 
       {/* UI za prikaz i upravljanje količinom */}
       <View style={styles.quantityWrapper}>
@@ -102,6 +124,19 @@ const styles = StyleSheet.create({
   quantityText: {
     marginHorizontal: 8,
     fontSize: 15,
+  },
+  deleteButton: {
+    backgroundColor: '#ff3b30',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingHorizontal: 20,
+    marginVertical: 6,
+    borderRadius: 8,
+    flex: 1,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
