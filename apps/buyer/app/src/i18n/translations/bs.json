@@ -69,6 +69,17 @@
     "no_products_in_store": "Prodavnica nema proizvoda",
     "code_placeholder": "Kod iz mail-a",
     "profile_title": "Profil",
-    "profile_subtitle": "Upravljajte svojim profilom"
+    "profile_subtitle": "Upravljajte svojim profilom",
+    "loading":"Učitavanje...",
+    "available":"Na stanju",
+    "not-available":"Nema na stanju",
+    "weight":"Težina",
+    "volume":"Zapremina",
+    "items":"komada",
+    "or more items":"ili više komada",
+    "quantity":"Količina",
+    "Product added to cart":"Proizvod dodan u korpu",
+    "Add to Cart":"Dodaj u korpu",
+    "This product is currently not available.":"Ovaj proizvod trenutno nije dostupan."
 }
   
