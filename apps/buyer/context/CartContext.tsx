@@ -21,7 +21,7 @@ interface Product {
 
 interface CartContextType {
   cartItems: {product:Product, qty:number} [];
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product, qty?: number) => void;
   removeFromCart: (productId: number) => void;
   clearCart: () => void;
   handleQuantityChange: (product: Product, newQty: number) => void;
@@ -32,13 +32,14 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<{ product: Product; qty: number }[]>([]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, qty?: number) => {
+    if (!qty) qty = 1;
     // Check if the product is already in the cart
     const exists = cartItems.find(item => item.product.id === product.id);
     if (exists) {
-      setCartItems(prev => prev.map(item => item.product.id === product.id ? {...item, qty: item.qty + 1} : item));
+      setCartItems(prev => prev.map(item => item.product.id === product.id ? {...item, qty: item.qty + qty} : item));
     } else {
-      setCartItems(prev => [...prev, {product, qty: 1}]);
+      setCartItems(prev => [...prev, {product, qty: qty}]);
     }
     console.log("cartItems: ", cartItems);
   };
