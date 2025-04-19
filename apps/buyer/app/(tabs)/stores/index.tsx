@@ -66,7 +66,7 @@ const StoresScreen = () => {
   }, []);
 
   const handleProductPress = (store: Store) => {
-    router.push(`/stores/products/${store.id}`);
+    router.push(`/stores/${store.id}`);
   };
 
   if (loading) {

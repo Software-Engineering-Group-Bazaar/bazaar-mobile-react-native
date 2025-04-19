@@ -69,5 +69,16 @@
     "code_placeholder": "Code from mail",
     "profile_title": "Profile",
     "profile_subtitle": "Manage your profile",
-    "cart": "Cart"
+    "cart": "Cart",
+    "loading":"Loading...",
+    "available":"Available",
+    "not-available": "Not available",
+    "weight":"Weight",
+    "volume":"Volume",
+    "items":"items",
+    "or more items":"or more items",
+    "quantity":"Quantity",
+    "Product added to cart":"Product added to cart",
+    "Add to Cart":"Add to Cart",
+    "This product is currently not available.":"This product is currently not available."
 }

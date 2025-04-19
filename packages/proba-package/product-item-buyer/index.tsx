@@ -21,6 +21,8 @@ interface Product {
   volumeUnit?: string;
   storeId: number;                 // Promijenjeno iz storeID (usklađeno s formatom)
   photos: string[];                // Promijenjeno iz imageUrl u niz stringova
+  isAvailable: boolean;
+  wholesaleThreshold?: number;
 }
 
 interface ProductItemProps {
