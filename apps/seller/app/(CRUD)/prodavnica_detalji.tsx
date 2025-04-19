@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Image,
   ActivityIndicator,
   StyleSheet,
   ScrollView,
@@ -11,9 +10,10 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
+import SetHeaderRight from '../../components/ui/NavHeader';
 
 export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
@@ -54,6 +54,7 @@ export default function PregledProdavnice() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
+      <SetHeaderRight title="Detalji prodavnice" />
         <LanguageButton />
 
         {/*---------------------Screen Explorer Button----------------------*/}

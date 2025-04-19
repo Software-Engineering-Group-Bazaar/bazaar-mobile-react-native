@@ -7,6 +7,7 @@ import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import { logoutApi } from "../api/auth/logoutApi";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
+import SetHeaderRight from '../../components/ui/NavHeader';
 
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
@@ -35,6 +36,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <SetHeaderRight title="Početna" />
       <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}

@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
-import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { useTranslation } from "react-i18next";
-import { useNavigation } from "@react-navigation/native";
 import {
   apiFetchAllCategoriesAsync,
   apiCreateNewStoreAsync,
@@ -10,12 +16,11 @@ import {
 import { useRouter } from "expo-router";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
+import SetHeaderRight from '../../components/ui/NavHeader';
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
-
-// TODO: Kad backend bude spreman, otkomentarisati ove pozive
-// import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function PostavkeProdavnice() {
   const { t, i18n } = useTranslation();
@@ -37,8 +42,6 @@ export default function PostavkeProdavnice() {
   const [municipalities, setMunicipalities] = useState<
     { label: string; value: number }[]
   >([]);
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     async function fetchCategories() {
@@ -62,12 +65,6 @@ export default function PostavkeProdavnice() {
     loadMunicipalities();
     fetchCategories();
   }, []);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: "Postavke prodavnice",
-    });
-  }, [navigation, i18n.language]); // i18n.language dodala
 
   const handleSave = async () => {
     if (
@@ -109,6 +106,7 @@ export default function PostavkeProdavnice() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
+      <SetHeaderRight title="Postavke prodavnice" />
       <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}

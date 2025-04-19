@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { FontAwesome } from "@expo/vector-icons";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
+import SetHeaderRight from '../../components/ui/NavHeader';
 
 
 export default function ProductScreen() {
@@ -66,6 +67,7 @@ export default function ProductScreen() {
     return (
     <ScrollView style={styles.container}>
       {/* Dugme za promjenu jezika */}
+      <SetHeaderRight title="Detalji proizvoda" />
       <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}

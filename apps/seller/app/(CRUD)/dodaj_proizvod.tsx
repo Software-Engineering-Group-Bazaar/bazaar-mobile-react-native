@@ -34,6 +34,7 @@ import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
+import SetHeaderRight from '../../components/ui/NavHeader';
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -296,6 +297,7 @@ export default function AddProductScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
+      <SetHeaderRight title={t("add_a_product")} />
       <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}

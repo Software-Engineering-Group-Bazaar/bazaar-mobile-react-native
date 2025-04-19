@@ -12,13 +12,9 @@ import { FontAwesome } from "@expo/vector-icons";
 import styles from "../styles";
 import React, { useState, useEffect } from "react";
 import { apiFetchActiveStores } from "../api/storeApi";
-
+import SetHeaderRight from '../../components/ui/NavHeader';
 import { Store } from "../types/prodavnica";
 import LanguageButton from "@/components/ui/LanguageButton";
-
-type RootStackParamList = {
-  "../(CRUD)/prodavnica_detalji": { store: Store };
-};
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -76,6 +72,7 @@ export default function StoresScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <SetHeaderRight title="Pregled prodavnice" />
       <LanguageButton />
 
       <ScrollView
