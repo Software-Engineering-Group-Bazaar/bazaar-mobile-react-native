@@ -33,7 +33,7 @@ interface ProductItemProps {
 
 const ProductItem: React.FC<ProductItemProps> = ({ product, onPress, onAddToCart }) => {
   // Destrukturiranje svojstava iz novog Product objekta
-  const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit } = product;
+  const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit, isAvailable } = product;
   // <Image source={{ uri: "http://192.168.0.25:5054" + firstImageUrl }} style={styles.image} />
 
   // Dohvaćanje prve slike iz niza 'photos', ako postoji
@@ -54,9 +54,13 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onPress, onAddToCart
         )}
       </View>
       <View style={styles.actionContainer}>
+        {isAvailable ? (
         <TouchableOpacity onPress={() => {if (onAddToCart) {onAddToCart(product); ToastAndroid.show('Dodano u korpu!', ToastAndroid.SHORT);}}} style={styles.addButton}>
           <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>) : 
+        (<TouchableOpacity style={styles.addButtonRed}>
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>)}
       </View>
     </TouchableOpacity>
   );
@@ -104,6 +108,15 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: '#4e8d7c',
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  addButtonRed: {
+    backgroundColor: 'red',
     borderRadius: 20,
     width: 30,
     height: 30,
