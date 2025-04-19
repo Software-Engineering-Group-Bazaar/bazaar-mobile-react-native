@@ -28,3 +28,34 @@ export async function apiFetchAllProductsForStore(
     return [];
   }
 }
+
+export async function apiFetchProductDetails(productId: number): Promise<Product | null> {
+    try {
+        const response = await api.get(`/Catalog/products/${productId}`);
+        console.log(`Fetched details for product ${productId}:`, response.data);
+        return response.data; 
+    } catch (error: any) {
+        console.error(`Error fetching product details for ID ${productId}:`, error.response?.data || error.message);
+        return null; 
+    }
+}
+interface UpdatePricesPayload {
+    productId: number;
+    retailPrice: number;
+    wholesaleThreshold?: number | null; 
+    wholesalePrice?: number | null; 
+}
+export async function apiUpdateProductPrices(payload: UpdatePricesPayload): Promise<any> {
+    console.log("Calling API to update prices:", payload);
+    return api.post(`/catalog/products/prices`, payload); // Šalje JSON payload
+}
+
+interface UpdateAvailabilityPayload {
+    productId: number;
+    isAvailable: boolean;
+}
+export async function apiUpdateProductAvailability(payload: UpdateAvailabilityPayload): Promise<any> {
+   
+    console.log("Calling API to update availability:", payload);
+    return api.post(`/catalog/product/isAvailable`, payload); 
+}

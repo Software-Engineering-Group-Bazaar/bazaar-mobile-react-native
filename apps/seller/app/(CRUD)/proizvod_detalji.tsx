@@ -16,8 +16,10 @@ import { FontAwesome } from "@expo/vector-icons";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 
+
 export default function ProductScreen() {
-  const params = useLocalSearchParams();
+  
+    const params = useLocalSearchParams();
   const router = useRouter();
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
@@ -60,8 +62,8 @@ export default function ProductScreen() {
       </View>
     );
   }
-
-  return (
+  
+    return (
     <ScrollView style={styles.container}>
       {/* Dugme za promjenu jezika */}
       <LanguageButton />
@@ -110,41 +112,70 @@ export default function ProductScreen() {
           </>
         )}
       </View>
+  
+           {/* Podaci o proizvodu */}
+     <View style={styles.infoSection}>
+       <Text style={styles.productName}>{product.name}</Text>
+       <Text style={styles.price}>{product.wholesalePrice} KM</Text>
+      
+       <View style={styles.detailsSection}>
+          {/* Maloprodajna Cena */}
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{t('retail_price')}:</Text>
+      <Text style={styles.detailValue}>{product.retailPrice} KM</Text>
+    </View>
 
-      {/* Podaci o proizvodu */}
-      <View style={styles.infoSection}>
-        <Text style={styles.productName}>{product.name}</Text>
-        <Text style={styles.price}>{product.wholesalePrice} KM</Text>
-
-        <View style={styles.detailsSection}>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t("Category")}:</Text>
-            <Text style={styles.detailValue}>
-              {product.productCategory.name}
-            </Text>
-          </View>
-
-          {product.weight && (
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{t("Weight")}:</Text>
-              <Text style={styles.detailValue}>
-                {product.weight} {product.weightUnit}
-              </Text>
-            </View>
-          )}
-
-          {product.volume && (
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{t("Volume")}:</Text>
-              <Text style={styles.detailValue}>
-                {product.volume} {product.volumeUnit}
-              </Text>
-            </View>
-          )}
-        </View>
+    {/* Prag za Veleprodaju (prikazi samo ako postoji) */}
+    {product.wholesaleThreshold != null && ( // Provera za null ili undefined
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>{t('wholesale_threshold')}:</Text>
+        <Text style={styles.detailValue}>{product.wholesaleThreshold}</Text> {/* Dodaj "kom" ili jedinicu ako treba */}
       </View>
-    </ScrollView>
-  );
+    )}
+
+    {/* Veleprodajna Cena (prikazi samo ako postoji) */}
+    {product.wholesalePrice != null && ( // Provera za null ili undefined
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>{t('wholesale_price')}:</Text>
+        <Text style={styles.detailValue}>{product.wholesalePrice} KM</Text>
+      </View>
+    )}
+
+    {/* Kategorija */}
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{t('Category')}:</Text>
+      <Text style={styles.detailValue}>{product.productCategory.name}</Text>
+    </View>
+         <View style={styles.detailRow}>
+          
+           <Text style={styles.detailLabel}>{t('Category')}:</Text>
+           <Text style={styles.detailValue}>{product.productCategory.name}</Text>
+         </View>
+        
+         {product.weight && (
+           <View style={styles.detailRow}>
+             <Text style={styles.detailLabel}>{t('Weight')}:</Text>
+             <Text style={styles.detailValue}>{product.weight} {product.weightUnit}</Text>
+           </View>
+         )}
+        
+         {product.volume && (
+           <View style={styles.detailRow}>
+             <Text style={styles.detailLabel}>{t('Volume')}:</Text>
+             <Text style={styles.detailValue}>{product.volume} {product.volumeUnit}</Text>
+           </View>
+         )}
+         <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{t('availability')}:</Text>
+            <Text style={[styles.detailValue, { color: product.isAvailable ? '#10b981' : '#ef4444', fontWeight: 'bold' }]}>
+              {product.isAvailable ? t('available') : t('unavailable')}
+            </Text>
+          </View> 
+       </View>
+       
+     </View>
+   </ScrollView>
+ );
 }
 
 const styles = StyleSheet.create({

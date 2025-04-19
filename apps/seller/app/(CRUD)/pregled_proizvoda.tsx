@@ -58,87 +58,72 @@ export default function ProductsScreen() {
         }
       }
       loadProducts();
-    }, [storeId])
-  );
+         }, [storeId])
+ );
+  
+   const renderProductCard = ({ item }: { item: Product }) => (
+  <TouchableOpacity
+    style={styles.productCard}
+    onPress={() => router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)}
+  >
+       <View style={styles.productInfo}>
+         <Text style={styles.productName}>{item.name}</Text>
+         <Text style={styles.productPrice}>{t('Price')}: {item.retailPrice.toString()} KM</Text>
+         <Text style={styles.productCategory}>{t('Category')}: {item.productCategory.name}</Text>
+  
+         {/* Display weight and volume if available */}
+         {item.weight && (
+           <Text style={styles.productCategory}>
+             {t('Weight')}: {item.weight.toString()} {item.weightUnit || ''}
+           </Text>
+         )}
+         {item.volume && (
+           <Text style={styles.productCategory}>
+             {t('Volume')}: {item.volume.toString()} {item.volumeUnit || ''}
+           </Text>
+         )}
+       </View>
+     </TouchableOpacity>
+   );
+  
+   return (
+   <View style={{ flex: 1 }}>
+     {/* Fiksirano dugme za promjenu jezika */}
+     <LanguageButton />
 
-  const renderProductCard = ({ item }: { item: Product }) => (
-    <TouchableOpacity
-      style={styles.productCard}
-      onPress={() =>
-        router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)
-      }
-    >
-      <View style={styles.productInfo}>
-        <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productPrice}>
-          {t("Price")}: {item.wholesalePrice.toString()} KM
-        </Text>
-        <Text style={styles.productCategory}>
-          {t("Category")}: {item.productCategory.name}
-        </Text>
-
-        {/* Display weight and volume if available */}
-        {item.weight && (
-          <Text style={styles.productCategory}>
-            {t("Weight")}: {item.weight.toString()} {item.weightUnit || ""}
-          </Text>
-        )}
-        {item.volume && (
-          <Text style={styles.productCategory}>
-            {t("Volume")}: {item.volume.toString()} {item.volumeUnit || ""}
-          </Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-
-  return (
-    <View style={{ flex: 1 }}>
-      {/* Fiksirano dugme za promjenu jezika */}
-      <LanguageButton />
-
-      <ScrollView
-        style={styles.scrollWrapper}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={() =>
-            router.push(`/(CRUD)/dodaj_proizvod/?storeId=${storeId}`)
-          }
-          disabled={loading}
-        >
-          {/*---------------------Screen Explorer Button----------------------*/}
+     <ScrollView style={styles.scrollWrapper} contentContainerStyle={styles.scrollContent}>
+       <TouchableOpacity
+         style={styles.createButton}
+         onPress={() => router.push(`/(CRUD)/dodaj_proizvod/?storeId=${storeId}`)}
+         disabled={loading}
+       >
+         
+         {/*---------------------Screen Explorer Button----------------------*/}
           <ScreenExplorer route="../(tabs)/screen_explorer" />
           {/*-----------------------------------------------------------------*/}
+         {loading ? (
+           <ActivityIndicator color="#fff" />
+         ) : (
+           <>
+             <FontAwesome name="plus" size={14} color="#fff" style={{ marginRight: 6 }} />
+             <Text style={styles.createButtonText}>{t('add_a_product')}</Text>
+           </>
+         )}
+       </TouchableOpacity>
 
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <FontAwesome
-                name="plus"
-                size={14}
-                color="#fff"
-                style={{ marginRight: 6 }}
-              />
-              <Text style={styles.createButtonText}>{t("add_a_product")}</Text>
-            </>
-          )}
-        </TouchableOpacity>
 
-        <FlatList
-          data={products}
-          renderItem={renderProductCard}
-          keyExtractor={(item: Product) => item.id.toString()}
-          numColumns={2}
-          contentContainerStyle={styles.listContainer}
-          columnWrapperStyle={styles.columnWrapper}
-          scrollEnabled={false}
-        />
-      </ScrollView>
-    </View>
-  );
+       <FlatList
+         data={products}
+         renderItem={renderProductCard}
+         keyExtractor={(item: Product) => item.id.toString()}
+         numColumns={2}
+         contentContainerStyle={styles.listContainer}
+         columnWrapperStyle={styles.columnWrapper}
+         scrollEnabled={false}
+       />
+     </ScrollView>
+   </View>
+ );
 }
 
 const styles = StyleSheet.create({
