@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 // Importuj ažurirani ProductItem koji očekuje novi format
-import ProductItem from 'proba-package/product-item/index';
+import ProductItem from 'proba-package/product-item-buyer/index';
 // Pretpostavljam da koristite i18next za t funkciju
 import { useTranslation } from 'react-i18next';
 // Importuj SecureStore ako planirate da koristite token za pravi API poziv
 import * as SecureStore from 'expo-secure-store';
+import { useCart } from '@/context/CartContext';
 
 // Definicija za kategoriju proizvoda (ista kao u ProductItem i SearchProductsScreen)
 interface ProductCategory {
@@ -69,6 +70,7 @@ const StoreProductsScreen = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null); // Tipiziraj grešku
+  const { addToCart } = useCart();
 
   useEffect(() => {
     // Ako storeId nije validan broj, nemoj ni pokretati fetch
@@ -172,6 +174,7 @@ const StoreProductsScreen = () => {
               <ProductItem
                 product={item}
                 onPress={handleProductPress}
+                onAddToCart={addToCart}
               />
             )}
             // Opcionalno: Dodati malo paddinga na dnu liste

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
 // Pretpostavka da ova putanja vodi do AŽURIRANE ProductItem komponente
-import ProductItem from 'proba-package/product-item/index';
+import ProductItem from 'proba-package/product-item-buyer/index';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
+import { useCart } from '@/context/CartContext';
 import { useRouter } from 'expo-router';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
@@ -63,6 +64,7 @@ const SearchProductsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null); // Eksplicitno tipiziranje greške
   const [searchQuery, setSearchQuery] = useState('');
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchStoreProducts = async () => {
@@ -169,7 +171,7 @@ const SearchProductsScreen = () => {
             renderItem={({ item }) => (
                 // Sada 'item' (koji je tipa Product) odgovara onome što ProductItem očekuje
                 // handleProductPress također odgovara očekivanom tipu za onPress
-                <ProductItem product={item} onPress={handleProductPress} />
+                <ProductItem product={item} onPress={handleProductPress} onAddToCart={addToCart}/>
             )}
             // Opcionalno: Poboljšanja za FlatList
             // initialNumToRender={10}
