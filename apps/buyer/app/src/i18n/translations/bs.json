@@ -85,6 +85,27 @@
     "Make a change": "Napravite promjenu",
     "empty_cart":"Tvoja korpa je prazna.",
     "submit_order":"Podnesi narudžbu",
-    "total":"Ukupno"
+    "total":"Ukupno",
+    "my_orders": "Moje narudžbe",
+    "order_id": "ID",
+    "order_price": "Cijena",
+    "order_status": "Status",
+    "status_requested": "Zatraženo",
+    "status_confirmed": "Potvrđeno",
+    "status_ready": "Spremno",
+    "status_sent": "Poslato",
+    "status_delivered": "Isporučeno",
+    "status_rejected": "Odbijeno",
+    "order_canceled": "Otkazano",
+    "orders_empty": "Nema narudžbi za prikaz.",
+    "filter_products": "Filtriraj proizvode",
+    "select_region":"Odaberi regiju",
+    "all":"Sve",
+    "select_category":"Odaberi kategoriju",
+    "select_municipalities":"Odaberi općinu",
+    "close":"Zatvori",
+    "apply_filters":"Primijeni filtere",
+    "filter":"Filtriraj",
+    "reset_filters": "Resetuj filtere"
 }
   
