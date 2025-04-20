@@ -86,7 +86,11 @@ export default function SignUp() {
         console.log("Google Sign-Up User Info:", { idToken });
 
         const apiResponse = await fetch(
+<<<<<<< HEAD
           "http://10.0.2.2:5054/api/Auth/login/google",
+=======
+          "http://192.168.15.104:5054/api/Auth/login/google",
+>>>>>>> 25d3e51 (Doradjen inbox)
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
