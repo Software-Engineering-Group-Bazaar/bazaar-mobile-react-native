@@ -70,14 +70,12 @@ export default function PostavkeProdavnice() {
     if (
       !name.trim() ||
       !streetAndNumber.trim() ||
-      !city.trim() ||
       !selectedMunicipality ||
-      !description.trim()
-      // !selectedCategoryId
+      !description.trim() ||
+      selectedCategoryId == null
     ) {
       console.log("Ime:", name.trim());
-      console.log("Ulica i broj:", streetAndNumber.trim());
-      console.log("Grad:", city.trim());
+      console.log("Ulica i broj:", streetAndNumber.trim()); 
       console.log("Opština:", selectedMunicipality);
       console.log("Opis:", description.trim());
       console.log("Kategorija ID:", selectedCategoryId);
@@ -90,7 +88,6 @@ export default function PostavkeProdavnice() {
         name: name.trim(),
         categoryId: selectedCategoryId,
         address: streetAndNumber.trim(), // Dodato novo polje
-        //city: city.trim(), //  Dodato novo polje
         description: description.trim(),
         placeId: selectedMunicipality, //  Dodato novo polje
       };
@@ -130,14 +127,6 @@ export default function PostavkeProdavnice() {
           value={streetAndNumber}
           onChangeText={setStreetAndNumber}
         />
-
-        {/* Input za Grad */}
-        {/*<InputField
-          icon="city"
-          placeholder={t("city")}
-          value={city}
-          onChangeText={setCity}
-        />*/}
 
         {/* Input za Opštinu */}
         {/* Ovaj View je lose rjesenje*/}

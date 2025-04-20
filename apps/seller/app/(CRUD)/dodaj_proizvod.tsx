@@ -189,7 +189,7 @@ export default function AddProductScreen() {
 
     const formData = new FormData();
     formData.append("Name", name);
-    if (category) {
+    if (category != null) {
       // Provjeri da li je kategorija odabrana
       formData.append("ProductCategoryId", category.toString());
     }
