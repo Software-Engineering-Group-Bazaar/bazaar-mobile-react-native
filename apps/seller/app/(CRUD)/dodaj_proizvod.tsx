@@ -156,14 +156,8 @@ export default function AddProductScreen() {
     // Ponovo izvrši ako se promeni mod (isEditing), jezik ili sama navigation instanca
   }, [isEditing, navigation, i18n.language, t]);
 
-  async function prepareImage(imageUri: string) {
-    const base64 = await FileSystem.readAsStringAsync(imageUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    return `data:image/jpeg;base64,${base64}`;
-  }
-
   const handleSave = async () => {
+    console.log(isAvailable);
     if (
       !name.trim() ||
       !price.trim() ||
@@ -193,63 +187,19 @@ export default function AddProductScreen() {
 
     setLoading(true);
 
-    /*setFormData((prevData) => ({
-      ...prevData, 
-      name: name, 
-      ProductCategoryId: category,
-      RetailPrice: price,
-      WholesalePrice: price,
-      Weight: weight,
-      WeightUnit: weightUnit,
-      Volume: volume,
-      VolumeUnit: volumeUnit,
-      StoreId: storeId
-    }));    
-
-    for (const image of images) {
-      const base64Image = await prepareImage(image.uri);
-      formData.append("Files", base64Image);
-    }*/
-    // ✅ Construct JSON object
-    /*const productPayload = {
-      Name: name,
-      ProductCategoryId: category,
-      RetailPrice: parseFloat(price),
-      WholesalePrice: parseFloat(price),
-      Weight: parseFloat(weight),
-      WeightUnit: weightUnit,
-      Volume: parseFloat(volume),
-      VolumeUnit: volumeUnit,
-      StoreId: storeId,
-      Files: images.map((image, index) => ({
-        uri: image.uri,
-        name: `photo_${index}.jpg`,
-        type: "image/jpeg",
-      })), 
-    };*/
     const formData = new FormData();
     formData.append("Name", name);
-    formData.append("ProductCategoryId", category.toString());
-    formData.append("RetailPrice", price.toString());
-    formData.append("WholesalePrice", price.toString());
-    formData.append("Weight", weight.toString());
-    formData.append("WeightUnit", weightUnit);
-    formData.append("Volume", volume.toString());
-    formData.append("VolumeUnit", volumeUnit);
-    formData.append("StoreId", storeId!.toString());
-    formData.append("IsAvailable", isAvailable.toString()); //novo
-    formData.append("RetailPrice", price.trim());
     if (category) {
       // Provjeri da li je kategorija odabrana
       formData.append("ProductCategoryId", category.toString());
     }
-    if (wholesaleThreshold.trim()) {
-      formData.append("WholesaleThreshold", wholesaleThreshold.trim()); //novo
-    }
+    formData.append("RetailPrice", price.toString());
     if (wholesalePrice.trim()) {
       formData.append("WholesalePrice", wholesalePrice.trim()); //novo
     }
-
+    if (wholesaleThreshold.trim()) {
+      formData.append("WholesaleThreshold", wholesaleThreshold.trim()); //novo
+    }
     if (weight.trim()) {
       formData.append("Weight", weight.trim());
       formData.append("WeightUnit", weightUnit);
@@ -258,6 +208,8 @@ export default function AddProductScreen() {
       formData.append("Volume", volume.trim());
       formData.append("VolumeUnit", volumeUnit);
     }
+    formData.append("StoreId", storeId!.toString());
+    formData.append("IsActive", isAvailable.toString()); //novo
 
     images.forEach((image, index) => {
       formData.append("Files", {
@@ -271,6 +223,7 @@ export default function AddProductScreen() {
 
     try {
       setLoading(true);
+      console.log(formData);
       const response = await api.post("/Catalog/products/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -344,6 +297,15 @@ export default function AddProductScreen() {
               value={wholesalePrice}
               onChangeText={setWholesalePrice}
               placeholder={t("enter_wholesale_price")}
+              keyboardType="decimal-pad"
+            />
+
+            {/* Threshold za veleprodajnu cijena */}
+            <InputField
+              label={t("wholesale_threshold")}
+              value={wholesaleThreshold}
+              onChangeText={setWholesaleThreshold}
+              placeholder={t("enter_wholesale_threshold")}
               keyboardType="decimal-pad"
             />
 

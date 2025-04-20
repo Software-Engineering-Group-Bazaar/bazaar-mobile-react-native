@@ -52,6 +52,7 @@ export async function apiCreateNewStoreAsync(
   storeInfo: Record<string, any>
 ): Promise<boolean> {
   try {
+    console.log(storeInfo);
     const response = await api.post("/Stores", storeInfo);
     if (response.status === 200 || response.status === 201) {
       Alert.alert(t("success"), t("store_updated"));

@@ -94,15 +94,15 @@ export default function ProductsScreen() {
      <LanguageButton />
 
      <ScrollView style={styles.scrollWrapper} contentContainerStyle={styles.scrollContent}>
+        {/*---------------------Screen Explorer Button----------------------*/}
+          <ScreenExplorer route="../(tabs)/screen_explorer" />
+        {/*-----------------------------------------------------------------*/}
+
        <TouchableOpacity
          style={styles.createButton}
-         onPress={() => router.push(`./(CRUD)/dodaj_proizvod/?storeId=${storeId}`)}
+         onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
          disabled={loading}
        >
-         
-         {/*---------------------Screen Explorer Button----------------------*/}
-          <ScreenExplorer route="../(tabs)/screen_explorer" />
-          {/*-----------------------------------------------------------------*/}
          {loading ? (
            <ActivityIndicator color="#fff" />
          ) : (

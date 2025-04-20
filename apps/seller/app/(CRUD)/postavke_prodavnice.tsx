@@ -88,11 +88,11 @@ export default function PostavkeProdavnice() {
     try {
       const payload = {
         name: name.trim(),
-        streetAndNumber: streetAndNumber.trim(), // Dodato novo polje
-        city: city.trim(), //  Dodato novo polje
-        municipality: selectedMunicipality, //  Dodato novo polje
-        description: description.trim(),
         categoryId: selectedCategoryId,
+        address: streetAndNumber.trim(), // Dodato novo polje
+        //city: city.trim(), //  Dodato novo polje
+        description: description.trim(),
+        placeId: selectedMunicipality, //  Dodato novo polje
       };
       const response = await apiCreateNewStoreAsync(payload);
       response && router.replace("../(tabs)/pregled_prodavnica");
@@ -132,12 +132,12 @@ export default function PostavkeProdavnice() {
         />
 
         {/* Input za Grad */}
-        <InputField
+        {/*<InputField
           icon="city"
           placeholder={t("city")}
           value={city}
           onChangeText={setCity}
-        />
+        />*/}
 
         {/* Input za Opštinu */}
         {/* Ovaj View je lose rjesenje*/}
