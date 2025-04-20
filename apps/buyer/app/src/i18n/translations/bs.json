@@ -70,6 +70,7 @@
     "code_placeholder": "Kod iz mail-a",
     "profile_title": "Profil",
     "profile_subtitle": "Upravljajte svojim profilom",
+    "cart": "Korpa",
     "loading":"Učitavanje...",
     "available":"Na stanju",
     "not-available":"Nema na stanju",
@@ -80,6 +81,7 @@
     "quantity":"Količina",
     "Product added to cart":"Proizvod dodan u korpu",
     "Add to Cart":"Dodaj u korpu",
-    "This product is currently not available.":"Ovaj proizvod trenutno nije dostupan."
+    "This product is currently not available.":"Ovaj proizvod trenutno nije dostupan.",
+    "Make a change": "Napravite promjenu"
 }
   

@@ -60,8 +60,8 @@ const ProductDetailsScreen = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  const { cartItems, addToCart, handleQuantityChange } = useCart();
+  const [quantity, setQuantity] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty || 1);
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -217,8 +217,8 @@ const ProductDetailsScreen = () => {
             </View>
 
             {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
-            <TouchableOpacity style={styles.addToCartButton} onPress={() => {addToCart(product, quantity); alert(t('Product added to cart'))}}>
-              <Text style={styles.addToCartButtonText}>{t('Add to Cart')}</Text>
+            <TouchableOpacity style={styles.addToCartButton} onPress={() => {handleQuantityChange(product,quantity); alert(t('Product added to cart'))}}>
+              <Text style={styles.addToCartButtonText}>{t('Make a change')}</Text>
             </TouchableOpacity>
           </>
         ) : (
