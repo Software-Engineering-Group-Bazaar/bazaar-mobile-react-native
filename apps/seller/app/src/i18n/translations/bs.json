@@ -145,5 +145,8 @@
   "Ready": "Spremno",
   "Sent": "Poslano",
   "Delivered": "Isporučeno",
-  "Cancelled": "Otkazano"
+  "Cancelled": "Otkazano",
+  "Missing_Fields": "Nedostajuća polja",
+  "fill_in_all_fields": "Molimo popunite sva polja prije spašavanja.",
+  "prices_updated": "Cijene su uspješno izmijenjene."
 }

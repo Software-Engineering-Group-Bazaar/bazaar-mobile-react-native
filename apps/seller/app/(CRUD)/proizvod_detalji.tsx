@@ -8,18 +8,17 @@ import {
   Pressable,
   Switch,
   TextInput,
-  Button,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FontAwesome } from "@expo/vector-icons";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from '../../components/ui/NavHeader';
 import { apiUpdateProductPrices, apiUpdateProductAvailability}  from '../api/productApi'
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 export default function ProductScreen() {
   const params = useLocalSearchParams();
@@ -29,13 +28,16 @@ export default function ProductScreen() {
   const productString = Array.isArray(params.product)
     ? params.product[0]
     : params.product;
-  const product = productString ? JSON.parse(productString) : null;
+  let product = productString ? JSON.parse(productString) : null;
 
   const photos = product?.photos || [];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isActive, setIsActive] = useState<boolean>(false); 
-
+  const [isActive, setIsActive] = useState<boolean>(product.isActive); 
+  const [retailPrice, setRetailPrice] = useState(product.retailPrice.toString());
+  const [wholesalePrice, setWholesalePrice] = useState(product.wholesalePrice.toString());
+  const [wholesaleThreshold, setWholesaleThreshold] = useState(product.wholesaleThreshold.toString());
+  
   const nextImage = () => {
     //  zamijeni mockPhotos sa photos
     if (currentImageIndex < photos.length - 1 /* photos.length - 1 */) {
@@ -61,14 +63,25 @@ export default function ProductScreen() {
   };
 
   const updatePrices = async () => {
+    console.log(wholesaleThreshold);
+    if (!retailPrice || !wholesalePrice || !wholesaleThreshold) {
+      Alert.alert(t('Missing_Fields'), t('fill_in_all_fields'));
+      return;
+    }
     const payload = {
       productId: product.id,
-      retailPrice: product.retailPrice,
-      wholesalePrice: product.wholesalePrice,
-      wholesaleThreshold: product.wholesaleThreshold,
+      retailPrice: parseFloat(retailPrice) || 0,
+      wholesalePrice: parseFloat(wholesalePrice) || 0,
+      wholesaleThreshold: parseFloat(wholesaleThreshold) || 0,
     };
-    await apiUpdateProductPrices(payload);
-    console.log('Prices updated!');
+    try {
+      await apiUpdateProductPrices(payload);
+      console.log('Prices updated!');
+      Alert.alert(t('success'), t('prices_updated'));
+    } catch (error) {
+      console.error('Error updating prices:', error);
+      Alert.alert(t("error"), 'Failed to update prices. Please try again.');
+    }
   };
 
   if (!product) {
@@ -145,10 +158,10 @@ export default function ProductScreen() {
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>{t('retail_price')}:</Text>
           <TextInput
-            style={styles.detailValue}
-            value={product.retailPrice.toString()}
+            style={[styles.detailValue, styles.inputField]}
+            value={retailPrice}
             keyboardType="numeric"
-            onChangeText={(text) => product.setRetailPrice(parseFloat(text))}
+            onChangeText={(text) => setRetailPrice(parseFloat(text))}
           />
         </View>
 
@@ -157,10 +170,10 @@ export default function ProductScreen() {
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>{t('wholesale_threshold')}:</Text>
             <TextInput
-              style={styles.detailValue}
-              value={product.wholesaleThreshold ? product.wholesaleThreshold.toString() : ''}
+              style={[styles.detailValue, styles.inputField]}
+              value={wholesaleThreshold}
               keyboardType="numeric"
-              onChangeText={(text) => product.setWholesaleThreshold(parseInt(text))}
+              onChangeText={(text) => setWholesaleThreshold(parseFloat(text))}
             />
           </View>
         )}
@@ -170,15 +183,15 @@ export default function ProductScreen() {
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>{t('wholesale_price')}:</Text>
             <TextInput
-              style={styles.detailValue}
-              value={product.wholesalePrice ? product.wholesalePrice.toString() : ''}
+              style={[styles.detailValue, styles.inputField]}
+              value={wholesalePrice}
               keyboardType="numeric"
-              onChangeText={(text) => product.setWholesalePrice(parseFloat(text))}
+              onChangeText={(text) => setWholesalePrice(parseFloat(text))}
             />
           </View>
         )}
         {/* Save Changes Button */}
-        <Button title="Save Changes" onPress={updatePrices} />
+        <SubmitButton buttonText={t('save_changes')} onPress={updatePrices} />
 
         {/* Kategorija */}
         <View style={styles.detailRow}>
@@ -232,6 +245,15 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
+  },
+  inputField: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    minWidth: 80,
   },
   navArrow: {
     position: "absolute",

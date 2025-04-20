@@ -145,7 +145,10 @@
   "Ready": "Ready",
   "Sent": "Sent",
   "Delivered": "Delivered",
-  "Cancelled": "Cancelled"
+  "Cancelled": "Cancelled",
+  "Missing_Fields": "Missing Fields",
+  "fill_in_all_fields": "Please fill in all price fields before saving.",
+  "prices_updated": "Prices have been updated successfully."
 }
 
 

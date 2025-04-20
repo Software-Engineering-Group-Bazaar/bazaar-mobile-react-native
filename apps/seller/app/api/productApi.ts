@@ -48,7 +48,14 @@ interface UpdatePricesPayload {
 }
 export async function apiUpdateProductPrices(payload: UpdatePricesPayload): Promise<any> {
     console.log("Calling API to update prices:", payload);
-    return api.post(`/catalog/products/prices`, payload); // Šalje JSON payload
+    const url = `Catalog/products/${payload.productId}/pricing`;
+    console.log(url);
+
+    return api.put(url, {
+      retailPrice: payload.retailPrice,
+      wholesaleThreshold: payload.wholesaleThreshold,
+      wholesalePrice: payload.wholesalePrice,
+    });
 }
 
 export async function apiUpdateProductAvailability(productId: number, isActive: boolean): Promise<any> {
