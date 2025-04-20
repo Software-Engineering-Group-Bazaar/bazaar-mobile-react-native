@@ -39,6 +39,7 @@ interface Store {
   isActive: boolean;
   categoryid: number;
   logoUrl?: string;
+  place: number //opcina 
 }
 
 interface StoreWithProducts {
@@ -83,19 +84,19 @@ const DUMMY_PRODUCTS: Product[] = [
 
 const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
   {
-    Store: { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },
+    Store: { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA',place:1 },
     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 1),
   },
   {
-    Store: { id: 2, isActive: false, categoryid: 202, name: 'Elektronika Centar', address: 'Sporedna ulica 5, Tuzla', description: 'Najnovija elektronika po povoljnim cijenama', logoUrl: 'https://via.placeholder.com/150/2196F3/FFFFFF?Text=LogoE' },
+    Store: { id: 2, isActive: false, categoryid: 202, name: 'Elektronika Centar', address: 'Sporedna ulica 5, Tuzla', description: 'Najnovija elektronika po povoljnim cijenama', logoUrl: 'https://via.placeholder.com/150/2196F3/FFFFFF?Text=LogoE',place:2 },
     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 2),
   },
   {
-    Store: { id: 4, isActive: true, categoryid: 303, name: 'Knjižara Z', address: 'Pored rijeke 15, Banja Luka', description: 'Širok asortiman knjiga i uredskog materijala', logoUrl: 'https://via.placeholder.com/150/9C27B0/FFFFFF?Text=LogoK' },
+    Store: { id: 4, isActive: true, categoryid: 303, name: 'Knjižara Z', address: 'Pored rijeke 15, Banja Luka', description: 'Širok asortiman knjiga i uredskog materijala', logoUrl: 'https://via.placeholder.com/150/9C27B0/FFFFFF?Text=LogoK',place:1 },
     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 4),
   },
   {
-    Store: { id: 5, isActive: true, categoryid: 101, name: 'Pekara Mlin', address: 'Novo Sarajevo 1', description: 'Svježi kruh i peciva', logoUrl: 'https://via.placeholder.com/150/FF9800/FFFFFF?Text=LogoP' },
+    Store: { id: 5, isActive: true, categoryid: 101, name: 'Pekara Mlin', address: 'Novo Sarajevo 1', description: 'Svježi kruh i peciva', logoUrl: 'https://via.placeholder.com/150/FF9800/FFFFFF?Text=LogoP', place: 3 },
     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 5),
   },
 ];
@@ -144,7 +145,6 @@ const SearchProductsScreen = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       if (USE_DUMMY_DATA) {
-        // Simuliraj dohvat kategorija (možeš hardkodirati ili iz DUMMY_PRODUCTS)
         const dummyCategories = DUMMY_PRODUCTS.reduce((acc: ProductCategory[], product) => {
           if (!acc.find(cat => cat.id === product.productCategory.id)) {
             acc.push(product.productCategory);
@@ -211,7 +211,7 @@ const SearchProductsScreen = () => {
 
       setError(null);
       if (regionId) {
-        // API poziv za dohvat općina ostaje isti
+        // API poziv za dohvat opcina
         const fetchMunicipalitiesApi = async () => {
           try {
             const authToken = await SecureStore.getItemAsync('auth_token');
@@ -242,84 +242,84 @@ const SearchProductsScreen = () => {
       } else {
         setMunicipalities([]);
       }
-      setSelectedMunicipalities([]); // Resetiraj odabrane općine kada se promijeni regija
+      setSelectedMunicipalities([]); // reset odabranih opcina kad se mijenja regija
     };
 
     fetchMunicipalitiesForRegion(selectedRegion);
   }, [selectedRegion]);
+
+  const fetchStoreProducts = async () => {
+    console.log("Odabrana regija: ",selectedRegion, " odabrane opcine: ",selectedMunicipalities, " i odabrana kategorija: ",selectedCategory)
+    setLoading(true);
+    setError(null);
+
+    if (USE_DUMMY_DATA) {
+      let filteredStores = DUMMY_STORES_WITH_PRODUCTS.map(storeWithProducts => ({
+        ...storeWithProducts,
+        Products: storeWithProducts.Products.filter(product =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          (selectedCategory === null || product.productCategory.id === selectedCategory)
+        ),
+      }));
+
+      if (selectedRegion) {
+        filteredStores = filteredStores.filter(store => {
+          const storeMunicipalityId = store.Store.place;
+          const municipality = DUMMY_MUNICIPALITIES.find(m => m.id === storeMunicipalityId);
+          return municipality && municipality.idRegije === selectedRegion &&
+                 (selectedMunicipalities.length === 0 || selectedMunicipalities.includes(storeMunicipalityId));
+        });
+      } else if (selectedMunicipalities.length > 0) {
+        filteredStores = filteredStores.filter(store => selectedMunicipalities.includes(store.Store.place));
+      }
+
+      setStoresWithProducts(filteredStores.filter(storeWithProducts => storeWithProducts.Products.length > 0));
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const authToken = await SecureStore.getItemAsync('auth_token');
+      if (!authToken) {
+        throw new Error('Authentication token not found.');
+      }
+
+      const body = {
+        region: selectedRegion,
+        municipality: selectedMunicipalities.length > 0 ? selectedMunicipalities : null,
+        category: selectedCategory,
+        searchQuery: searchQuery,
+      };
+
+      const response = await fetch('https://bazaar-system.duckdns.org/api/Catalog/filter', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
+      }
+
+      const data: StoreWithProducts[] = await response.json();
+      setStoresWithProducts(data);
+
+    } catch (e: any) {
+      console.error("Error fetching products:", e);
+      setError(e instanceof Error ? e : new Error('An unknown error occurred'));
+    } finally {
+      setLoading(false);
+    }
+  };
   
   useEffect(() => {
-    const fetchStoreProducts = async () => {
-      setLoading(true);
-      setError(null);
-
-      if (USE_DUMMY_DATA) {
-        const filteredStores = DUMMY_STORES_WITH_PRODUCTS.map(storeWithProducts => ({
-          ...storeWithProducts,
-          Products: storeWithProducts.Products.filter(product =>
-            product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            (!selectedCategory || product.productCategory.id === selectedCategory) &&
-            (!selectedRegion || (selectedMunicipalities.length > 0
-              ? DUMMY_MUNICIPALITIES.filter(m => selectedMunicipalities.includes(m.id)).some(municipality => {
-                // Provjeri da li je storeId proizvoda povezan s općinom unutar odabrane regije
-                const storeMunicipality = DUMMY_STORES_WITH_PRODUCTS.find(swp => swp.Products.some(p => p.id === product.id))?.Store;
-                const productMunicipality = DUMMY_MUNICIPALITIES.find(m => storeMunicipality?.address.includes(m.naziv)); // Ovo je nagađanje veze
-                return productMunicipality?.idRegije === selectedRegion && selectedMunicipalities.includes(productMunicipality.id);
-              })
-              : DUMMY_STORES_WITH_PRODUCTS.some(swp => swp.Products.some(p => p.id === product.id) &&
-                  DUMMY_MUNICIPALITIES.find(m => swp.Store.address.includes(m.naziv))?.idRegije === selectedRegion)
-            ))
-          ),
-        })).filter(storeWithProducts => storeWithProducts.Products.length > 0);
-        setStoresWithProducts(filteredStores);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const authToken = await SecureStore.getItemAsync('auth_token');
-        if (!authToken) {
-          throw new Error('Authentication token not found.');
-        }
-
-        const body = {
-          region: selectedRegion ? regions.find(r => r.id === selectedRegion)?.naziv : '', // Promijenjeno na 'regija'
-          municipality: selectedMunicipalities.length > 0
-            ? municipalities.filter(m => selectedMunicipalities.includes(m.id)).map(m => m.naziv).join(',')
-            : '',
-          category: selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : '',
-          searchQuery: searchQuery,
-        };
-
-        const response = await fetch('https://bazaar-system.duckdns.org/api/Catalog/filter', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        });
-
-        if (!response.ok) {
-          const errorBody = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
-        }
-
-        const data: StoreWithProducts[] = await response.json();
-        setStoresWithProducts(data);
-
-      } catch (e: any) {
-        console.error("Error fetching products:", e);
-        setError(e instanceof Error ? e : new Error('An unknown error occurred'));
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const debounceFetch = setTimeout(() => {
       fetchStoreProducts();
     }, 500);
-
     return () => clearTimeout(debounceFetch);
   }, [searchQuery]);
 
@@ -536,7 +536,10 @@ const SearchProductsScreen = () => {
             )}
 
             <View style={styles.modalButtons}>
-                <Button title={t('apply_filters')} onPress={closeFilterModal} color='#4e8d7c'/>
+            <Button title={t('apply_filters')} onPress={() => {
+                fetchStoreProducts()
+                closeFilterModal();
+              }} color='#4e8d7c'/>
                 <Button title={t('close')} onPress={closeFilterModal} color="gray" />
             </View>
         </View>
