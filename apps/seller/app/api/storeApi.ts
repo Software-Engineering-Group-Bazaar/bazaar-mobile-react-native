@@ -23,21 +23,7 @@ export async function apiFetchAllCategoriesAsync(): Promise<
     return [];
   }
 }
-/*
-// Dohvacanje svih prodavnica
-export async function apiFetchActiveStores(): Promise<Store[]> {
-   try {
-       const response = await api.get('/Stores/MyStore');
-       console.log(response);
 
-
-       const activeStores = response.data.filter((store: Store) => store.isActive === true);
-       return activeStores;
-   } catch (error) {
-       console.error('Error fetching stores:', error);
-       return [];
-   }
-} */
 export async function apiFetchActiveStores(): Promise<Store[]> {
   try {
     const response = await api.get("/Stores/MyStore");
@@ -66,6 +52,7 @@ export async function apiCreateNewStoreAsync(
   storeInfo: Record<string, any>
 ): Promise<boolean> {
   try {
+    console.log(storeInfo);
     const response = await api.post("/Stores", storeInfo);
     if (response.status === 200 || response.status === 201) {
       Alert.alert(t("success"), t("store_updated"));

@@ -128,13 +128,13 @@ export default function SignIn() {
     try {
       setLoading(true);
       const token = await apiLogin(email, password);
-      // Step 5: Store the token securely
       await SecureStore.setItemAsync("accessToken", token);
-      // Step 6: Redirect to the logout screen or dashboard
       router.replace("../(tabs)/home");
-    } catch (error) {
-      console.error("Login error:", error);
-      Alert.alert(t("error"), t("something_went_wrong"));
+    } catch (error: any) {
+      if (error.message !== "login_failed_handled") {
+        console.log("dodje");
+        Alert.alert(t("error"), t("something_went_wrong"));
+      }
     } finally {
       setLoading(false);
     }

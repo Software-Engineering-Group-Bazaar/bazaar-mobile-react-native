@@ -37,9 +37,32 @@ export const apiLogin = async (email: string, password: string) => {
     }
 
     return token;
-  } catch (error) {
-    console.error("Login error:", error);
-    throw error; // or handle it differently
+  } catch (error: any) {
+    if (error.response) {
+      const status = error.response.status;
+      const responseData = error.response.data;
+  
+      if (status === 401) {
+        const message = responseData?.message || "";
+        // Customize messages based on backend's response
+        if (message.includes("No user account with email address.")) {
+          Alert.alert(t("login_failed"), t("invalid_credentials"));
+        } else if (message.includes("User account is unapproved.")) {
+          Alert.alert(t("access_denied"), t("account_not_approved"));
+        } else {
+          Alert.alert(t("login_failed"), t("unauthorized_access"));
+        }
+      } else {
+        Alert.alert(t("login_failed"), t("unexpected_error"));
+      }
+  
+      //console.error("Login error response:", error.response);
+    } else {
+      Alert.alert(t("login_failed"), t("network_error"));
+      console.error("Login error:", error);
+    }  
+
+    throw { message: "login_failed_handled", details: error.response?.data };
   }
 };
 

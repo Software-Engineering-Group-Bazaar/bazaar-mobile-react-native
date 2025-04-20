@@ -77,7 +77,7 @@
   "municipality": "Opština",
   "store_created_successfully": "Prodavnica uspješno kreirana!",
   "retail_price": "Maloprodajna Cijena",
-  "enter_retail_price ": "Unesite maloprodajnu cijenu",
+  "enter_retail_price": "Unesite maloprodajnu cijenu",
   "wholesale_threshold": "Prag za Veleprodaju (Količina)",
   "enter_wholesale_threshold": "Unesite prag za veleprodaju",
   "wholesale_price": "Veleprodajna Cijena",
@@ -145,5 +145,8 @@
   "Ready": "Spremno",
   "Sent": "Poslano",
   "Delivered": "Isporučeno",
-  "Cancelled": "Otkazano"
+  "Cancelled": "Otkazano",
+  "Missing_Fields": "Nedostajuća polja",
+  "fill_in_all_fields": "Molimo popunite sva polja prije spašavanja.",
+  "prices_updated": "Cijene su uspješno izmijenjene."
 }

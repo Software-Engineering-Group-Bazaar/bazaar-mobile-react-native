@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
-import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { useTranslation } from "react-i18next";
-import { useNavigation } from "@react-navigation/native";
 import {
   apiFetchAllCategoriesAsync,
   apiCreateNewStoreAsync,
@@ -10,12 +16,11 @@ import {
 import { useRouter } from "expo-router";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
+import SetHeaderRight from '../../components/ui/NavHeader';
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
-
-// TODO: Kad backend bude spreman, otkomentarisati ove pozive
-// import { apiGetStoreCategoriesAsync, apiCreateStoreAsync } from '../api/store';
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function PostavkeProdavnice() {
   const { t, i18n } = useTranslation();
@@ -37,8 +42,6 @@ export default function PostavkeProdavnice() {
   const [municipalities, setMunicipalities] = useState<
     { label: string; value: number }[]
   >([]);
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     async function fetchCategories() {
@@ -63,24 +66,16 @@ export default function PostavkeProdavnice() {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: "Postavke prodavnice",
-    });
-  }, [navigation, i18n.language]); // i18n.language dodala
-
   const handleSave = async () => {
     if (
       !name.trim() ||
       !streetAndNumber.trim() ||
-      !city.trim() ||
       !selectedMunicipality ||
-      !description.trim()
-      // !selectedCategoryId
+      !description.trim() ||
+      selectedCategoryId == null
     ) {
       console.log("Ime:", name.trim());
-      console.log("Ulica i broj:", streetAndNumber.trim());
-      console.log("Grad:", city.trim());
+      console.log("Ulica i broj:", streetAndNumber.trim()); 
       console.log("Opština:", selectedMunicipality);
       console.log("Opis:", description.trim());
       console.log("Kategorija ID:", selectedCategoryId);
@@ -91,11 +86,10 @@ export default function PostavkeProdavnice() {
     try {
       const payload = {
         name: name.trim(),
-        streetAndNumber: streetAndNumber.trim(), // Dodato novo polje
-        city: city.trim(), //  Dodato novo polje
-        municipality: selectedMunicipality, //  Dodato novo polje
-        description: description.trim(),
         categoryId: selectedCategoryId,
+        address: streetAndNumber.trim(), // Dodato novo polje
+        description: description.trim(),
+        placeId: selectedMunicipality, //  Dodato novo polje
       };
       const response = await apiCreateNewStoreAsync(payload);
       response && router.replace("../(tabs)/pregled_prodavnica");
@@ -109,6 +103,7 @@ export default function PostavkeProdavnice() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
+      <SetHeaderRight title="Postavke prodavnice" />
       <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
@@ -131,14 +126,6 @@ export default function PostavkeProdavnice() {
           placeholder={t("street_and_number")}
           value={streetAndNumber}
           onChangeText={setStreetAndNumber}
-        />
-
-        {/* Input za Grad */}
-        <InputField
-          icon="city"
-          placeholder={t("city")}
-          value={city}
-          onChangeText={setCity}
         />
 
         {/* Input za Opštinu */}

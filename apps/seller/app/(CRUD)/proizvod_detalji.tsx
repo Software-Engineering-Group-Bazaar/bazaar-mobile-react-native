@@ -6,33 +6,38 @@ import {
   Image,
   ScrollView,
   Pressable,
+  Switch,
+  TextInput,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FontAwesome } from "@expo/vector-icons";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
-
+import SetHeaderRight from '../../components/ui/NavHeader';
+import { apiUpdateProductPrices, apiUpdateProductAvailability}  from '../api/productApi'
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 export default function ProductScreen() {
-  
-    const params = useLocalSearchParams();
+  const params = useLocalSearchParams();
   const router = useRouter();
-  const navigation = useNavigation();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const productString = Array.isArray(params.product)
     ? params.product[0]
     : params.product;
-  const product = productString ? JSON.parse(productString) : null;
+  let product = productString ? JSON.parse(productString) : null;
 
   const photos = product?.photos || [];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [isActive, setIsActive] = useState<boolean>(product.isActive); 
+  const [retailPrice, setRetailPrice] = useState(product.retailPrice.toString());
+  const [wholesalePrice, setWholesalePrice] = useState(product.wholesalePrice.toString());
+  const [wholesaleThreshold, setWholesaleThreshold] = useState(product.wholesaleThreshold.toString());
+  
   const nextImage = () => {
     //  zamijeni mockPhotos sa photos
     if (currentImageIndex < photos.length - 1 /* photos.length - 1 */) {
@@ -46,11 +51,38 @@ export default function ProductScreen() {
     }
   };
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: product?.name || "",
-    });
-  }, [product, navigation]);
+  // Funkcije za izmjenu dostupnosti i cijene
+  const updateAvailability = async (newValue: boolean) => {
+    try {
+      await apiUpdateProductAvailability(product.id, newValue);
+      console.log("Availability updated!");
+    } catch (error) {
+      console.error("Error updating availability:", error);
+      setIsActive(!newValue);
+    }
+  };
+
+  const updatePrices = async () => {
+    console.log(wholesaleThreshold);
+    if (!retailPrice || !wholesalePrice || !wholesaleThreshold) {
+      Alert.alert(t('Missing_Fields'), t('fill_in_all_fields'));
+      return;
+    }
+    const payload = {
+      productId: product.id,
+      retailPrice: parseFloat(retailPrice) || 0,
+      wholesalePrice: parseFloat(wholesalePrice) || 0,
+      wholesaleThreshold: parseFloat(wholesaleThreshold) || 0,
+    };
+    try {
+      await apiUpdateProductPrices(payload);
+      console.log('Prices updated!');
+      Alert.alert(t('success'), t('prices_updated'));
+    } catch (error) {
+      console.error('Error updating prices:', error);
+      Alert.alert(t("error"), 'Failed to update prices. Please try again.');
+    }
+  };
 
   if (!product) {
     return (
@@ -63,9 +95,10 @@ export default function ProductScreen() {
     );
   }
   
-    return (
+  return (
     <ScrollView style={styles.container}>
       {/* Dugme za promjenu jezika */}
+      <SetHeaderRight title="Detalji proizvoda" />
       <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
@@ -112,69 +145,87 @@ export default function ProductScreen() {
           </>
         )}
       </View>
-  
-           {/* Podaci o proizvodu */}
-     <View style={styles.infoSection}>
-       <Text style={styles.productName}>{product.name}</Text>
-       <Text style={styles.price}>{product.wholesalePrice} KM</Text>
-      
-       <View style={styles.detailsSection}>
-          {/* Maloprodajna Cena */}
-    <View style={styles.detailRow}>
-      <Text style={styles.detailLabel}>{t('retail_price')}:</Text>
-      <Text style={styles.detailValue}>{product.retailPrice} KM</Text>
-    </View>
 
-    {/* Prag za Veleprodaju (prikazi samo ako postoji) */}
-    {product.wholesaleThreshold != null && ( // Provera za null ili undefined
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>{t('wholesale_threshold')}:</Text>
-        <Text style={styles.detailValue}>{product.wholesaleThreshold}</Text> {/* Dodaj "kom" ili jedinicu ako treba */}
+      {/* Podaci o proizvodu */}
+      <View style={styles.infoSection}>
+        <Text style={styles.productName}>{product.name}</Text>
+        <Text style={styles.price}>{product.wholesalePrice} KM</Text>
       </View>
-    )}
 
-    {/* Veleprodajna Cena (prikazi samo ako postoji) */}
-    {product.wholesalePrice != null && ( // Provera za null ili undefined
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>{t('wholesale_price')}:</Text>
-        <Text style={styles.detailValue}>{product.wholesalePrice} KM</Text>
-      </View>
-    )}
+      <View style={styles.detailsSection}>
+    
+        {/* Retail Price */}
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>{t('retail_price')}:</Text>
+          <TextInput
+            style={[styles.detailValue, styles.inputField]}
+            value={retailPrice}
+            keyboardType="numeric"
+            onChangeText={(text) => setRetailPrice(parseFloat(text))}
+          />
+        </View>
 
-    {/* Kategorija */}
-    <View style={styles.detailRow}>
-      <Text style={styles.detailLabel}>{t('Category')}:</Text>
-      <Text style={styles.detailValue}>{product.productCategory.name}</Text>
-    </View>
-         <View style={styles.detailRow}>
+        {/* Wholesale Threshold */}
+        {product.wholesaleThreshold != null && (
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{t('wholesale_threshold')}:</Text>
+            <TextInput
+              style={[styles.detailValue, styles.inputField]}
+              value={wholesaleThreshold}
+              keyboardType="numeric"
+              onChangeText={(text) => setWholesaleThreshold(parseFloat(text))}
+            />
+          </View>
+        )}
+
+        {/* Wholesale Price */}
+        {product.wholesalePrice != null && (
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{t('wholesale_price')}:</Text>
+            <TextInput
+              style={[styles.detailValue, styles.inputField]}
+              value={wholesalePrice}
+              keyboardType="numeric"
+              onChangeText={(text) => setWholesalePrice(parseFloat(text))}
+            />
+          </View>
+        )}
+        {/* Save Changes Button */}
+        <SubmitButton buttonText={t('save_changes')} onPress={updatePrices} />
+
+        {/* Kategorija */}
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>{t('Category')}:</Text>
+          <Text style={styles.detailValue}>{product.productCategory.name}</Text>
+        </View>
           
-           <Text style={styles.detailLabel}>{t('Category')}:</Text>
-           <Text style={styles.detailValue}>{product.productCategory.name}</Text>
-         </View>
-        
-         {product.weight && (
-           <View style={styles.detailRow}>
-             <Text style={styles.detailLabel}>{t('Weight')}:</Text>
-             <Text style={styles.detailValue}>{product.weight} {product.weightUnit}</Text>
-           </View>
-         )}
-        
-         {product.volume && (
-           <View style={styles.detailRow}>
-             <Text style={styles.detailLabel}>{t('Volume')}:</Text>
-             <Text style={styles.detailValue}>{product.volume} {product.volumeUnit}</Text>
-           </View>
-         )}
-         <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('availability')}:</Text>
-            <Text style={[styles.detailValue, { color: product.isAvailable ? '#10b981' : '#ef4444', fontWeight: 'bold' }]}>
-              {product.isAvailable ? t('available') : t('unavailable')}
-            </Text>
-          </View> 
-       </View>
-       
-     </View>
-   </ScrollView>
+        {product.weight && (
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{t('Weight')}:</Text>
+            <Text style={styles.detailValue}>{product.weight} {product.weightUnit}</Text>
+          </View>
+        )}
+          
+        {product.volume && (
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>{t('Volume')}:</Text>
+            <Text style={styles.detailValue}>{product.volume} {product.volumeUnit}</Text>
+          </View>
+        )}
+
+        {/* Availability */}
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>{t('availability')}:</Text>
+          <Switch
+            value={isActive}
+            onValueChange={(newValue) => {
+              setIsActive(newValue);  // Update local state
+              updateAvailability(newValue);  // Call the function that handles the update
+            }}
+          />
+        </View>
+      </View>
+    </ScrollView>
  );
 }
 
@@ -194,6 +245,15 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
+  },
+  inputField: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    minWidth: 80,
   },
   navArrow: {
     position: "absolute",

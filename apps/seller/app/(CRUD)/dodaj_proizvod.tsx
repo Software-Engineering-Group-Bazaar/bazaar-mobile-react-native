@@ -34,6 +34,7 @@ import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
+import SetHeaderRight from '../../components/ui/NavHeader';
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -72,7 +73,7 @@ export default function AddProductScreen() {
   const [categories, setCategories] = useState<any[]>([]);
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
 
-  const [isAvailable, setIsAvailable] = useState(true);
+  const [isActive, setIsActive] = useState(true);
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -126,7 +127,7 @@ export default function AddProductScreen() {
           setVolume(productData.volume?.toString() ?? "");
           setVolumeUnit(productData.volumeUnit ?? volumeUnits[0]); // Vrati na default ako ne postoji
           setCategory(productData.productCategory?.id ?? null); // Postavi ID kategorije
-          setIsAvailable(productData.isAvailable ?? true); // Postavi dostupnost (default true)
+          setIsActive(productData.isActive ?? true); // Postavi dostupnost (default true)
           // TODO: Popuniti state za postojeće slike ako je potrebno
           // setExistingImages(productData.photos || []);
         } else {
@@ -155,14 +156,8 @@ export default function AddProductScreen() {
     // Ponovo izvrši ako se promeni mod (isEditing), jezik ili sama navigation instanca
   }, [isEditing, navigation, i18n.language, t]);
 
-  async function prepareImage(imageUri: string) {
-    const base64 = await FileSystem.readAsStringAsync(imageUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    return `data:image/jpeg;base64,${base64}`;
-  }
-
   const handleSave = async () => {
+    console.log(isActive);
     if (
       !name.trim() ||
       !price.trim() ||
@@ -192,63 +187,19 @@ export default function AddProductScreen() {
 
     setLoading(true);
 
-    /*setFormData((prevData) => ({
-      ...prevData, 
-      name: name, 
-      ProductCategoryId: category,
-      RetailPrice: price,
-      WholesalePrice: price,
-      Weight: weight,
-      WeightUnit: weightUnit,
-      Volume: volume,
-      VolumeUnit: volumeUnit,
-      StoreId: storeId
-    }));    
-
-    for (const image of images) {
-      const base64Image = await prepareImage(image.uri);
-      formData.append("Files", base64Image);
-    }*/
-    // ✅ Construct JSON object
-    /*const productPayload = {
-      Name: name,
-      ProductCategoryId: category,
-      RetailPrice: parseFloat(price),
-      WholesalePrice: parseFloat(price),
-      Weight: parseFloat(weight),
-      WeightUnit: weightUnit,
-      Volume: parseFloat(volume),
-      VolumeUnit: volumeUnit,
-      StoreId: storeId,
-      Files: images.map((image, index) => ({
-        uri: image.uri,
-        name: `photo_${index}.jpg`,
-        type: "image/jpeg",
-      })), 
-    };*/
     const formData = new FormData();
     formData.append("Name", name);
-    formData.append("ProductCategoryId", category.toString());
-    formData.append("RetailPrice", price.toString());
-    formData.append("WholesalePrice", price.toString());
-    formData.append("Weight", weight.toString());
-    formData.append("WeightUnit", weightUnit);
-    formData.append("Volume", volume.toString());
-    formData.append("VolumeUnit", volumeUnit);
-    formData.append("StoreId", storeId!.toString());
-    formData.append("IsAvailable", isAvailable.toString()); //novo
-    formData.append("RetailPrice", price.trim());
-    if (category) {
+    if (category != null) {
       // Provjeri da li je kategorija odabrana
       formData.append("ProductCategoryId", category.toString());
+    }
+    formData.append("RetailPrice", price.toString());
+    if (wholesalePrice.trim()) {
+      formData.append("WholesalePrice", wholesalePrice.trim()); //novo
     }
     if (wholesaleThreshold.trim()) {
       formData.append("WholesaleThreshold", wholesaleThreshold.trim()); //novo
     }
-    if (wholesalePrice.trim()) {
-      formData.append("WholesalePrice", wholesalePrice.trim()); //novo
-    }
-
     if (weight.trim()) {
       formData.append("Weight", weight.trim());
       formData.append("WeightUnit", weightUnit);
@@ -257,6 +208,8 @@ export default function AddProductScreen() {
       formData.append("Volume", volume.trim());
       formData.append("VolumeUnit", volumeUnit);
     }
+    formData.append("StoreId", storeId!.toString());
+    formData.append("IsActive", isActive.toString()); //novo
 
     images.forEach((image, index) => {
       formData.append("Files", {
@@ -270,6 +223,7 @@ export default function AddProductScreen() {
 
     try {
       setLoading(true);
+      console.log(formData);
       const response = await api.post("/Catalog/products/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -296,6 +250,7 @@ export default function AddProductScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
+      <SetHeaderRight title={t("add_a_product")} />
       <LanguageButton />
 
       {/*---------------------Screen Explorer Button----------------------*/}
@@ -342,6 +297,15 @@ export default function AddProductScreen() {
               value={wholesalePrice}
               onChangeText={setWholesalePrice}
               placeholder={t("enter_wholesale_price")}
+              keyboardType="decimal-pad"
+            />
+
+            {/* Threshold za veleprodajnu cijena */}
+            <InputField
+              label={t("wholesale_threshold")}
+              value={wholesaleThreshold}
+              onChangeText={setWholesaleThreshold}
+              placeholder={t("enter_wholesale_threshold")}
               keyboardType="decimal-pad"
             />
 
@@ -396,10 +360,10 @@ export default function AddProductScreen() {
               <Text style={styles.label}>{t("is_available")}</Text>
               <Switch
                 trackColor={{ false: "#d1d5db", true: "#a7f3d0" }} // Svetlije boje
-                thumbColor={isAvailable ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
+                thumbColor={isActive ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
                 ios_backgroundColor="#e5e7eb"
-                onValueChange={setIsAvailable}
-                value={isAvailable}
+                onValueChange={setIsActive}
+                value={isActive}
               />
             </View>
 

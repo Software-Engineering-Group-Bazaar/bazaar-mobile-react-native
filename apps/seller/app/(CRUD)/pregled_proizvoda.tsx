@@ -21,6 +21,7 @@ import { useCallback } from "react";
 import { Product } from "../types/proizvod";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
+import SetHeaderRight from '../../components/ui/NavHeader';
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
@@ -88,19 +89,20 @@ export default function ProductsScreen() {
   
    return (
    <View style={{ flex: 1 }}>
+     <SetHeaderRight title="Pregled proizvoda" />
      {/* Fiksirano dugme za promjenu jezika */}
      <LanguageButton />
 
      <ScrollView style={styles.scrollWrapper} contentContainerStyle={styles.scrollContent}>
+        {/*---------------------Screen Explorer Button----------------------*/}
+          <ScreenExplorer route="../(tabs)/screen_explorer" />
+        {/*-----------------------------------------------------------------*/}
+
        <TouchableOpacity
          style={styles.createButton}
-         onPress={() => router.push(`/(CRUD)/dodaj_proizvod/?storeId=${storeId}`)}
+         onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
          disabled={loading}
        >
-         
-         {/*---------------------Screen Explorer Button----------------------*/}
-          <ScreenExplorer route="../(tabs)/screen_explorer" />
-          {/*-----------------------------------------------------------------*/}
          {loading ? (
            <ActivityIndicator color="#fff" />
          ) : (

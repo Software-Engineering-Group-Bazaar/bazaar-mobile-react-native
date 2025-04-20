@@ -54,7 +54,7 @@ export default function screenExplorer() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => goToScreen("../(CRUD)/prodavnice_detalji")}
+        onPress={() => goToScreen("../(CRUD)/prodavnica_detalji")}
       >
         <Text style={styles.buttonText}>Go To Prodavnica Detalji</Text>
       </TouchableOpacity>
