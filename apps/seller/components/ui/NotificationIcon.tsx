@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Modal, Text } from 'react-native';
 import NotificationList from '../../app/(CRUD)/lista_notifikacija';
-
-// Simulated mock data or API call
-const mockNotifications = [
-  { id: 1, message: 'New order #123', read: false, timestamp: '...' },
-  { id: 2, message: 'Order confirmed', read: true, timestamp: '...' },
-];
+import { apiFetchUnreadCount } from '../../app/api/inboxApi';
 
 const NotificationIcon = () => {
   const [visible, setVisible] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
 
-  const checkUnread = () => {
-    const unread = mockNotifications.some((n) => !n.read);
-    setHasUnread(unread);
+  const fetchUnreadCount = async () => {
+    try {
+      const count = await apiFetchUnreadCount();
+      setHasUnread(count > 0);
+    } catch (error) {
+      console.error("Failed to fetch unread notification count");
+    }
   };
 
   useEffect(() => {
-    checkUnread();
-
-    // Optionally set up polling to check every few seconds
-    const interval = setInterval(checkUnread, 10000);
-    return () => clearInterval(interval);
+    fetchUnreadCount();
+    const intervalId = setInterval(fetchUnreadCount, 5000); 
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
