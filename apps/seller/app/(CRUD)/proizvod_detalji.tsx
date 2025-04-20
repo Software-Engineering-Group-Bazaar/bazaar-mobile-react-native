@@ -6,6 +6,9 @@ import {
   Image,
   ScrollView,
   Pressable,
+  Switch,
+  TextInput,
+  Button,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
@@ -16,14 +19,12 @@ import { FontAwesome } from "@expo/vector-icons";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from '../../components/ui/NavHeader';
-
+import { apiUpdateProductPrices, apiUpdateProductAvailability}  from '../api/productApi'
 
 export default function ProductScreen() {
-  
   const params = useLocalSearchParams();
   const router = useRouter();
-  const navigation = useNavigation();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const productString = Array.isArray(params.product)
     ? params.product[0]
@@ -33,6 +34,7 @@ export default function ProductScreen() {
   const photos = product?.photos || [];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isActive, setIsActive] = useState<boolean>(false); 
 
   const nextImage = () => {
     //  zamijeni mockPhotos sa photos
@@ -47,11 +49,27 @@ export default function ProductScreen() {
     }
   };
 
-  useEffect(() => {
-    navigation.setOptions({
-      title: product?.name || "",
-    });
-  }, [product, navigation]);
+  // Funkcije za izmjenu dostupnosti i cijene
+  const updateAvailability = async (newValue: boolean) => {
+    try {
+      await apiUpdateProductAvailability(product.id, newValue);
+      console.log("Availability updated!");
+    } catch (error) {
+      console.error("Error updating availability:", error);
+      setIsActive(!newValue);
+    }
+  };
+
+  const updatePrices = async () => {
+    const payload = {
+      productId: product.id,
+      retailPrice: product.retailPrice,
+      wholesalePrice: product.wholesalePrice,
+      wholesaleThreshold: product.wholesaleThreshold,
+    };
+    await apiUpdateProductPrices(payload);
+    console.log('Prices updated!');
+  };
 
   if (!product) {
     return (
@@ -123,27 +141,44 @@ export default function ProductScreen() {
 
       <View style={styles.detailsSection}>
     
-        {/* Maloprodajna Cena */}
+        {/* Retail Price */}
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>{t('retail_price')}:</Text>
-          <Text style={styles.detailValue}>{product.retailPrice} KM</Text>
+          <TextInput
+            style={styles.detailValue}
+            value={product.retailPrice.toString()}
+            keyboardType="numeric"
+            onChangeText={(text) => product.setRetailPrice(parseFloat(text))}
+          />
         </View>
 
-        {/* Prag za Veleprodaju (prikazi samo ako postoji) */}
-        {product.wholesaleThreshold != null && ( // Provera za null ili undefined
+        {/* Wholesale Threshold */}
+        {product.wholesaleThreshold != null && (
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>{t('wholesale_threshold')}:</Text>
-            <Text style={styles.detailValue}>{product.wholesaleThreshold}</Text> {/* Dodaj "kom" ili jedinicu ako treba */}
+            <TextInput
+              style={styles.detailValue}
+              value={product.wholesaleThreshold ? product.wholesaleThreshold.toString() : ''}
+              keyboardType="numeric"
+              onChangeText={(text) => product.setWholesaleThreshold(parseInt(text))}
+            />
           </View>
         )}
 
-        {/* Veleprodajna Cena (prikazi samo ako postoji) */}
-        {product.wholesalePrice != null && ( // Provera za null ili undefined
+        {/* Wholesale Price */}
+        {product.wholesalePrice != null && (
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>{t('wholesale_price')}:</Text>
-            <Text style={styles.detailValue}>{product.wholesalePrice} KM</Text>
+            <TextInput
+              style={styles.detailValue}
+              value={product.wholesalePrice ? product.wholesalePrice.toString() : ''}
+              keyboardType="numeric"
+              onChangeText={(text) => product.setWholesalePrice(parseFloat(text))}
+            />
           </View>
         )}
+        {/* Save Changes Button */}
+        <Button title="Save Changes" onPress={updatePrices} />
 
         {/* Kategorija */}
         <View style={styles.detailRow}>
@@ -165,12 +200,17 @@ export default function ProductScreen() {
           </View>
         )}
 
+        {/* Availability */}
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>{t('availability')}:</Text>
-          <Text style={[styles.detailValue, { color: product.isActive ? '#10b981' : '#ef4444', fontWeight: 'bold' }]}>
-            {product.isActive ? t('available') : t('unavailable')}
-          </Text>
-        </View> 
+          <Switch
+            value={isActive}
+            onValueChange={(newValue) => {
+              setIsActive(newValue);  // Update local state
+              updateAvailability(newValue);  // Call the function that handles the update
+            }}
+          />
+        </View>
       </View>
     </ScrollView>
  );

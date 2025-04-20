@@ -73,7 +73,7 @@ export default function AddProductScreen() {
   const [categories, setCategories] = useState<any[]>([]);
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
 
-  const [isAvailable, setIsAvailable] = useState(true);
+  const [isActive, setIsActive] = useState(true);
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -127,7 +127,7 @@ export default function AddProductScreen() {
           setVolume(productData.volume?.toString() ?? "");
           setVolumeUnit(productData.volumeUnit ?? volumeUnits[0]); // Vrati na default ako ne postoji
           setCategory(productData.productCategory?.id ?? null); // Postavi ID kategorije
-          setIsAvailable(productData.isAvailable ?? true); // Postavi dostupnost (default true)
+          setIsActive(productData.isActive ?? true); // Postavi dostupnost (default true)
           // TODO: Popuniti state za postojeće slike ako je potrebno
           // setExistingImages(productData.photos || []);
         } else {
@@ -157,7 +157,7 @@ export default function AddProductScreen() {
   }, [isEditing, navigation, i18n.language, t]);
 
   const handleSave = async () => {
-    console.log(isAvailable);
+    console.log(isActive);
     if (
       !name.trim() ||
       !price.trim() ||
@@ -209,7 +209,7 @@ export default function AddProductScreen() {
       formData.append("VolumeUnit", volumeUnit);
     }
     formData.append("StoreId", storeId!.toString());
-    formData.append("IsActive", isAvailable.toString()); //novo
+    formData.append("IsActive", isActive.toString()); //novo
 
     images.forEach((image, index) => {
       formData.append("Files", {
@@ -360,10 +360,10 @@ export default function AddProductScreen() {
               <Text style={styles.label}>{t("is_available")}</Text>
               <Switch
                 trackColor={{ false: "#d1d5db", true: "#a7f3d0" }} // Svetlije boje
-                thumbColor={isAvailable ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
+                thumbColor={isActive ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
                 ios_backgroundColor="#e5e7eb"
-                onValueChange={setIsAvailable}
-                value={isAvailable}
+                onValueChange={setIsActive}
+                value={isActive}
               />
             </View>
 

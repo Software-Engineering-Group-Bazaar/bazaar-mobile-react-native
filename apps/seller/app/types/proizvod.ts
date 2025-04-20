@@ -10,6 +10,6 @@ export interface Product {
     weightUnit?: string;
     volume?: number;
     volumeUnit?: string;
-    isAvailable: boolean; // NOVO: 
+    isActive: boolean; // NOVO: 
     storeId: number;
 }

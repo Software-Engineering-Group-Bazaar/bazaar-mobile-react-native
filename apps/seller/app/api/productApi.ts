@@ -39,6 +39,7 @@ export async function apiFetchProductDetails(productId: number): Promise<Product
         return null; 
     }
 }
+
 interface UpdatePricesPayload {
     productId: number;
     retailPrice: number;
@@ -50,12 +51,9 @@ export async function apiUpdateProductPrices(payload: UpdatePricesPayload): Prom
     return api.post(`/catalog/products/prices`, payload); // Šalje JSON payload
 }
 
-interface UpdateAvailabilityPayload {
-    productId: number;
-    isAvailable: boolean;
-}
-export async function apiUpdateProductAvailability(payload: UpdateAvailabilityPayload): Promise<any> {
-   
-    console.log("Calling API to update availability:", payload);
-    return api.post(`/catalog/product/isAvailable`, payload); 
+export async function apiUpdateProductAvailability(productId: number, isActive: boolean): Promise<any> {
+    console.log("Calling API to update availability:", { productId, isActive });
+    const url = `Catalog/products/${productId}/availability`;
+
+    return api.put(url, { isActive }); 
 }
