@@ -82,6 +82,9 @@
     "Product added to cart":"Proizvod dodan u korpu",
     "Add to Cart":"Dodaj u korpu",
     "This product is currently not available.":"Ovaj proizvod trenutno nije dostupan.",
-    "Make a change": "Napravite promjenu"
+    "Make a change": "Napravite promjenu",
+    "empty_cart":"Tvoja korpa je prazna.",
+    "submit_order":"Podnesi narudžbu",
+    "total":"Ukupno"
 }
   

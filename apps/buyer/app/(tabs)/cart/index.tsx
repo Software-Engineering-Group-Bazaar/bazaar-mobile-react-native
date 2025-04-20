@@ -33,12 +33,15 @@ interface Product {
 }
 
 const CartScreen = () => {
+  const { t } = useTranslation();
   const { cartItems, handleQuantityChange } = useCart();
 
-  const totalPrice = cartItems.reduce(
-    (sum, { product, qty }) => sum + product.retailPrice * qty,
-    0
-  );
+  const totalPrice = cartItems.reduce((sum, { product, qty }) => {
+    const useWholesale =
+      product.wholesaleThreshold !== undefined && qty > product.wholesaleThreshold;
+    const pricePerUnit = useWholesale ? product.wholesalePrice : product.retailPrice;
+    return sum + pricePerUnit * qty;
+  }, 0);
 
   const handleProductPress = (product: Product) => {
     router.push(`/cart/details/${product.id}`);
@@ -48,7 +51,7 @@ const CartScreen = () => {
     <View style={styles.container}>
       {cartItems.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Tvoja korpa je prazna.</Text>
+          <Text style={styles.emptyText}>{t('empty_cart')}</Text>
         </View>
       ) : (
         <>
@@ -65,9 +68,9 @@ const CartScreen = () => {
           />
           <View style={styles.summary}>
             <Text style={styles.totalText}>
-              Ukupno: KM {totalPrice.toFixed(2)}
+              {t('total')}: {totalPrice.toFixed(2)} KM
             </Text>
-            <Button color={'#4e8d7c'} title="Podnesi narudžbu" onPress={() => {console.log(cartItems)}} />
+            <Button color={'#4e8d7c'} title={t('submit_order')} onPress={() => {console.log(cartItems)}} />
           </View>
         </>
       )}
