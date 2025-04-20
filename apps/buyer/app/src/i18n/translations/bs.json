@@ -94,6 +94,15 @@
     "status_delivered": "Isporučeno",
     "status_rejected": "Odbijeno",
     "order_canceled": "Otkazano",
-    "orders_empty": "Nema narudžbi za prikaz."
+    "orders_empty": "Nema narudžbi za prikaz.",
+    "filter_products": "Filtriraj proizvode",
+    "select_region":"Odaberi regiju",
+    "all":"Sve",
+    "select_category":"Odaberi kategoriju",
+    "select_municipalities":"Odaberi općinu",
+    "close":"Zatvori",
+    "apply_filters":"Primijeni filtere",
+    "filter":"Filtriraj",
+    "reset_filters": "Resetuj filtere"
 }
   
