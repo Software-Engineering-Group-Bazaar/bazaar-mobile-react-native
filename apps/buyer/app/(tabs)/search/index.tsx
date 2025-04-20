@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
 import ProductItem from 'proba-package/product-item/index';
+// Pretpostavka da ova putanja vodi do AŽURIRANE ProductItem komponente
+import ProductItem from 'proba-package/product-item-buyer/index';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
+import { useCart } from '@/context/CartContext';
 import { useRouter } from 'expo-router';
 import { TouchableOpacity, Modal, Button, Dimensions, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import Checkbox from 'expo-checkbox';
@@ -133,6 +136,7 @@ const SearchProductsScreen = () => {
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [isRegionDropdownVisible, setIsRegionDropdownVisible] = useState(false);
   const [isCategoryDropdownVisible, setIsCategoryDropdownVisible] = useState(false);
+  const { addToCart } = useCart();
 
   const openFilterModal = () => {
     setIsFilterModalVisible(true);

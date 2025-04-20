@@ -70,6 +70,7 @@
     "code_placeholder": "Kod iz mail-a",
     "profile_title": "Profil",
     "profile_subtitle": "Upravljajte svojim profilom",
+    "cart": "Korpa",
     "loading":"Učitavanje...",
     "available":"Na stanju",
     "not-available":"Nema na stanju",
@@ -90,5 +91,6 @@
     "apply_filters":"Primijeni filtere",
     "filter":"Filtriraj",
     "reset_filters": "Resetuj filtere"
+    "Make a change": "Napravite promjenu"
 }
   

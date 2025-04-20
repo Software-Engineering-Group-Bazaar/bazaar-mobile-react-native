@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
+import { useCart } from '@/context/CartContext';
 
 interface ProductCategory {
   id: number;
@@ -61,6 +62,7 @@ const ProductDetailsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -216,7 +218,7 @@ const ProductDetailsScreen = () => {
             </View>
 
             {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
-            <TouchableOpacity style={styles.addToCartButton} onPress={() => alert(t('Product added to cart'))}>
+            <TouchableOpacity style={styles.addToCartButton} onPress={() => {addToCart(product, quantity); alert(t('Product added to cart'))}}>
               <Text style={styles.addToCartButtonText}>{t('Add to Cart')}</Text>
             </TouchableOpacity>
           </>

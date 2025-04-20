@@ -69,6 +69,7 @@
     "code_placeholder": "Code from mail",
     "profile_title": "Profile",
     "profile_subtitle": "Manage your profile",
+    "cart": "Cart",
     "loading":"Loading...",
     "available":"Available",
     "not-available": "Not available",
@@ -89,4 +90,5 @@
     "apply_filters":"Apply filters",
     "filter":"Filter",
     "reset_filters": "Reset filters"
+    "Make a change": "Make a change"
 }
