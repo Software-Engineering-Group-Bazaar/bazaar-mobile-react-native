@@ -148,7 +148,10 @@
   "Cancelled": "Cancelled",
   "Missing_Fields": "Missing Fields",
   "fill_in_all_fields": "Please fill in all price fields before saving.",
-  "prices_updated": "Prices have been updated successfully."
+  "prices_updated": "Prices have been updated successfully.",
+   "unexpected_error": "There has been an error.",
+   "account_not_active": "Account is not active.",
+   "unauthorized_access": "Unsuccessful signin"
 }
 
 

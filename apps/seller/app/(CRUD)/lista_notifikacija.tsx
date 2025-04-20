@@ -43,18 +43,19 @@ const NotificationList = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const markAsRead = async (id: number) => {
+  const markAsRead = async (notificationId: number, orderId: number) => {
     try {
-      await apiSetNotificationsAsRead(id);
+      await apiSetNotificationsAsRead(notificationId);
   
       const updated = notifications.map((n) =>
-        n.id === id ? { ...n, read: true } : n
+        n.id === notificationId ? { ...n, read: true } : n
       );
       setNotifications(updated);
+      console.log(notificationId, orderId)
 
       router.push({
-        pathname: './narudzba_detalji',
-        params: { id: id.toString() },
+        pathname: '/(CRUD)/narudzba_detalji',
+        params: { id: orderId.toString() },
       });
     } catch (error) {
       console.error("Error marking notification as read and redirecting:", error);
@@ -68,7 +69,7 @@ const NotificationList = () => {
       data={notifications}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => markAsRead(item.id)}>
+        <TouchableOpacity onPress={() => markAsRead(item.id, item.orderId)}>
           <View
             style={{ padding: 16, backgroundColor: item.isRead ? '#eee' : '#fff' }}
           >
