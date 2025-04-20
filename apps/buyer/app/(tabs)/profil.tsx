@@ -4,6 +4,7 @@ import * as SecureStore from 'expo-secure-store'; // Importaj SecureStore
 import { useRouter } from 'expo-router'; // Importaj useRouter iz expo-router
 // Pretpostavka: Koristiš neku i18n biblioteku. Ako ne, zamijeni 'useTranslation' odgovarajućim načinom dohvaćanja t funkcije.
 import { useTranslation } from 'react-i18next'; // Primjer: react-i18next
+import {} from '../screens/orders/index'; // Importaj sve potrebne tipove i funkcije iz orders/index
 
 export default function Profil() {
   const router = useRouter(); // Dohvati router objekt
@@ -36,14 +37,21 @@ export default function Profil() {
          <Text style={styles.title}>{t('profile_title')}</Text>
          <Text style={styles.subtitle}>{t('profile_subtitle')}</Text>
       </View>
+      {/* Dugme za "Moje narudžbe" */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push('../screens/orders')}
+      >
+        <Text style={styles.buttonText}>
+          {t('my_orders', 'Moje narudžbe')}
+        </Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} >
         <Text style={styles.buttonText}>{t('logout_button')}</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-// Tvoji stilovi (s malom prilagodbom za logout tipku ako želiš drugačiju boju)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -71,7 +79,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     backgroundColor: "#4e8d7c", // Crvena boja često se koristi za destruktivne akcije poput odjave
-    // backgroundColor: "#4E8D7C", // Ili koristi tvoju originalnu boju
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
@@ -82,7 +89,17 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-  // Ostali tvoji stilovi (nisu direktno korišteni u ovom primjeru, ali su tu)
+  // Koristi isti stil za gumb “Moje narudžbe”
+  button: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "#4E8D7C",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  // Ostali tvoji stilovi...
   input: {
     width: "100%",
     height: 50,
@@ -100,15 +117,6 @@ const styles = StyleSheet.create({
     borderRadius: 80,
     marginBottom: 20,
   },
-   button: { // Originalni stil tipke, možeš ga koristiti ako želiš istu boju
-     width: "100%",
-     height: 50,
-     backgroundColor: "#4E8D7C",
-     justifyContent: "center",
-     alignItems: "center",
-     borderRadius: 8,
-     marginBottom: 10,
-   },
   text: {
     fontSize: 14,
     color: "#333",
