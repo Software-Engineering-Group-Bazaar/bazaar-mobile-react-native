@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import { TouchableOpacity, Modal, Button, Dimensions, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import Checkbox from 'expo-checkbox';
 
 const screenWidth = Dimensions.get('window').width;
@@ -104,7 +103,7 @@ const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
 const DUMMY_REGIONS: Region[] = [
   { id: 1, naziv: 'Sarajevski kanton' },
   { id: 2, naziv: 'Tuzlanski kanton' },
-  { id: 3, naziv: 'Republika Srpska' }, // Primjer entiteta koji nije striktno kanton
+  { id: 3, naziv: 'Republika Srpska' },
 ];
 
 const DUMMY_MUNICIPALITIES: Municipality[] = [
