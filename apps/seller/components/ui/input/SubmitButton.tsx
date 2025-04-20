@@ -1,4 +1,4 @@
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import {
   StyleSheet,
@@ -9,12 +9,12 @@ import {
   View,
 } from "react-native";
 
-type FontAwesomeIconName = React.ComponentProps<typeof FontAwesome>["name"];
+type FontAwesome5IconName = React.ComponentProps<typeof FontAwesome5>["name"];
 interface SubmitButtonProps extends TouchableOpacityProps {
   buttonText: string;
   loading?: boolean;
   social?: boolean;
-  icon?: FontAwesomeIconName;
+  icon?: FontAwesome5IconName;
   small?: boolean;
   label?: string;
 }
@@ -53,7 +53,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
           ) : (
             <>
               {icon && (
-                <FontAwesome
+                <FontAwesome5
                   name={icon}
                   size={20}
                   color={iconColor}
