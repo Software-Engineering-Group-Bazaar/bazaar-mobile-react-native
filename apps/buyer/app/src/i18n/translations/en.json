@@ -87,5 +87,6 @@
     "select_municipalities":"Select municipalities",
     "close":"Close",
     "apply_filters":"Apply filters",
-    "filter":"Filter"
+    "filter":"Filter",
+    "reset_filters": "Reset filters"
 }

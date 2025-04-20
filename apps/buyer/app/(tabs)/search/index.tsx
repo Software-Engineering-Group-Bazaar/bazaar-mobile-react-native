@@ -4,7 +4,7 @@ import ProductItem from 'proba-package/product-item/index';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
-import { TouchableOpacity, Modal, Button, Dimensions, ScrollView } from 'react-native';
+import { TouchableOpacity, Modal, Button, Dimensions, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import Checkbox from 'expo-checkbox';
 
 const screenWidth = Dimensions.get('window').width;
@@ -321,7 +321,7 @@ const SearchProductsScreen = () => {
       fetchStoreProducts();
     }, 500);
     return () => clearTimeout(debounceFetch);
-  }, [searchQuery]);
+  }, [searchQuery, selectedCategory,selectedMunicipalities]);
 
   const handleProductPress = (product: Product) => {
     router.push(`/search/details/${product.id}`);
@@ -329,6 +329,14 @@ const SearchProductsScreen = () => {
 
   const handleCategorySelect = (categoryId: number | null) => {
     setSelectedCategory(categoryId);
+  };
+
+  const resetFilters = async () => {
+    setSelectedCategory(null);
+    setSelectedRegion(null);
+    setSelectedMunicipalities([]);
+    setIsRegionDropdownVisible(false);
+    setIsCategoryDropdownVisible(false);
   };
 
   const handleMunicipalityCheckboxChange = (municipalityId: number) => {
@@ -373,6 +381,9 @@ const SearchProductsScreen = () => {
     visible={isFilterModalVisible}
     onRequestClose={closeFilterModal}
 >
+<TouchableWithoutFeedback onPress={() => { 
+        closeFilterModal();  // Close the modal
+    }}>
     <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>{t('filter_products')}</Text>
@@ -536,14 +547,12 @@ const SearchProductsScreen = () => {
             )}
 
             <View style={styles.modalButtons}>
-            <Button title={t('apply_filters')} onPress={() => {
-                fetchStoreProducts()
-                closeFilterModal();
-              }} color='#4e8d7c'/>
+            <Button title={t('reset_filters')} onPress={resetFilters} color='#4e8d7c'/>
                 <Button title={t('close')} onPress={closeFilterModal} color="gray" />
             </View>
         </View>
     </View>
+    </TouchableWithoutFeedback>
 </Modal>
 
 
