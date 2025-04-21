@@ -120,7 +120,7 @@ const ProductDetailsScreen = () => {
 
 
           if(cartStore != 0 && cartStore != data.storeId){
-            Alert.alert("Khm nije ista prodavnica");
+            Alert.alert("Proizvod nije moguće dodati u korpu", "Već imate proizvode druge prodavnice u korpi. Finalizirajte narudžbu ili očistite korpu da biste mogli ovaj proizvod dodati u korpu.");
             data.isActive = false;
           }
 

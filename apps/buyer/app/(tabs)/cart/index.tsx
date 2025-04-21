@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, Touchable } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, Touchable, Alert } from 'react-native';
 import CartItem from 'proba-package/cart-item/index';
 // Pretpostavka da ova putanja vodi do AŽURIRANE ProductItem komponente
 import ProductItem from 'proba-package/product-item/index';
@@ -32,9 +32,16 @@ interface Product {
   wholesaleThreshold?: number;
 }
 
+interface ProductPayload {
+  id: number;
+  productId: number;
+  price: number;
+  quantity: number;
+}
+
 const CartScreen = () => {
   const { t } = useTranslation();
-  const { cartItems, handleQuantityChange } = useCart();
+  const { cartItems, handleQuantityChange, clearCart } = useCart();
 
   const totalPrice = cartItems.reduce((sum, { product, qty }) => {
     const useWholesale =
@@ -47,9 +54,13 @@ const CartScreen = () => {
     router.push(`/cart/details/${product.id}`);
   };
 
-  const checkoutOrder = () => {
+  const checkoutOrder = async () => {
     console.log(cartItems);
     if(cartItems.length && cartItems.length > 0){
+      const orderPayload : {storeId: number; orderItems: ProductPayload[]} = {
+        storeId: cartItems[0].product.storeId,
+        orderItems: []
+      };
       console.log("storeId: " + cartItems[0].product.storeId);
       for(let i in cartItems){
         let product = {
@@ -57,10 +68,33 @@ const CartScreen = () => {
           productId: cartItems[i].product.id,
           price: (cartItems[i].product.wholesaleThreshold && cartItems[i].qty >= cartItems[i].product.wholesaleThreshold)? 
             cartItems[i].product.wholesalePrice : cartItems[i].product.retailPrice,
-            quantity: cartItems[i].qty
+          quantity: cartItems[i].qty
         }
+        orderPayload.orderItems.push(product);
         console.log("product " + JSON.stringify(product));
       }
+
+      console.log(JSON.stringify(orderPayload));
+
+      const authToken = await SecureStore.getItemAsync('auth_token');
+      const loginRes = await fetch('http://192.168.0.25:5054/api/OrderBuyer/order/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}` // Odkomentariši ako API zahteva token
+        },
+        body: JSON.stringify(orderPayload) 
+      });
+
+      const loginData: any = await loginRes.json();
+      
+      if (loginRes.status != 201) {
+        // Alert.alert(t('login_failed',), t('invalid_credentials'));
+        Alert.alert("Narudžba neuspješna");
+        return;
+      }
+      Alert.alert("Narudžba uspješna", "Narudžba je uspješno napravljena.");
+      clearCart();
     }
   }
 
