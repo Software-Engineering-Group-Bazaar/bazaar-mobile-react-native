@@ -39,7 +39,7 @@ async function getAuthTokenFromStorage(): Promise<string | null> {
 }
 
 // ➤➤➤ ZAMIJENI SA SVOJIM BACKEND URL-om ➤➤➤
-const DEVICES_API_ENDPOINT = 'http://192.168.15.104:5054/api/Devices/pushNotification';
+const DEVICES_API_ENDPOINT = 'http://192.168.0.26:5054/api/Devices/pushNotification';
 // Primjer za Android emulator: 'http://10.0.2.2:5000/api/Devices/me/device'
 
 async function sendTokenToBackend(nativeToken: string) {
