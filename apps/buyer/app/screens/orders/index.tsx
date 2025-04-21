@@ -96,7 +96,7 @@ export default function OrdersScreen() {
           setOrders(DUMMY_ORDERS);
         } else {
           const authToken = await SecureStore.getItemAsync('auth_token');
-          const response = await fetch(`http://192.168.0.25:5054/api/OrderBuyer/order`, {
+          const response = await fetch(`https://bazaar-system.duckdns.org/api/OrderBuyer/order`, {
             // Dodaj method i headers ako je potrebno (posebno Authorization)
             method: 'GET',
             headers: {
@@ -112,7 +112,7 @@ export default function OrdersScreen() {
           // const response = await fetch('https://your-api/orders');
           const data : Order[] = await response.json();
 
-          const storesResponse = await fetch(`http://192.168.0.25:5054/api/Stores`, {
+          const storesResponse = await fetch(`https://bazaar-system.duckdns.org/api/Stores`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

@@ -169,7 +169,7 @@ const SearchProductsScreen = () => {
         }
 
         //dohvacanje kategorija
-        const categoriesResponse = await fetch('http://192.168.0.25:5054/api/Catalog/categories', {
+        const categoriesResponse = await fetch('https://bazaar-system.duckdns.org/api/Catalog/categories', {
           headers: {
             'Authorization': `Bearer ${authToken}`,
           },
@@ -182,7 +182,7 @@ const SearchProductsScreen = () => {
         setCategories(categoriesData);
 
         // dohvacanje regija
-        const regionsResponse = await fetch('http://192.168.0.25:5054/api/Geography/regions', {
+        const regionsResponse = await fetch('https://bazaar-system.duckdns.org/api/Geography/regions', {
           headers: {
             'Authorization': `Bearer ${authToken}`,
           },
@@ -223,7 +223,7 @@ const SearchProductsScreen = () => {
               throw new Error('Authentication token not found.');
             }
 
-            const url = `http://192.168.0.25:5054/api/Geography/region/${regionId}`;
+            const url = `https://bazaar-system.duckdns.org/api/Geography/region/${regionId}`;
 
             const municipalitiesResponse = await fetch(url, {
               headers: {
@@ -333,7 +333,7 @@ const SearchProductsScreen = () => {
     //   body: JSON.stringify(body),
     // });
 
-    const baseUrl = 'http://192.168.0.25:5054/api/Catalog/filter';
+    const baseUrl = 'https://bazaar-system.duckdns.org/api/Catalog/filter';
 
     // Koristimo URLSearchParams za lako kreiranje query stringa
     const params = new URLSearchParams();

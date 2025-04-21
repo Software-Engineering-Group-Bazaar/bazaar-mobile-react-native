@@ -53,7 +53,7 @@ const StoresScreen = () => {
           throw new Error('Authentication token not found.');
         }
 
-        const endpoint = `http://192.168.0.25:5054/api/Stores/search?query=${encodeURIComponent(searchQuery)}`;
+        const endpoint = `https://bazaar-system.duckdns.org/api/Stores/search?query=${encodeURIComponent(searchQuery)}`;
 
         const response = await fetch(endpoint, {
           method: 'GET',

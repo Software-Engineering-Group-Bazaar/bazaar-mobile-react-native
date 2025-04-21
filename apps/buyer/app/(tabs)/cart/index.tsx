@@ -77,7 +77,7 @@ const CartScreen = () => {
       console.log(JSON.stringify(orderPayload));
 
       const authToken = await SecureStore.getItemAsync('auth_token');
-      const loginRes = await fetch('http://192.168.0.25:5054/api/OrderBuyer/order/create', {
+      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/OrderBuyer/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

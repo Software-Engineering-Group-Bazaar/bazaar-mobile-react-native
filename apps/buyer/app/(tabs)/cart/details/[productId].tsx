@@ -103,7 +103,7 @@ const ProductDetailsScreen = () => {
       } else {
         try {
           const authToken = await SecureStore.getItemAsync('auth_token');
-          const response = await fetch(`http://192.168.0.25:5054/api/Catalog/products/${productId}`, {
+          const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products/${productId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${authToken}`,

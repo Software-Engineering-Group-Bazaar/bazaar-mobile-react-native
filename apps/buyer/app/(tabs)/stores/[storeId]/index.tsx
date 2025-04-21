@@ -106,7 +106,7 @@ const StoreProductsScreen = () => {
         // console.log(`http://192.168.0.25:5054/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`);
         // Proveri da li ovaj endpoint zaista vraća proizvode za SPECIFIČNI storeId i u NOVOM formatu
         // const response = await fetch(`https://bazaar-system.duckdns.org/api/catalog/store/${storeId}/products`, {
-        const response = await fetch(`http://192.168.0.25:5054/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
+        const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
           // Dodaj method i headers ako je potrebno (posebno Authorization)
           method: 'GET',
           headers: {
