@@ -151,7 +151,8 @@
   "prices_updated": "Prices have been updated successfully.",
    "unexpected_error": "There has been an error.",
    "account_not_active": "Account is not active.",
-   "unauthorized_access": "Unsuccessful signin"
+   "unauthorized_access": "Unsuccessful signin",
+   "region": "Region"
 }
 
 

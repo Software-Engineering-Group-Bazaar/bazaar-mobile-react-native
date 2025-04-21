@@ -9,6 +9,7 @@ import { Platform, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import * as SecureStore from 'expo-secure-store'; // <<< Dodaj SecureStore
+import { apiSetNotificationsAsRead } from '../app/api/inboxApi';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -39,7 +40,7 @@ async function getAuthTokenFromStorage(): Promise<string | null> {
 }
 
 // ➤➤➤ ZAMIJENI SA SVOJIM BACKEND URL-om ➤➤➤
-const DEVICES_API_ENDPOINT = 'http://192.168.0.26:5054/api/Devices/pushNotification';
+const DEVICES_API_ENDPOINT = 'https://bazaar-system.duckdns.org/api/Devices/pushNotification';
 // Primjer za Android emulator: 'http://10.0.2.2:5000/api/Devices/me/device'
 
 async function sendTokenToBackend(nativeToken: string) {
@@ -179,7 +180,7 @@ export default function RootLayout() {
       // Listener za primljene notifikacije (foreground)
       notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
         console.log('Notification Received (Foreground) in _layout:', notification);
-        Alert.alert(notification.request.content.title ?? "Obavijest", notification.request.content.body ?? "");
+        //Alert.alert(notification.request.content.title ?? "Obavijest", notification.request.content.body ?? "");
       });
 
       // Listener za klik na notifikaciju
@@ -188,7 +189,24 @@ export default function RootLayout() {
         const data = response.notification.request.content.data;
         if (data && data.orderId) {
           console.log(`User tapped notification for Order ID: ${data.orderId}. Navigating...`);
-          // ➤➤➤ IMPLEMENTIRAJ NAVIGACIJU ➤➤➤
+          router.push({
+            pathname: '/(CRUD)/narudzba_detalji',
+            params: { id: data.orderId.toString() },
+          });
+          /*const handleNotificationTap = async () => {
+            router.push({
+              pathname: '/(CRUD)/narudzba_detalji',
+              params: { id: data.orderId.toString() },
+            });
+      
+            try {
+              console.log("Notification ID:", data);
+              await apiSetNotificationsAsRead(data.id);
+            } catch (error) {
+              console.error("Failed to mark notification as read:", error);
+            }
+          };
+          handleNotificationTap();*/
         } else {
              console.log("User tapped notification without specific nav data.");
         }

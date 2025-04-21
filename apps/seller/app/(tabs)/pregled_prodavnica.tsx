@@ -19,6 +19,7 @@ export default function StoresScreen() {
     async function getStore() {
       setLoading(true);
       const activeStore = await apiFetchActiveStore();
+      console.log(activeStore);
       if (activeStore) {
         setStore(activeStore);
       }

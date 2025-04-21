@@ -195,10 +195,7 @@ export default function OrderDetailsScreen() {
 
   return (
     <View style={styles.rootWrapper}>
-      <SetHeaderRight title={t("add_a_product")} />
-      <Stack.Screen
-        options={{ title: t("order_overview"), headerTitleAlign: "center" }}
-      />
+      <SetHeaderRight title={t("order_overview")} />
 
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={handleDelete} style={{ marginRight: 8 }}>

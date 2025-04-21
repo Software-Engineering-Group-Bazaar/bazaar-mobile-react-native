@@ -64,7 +64,7 @@ export default function SignIn() {
         console.log("User Info:", { idToken });
 
         const apiResponse = await fetch(
-          "http://192.168.15.104:5054/api/Auth/login/google",
+          "https://bazaar-system.duckdns.org/api/Auth/login/google",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

@@ -26,7 +26,7 @@ export async function apiFetchAllCategoriesAsync(): Promise<
 
 export async function apiFetchActiveStore(): Promise<Store | null> {
   try {
-    const response = await api.get("/Stores/MyStore");
+    const response = await api.get("Stores/MyStore");
     console.log(response);
 
     const store = response.data;
@@ -53,46 +53,42 @@ export async function apiCreateNewStoreAsync(
 ): Promise<boolean> {
   try {
     console.log(storeInfo);
-    const response = await api.post("/Stores", storeInfo);
+    const response = await api.post("Stores", storeInfo);
     if (response.status === 200 || response.status === 201) {
       Alert.alert(t("success"), t("store_updated"));
       return true;
     } else {
       throw new Error("Unexpected response status: " + response.status);
     }
-  } catch (error) {
-    console.error("Error fetching stores:", error);
+  } catch (error: any) {
+    console.error("Error creating store:", error);
+  
+    // Log the error response if available (useful for debugging API issues)
+    if (error.response) {
+      console.error("Response Data:", error.response.data);
+      console.error("Response Status:", error.response.status);
+      console.error("Response Headers:", error.response.headers);
+    }
     throw error;
   }
 }
 
-// Treba napraviti funckiju za dobavljanje gradova
-
-//------------------------MOCK apiGetRegionsAsync------------------------
-export interface Region {
-  id: number;
-  name: string;
-  country: string;
+export async function apiGetRegionsAsync() {
+  try {
+    const response = await api.get("/Geography/regions");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch regions:", error);
+    return [];
+  }
 }
 
-// Mocked data from your screenshot
-const mockRegions: Region[] = [
-  { id: 1, name: "Kanton Sarajevo", country: "ba" },
-  { id: 2, name: "Tuzlanski kanton", country: "ba" },
-  { id: 3, name: "Zeničko-dobojski kanton", country: "ba" },
-  { id: 4, name: "Hercegovačko-neretvanski kanton", country: "ba" },
-  { id: 5, name: "Unsko-sanski kanton", country: "ba" },
-  { id: 6, name: "Srednjobosanski kanton", country: "ba" },
-  { id: 7, name: "Brčko Distrikt", country: "ba" },
-  { id: 8, name: "Banjalučka regija", country: "ba" },
-];
-
-// Simulate API delay
-export const apiGetRegionsAsync = (): Promise<Region[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockRegions);
-    }, 100); // optional delay to simulate loading
-  });
-};
-//------------------------MOCK apiGetRegionsAsync------------------------
+export async function apiGetPlacesAsync(regionId: number) {
+  try {
+    const response = await api.get(`/Geography/region/${regionId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch places:", error);
+    return [];
+  }
+}

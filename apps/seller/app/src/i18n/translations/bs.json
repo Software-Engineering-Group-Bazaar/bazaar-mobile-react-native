@@ -151,5 +151,6 @@
   "prices_updated": "Cijene su uspješno izmijenjene.",
   "unexpected_error": "Došlo je do greške.",
   "account_not_active": "Račun nije aktivan.",
-  "unauthorized_access": "Neuspješna prijava"
+  "unauthorized_access": "Neuspješna prijava",
+  "region": "Region"
 }
