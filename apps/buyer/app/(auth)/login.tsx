@@ -163,7 +163,7 @@ export default function SignIn() {
       console.log(JSON.stringify({ email, password, app:"buyer" }));
 
       // Step 1: Send login request
-      const loginRes = await fetch('http://192.168.0.25:5054/api/Auth/login', {
+      const loginRes = await fetch('http://192.168.0.26:5054/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, app:"buyer" }) 
