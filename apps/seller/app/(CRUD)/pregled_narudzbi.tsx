@@ -206,11 +206,8 @@ export default function OrdersScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{ title: t("orders"), headerTitleAlign: "center" }}
-      />
       <View style={{ flex: 1 }}>
-        <SetHeaderRight title={t("add_a_product")} />
+        <SetHeaderRight title={t("orders")} />
 
         <TouchableOpacity
           onPress={toggleLanguage}

@@ -39,9 +39,9 @@ export default function HomeScreen() {
       <SetHeaderRight title="Početna" />
       <LanguageButton />
 
-      {/*---------------------Screen Explorer Button----------------------*/}
+      {/*---------------------Screen Explorer Button----------------------
       <ScreenExplorer route="../(tabs)/screen_explorer" />
-      {/*-----------------------------------------------------------------*/}
+      -----------------------------------------------------------------*/}
 
       {/* Dodan logo */}
       <Image

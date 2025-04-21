@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import SubmitButton from "@/components/ui/input/SubmitButton";
@@ -12,18 +12,11 @@ export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
-  const navigation = useNavigation();
 
   const storeString = Array.isArray(params.store)
     ? params.store[0]
     : params.store;
   const store = storeString ? JSON.parse(storeString) : null;
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: t("store_overview"),
-    });
-  }, [i18n.language, navigation]);
 
   const handleSave = () => {
     if (store) {
@@ -45,8 +38,9 @@ export default function PregledProdavnice() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
+      
       <View style={styles.container}>
-        <SetHeaderRight title="Detalji prodavnice" />
+        <SetHeaderRight title={t("store_overview")} />
         <LanguageButton />
 
         <InfoCard icon="store" title={t("store_name")} text={store.name} />
