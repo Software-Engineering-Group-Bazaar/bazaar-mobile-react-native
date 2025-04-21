@@ -99,7 +99,6 @@ export default function AddProductScreen() {
   }, [navigation, i18n.language, t]);
 
   const handleSave = async () => {
-    console.log(isActive);
     if (
       !name.trim() ||
       !price.trim() ||
@@ -177,10 +176,6 @@ export default function AddProductScreen() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    navigation.setOptions({ title: t("add_a_product") });
-  }, [i18n.language, navigation]);
 
   return (
     <KeyboardAvoidingView
@@ -338,17 +333,6 @@ const styles = StyleSheet.create({
     color: "#374151",
     marginBottom: 8,
   },
-  dropdown: {
-    borderRadius: 8,
-    borderColor: "#ccc",
-    backgroundColor: "#f7f7f7",
-    marginBottom: 16,
-  },
-  dropdownContainer: {
-    borderColor: "#ccc",
-    backgroundColor: "#fff",
-    zIndex: 1000,
-  },
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -358,16 +342,5 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: "#e5e7eb",
-  },
-  loadingOverlay: {
-    position: "absolute", // Da prekrije ceo ekran
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    alignItems: "center", // Centriraj indikator horizontalno
-    justifyContent: "center", // Centriraj indikator vertikalno
-    backgroundColor: "rgba(255, 255, 255, 0.8)", // Poluprovidna bela pozadina
-    zIndex: 9999, // Osiguraj da je iznad ostalih elemenata
   },
 });
