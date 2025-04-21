@@ -1,28 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useLocalSearchParams } from 'expo-router';
-import { apiFetchCategories } from '../api/productApi'; 
-import api from '../api/defaultApi'
-import * as FileSystem from 'expo-file-system';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Switch,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { useTranslation } from "react-i18next";
+import { useNavigation } from "@react-navigation/native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import api from "../api/defaultApi";
+//-------------------Route Explorer---------------------------------
+import LanguageButton from "@/components/ui/LanguageButton";
+import InputField from "@/components/ui/input/InputField";
+import SubmitButton from "@/components/ui/input/SubmitButton";
+import ImagePreviewList from "@/components/ui/ImagePreviewList";
+import DropdownPicker from "@/components/ui/input/DropdownPicker";
+import SetHeaderRight from "../../components/ui/NavHeader";
+import { apiFetchCategories } from "../api/productApi";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
 
 export default function AddProductScreen() {
   const { t, i18n } = useTranslation();
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [weight, setWeight] = useState('');
-  const [volume, setVolume] = useState('');
+  const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  const router = useRouter(); // Premesti ovde
+  const storeId = params.storeId ? Number(params.storeId) : null; // Dodaj i storeId ovde
+  // const isEditing = productId !== null;
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState(""); // Ovo će biti Maloprodajna
+  const [wholesaleThreshold, setWholesaleThreshold] = useState(""); // NOVO: Prag
+  const [wholesalePrice, setWholesalePrice] = useState(""); // NOVO: Veleprodajna
+  const [weight, setWeight] = useState("");
+  const [volume, setVolume] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [weightOpen, setWeightOpen] = useState(false);
   const [weightUnit, setWeightUnit] = useState(weightUnits[0]);
   const [weightItems, setWeightItems] = useState(
@@ -36,23 +53,12 @@ export default function AddProductScreen() {
   );
 
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const [category, setCategory] = useState<number>(0);
+  const [category, setCategory] = useState<number | null>(null); // Inicijalizacija na null
 
   const [categories, setCategories] = useState<any[]>([]);
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
-  const router = useRouter();
-  const { storeId } = useLocalSearchParams();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    weight: "",
-    weightunit: "kg",
-    volume: "",
-    volumeunit: "L",
-    productcategoryid: "",
-    photos: [],
-  });
+  const [isActive, setIsActive] = useState(true);
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -60,7 +66,7 @@ export default function AddProductScreen() {
       allowsMultipleSelection: true,
       quality: 1,
     });
-  
+
     if (!result.canceled) {
       setImages(result.assets);
     }
@@ -69,73 +75,76 @@ export default function AddProductScreen() {
   useEffect(() => {
     const fetchCategories = async () => {
       const data = await apiFetchCategories();
-      const formattedCategories = data.map((cat: { id: number; name: string }) => ({
-        label: cat.name,
-        value: cat.id,
-      }));
+      const formattedCategories = data.map(
+        (cat: { id: number; name: string }) => ({
+          label: cat.name,
+          value: cat.id,
+        })
+      );
 
       setCategories(formattedCategories);
       console.log("Fetched categories:", formattedCategories);
     };
-  
+
     fetchCategories();
   }, []);
 
-  async function prepareImage(imageUri: string) {
-    const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 });
-    return `data:image/jpeg;base64,${base64}`;
-  }
-  
+  // Postavljanje naslova ekrana dinamički (Dodaj/Uredi Proizvod)
+  useEffect(() => {
+    navigation.setOptions({
+      title: t("add_a_product"),
+    });
+    // Ponovo izvrši ako se promeni mod (isEditing), jezik ili sama navigation instanca
+  }, [navigation, i18n.language, t]);
+
   const handleSave = async () => {
-    if (!name.trim() || !price.trim() || !weight.trim() || !volume.trim()) {
-      Alert.alert(t("error"), t("fill_all_fields"));
+    if (
+      !name.trim() ||
+      !price.trim() ||
+      category == null ||
+      !wholesaleThreshold.trim() ||
+      !wholesalePrice.trim()
+    ) {
+      Alert.alert(t("error"), t("fill_all_fields")); // Možda treba specifičnija poruka
+      return;
+    }
+    const isWeightProvided = weight.trim() !== "";
+    const isVolumeProvided = volume.trim() !== "";
+    if (!isWeightProvided && !isVolumeProvided) {
+      Alert.alert(t("error"), t("error_weight_or_volume_required"));
+      return;
+    }
+    if (storeId == null) {
+      console.error("Store ID missing for create.");
+      Alert.alert(t("error"), t("something_went_wrong"));
       return;
     }
 
-    /*setFormData((prevData) => ({
-      ...prevData, 
-      name: name, 
-      ProductCategoryId: category,
-      RetailPrice: price,
-      WholesalePrice: price,
-      Weight: weight,
-      WeightUnit: weightUnit,
-      Volume: volume,
-      VolumeUnit: volumeUnit,
-      StoreId: storeId
-    }));    
+    setLoading(true);
 
-    for (const image of images) {
-      const base64Image = await prepareImage(image.uri);
-      formData.append("Files", base64Image);
-    }*/
-    // ✅ Construct JSON object
-    /*const productPayload = {
-      Name: name,
-      ProductCategoryId: category,
-      RetailPrice: parseFloat(price),
-      WholesalePrice: parseFloat(price),
-      Weight: parseFloat(weight),
-      WeightUnit: weightUnit,
-      Volume: parseFloat(volume),
-      VolumeUnit: volumeUnit,
-      StoreId: storeId,
-      Files: images.map((image, index) => ({
-        uri: image.uri,
-        name: `photo_${index}.jpg`,
-        type: "image/jpeg",
-      })), 
-    };*/
     const formData = new FormData();
     formData.append("Name", name);
-    formData.append("ProductCategoryId", category.toString());
+    if (category != null) {
+      // Provjeri da li je kategorija odabrana
+      formData.append("ProductCategoryId", category.toString());
+    }
     formData.append("RetailPrice", price.toString());
-    formData.append("WholesalePrice", price.toString());
-    formData.append("Weight", weight.toString());
-    formData.append("WeightUnit", weightUnit);
-    formData.append("Volume", volume.toString());
-    formData.append("VolumeUnit", volumeUnit);
-    formData.append("StoreId", storeId.toString());
+    if (wholesalePrice.trim()) {
+      formData.append("WholesalePrice", wholesalePrice.trim()); //novo
+    }
+    if (wholesaleThreshold.trim()) {
+      formData.append("WholesaleThreshold", wholesaleThreshold.trim()); //novo
+    }
+    if (weight.trim()) {
+      formData.append("Weight", weight.trim());
+      formData.append("WeightUnit", weightUnit);
+    }
+    if (volume.trim()) {
+      formData.append("Volume", volume.trim());
+      formData.append("VolumeUnit", volumeUnit);
+    }
+    formData.append("StoreId", storeId!.toString());
+    formData.append("IsActive", isActive.toString()); //novo
 
     images.forEach((image, index) => {
       formData.append("Files", {
@@ -146,15 +155,16 @@ export default function AddProductScreen() {
     });
 
     console.log("Payload to send:", formData);
-  
+
     try {
       setLoading(true);
+      console.log(formData);
       const response = await api.post("/Catalog/products/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       console.log("Upload Success:", response.data);
       Alert.alert(t("success"), t("store_updated"));
       router.back();
@@ -166,107 +176,128 @@ export default function AddProductScreen() {
     }
   };
 
-  const navigation = useNavigation();
-  const toggleLanguage = () => i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
-
-  useEffect(() => {
-    navigation.setOptions({ title: t('add_a_product') });
-  }, [i18n.language, navigation]);
-
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-      <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
-        <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-      </TouchableOpacity>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={{ flex: 1 }}
+    >
+      <SetHeaderRight title={t("add_a_product")} />
+      <LanguageButton />
 
-      <KeyboardAwareScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>{t('add_a_product')}</Text>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === "ios" ? 20 : 150}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.title}>{t("add_a_product")}</Text>
 
         <View style={[styles.form, { zIndex: 0 }]}>
-          <Text style={styles.label}>{t('product_name')}</Text>
-          <TextInput style={styles.input} value={name} onChangeText={setName} placeholder={t('enter_product_name')} />
+          <InputField
+            label={t("product_name")}
+            value={name}
+            onChangeText={setName}
+            placeholder={t("enter_product_name")}
+          />
 
-          <Text style={styles.label}>{t('price')}</Text>
-          <TextInput style={styles.input} value={price} onChangeText={setPrice} placeholder={t('enter_price')} keyboardType="decimal-pad" />
+          <InputField
+            label={t("retail_price")}
+            value={price}
+            onChangeText={setPrice}
+            placeholder={t("enter_retail_price")}
+            keyboardType="decimal-pad"
+          />
 
-          <Text style={styles.label}>{t('weight')}</Text>
-          <TextInput style={styles.input} value={weight} onChangeText={setWeight} placeholder={t('enter_weight')} keyboardType="decimal-pad" />
-          <View style={{ zIndex: 3000 }}>
-            <DropDownPicker
-              open={weightOpen}
-              value={weightUnit}
-              items={weightItems}
-              setOpen={setWeightOpen}
-              setValue={setWeightUnit}
-              setItems={setWeightItems}
-              placeholder={t('select_unit')}
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              listMode="SCROLLVIEW"
+          {/* Veleprodajna Cijena */}
+          <InputField
+            label={t("wholesale_price")}
+            value={wholesalePrice}
+            onChangeText={setWholesalePrice}
+            placeholder={t("enter_wholesale_price")}
+            keyboardType="decimal-pad"
+          />
+
+          {/* Threshold za veleprodajnu cijena */}
+          <InputField
+            label={t("wholesale_threshold")}
+            value={wholesaleThreshold}
+            onChangeText={setWholesaleThreshold}
+            placeholder={t("enter_wholesale_threshold")}
+            keyboardType="decimal-pad"
+          />
+
+          <InputField
+            label={t("weight")}
+            value={weight}
+            onChangeText={setWeight}
+            placeholder={t("enter_weight")}
+            keyboardType="decimal-pad"
+          />
+
+          <DropdownPicker
+            open={weightOpen}
+            value={weightUnit}
+            items={weightItems}
+            setOpen={setWeightOpen}
+            setValue={setWeightUnit}
+            setItems={setWeightItems}
+            placeholder={t("select-unit")}
+          />
+
+          <InputField
+            label={t("volume")}
+            value={volume}
+            onChangeText={setVolume}
+            placeholder={t("enter_volume")}
+            keyboardType="decimal-pad"
+          />
+
+          <DropdownPicker
+            open={volumeOpen}
+            value={volumeUnit}
+            items={volumeItems}
+            setOpen={setVolumeOpen}
+            setValue={setVolumeUnit}
+            setItems={setVolumeItems}
+            placeholder={t("select-unit")}
+          />
+
+          <DropdownPicker
+            open={categoryOpen}
+            value={category}
+            items={categories}
+            setOpen={setCategoryOpen}
+            setValue={setCategory}
+            setItems={setCategories}
+            placeholder={t("select_category")}
+          />
+
+          {/* << NOVO: Switch za IsAvailable >> */}
+          <View style={styles.switchContainer}>
+            <Text style={styles.label}>{t("is_available")}</Text>
+            <Switch
+              trackColor={{ false: "#d1d5db", true: "#a7f3d0" }} // Svetlije boje
+              thumbColor={isActive ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
+              ios_backgroundColor="#e5e7eb"
+              onValueChange={setIsActive}
+              value={isActive}
             />
           </View>
 
-          <Text style={styles.label}>{t('volume')}</Text>
-          <TextInput style={styles.input} value={volume} onChangeText={setVolume} placeholder={t('enter_volume')} keyboardType="decimal-pad" />
-          <View style={{ zIndex: 2000 }}>
-            <DropDownPicker
-              open={volumeOpen}
-              value={volumeUnit}
-              items={volumeItems}
-              setOpen={setVolumeOpen}
-              setValue={setVolumeUnit}
-              setItems={setVolumeItems}
-              placeholder={t('select_unit')}
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              listMode="SCROLLVIEW"
-            />
-          </View>
+          <SubmitButton
+            label={t("images")}
+            onPress={pickImages}
+            buttonText={t("select_images")}
+          />
 
-          <Text style={styles.label}>{t('category')}</Text>
-          <View style={{ zIndex: 1000 }}>
-            <DropDownPicker
-              open={categoryOpen}
-              value={category}
-              items={categories}
-              setOpen={setCategoryOpen}
-              setValue={setCategory}
-              setItems={setCategories}
-              placeholder={t('select_category')}
-              style={styles.dropdown}
-              dropDownContainerStyle={styles.dropdownContainer}
-              listMode="SCROLLVIEW"
-            />
-          </View>
+          <ImagePreviewList images={images} />
 
-          <Text style={styles.label}>{t('images')}</Text>
-          <TouchableOpacity style={styles.imageButton} onPress={pickImages}>
-            <Text style={styles.imageButtonText}>{t('select_images')}</Text>
-          </TouchableOpacity>
-
-          <View style={styles.imagePreviewContainer}>
-          {images.length > 0 ? (
-            <View style={styles.imagePreviewContainer}>
-              {images.map((image, index) => (
-                <Image key={index} source={{ uri: image.uri }} style={styles.imagePreview} />
-              ))}
-            </View>
-          ) : (
-            <Text>{t('No Images Selected')}</Text>
-          )}
-          </View>
-
-          <TouchableOpacity style={styles.button} onPress={handleSave} disabled={loading}>
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <>
-                <FontAwesome name="save" size={18} color="#fff" />
-                <Text style={styles.buttonText}> {t('save_changes')}</Text>
-              </>
-            )}
-          </TouchableOpacity>
+          <SubmitButton
+            onPress={handleSave}
+            loading={loading}
+            buttonText={t("save_changes")}
+          />
         </View>
       </KeyboardAwareScrollView>
     </KeyboardAvoidingView>
@@ -276,43 +307,16 @@ export default function AddProductScreen() {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingBottom: 40,
     paddingTop: 80,
   },
-  topSpace: {
-    height: 80,
-    justifyContent: 'center',
-  },
-  topButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-  topRightButtons: {
-    flexDirection: 'row',
-    gap: 10,
-  },
   title: {
     fontSize: 26,
-    fontWeight: 'bold',
-    color: '#4E8D7C',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#4E8D7C",
+    textAlign: "center",
     marginTop: 20,
-  },
-  topButton: {
-    backgroundColor: '#22C55E',
-    padding: 8,
-    borderRadius: 8,
-  },
-  topButtonText: {
-    color: '#fff',
-    fontSize: 14,
   },
   form: {
     padding: 16,
@@ -320,121 +324,18 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
     marginBottom: 8,
   },
-  languageButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#f1f5f9',
-    zIndex: 1000,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-  input: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#4E8D7C',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-    marginLeft: 10,
-  },
-  row: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    gap: 12,
-  },
-  flex1: {
-    flex: 1,
-  },
-  picker: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    width: "30%",
-    height: '75%',
-  },
-  pickerFull: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  imageButton: {
-    backgroundColor: '#4E8D7C',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  imageButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#4E8D7C',
-    marginTop: 2,
-  },
-  imagePreviewContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    padding: 10,
-  },
-  imagePreview: {
-    width: 100,
-    height: 100,
-    margin: 5,
-    borderRadius: 10,
-  },
-  submitButton: {
-    backgroundColor: '#4E8D7C',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  dropdown: {
-    borderRadius: 8,
-    borderColor: '#ccc',
-    backgroundColor: '#f7f7f7',
-    marginBottom: 16,
-  },
-  dropdownContainer: {
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
-    zIndex: 1000,
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20, // Dodaj malo veći razmak ispod switcha
+    paddingVertical: 10, // Vertikalni padding za bolji izgled
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
   },
 });
