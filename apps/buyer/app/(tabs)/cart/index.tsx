@@ -28,7 +28,7 @@ interface Product {
   volumeUnit?: string;
   storeId: number;                 // Promijenjeno iz storeID (usklađeno s formatom)
   photos: string[];                // Promijenjeno iz imageUrl u niz stringova
-  isAvailable: boolean;
+  isActive: boolean;
   wholesaleThreshold?: number;
 }
 
@@ -46,6 +46,23 @@ const CartScreen = () => {
   const handleProductPress = (product: Product) => {
     router.push(`/cart/details/${product.id}`);
   };
+
+  const checkoutOrder = () => {
+    console.log(cartItems);
+    if(cartItems.length && cartItems.length > 0){
+      console.log("storeId: " + cartItems[0].product.storeId);
+      for(let i in cartItems){
+        let product = {
+          id: 0,
+          productId: cartItems[i].product.id,
+          price: (cartItems[i].product.wholesaleThreshold && cartItems[i].qty >= cartItems[i].product.wholesaleThreshold)? 
+            cartItems[i].product.wholesalePrice : cartItems[i].product.retailPrice,
+            quantity: cartItems[i].qty
+        }
+        console.log("product " + JSON.stringify(product));
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -70,7 +87,7 @@ const CartScreen = () => {
             <Text style={styles.totalText}>
               {t('total')}: {totalPrice.toFixed(2)} KM
             </Text>
-            <Button color={'#4e8d7c'} title={t('submit_order')} onPress={() => {console.log(cartItems)}} />
+            <Button color={'#4e8d7c'} title={t('submit_order')} onPress={() => checkoutOrder()} />
           </View>
         </>
       )}

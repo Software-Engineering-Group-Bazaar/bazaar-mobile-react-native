@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +62,7 @@ const ProductDetailsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  const { cartItems, addToCart } = useCart();
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -115,6 +115,15 @@ const ProductDetailsScreen = () => {
             throw new Error('Product not found');
           }
           const data = await response.json();
+
+          const cartStore = (cartItems && cartItems.length > 0)? cartItems[0].product.storeId : 0;
+
+
+          if(cartStore != 0 && cartStore != data.storeId){
+            Alert.alert("Khm nije ista prodavnica");
+            data.isActive = false;
+          }
+
           setProduct(data);
         } catch (error) {
           console.error('Error fetching product:', error);
@@ -177,17 +186,14 @@ const ProductDetailsScreen = () => {
       {/* Podaci o proizvodu */}
       <View style={styles.infoSection}>
         <Text style={styles.productName}>{product.name}</Text>
-        <Text style={[styles.availabilityText, !product.isActive && styles.notAvailableText]}>
-          {product.isActive ? t('available') : t('not-available')}
-        </Text>
 
-        {product.weight && (
+        {typeof product.weight === 'number' && product.weight > 0 && product.weight && (
           <Text style={styles.productDetailText}>
             {t('weight')}: {product.weight} {product.weightUnit}
           </Text>
         )}
 
-        {product.volume && (
+        {typeof product.volume === 'number' && product.volume > 0 && product.volume && (
           <Text style={styles.productDetailText}>
             {t('volume')}: {product.volume} {product.volumeUnit}
           </Text>
