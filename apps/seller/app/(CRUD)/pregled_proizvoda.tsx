@@ -19,6 +19,7 @@ import { Product } from "../types/proizvod";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import ProductCard from "@/components/ui/cards/ProductCard";
+import CreateButton from "@/components/ui/CreateButton";
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
@@ -69,25 +70,10 @@ export default function ProductsScreen() {
         style={styles.scrollWrapper}
         contentContainerStyle={styles.scrollContent}
       >
-        <TouchableOpacity
-          style={styles.createButton}
+        <CreateButton
+          loading={loading}
           onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <FontAwesome
-                name="plus"
-                size={14}
-                color="#fff"
-                style={{ marginRight: 6 }}
-              />
-              <Text style={styles.createButtonText}>{t("add_a_product")}</Text>
-            </>
-          )}
-        </TouchableOpacity>
+        />
 
         <FlatList
           data={products}
