@@ -13,6 +13,7 @@ const CustomHeader = () => {
     if (pathname.startsWith('/search')) return t('search');
     if (pathname.startsWith('/home')) return t('home');
     if (pathname.startsWith('/profil')) return t('profile');
+    if (pathname.startsWith('/cart')) return t('cart');
     return 'Bazaar';
   };
 

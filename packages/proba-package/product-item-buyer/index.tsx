@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native';
+import { useCart } from '../../../apps/buyer/context/CartContext';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt)
 interface ProductCategory {
@@ -27,11 +28,12 @@ interface Product {
 interface ProductItemProps {
   product: Product;
   onPress?: (product: Product) => void; // Proslijeđuje cijeli (novi) Product objekt
+  onAddToCart?: (product: Product) => void;
 }
 
-const ProductItem: React.FC<ProductItemProps> = ({ product, onPress }) => {
+const ProductItem: React.FC<ProductItemProps> = ({ product, onPress, onAddToCart }) => {
   // Destrukturiranje svojstava iz novog Product objekta
-  const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit } = product;
+  const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit, isAvailable } = product;
   // <Image source={{ uri: "http://192.168.0.25:5054" + firstImageUrl }} style={styles.image} />
 
   // Dohvaćanje prve slike iz niza 'photos', ako postoji
@@ -50,6 +52,15 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onPress }) => {
         {typeof volume === 'number' && volume > 0 && volumeUnit && (
           <Text style={styles.details}>{`${volume} ${volumeUnit}`}</Text>
         )}
+      </View>
+      <View style={styles.actionContainer}>
+        {isAvailable ? (
+        <TouchableOpacity onPress={() => {if (onAddToCart) {onAddToCart(product); ToastAndroid.show('Dodano u korpu!', ToastAndroid.SHORT);}}} style={styles.addButton}>
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>) : 
+        (<TouchableOpacity style={styles.addButtonRed}>
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>)}
       </View>
     </TouchableOpacity>
   );
@@ -95,6 +106,34 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'gray',
   },
+  addButton: {
+    backgroundColor: '#4e8d7c',
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  addButtonRed: {
+    backgroundColor: 'red',
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  actionContainer: {
+    position: 'absolute',
+    top: 35,
+    right: 10
+  }  
 });
 
 export default ProductItem;
