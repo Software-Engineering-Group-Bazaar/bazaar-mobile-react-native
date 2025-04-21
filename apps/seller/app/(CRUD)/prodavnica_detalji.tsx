@@ -13,12 +13,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
+import InputField from "@/components/ui/input/InputField";
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
   const storeString = Array.isArray(params.store)
@@ -80,17 +81,10 @@ export default function PregledProdavnice() {
           <Text style={styles.value}>{store.description}</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.imageButton}
+        <SubmitButton
+          buttonText={t("view_all_products")}
           onPress={handleSave}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}> {t("view_all_products")}</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
     </ScrollView>
   );
@@ -106,37 +100,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 100,
     alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 10,
-  },
-  imageButton: {
-    backgroundColor: "#4E8D7C",
-    width: "100%",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  image: {
-    width: 220,
-    height: 220,
-    borderRadius: 10,
-    marginBottom: 25,
-  },
-  placeholderImage: {
-    width: 220,
-    height: 220,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 25,
-    backgroundColor: "#f0f0f0",
   },
   infoBox: {
     width: "100%",
