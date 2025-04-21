@@ -1,8 +1,7 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
