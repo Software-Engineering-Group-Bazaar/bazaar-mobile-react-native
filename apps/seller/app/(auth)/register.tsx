@@ -12,8 +12,6 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { registerApi } from "../api/auth/registerApi";
 import { fbLoginApi } from "../api/auth/loginApi";
-//-------------------Route Explorer---------------------------------
-import ScreenExplorer from "../../components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
@@ -132,10 +130,6 @@ export default function SignUp() {
   return (
     <View style={styles.container}>
       <LanguageButton />
-
-      {/*---------------------Screen Explorer Button----------------------*/}
-      <ScreenExplorer route="../(tabs)/screen_explorer" />
-      {/*-----------------------------------------------------------------*/}
 
       <View style={styles.titleContainer}>
         <Image

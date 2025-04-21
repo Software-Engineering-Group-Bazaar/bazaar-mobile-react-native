@@ -15,7 +15,6 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useLocalSearchParams, useRouter } from "expo-router";
 import api from "../api/defaultApi";
 //-------------------Route Explorer---------------------------------
-import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
@@ -184,10 +183,6 @@ export default function AddProductScreen() {
     >
       <SetHeaderRight title={t("add_a_product")} />
       <LanguageButton />
-
-      {/*---------------------Screen Explorer Button----------------------*/}
-      <ScreenExplorer route="../(tabs)/screen_explorer" />
-      {/*-----------------------------------------------------------------*/}
 
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}

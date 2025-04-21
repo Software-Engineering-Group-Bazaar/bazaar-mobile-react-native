@@ -11,9 +11,8 @@ import { useTranslation } from "react-i18next";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
-import SetHeaderRight from '../../components/ui/NavHeader';
+import SetHeaderRight from "../../components/ui/NavHeader";
 
 export default function PregledProdavnice() {
   const { t, i18n } = useTranslation();
@@ -54,12 +53,8 @@ export default function PregledProdavnice() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
-      <SetHeaderRight title="Detalji prodavnice" />
+        <SetHeaderRight title="Detalji prodavnice" />
         <LanguageButton />
-
-        {/*---------------------Screen Explorer Button----------------------*/}
-        <ScreenExplorer route="../(tabs)/screen_explorer" />
-        {/*-----------------------------------------------------------------*/}
 
         <View style={styles.infoBox}>
           <FontAwesome5 name="store" size={18} color="#4E8D7C" />

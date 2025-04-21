@@ -11,8 +11,6 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 import InputField from "@/components/ui/input/InputField";
-//-------------------Route Explorer---------------------------------
-import ScreenExplorer from "../../components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 
@@ -75,10 +73,10 @@ export default function SignIn() {
         );
 
         console.log(apiResponse);
-        
+
         if (!apiResponse.ok) {
           let errorData = { message: "Došlo je do greške." };
-      
+
           const contentType = apiResponse.headers.get("Content-Type") || "";
           if (contentType.includes("application/json")) {
             errorData = await apiResponse.json();
@@ -86,19 +84,18 @@ export default function SignIn() {
             const text = await apiResponse.text();
             errorData.message = text;
           }
-      
+
           console.log("Error response:", errorData);
-      
+
           if (errorData.message.includes("unapproved")) {
             Alert.alert(t("access_denied"), t("account_not_approved"));
-          }
-          else if (errorData.message.includes("inactive")) {
+          } else if (errorData.message.includes("inactive")) {
             Alert.alert(t("access_denied"), t("account_not_active"));
           } else {
             Alert.alert(t("login_failed"), t("unexpected_error"));
           }
-      
-          return; 
+
+          return;
         }
 
         const result = await apiResponse.text();
@@ -168,10 +165,6 @@ export default function SignIn() {
   return (
     <View style={styles.container}>
       <LanguageButton />
-
-      {/*---------------------Screen Explorer Button----------------------*/}
-      <ScreenExplorer route="../(tabs)/screen_explorer" />
-      {/*-----------------------------------------------------------------*/}
 
       <View style={styles.titleContainer}>
         <Image

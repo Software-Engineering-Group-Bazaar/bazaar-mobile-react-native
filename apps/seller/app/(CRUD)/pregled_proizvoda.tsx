@@ -16,7 +16,6 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { apiFetchAllProductsForStore } from "../api/productApi";
 
 import { Product } from "../types/proizvod";
-import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import ProductCard from "@/components/ui/cards/ProductCard";
@@ -70,10 +69,6 @@ export default function ProductsScreen() {
         style={styles.scrollWrapper}
         contentContainerStyle={styles.scrollContent}
       >
-        {/*---------------------Screen Explorer Button----------------------*/}
-        <ScreenExplorer route="../(tabs)/screen_explorer" />
-        {/*-----------------------------------------------------------------*/}
-
         <TouchableOpacity
           style={styles.createButton}
           onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}

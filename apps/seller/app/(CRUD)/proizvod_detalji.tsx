@@ -14,10 +14,12 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
-import SetHeaderRight from '../../components/ui/NavHeader';
-import { apiUpdateProductPrices, apiUpdateProductAvailability}  from '../api/productApi'
+import SetHeaderRight from "../../components/ui/NavHeader";
+import {
+  apiUpdateProductPrices,
+  apiUpdateProductAvailability,
+} from "../api/productApi";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 
 export default function ProductScreen() {
@@ -33,11 +35,17 @@ export default function ProductScreen() {
   const photos = product?.photos || [];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isActive, setIsActive] = useState<boolean>(product.isActive); 
-  const [retailPrice, setRetailPrice] = useState(product.retailPrice.toString());
-  const [wholesalePrice, setWholesalePrice] = useState(product.wholesalePrice.toString());
-  const [wholesaleThreshold, setWholesaleThreshold] = useState(product.wholesaleThreshold.toString());
-  
+  const [isActive, setIsActive] = useState<boolean>(product.isActive);
+  const [retailPrice, setRetailPrice] = useState(
+    product.retailPrice.toString()
+  );
+  const [wholesalePrice, setWholesalePrice] = useState(
+    product.wholesalePrice.toString()
+  );
+  const [wholesaleThreshold, setWholesaleThreshold] = useState(
+    product.wholesaleThreshold.toString()
+  );
+
   const nextImage = () => {
     //  zamijeni mockPhotos sa photos
     if (currentImageIndex < photos.length - 1 /* photos.length - 1 */) {
@@ -65,7 +73,7 @@ export default function ProductScreen() {
   const updatePrices = async () => {
     console.log(wholesaleThreshold);
     if (!retailPrice || !wholesalePrice || !wholesaleThreshold) {
-      Alert.alert(t('Missing_Fields'), t('fill_in_all_fields'));
+      Alert.alert(t("Missing_Fields"), t("fill_in_all_fields"));
       return;
     }
     const payload = {
@@ -76,11 +84,11 @@ export default function ProductScreen() {
     };
     try {
       await apiUpdateProductPrices(payload);
-      console.log('Prices updated!');
-      Alert.alert(t('success'), t('prices_updated'));
+      console.log("Prices updated!");
+      Alert.alert(t("success"), t("prices_updated"));
     } catch (error) {
-      console.error('Error updating prices:', error);
-      Alert.alert(t("error"), 'Failed to update prices. Please try again.');
+      console.error("Error updating prices:", error);
+      Alert.alert(t("error"), "Failed to update prices. Please try again.");
     }
   };
 
@@ -94,16 +102,12 @@ export default function ProductScreen() {
       </View>
     );
   }
-  
+
   return (
     <ScrollView style={styles.container}>
       {/* Dugme za promjenu jezika */}
       <SetHeaderRight title="Detalji proizvoda" />
       <LanguageButton />
-
-      {/*---------------------Screen Explorer Button----------------------*/}
-      <ScreenExplorer route="../(tabs)/screen_explorer" />
-      {/*-----------------------------------------------------------------*/}
 
       {/* Sekcija sa slikama i strelicama */}
       <View style={styles.imageSection}>
@@ -153,10 +157,9 @@ export default function ProductScreen() {
       </View>
 
       <View style={styles.detailsSection}>
-    
         {/* Retail Price */}
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>{t('retail_price')}:</Text>
+          <Text style={styles.detailLabel}>{t("retail_price")}:</Text>
           <TextInput
             style={[styles.detailValue, styles.inputField]}
             value={retailPrice}
@@ -168,7 +171,7 @@ export default function ProductScreen() {
         {/* Wholesale Threshold */}
         {product.wholesaleThreshold != null && (
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('wholesale_threshold')}:</Text>
+            <Text style={styles.detailLabel}>{t("wholesale_threshold")}:</Text>
             <TextInput
               style={[styles.detailValue, styles.inputField]}
               value={wholesaleThreshold}
@@ -181,7 +184,7 @@ export default function ProductScreen() {
         {/* Wholesale Price */}
         {product.wholesalePrice != null && (
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('wholesale_price')}:</Text>
+            <Text style={styles.detailLabel}>{t("wholesale_price")}:</Text>
             <TextInput
               style={[styles.detailValue, styles.inputField]}
               value={wholesalePrice}
@@ -191,42 +194,46 @@ export default function ProductScreen() {
           </View>
         )}
         {/* Save Changes Button */}
-        <SubmitButton buttonText={t('save_changes')} onPress={updatePrices} />
+        <SubmitButton buttonText={t("save_changes")} onPress={updatePrices} />
 
         {/* Kategorija */}
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>{t('Category')}:</Text>
+          <Text style={styles.detailLabel}>{t("Category")}:</Text>
           <Text style={styles.detailValue}>{product.productCategory.name}</Text>
         </View>
-          
+
         {product.weight && (
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('Weight')}:</Text>
-            <Text style={styles.detailValue}>{product.weight} {product.weightUnit}</Text>
+            <Text style={styles.detailLabel}>{t("Weight")}:</Text>
+            <Text style={styles.detailValue}>
+              {product.weight} {product.weightUnit}
+            </Text>
           </View>
         )}
-          
+
         {product.volume && (
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{t('Volume')}:</Text>
-            <Text style={styles.detailValue}>{product.volume} {product.volumeUnit}</Text>
+            <Text style={styles.detailLabel}>{t("Volume")}:</Text>
+            <Text style={styles.detailValue}>
+              {product.volume} {product.volumeUnit}
+            </Text>
           </View>
         )}
 
         {/* Availability */}
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>{t('availability')}:</Text>
+          <Text style={styles.detailLabel}>{t("availability")}:</Text>
           <Switch
             value={isActive}
             onValueChange={(newValue) => {
-              setIsActive(newValue);  // Update local state
-              updateAvailability(newValue);  // Call the function that handles the update
+              setIsActive(newValue); // Update local state
+              updateAvailability(newValue); // Call the function that handles the update
             }}
           />
         </View>
       </View>
     </ScrollView>
- );
+  );
 }
 
 const styles = StyleSheet.create({
@@ -247,9 +254,9 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   inputField: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 6,

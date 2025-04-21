@@ -7,7 +7,6 @@ import {
   apiGetRegionsAsync,
 } from "../api/storeApi";
 import { useRouter } from "expo-router";
-import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import InputField from "@/components/ui/input/InputField";
@@ -96,10 +95,6 @@ export default function PostavkeProdavnice() {
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <SetHeaderRight title="Postavke prodavnice" />
       <LanguageButton />
-
-      {/*---------------------Screen Explorer Button----------------------*/}
-      <ScreenExplorer route="../(tabs)/screen_explorer" />
-      {/*-----------------------------------------------------------------*/}
 
       <View style={styles.container}>
         <Text style={styles.title}>{t("store_settings")}</Text>
