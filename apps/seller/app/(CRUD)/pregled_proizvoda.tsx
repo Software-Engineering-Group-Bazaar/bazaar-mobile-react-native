@@ -1,16 +1,12 @@
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
-  ActivityIndicator,
   Dimensions,
-  TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { FontAwesome } from "@expo/vector-icons";
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { apiFetchAllProductsForStore } from "../api/productApi";
@@ -71,6 +67,7 @@ export default function ProductsScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <CreateButton
+          text={t("add_a_product")}
           loading={loading}
           onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
         />

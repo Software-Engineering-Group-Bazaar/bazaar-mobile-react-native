@@ -12,9 +12,10 @@ import { FontAwesome } from "@expo/vector-icons";
 import styles from "../styles";
 import React, { useState, useEffect } from "react";
 import { apiFetchActiveStores } from "../api/storeApi";
-import SetHeaderRight from '../../components/ui/NavHeader';
+import SetHeaderRight from "../../components/ui/NavHeader";
 import { Store } from "../types/prodavnica";
 import LanguageButton from "@/components/ui/LanguageButton";
+import CreateButton from "@/components/ui/CreateButton";
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -43,26 +44,28 @@ export default function StoresScreen() {
   const renderStoreCard = ({ item }: { item: Store }) => (
     <>
       <TouchableOpacity
-      style={styles.section}
-      onPress={() =>
-        router.push(`/(CRUD)/prodavnica_detalji?store=${JSON.stringify(item)}`)
+        style={styles.section}
+        onPress={() =>
+          router.push(
+            `/(CRUD)/prodavnica_detalji?store=${JSON.stringify(item)}`
+          )
         }
-        >
-          <View style={styles.storeInfo}>
-            <Text style={styles.storeName}>{item.name}</Text>
-            <Text style={styles.storeAddress}>{item.categoryName}</Text>
-            <Text style={styles.storeAddress}>{item.description}</Text>
-            {/* <Text style={styles.storeAddress}>{item.address}</Text> */}
-          </View>
+      >
+        <View style={styles.storeInfo}>
+          <Text style={styles.storeName}>{item.name}</Text>
+          <Text style={styles.storeAddress}>{item.categoryName}</Text>
+          <Text style={styles.storeAddress}>{item.description}</Text>
+          {/* <Text style={styles.storeAddress}>{item.address}</Text> */}
+        </View>
       </TouchableOpacity>
 
       {/* Sekcija: Pregled narudžbi */}
       <View style={styles.section}>
         <TouchableOpacity style={styles.storeCard} onPress={handleViewOrders}>
           <View style={styles.storeInfo}>
-            <Text style={styles.storeName}>{t('view_orders')}</Text>
+            <Text style={styles.storeName}>{t("view_orders")}</Text>
             <Text style={styles.storeAddress}>
-              {t('view_orders_description') || 'View all orders for this store'}
+              {t("view_orders_description") || "View all orders for this store"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -85,27 +88,11 @@ export default function StoresScreen() {
           <Text style={styles.title}>{t("my_stores")}</Text>
 
           {stores.length === 0 && (
-            <TouchableOpacity
-              style={styles.createButton}
+            <CreateButton
+              text={t("add_a_new_store")}
               onPress={handleCreateStore}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <>
-                  <FontAwesome
-                    name="plus"
-                    size={14}
-                    color="#fff"
-                    style={{ marginRight: 6 }}
-                  />
-                  <Text style={styles.createButtonText}>
-                    {t("add_a_new_store")}
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
+              loading={loading}
+            />
           )}
 
           <FlatList

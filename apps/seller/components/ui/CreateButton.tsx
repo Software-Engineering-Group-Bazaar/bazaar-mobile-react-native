@@ -11,10 +11,12 @@ import { useTranslation } from "react-i18next";
 
 interface CreateButtonProps extends TouchableOpacityProps {
   loading?: boolean;
+  text: string;
 }
 
 const CreateButton: React.FC<CreateButtonProps> = ({
   loading = false,
+  text,
   ...rest
 }) => {
   const { t } = useTranslation(); // Using i18next for translation
@@ -31,7 +33,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({
             color="#fff"
             style={{ marginRight: 6 }}
           />
-          <Text style={styles.createButtonText}>{t("add_a_product")}</Text>
+          <Text style={styles.createButtonText}>{text}</Text>
         </>
       )}
     </TouchableOpacity>
