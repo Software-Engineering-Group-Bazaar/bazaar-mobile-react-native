@@ -152,5 +152,7 @@
   "unexpected_error": "Došlo je do greške.",
   "account_not_active": "Račun nije aktivan.",
   "unauthorized_access": "Neuspješna prijava",
-  "region": "Region"
+  "region": "Region",
+  "select_region": "Odaberite region",
+  "select_place": "Odaberite mjesto"
 }

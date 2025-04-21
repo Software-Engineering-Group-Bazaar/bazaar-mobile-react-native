@@ -108,13 +108,43 @@ export default function PostavkeProdavnice() {
         <InputField icon="map-marker" placeholder={t("street_and_number")} value={streetAndNumber} onChangeText={setStreetAndNumber} />
 
         {/* Region Dropdown */}
-        <DropdownPicker open={openRegion} value={selectedRegionId} items={regions} setOpen={setOpenRegion} setValue={setSelectedRegionId} setItems={setRegions} placeholder={t("select_region")} />
+        <View style={styles.dropdownWrapperTopTop}>
+          <DropdownPicker 
+            open={openRegion} 
+            value={selectedRegionId} 
+            items={regions} 
+            setOpen={setOpenRegion} 
+            setValue={setSelectedRegionId} 
+            setItems={setRegions} 
+            placeholder={t("select_region")} 
+          />
+        </View>
 
         {/* Place Dropdown */}
-        <DropdownPicker open={openPlace} value={selectedPlaceId} items={places} setOpen={setOpenPlace} setValue={setSelectedPlaceId} setItems={setPlaces} placeholder={t("select_place")} />
+        <View style={styles.dropdownWrapperTop}>
+          <DropdownPicker 
+            open={openPlace} 
+            value={selectedPlaceId} 
+            items={places} 
+            setOpen={setOpenPlace} 
+            setValue={setSelectedPlaceId} 
+            setItems={setPlaces} 
+            placeholder={t("select_place")} 
+          />
+        </View>
 
         {/* Category Dropdown */}
-        <DropdownPicker open={openCategory} value={selectedCategoryId} items={categoryItems} setOpen={setOpenCategory} setValue={setSelectedCategoryId} setItems={setCategoryItems} placeholder={t("select_category")} />
+        <View style={styles.dropdownWrapperBottom}>
+          <DropdownPicker 
+            open={openCategory} 
+            value={selectedCategoryId} 
+            items={categoryItems} 
+            setOpen={setOpenCategory} 
+            setValue={setSelectedCategoryId} 
+            setItems={setCategoryItems} 
+            placeholder={t("select_category")} 
+          />
+        </View>
 
         <InputField icon="align-left" placeholder={t("description")} value={description} onChangeText={setDescription} />
         <SubmitButton onPress={handleSave} disabled={loading} icon="file" buttonText={t("save_changes")} />
@@ -127,4 +157,22 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, backgroundColor: "#fff", paddingBottom: 40 },
   container: { paddingHorizontal: 20, paddingTop: 100, alignItems: "center" },
   title: { fontSize: 26, fontWeight: "bold", color: "#4E8D7C", textAlign: "center", marginBottom: 30 },
+  dropdownWrapperTopTop: {
+    zIndex: 3000,
+    position: "relative",
+    width: "100%",
+    marginBottom: 16,
+  },
+  dropdownWrapperTop: {
+    zIndex: 2000,
+    position: "relative",
+    width: "100%",
+    marginBottom: 16,
+  },
+  dropdownWrapperBottom: {
+    zIndex: 1000,
+    position: "relative",
+    width: "100%",
+    marginBottom: 16,
+  },
 });

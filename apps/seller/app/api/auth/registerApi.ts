@@ -10,13 +10,14 @@ export const registerApi = async (
   try {
     const response = await api.post(
       "Auth/register",
-      { username, email, password },
+      { username, email, password, app: 'seller' },
       {
         headers: { "Content-Type": "application/json" },
       }
     );
 
     const data = await response.data;
+    console.log(data);
 
     if (response.status !== 200) {
       // If status is not 200–299

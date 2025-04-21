@@ -152,7 +152,9 @@
    "unexpected_error": "There has been an error.",
    "account_not_active": "Account is not active.",
    "unauthorized_access": "Unsuccessful signin",
-   "region": "Region"
+   "region": "Region",
+   "select_region": "Select region",
+  "select_place": "Select place"
 }
 
 
