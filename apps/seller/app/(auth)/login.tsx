@@ -44,6 +44,9 @@ export default function SignIn() {
   const loginWithFacebook = async () => {
     try {
       const apiData = await fbLoginApi();
+      if (!apiData || !apiData.token) {
+        return;
+      }
 
       await SecureStore.setItemAsync("accessToken", apiData.token);
       router.replace("../(tabs)/home");
@@ -63,7 +66,7 @@ export default function SignIn() {
         console.log("User Info:", { idToken });
 
         const apiResponse = await fetch(
-          "http://10.0.2.2:5054/api/Auth/login/google",
+          "http://192.168.0.26:5054/api/Auth/login/google",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -71,9 +74,31 @@ export default function SignIn() {
           }
         );
 
-        if (apiResponse.status != 200) {
-          Alert.alert(t("login_failed"), t("invalid_credentials"));
-          return;
+        console.log(apiResponse);
+        
+        if (!apiResponse.ok) {
+          let errorData = { message: "Došlo je do greške." };
+      
+          const contentType = apiResponse.headers.get("Content-Type") || "";
+          if (contentType.includes("application/json")) {
+            errorData = await apiResponse.json();
+          } else {
+            const text = await apiResponse.text();
+            errorData.message = text;
+          }
+      
+          console.log("Error response:", errorData);
+      
+          if (errorData.message.includes("unapproved")) {
+            Alert.alert(t("access_denied"), t("account_not_approved"));
+          }
+          else if (errorData.message.includes("inactive")) {
+            Alert.alert(t("access_denied"), t("account_not_active"));
+          } else {
+            Alert.alert(t("login_failed"), t("unexpected_error"));
+          }
+      
+          return; 
         }
 
         const result = await apiResponse.text();

@@ -67,7 +67,7 @@ export const apiLogin = async (email: string, password: string) => {
 };
 
 export const fbLoginApi = async () => {
-  try {
+  try { 
     const result = await LoginManager.logInWithPermissions([
       "public_profile",
       "email",
@@ -81,28 +81,54 @@ export const fbLoginApi = async () => {
     console.log(result);
 
     const data = await AccessToken.getCurrentAccessToken();
-    console.log(data);
 
     if (data?.accessToken) {
+      let payload = {
+        accessToken: data.accessToken,
+        app: "seller",
+      }
       // call your backend
-      const response = await api.post(
-        "Auth/login/facebook",
-        {
-          accessToken: data.accessToken,
-          app: "seller",
+      const response = await fetch('http://192.168.15.104:5054/api/Auth/login/facebook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        body: JSON.stringify(payload),
+      });
 
-      const apiData = await response.data;
-      console.log("API response:", apiData);
-      return apiData;
+      console.log(response);
+
+      if (!response.ok) {
+        let errorData = { message: "Došlo je do greške." };
+    
+        const contentType = response.headers.get("Content-Type") || "";
+        if (contentType.includes("application/json")) {
+          errorData = await response.json();
+        } else {
+          const text = await response.text();
+          errorData.message = text;
+        }
+    
+        console.log("Error response:", errorData);
+    
+        if (errorData.message.includes("unapproved")) {
+          Alert.alert(t("access_denied"), t("account_not_approved"));
+        }
+        else if (errorData.message.includes("inactive")) {
+          Alert.alert(t("access_denied"), t("account_not_active"));
+        } else {
+          Alert.alert(t("login_failed"), t("unexpected_error"));
+        }
+    
+        return; 
+      }
+
+      const result = await response.json();
+      console.log("Login success:", result);
+      return result;
     }
   } catch (error) {
+    console.log("Jel udje wtf");
     console.error("Facebook login flow failed:", error);
   }
 };
