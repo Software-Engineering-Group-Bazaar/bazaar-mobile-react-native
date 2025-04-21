@@ -21,7 +21,7 @@ import { useCallback } from "react";
 import { Product } from "../types/proizvod";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
-import SetHeaderRight from '../../components/ui/NavHeader';
+import SetHeaderRight from "../../components/ui/NavHeader";
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
@@ -59,73 +59,87 @@ export default function ProductsScreen() {
         }
       }
       loadProducts();
-         }, [storeId])
- );
-  
-   const renderProductCard = ({ item }: { item: Product }) => (
-  <TouchableOpacity
-    style={styles.productCard}
-    onPress={() => router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)}
-  >
-       <View style={styles.productInfo}>
-         <Text style={styles.productName}>{item.name}</Text>
-         <Text style={styles.productPrice}>{t('Price')}: {item.retailPrice.toString()} KM</Text>
-         <Text style={styles.productCategory}>{t('Category')}: {item.productCategory.name}</Text>
-  
-         {/* Display weight and volume if available */}
-         {item.weight && (
-           <Text style={styles.productCategory}>
-             {t('Weight')}: {item.weight.toString()} {item.weightUnit || ''}
-           </Text>
-         )}
-         {item.volume && (
-           <Text style={styles.productCategory}>
-             {t('Volume')}: {item.volume.toString()} {item.volumeUnit || ''}
-           </Text>
-         )}
-       </View>
-     </TouchableOpacity>
-   );
-  
-   return (
-   <View style={{ flex: 1 }}>
-     <SetHeaderRight title="Pregled proizvoda" />
-     {/* Fiksirano dugme za promjenu jezika */}
-     <LanguageButton />
+    }, [storeId])
+  );
 
-     <ScrollView style={styles.scrollWrapper} contentContainerStyle={styles.scrollContent}>
+  const renderProductCard = ({ item }: { item: Product }) => (
+    <TouchableOpacity
+      style={styles.productCard}
+      onPress={() => {
+        console.log("Idemo na porizvod");
+        router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`);
+      }}
+    >
+      <View style={styles.productInfo}>
+        <Text style={styles.productName}>{item.name}</Text>
+        <Text style={styles.productPrice}>
+          {t("Price")}: {item.retailPrice.toString()} KM
+        </Text>
+        <Text style={styles.productCategory}>
+          {t("Category")}: {item.productCategory.name}
+        </Text>
+
+        {/* Display weight and volume if available */}
+        {item.weight && (
+          <Text style={styles.productCategory}>
+            {t("Weight")}: {item.weight.toString()} {item.weightUnit || ""}
+          </Text>
+        )}
+        {item.volume && (
+          <Text style={styles.productCategory}>
+            {t("Volume")}: {item.volume.toString()} {item.volumeUnit || ""}
+          </Text>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={{ flex: 1 }}>
+      <SetHeaderRight title="Pregled proizvoda" />
+      {/* Fiksirano dugme za promjenu jezika */}
+      <LanguageButton />
+
+      <ScrollView
+        style={styles.scrollWrapper}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/*---------------------Screen Explorer Button----------------------*/}
-          <ScreenExplorer route="../(tabs)/screen_explorer" />
+        <ScreenExplorer route="../(tabs)/screen_explorer" />
         {/*-----------------------------------------------------------------*/}
 
-       <TouchableOpacity
-         style={styles.createButton}
-         onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
-         disabled={loading}
-       >
-         {loading ? (
-           <ActivityIndicator color="#fff" />
-         ) : (
-           <>
-             <FontAwesome name="plus" size={14} color="#fff" style={{ marginRight: 6 }} />
-             <Text style={styles.createButtonText}>{t('add_a_product')}</Text>
-           </>
-         )}
-       </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <FontAwesome
+                name="plus"
+                size={14}
+                color="#fff"
+                style={{ marginRight: 6 }}
+              />
+              <Text style={styles.createButtonText}>{t("add_a_product")}</Text>
+            </>
+          )}
+        </TouchableOpacity>
 
-
-       <FlatList
-         data={products}
-         renderItem={renderProductCard}
-         keyExtractor={(item: Product) => item.id.toString()}
-         numColumns={2}
-         contentContainerStyle={styles.listContainer}
-         columnWrapperStyle={styles.columnWrapper}
-         scrollEnabled={false}
-       />
-     </ScrollView>
-   </View>
- );
+        <FlatList
+          data={products}
+          renderItem={renderProductCard}
+          keyExtractor={(item: Product) => item.id.toString()}
+          numColumns={2}
+          contentContainerStyle={styles.listContainer}
+          columnWrapperStyle={styles.columnWrapper}
+          scrollEnabled={false}
+        />
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

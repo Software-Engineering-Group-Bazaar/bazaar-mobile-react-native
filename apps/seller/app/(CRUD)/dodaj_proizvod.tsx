@@ -1,32 +1,19 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
   Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   Switch,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import DropDownPicker from "react-native-dropdown-picker";
+import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import {
-  apiFetchCategories,
-  apiFetchProductDetails,
-  apiUpdateProductPrices,
-  apiUpdateProductAvailability,
-} from "../api/productApi";
 import api from "../api/defaultApi";
-import * as FileSystem from "expo-file-system";
 //-------------------Route Explorer---------------------------------
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
@@ -34,7 +21,8 @@ import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
-import SetHeaderRight from '../../components/ui/NavHeader';
+import SetHeaderRight from "../../components/ui/NavHeader";
+import { apiFetchCategories } from "../api/productApi";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -44,9 +32,8 @@ export default function AddProductScreen() {
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const router = useRouter(); // Premesti ovde
-  const productId = params.productId ? Number(params.productId) : null;
   const storeId = params.storeId ? Number(params.storeId) : null; // Dodaj i storeId ovde
-  const isEditing = productId !== null;
+  // const isEditing = productId !== null;
   const [name, setName] = useState("");
   const [price, setPrice] = useState(""); // Ovo će biti Maloprodajna
   const [wholesaleThreshold, setWholesaleThreshold] = useState(""); // NOVO: Prag
@@ -54,7 +41,6 @@ export default function AddProductScreen() {
   const [weight, setWeight] = useState("");
   const [volume, setVolume] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isFetchingData, setIsFetchingData] = useState(false);
   const [weightOpen, setWeightOpen] = useState(false);
   const [weightUnit, setWeightUnit] = useState(weightUnits[0]);
   const [weightItems, setWeightItems] = useState(
@@ -104,64 +90,20 @@ export default function AddProductScreen() {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    const fetchProductData = async () => {
-      // Izvrši samo ako je isEditing true i productId postoji
-      if (isEditing && productId) {
-        console.log(`EDIT MODE: Fetching data for product ID: ${productId}`);
-        setIsFetchingData(true); // Pokaži indikator učitavanja podataka
-        setLoading(true); // Može se koristiti i opšti loading
-        const productData = await apiFetchProductDetails(productId); // Pozovi API
-        if (productData) {
-          console.log("Product data fetched:", productData);
-          // Popuni state varijable vrednostima iz dobijenog objekta
-          setName(productData.name || "");
-          // Koristi ?? '' da osiguraš da je string, čak i ako je vrednost null/undefined
-          setPrice(productData.retailPrice?.toString() ?? "");
-          setWholesaleThreshold(
-            productData.wholesaleThreshold?.toString() ?? ""
-          );
-          setWholesalePrice(productData.wholesalePrice?.toString() ?? "");
-          setWeight(productData.weight?.toString() ?? "");
-          setWeightUnit(productData.weightUnit ?? weightUnits[0]); // Vrati na default ako ne postoji
-          setVolume(productData.volume?.toString() ?? "");
-          setVolumeUnit(productData.volumeUnit ?? volumeUnits[0]); // Vrati na default ako ne postoji
-          setCategory(productData.productCategory?.id ?? null); // Postavi ID kategorije
-          setIsActive(productData.isActive ?? true); // Postavi dostupnost (default true)
-          // TODO: Popuniti state za postojeće slike ako je potrebno
-          // setExistingImages(productData.photos || []);
-        } else {
-          // Greška pri dohvatanju ili proizvod nije nađen
-          console.error(
-            `Product with ID ${productId} not found or failed to fetch.`
-          );
-          Alert.alert(t("error"), t("error_fetching_product_data"));
-          // Razmotriti automatsko vraćanje korisnika nazad
-          // router.back();
-        }
-        setIsFetchingData(false); // Sakrij indikator učitavanja podataka
-        setLoading(false); // Resetuj opšti loading
-      }
-    };
-    // Pozovi funkciju za dohvatanje
-    fetchProductData();
-    // Ponovo izvrši ako se promeni productId (mada ne bi trebalo u praksi) ili jezik (za Alert)
-  }, [productId, isEditing, t]);
-
   // Postavljanje naslova ekrana dinamički (Dodaj/Uredi Proizvod)
   useEffect(() => {
     navigation.setOptions({
-      title: isEditing ? t("edit_product") : t("add_a_product"),
+      title: t("add_a_product"),
     });
     // Ponovo izvrši ako se promeni mod (isEditing), jezik ili sama navigation instanca
-  }, [isEditing, navigation, i18n.language, t]);
+  }, [navigation, i18n.language, t]);
 
   const handleSave = async () => {
     console.log(isActive);
     if (
       !name.trim() ||
       !price.trim() ||
-      !category ||
+      category == null ||
       !wholesaleThreshold.trim() ||
       !wholesalePrice.trim()
     ) {
@@ -174,13 +116,8 @@ export default function AddProductScreen() {
       Alert.alert(t("error"), t("error_weight_or_volume_required"));
       return;
     }
-    if (!storeId && !isEditing) {
+    if (storeId == null) {
       console.error("Store ID missing for create.");
-      Alert.alert(t("error"), t("something_went_wrong"));
-      return;
-    }
-    if (!productId && isEditing) {
-      console.error("Product ID missing for edit.");
       Alert.alert(t("error"), t("something_went_wrong"));
       return;
     }
@@ -257,132 +194,122 @@ export default function AddProductScreen() {
       <ScreenExplorer route="../(tabs)/screen_explorer" />
       {/*-----------------------------------------------------------------*/}
 
-      {/* Prikazi overlay dok se učitavaju podaci */}
-      {isFetchingData && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#4E8D7C" />
-        </View>
-      )}
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === "ios" ? 20 : 150}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.title}>{t("add_a_product")}</Text>
 
-      {/* Prikazi formu tek kada podaci NISU učitani */}
-      {!isFetchingData && (
-        <KeyboardAwareScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          enableOnAndroid={true}
-          extraScrollHeight={Platform.OS === "ios" ? 20 : 150}
-          showsVerticalScrollIndicator={false}
-        >
-          <Text style={styles.title}>{t("add_a_product")}</Text>
+        <View style={[styles.form, { zIndex: 0 }]}>
+          <InputField
+            label={t("product_name")}
+            value={name}
+            onChangeText={setName}
+            placeholder={t("enter_product_name")}
+          />
 
-          <View style={[styles.form, { zIndex: 0 }]}>
-            <InputField
-              label={t("product_name")}
-              value={name}
-              onChangeText={setName}
-              placeholder={t("enter_product_name")}
-            />
+          <InputField
+            label={t("retail_price")}
+            value={price}
+            onChangeText={setPrice}
+            placeholder={t("enter_retail_price")}
+            keyboardType="decimal-pad"
+          />
 
-            <InputField
-              label={t("retail_price")}
-              value={price}
-              onChangeText={setPrice}
-              placeholder={t("enter_retail_price")}
-              keyboardType="decimal-pad"
-            />
+          {/* Veleprodajna Cijena */}
+          <InputField
+            label={t("wholesale_price")}
+            value={wholesalePrice}
+            onChangeText={setWholesalePrice}
+            placeholder={t("enter_wholesale_price")}
+            keyboardType="decimal-pad"
+          />
 
-            {/* Veleprodajna Cijena */}
-            <InputField
-              label={t("wholesale_price")}
-              value={wholesalePrice}
-              onChangeText={setWholesalePrice}
-              placeholder={t("enter_wholesale_price")}
-              keyboardType="decimal-pad"
-            />
+          {/* Threshold za veleprodajnu cijena */}
+          <InputField
+            label={t("wholesale_threshold")}
+            value={wholesaleThreshold}
+            onChangeText={setWholesaleThreshold}
+            placeholder={t("enter_wholesale_threshold")}
+            keyboardType="decimal-pad"
+          />
 
-            {/* Threshold za veleprodajnu cijena */}
-            <InputField
-              label={t("wholesale_threshold")}
-              value={wholesaleThreshold}
-              onChangeText={setWholesaleThreshold}
-              placeholder={t("enter_wholesale_threshold")}
-              keyboardType="decimal-pad"
-            />
+          <InputField
+            label={t("weight")}
+            value={weight}
+            onChangeText={setWeight}
+            placeholder={t("enter_weight")}
+            keyboardType="decimal-pad"
+          />
 
-            <InputField
-              label={t("weight")}
-              value={weight}
-              onChangeText={setWeight}
-              placeholder={t("enter_weight")}
-              keyboardType="decimal-pad"
-            />
+          <DropdownPicker
+            open={weightOpen}
+            value={weightUnit}
+            items={weightItems}
+            setOpen={setWeightOpen}
+            setValue={setWeightUnit}
+            setItems={setWeightItems}
+            placeholder={t("select-unit")}
+          />
 
-            <DropdownPicker
-              open={weightOpen}
-              value={weightUnit}
-              items={weightItems}
-              setOpen={setWeightOpen}
-              setValue={setWeightUnit}
-              setItems={setWeightItems}
-              placeholder={t("select-unit")}
-            />
+          <InputField
+            label={t("volume")}
+            value={volume}
+            onChangeText={setVolume}
+            placeholder={t("enter_volume")}
+            keyboardType="decimal-pad"
+          />
 
-            <InputField
-              label={t("volume")}
-              value={volume}
-              onChangeText={setVolume}
-              placeholder={t("enter_volume")}
-              keyboardType="decimal-pad"
-            />
+          <DropdownPicker
+            open={volumeOpen}
+            value={volumeUnit}
+            items={volumeItems}
+            setOpen={setVolumeOpen}
+            setValue={setVolumeUnit}
+            setItems={setVolumeItems}
+            placeholder={t("select-unit")}
+          />
 
-            <DropdownPicker
-              open={volumeOpen}
-              value={volumeUnit}
-              items={volumeItems}
-              setOpen={setVolumeOpen}
-              setValue={setVolumeUnit}
-              setItems={setVolumeItems}
-              placeholder={t("select-unit")}
-            />
+          <DropdownPicker
+            open={categoryOpen}
+            value={category}
+            items={categories}
+            setOpen={setCategoryOpen}
+            setValue={setCategory}
+            setItems={setCategories}
+            placeholder={t("select_category")}
+          />
 
-            <DropdownPicker
-              open={categoryOpen}
-              value={category}
-              items={categories}
-              setOpen={setCategoryOpen}
-              setValue={setCategory}
-              setItems={setCategories}
-              placeholder={t("select_category")}
-            />
-
-            {/* << NOVO: Switch za IsAvailable >> */}
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>{t("is_available")}</Text>
-              <Switch
-                trackColor={{ false: "#d1d5db", true: "#a7f3d0" }} // Svetlije boje
-                thumbColor={isActive ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
-                ios_backgroundColor="#e5e7eb"
-                onValueChange={setIsActive}
-                value={isActive}
-              />
-            </View>
-
-            <SubmitButton
-              label={t("images")}
-              onPress={pickImages}
-              buttonText={t("select_images")}
-            />
-
-            <ImagePreviewList images={images} />
-
-            <SubmitButton
-              onPress={handleSave}
-              loading={loading}
-              buttonText={t("save_changes")}
+          {/* << NOVO: Switch za IsAvailable >> */}
+          <View style={styles.switchContainer}>
+            <Text style={styles.label}>{t("is_available")}</Text>
+            <Switch
+              trackColor={{ false: "#d1d5db", true: "#a7f3d0" }} // Svetlije boje
+              thumbColor={isActive ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
+              ios_backgroundColor="#e5e7eb"
+              onValueChange={setIsActive}
+              value={isActive}
             />
           </View>
-        </KeyboardAwareScrollView>
-      )}
+
+          <SubmitButton
+            label={t("images")}
+            onPress={pickImages}
+            buttonText={t("select_images")}
+          />
+
+          <ImagePreviewList images={images} />
+
+          <SubmitButton
+            onPress={handleSave}
+            loading={loading}
+            buttonText={t("save_changes")}
+          />
+        </View>
+      </KeyboardAwareScrollView>
     </KeyboardAvoidingView>
   );
 }
