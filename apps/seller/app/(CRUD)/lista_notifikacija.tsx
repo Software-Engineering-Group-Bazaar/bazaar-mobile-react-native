@@ -51,7 +51,6 @@ const NotificationList = () => {
         n.id === notificationId ? { ...n, read: true } : n
       );
       setNotifications(updated);
-      console.log(notificationId, orderId)
 
       router.push({
         pathname: '/(CRUD)/narudzba_detalji',

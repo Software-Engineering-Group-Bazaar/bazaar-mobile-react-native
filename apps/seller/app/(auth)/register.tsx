@@ -84,7 +84,7 @@ export default function SignUp() {
         console.log("Google Sign-Up User Info:", { idToken });
 
         const apiResponse = await fetch(
-          "http://192.168.0.26:5054/api/Auth/login/google",
+          "http://192.168.15.104:5054/api/Auth/login/google",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
