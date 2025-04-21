@@ -3,30 +3,28 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Image,
   ActivityIndicator,
-  Pressable,
   Dimensions,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { Link, useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { apiFetchAllProductsForStore } from "../api/productApi";
-import { useCallback } from "react";
 
 import { Product } from "../types/proizvod";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
-import SetHeaderRight from '../../components/ui/NavHeader';
+import SetHeaderRight from "../../components/ui/NavHeader";
+import ProductCard from "@/components/ui/cards/ProductCard";
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
 const NUM_COLUMNS = 2;
-const ITEM_WIDTH = (width - COLUMN_GAP * (NUM_COLUMNS + 1)) / NUM_COLUMNS;
+const ITEM_WIDTH = (width - COLUMN_GAP * 3) / 2;
 
 export default function ProductsScreen() {
   const router = useRouter();
@@ -59,73 +57,55 @@ export default function ProductsScreen() {
         }
       }
       loadProducts();
-         }, [storeId])
- );
-  
-   const renderProductCard = ({ item }: { item: Product }) => (
-  <TouchableOpacity
-    style={styles.productCard}
-    onPress={() => router.push(`/(CRUD)/proizvod_detalji?product=${JSON.stringify(item)}`)}
-  >
-       <View style={styles.productInfo}>
-         <Text style={styles.productName}>{item.name}</Text>
-         <Text style={styles.productPrice}>{t('Price')}: {item.retailPrice.toString()} KM</Text>
-         <Text style={styles.productCategory}>{t('Category')}: {item.productCategory.name}</Text>
-  
-         {/* Display weight and volume if available */}
-         {item.weight && (
-           <Text style={styles.productCategory}>
-             {t('Weight')}: {item.weight.toString()} {item.weightUnit || ''}
-           </Text>
-         )}
-         {item.volume && (
-           <Text style={styles.productCategory}>
-             {t('Volume')}: {item.volume.toString()} {item.volumeUnit || ''}
-           </Text>
-         )}
-       </View>
-     </TouchableOpacity>
-   );
-  
-   return (
-   <View style={{ flex: 1 }}>
-     <SetHeaderRight title="Pregled proizvoda" />
-     {/* Fiksirano dugme za promjenu jezika */}
-     <LanguageButton />
+    }, [storeId])
+  );
 
-     <ScrollView style={styles.scrollWrapper} contentContainerStyle={styles.scrollContent}>
+  return (
+    <View style={{ flex: 1 }}>
+      <SetHeaderRight title="Pregled proizvoda" />
+      {/* Fiksirano dugme za promjenu jezika */}
+      <LanguageButton />
+
+      <ScrollView
+        style={styles.scrollWrapper}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/*---------------------Screen Explorer Button----------------------*/}
-          <ScreenExplorer route="../(tabs)/screen_explorer" />
+        <ScreenExplorer route="../(tabs)/screen_explorer" />
         {/*-----------------------------------------------------------------*/}
 
-       <TouchableOpacity
-         style={styles.createButton}
-         onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
-         disabled={loading}
-       >
-         {loading ? (
-           <ActivityIndicator color="#fff" />
-         ) : (
-           <>
-             <FontAwesome name="plus" size={14} color="#fff" style={{ marginRight: 6 }} />
-             <Text style={styles.createButtonText}>{t('add_a_product')}</Text>
-           </>
-         )}
-       </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <FontAwesome
+                name="plus"
+                size={14}
+                color="#fff"
+                style={{ marginRight: 6 }}
+              />
+              <Text style={styles.createButtonText}>{t("add_a_product")}</Text>
+            </>
+          )}
+        </TouchableOpacity>
 
-
-       <FlatList
-         data={products}
-         renderItem={renderProductCard}
-         keyExtractor={(item: Product) => item.id.toString()}
-         numColumns={2}
-         contentContainerStyle={styles.listContainer}
-         columnWrapperStyle={styles.columnWrapper}
-         scrollEnabled={false}
-       />
-     </ScrollView>
-   </View>
- );
+        <FlatList
+          data={products}
+          renderItem={({ item }) => <ProductCard item={item} />}
+          keyExtractor={(item: Product) => item.id.toString()}
+          numColumns={2}
+          contentContainerStyle={styles.listContainer}
+          columnWrapperStyle={styles.columnWrapper}
+          scrollEnabled={false}
+        />
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -157,41 +137,6 @@ const styles = StyleSheet.create({
     gap: COLUMN_GAP,
     marginBottom: COLUMN_GAP,
     justifyContent: "space-between",
-  },
-  productCard: {
-    width: ITEM_WIDTH,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    overflow: "hidden",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-  },
-  productImage: {
-    width: "100%",
-    height: ITEM_WIDTH,
-    resizeMode: "cover",
-  },
-  productInfo: {
-    padding: 12,
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1C1C1E",
-    marginBottom: 4,
-  },
-  productPrice: {
-    fontSize: 14,
-    color: "#4E8D7C",
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  productCategory: {
-    fontSize: 12,
-    color: "#8E8E93",
   },
   createButton: {
     alignSelf: "flex-start",

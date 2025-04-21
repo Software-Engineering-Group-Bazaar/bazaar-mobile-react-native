@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Alert,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   apiFetchAllCategoriesAsync,
@@ -16,18 +9,16 @@ import {
 import { useRouter } from "expo-router";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import LanguageButton from "@/components/ui/LanguageButton";
-import SetHeaderRight from '../../components/ui/NavHeader';
+import SetHeaderRight from "../../components/ui/NavHeader";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
-import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function PostavkeProdavnice() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const [name, setName] = useState("");
   const [streetAndNumber, setStreetAndNumber] = useState(""); // << DODANO
-  const [city, setCity] = useState(""); // << DODANO
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -70,12 +61,12 @@ export default function PostavkeProdavnice() {
     if (
       !name.trim() ||
       !streetAndNumber.trim() ||
-      !selectedMunicipality ||
+      selectedMunicipality == null ||
       !description.trim() ||
       selectedCategoryId == null
     ) {
       console.log("Ime:", name.trim());
-      console.log("Ulica i broj:", streetAndNumber.trim()); 
+      console.log("Ulica i broj:", streetAndNumber.trim());
       console.log("Opština:", selectedMunicipality);
       console.log("Opis:", description.trim());
       console.log("Kategorija ID:", selectedCategoryId);
