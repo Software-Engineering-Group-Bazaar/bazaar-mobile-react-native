@@ -109,6 +109,7 @@
     "reset_filters": "Resetuj filtere",
     "search-stores":"Pretraži prodavnice",
     "no_stores_found": "Nema pronađenih prodavnica",
-    "quantity-updated": "Ažurirana količina proizvoda u korpi"
+    "quantity-updated": "Ažurirana količina proizvoda u korpi",
+    "valid-quantity":"Unesite ispravnu količinu"
 }
   

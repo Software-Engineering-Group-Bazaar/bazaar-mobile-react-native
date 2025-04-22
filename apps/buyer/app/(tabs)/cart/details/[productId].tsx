@@ -218,7 +218,7 @@ const ProductDetailsScreen = () => {
                             onChangeText={handleQuantityInputChange}
                             keyboardType="numeric"
                             onBlur={() => {
-                              if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
+                              if (!quantityInput || isNaN(parseInt(quantityInput, 10))) {
                                 setQuantityInput('1');
                               }
                             }}
@@ -233,12 +233,12 @@ const ProductDetailsScreen = () => {
             {/*ovdje dodati dio mijenja količina u korpi*/}
             <TouchableOpacity style={styles.addToCartButton} onPress={() => {
   const newQuantity = parseInt(quantityInput, 10);
-  if (!isNaN(newQuantity) && newQuantity > 0) {
+  if (!isNaN(newQuantity) && newQuantity >= 0) {
    handleQuantityChange(product, newQuantity);
    setQuantity(newQuantity); // Ažurirajte i quantity stanje
    alert(t('quantity-updated'));
   } else {
-   alert(t('Please enter a valid quantity.'));
+   alert(t('valid-quantity'));
   }
  }}>
   <Text style={styles.addToCartButtonText}>{t('Make a change')}</Text>
