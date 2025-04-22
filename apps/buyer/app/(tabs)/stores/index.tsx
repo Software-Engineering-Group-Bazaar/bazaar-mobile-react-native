@@ -35,7 +35,7 @@ const StoresScreen = () => {
 
   useEffect(() => {
     const fetchStores = async () => {
-      setLoading(true);
+      setLoading(false);
       setError(null);
 
       if (USE_DUMMY_DATA) {

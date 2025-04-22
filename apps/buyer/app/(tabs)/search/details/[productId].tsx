@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -61,8 +61,9 @@ const ProductDetailsScreen = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+  const [quantityInput, setQuantityInput] = useState('1');
   const { cartItems, addToCart } = useCart();
+  const quantity = parseInt(quantityInput, 10) || 1;
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -76,14 +77,8 @@ const ProductDetailsScreen = () => {
     }
   };
 
-  const incrementQuantity = () => {
-    setQuantity(prev => prev + 1);
-  };
-
-  const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(prev => prev - 1);
-    }
+  const handleQuantityInputChange = (text: React.SetStateAction<string>) => {
+    setQuantityInput(text);
   };
 
   useEffect(() => {
@@ -222,13 +217,22 @@ const ProductDetailsScreen = () => {
             {/*odabir količine */}
             <View style={styles.quantityContainer}>
               <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
-              <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
-                <Text style={styles.quantityButtonText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.quantityText}>{quantity}</Text>
-              <TouchableOpacity style={styles.quantityButton} onPress={incrementQuantity}>
-                <Text style={styles.quantityButtonText}>+</Text>
-              </TouchableOpacity>
+              <TextInput
+                style={styles.quantityInput}
+                value={quantityInput}
+                onChangeText={handleQuantityInputChange}
+                keyboardType="numeric"
+                onBlur={() => {
+                  if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
+                    setQuantityInput('1');
+                  }
+                }}
+                onFocus={() => {
+                  if (quantityInput === '1') {
+                    setQuantityInput('');
+                  }
+                }}
+              />
             </View>
 
             {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
@@ -247,6 +251,27 @@ const ProductDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  quantityInput: {
+    width: 100, 
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    textAlign: 'center',
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  quantityLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#666',
+  },
   productDetailText: {
     fontSize: 16,
     color: '#555',
@@ -274,19 +299,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#dc3545',
     fontWeight: 'bold',
-  },
-  quantityLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#666',
-  },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around', 
-    marginTop: 20,
-    marginBottom: 20,
-    paddingHorizontal: 20, 
   },
   quantityButton: {
     backgroundColor: '#e0e0e0',

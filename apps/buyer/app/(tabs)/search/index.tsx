@@ -284,7 +284,7 @@ const SearchProductsScreen = () => {
       `Pokretanje pretrage - Regija: ${regionName}, Općine: ${selectedMunicipalityNames}, Kategorija: ${categoryName}, Upit: ${searchQuery || 'Nema'}`
     );
 
-    setLoading(true);
+    setLoading(false);
     setError(null);
 
     // if (USE_DUMMY_DATA) {
@@ -466,11 +466,10 @@ const SearchProductsScreen = () => {
     visible={isFilterModalVisible}
     onRequestClose={closeFilterModal}
 >
-<TouchableWithoutFeedback onPress={() => { 
-        closeFilterModal();  // Close the modal
-    }}>
+<TouchableWithoutFeedback onPress={() => { closeFilterModal(); }}>
     <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
+        <View style={styles.modalContainer}
+          onStartShouldSetResponder={() => true}>
             <Text style={styles.modalTitle}>{t('filter_products')}</Text>
 
             {/* Regije */}
