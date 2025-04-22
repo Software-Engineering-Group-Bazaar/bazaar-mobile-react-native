@@ -107,5 +107,6 @@
     "filter":"Filter",
     "reset_filters": "Reset filters",
     "search-stores":"Search stores",
-    "no_stores_found": "No stores found."
+    "no_stores_found": "No stores found.",
+    "quantity-updated": "Product quantity updated in cart"
 }

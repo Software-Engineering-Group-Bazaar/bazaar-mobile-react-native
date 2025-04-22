@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity , TextInput} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -61,15 +61,19 @@ const ProductDetailsScreen = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [quantityInput, setQuantityInput] = useState('1');
-  const { cartItems, addToCart } = useCart();
-  const quantity = parseInt(quantityInput, 10) || 1;
+  const { cartItems, addToCart, handleQuantityChange } = useCart();
+  const [quantity, setQuantity] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty || 1);
+  const [quantityInput, setQuantityInput] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty?.toString() || '1');
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
       setCurrentImageIndex(prev => prev + 1);
     }
   };
+
+  useEffect(() => {
+    setQuantityInput(quantity.toString());
+   }, [quantity]);
 
   const previousImage = () => {
     if (currentImageIndex > 0) {
@@ -78,8 +82,9 @@ const ProductDetailsScreen = () => {
   };
 
   const handleQuantityInputChange = (text: React.SetStateAction<string>) => {
-    setQuantityInput(text);
-  };
+      setQuantityInput(text);
+    };
+  
 
   useEffect(() => {
     navigation.setOptions({
@@ -99,26 +104,16 @@ const ProductDetailsScreen = () => {
         try {
           const authToken = await SecureStore.getItemAsync('auth_token');
           const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products/${productId}`, {
-            // Dodaj method i headers ako je potrebno (posebno Authorization)
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${authToken}` // Odkomentariši ako API zahteva token
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json'
             }
           });
           if (!response.ok) {
             throw new Error('Product not found');
           }
           const data = await response.json();
-
-          const cartStore = (cartItems && cartItems.length > 0)? cartItems[0].product.storeId : 0;
-
-
-          if(cartStore != 0 && cartStore != data.storeId){
-            Alert.alert("Proizvod nije moguće dodati u korpu", "Već imate proizvode druge prodavnice u korpi. Finalizirajte narudžbu ili očistite korpu da biste mogli ovaj proizvod dodati u korpu.");
-            data.isActive = false;
-          }
-
           setProduct(data);
         } catch (error) {
           console.error('Error fetching product:', error);
@@ -216,29 +211,38 @@ const ProductDetailsScreen = () => {
           <>
             {/*odabir količine */}
             <View style={styles.quantityContainer}>
-              <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
-              <TextInput
-                style={styles.quantityInput}
-                value={quantityInput}
-                onChangeText={handleQuantityInputChange}
-                keyboardType="numeric"
-                onBlur={() => {
-                  if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
-                    setQuantityInput('1');
-                  }
-                }}
-                onFocus={() => {
-                  if (quantityInput === '1') {
-                    setQuantityInput('');
-                  }
-                }}
-              />
-            </View>
+                          <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
+                          <TextInput
+                            style={styles.quantityInput}
+                            value={quantityInput}
+                            onChangeText={handleQuantityInputChange}
+                            keyboardType="numeric"
+                            onBlur={() => {
+                              if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
+                                setQuantityInput('1');
+                              }
+                            }}
+                            onFocus={() => {
+                              if (quantityInput === '1') {
+                                setQuantityInput('');
+                              }
+                            }}
+                          />
+                        </View>
 
-            {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
-            <TouchableOpacity style={styles.addToCartButton} onPress={() => {addToCart(product, quantity); alert(t('Product added to cart'))}}>
-              <Text style={styles.addToCartButtonText}>{t('Add to Cart')}</Text>
-            </TouchableOpacity>
+            {/*ovdje dodati dio mijenja količina u korpi*/}
+            <TouchableOpacity style={styles.addToCartButton} onPress={() => {
+  const newQuantity = parseInt(quantityInput, 10);
+  if (!isNaN(newQuantity) && newQuantity > 0) {
+   handleQuantityChange(product, newQuantity);
+   setQuantity(newQuantity); // Ažurirajte i quantity stanje
+   alert(t('quantity-updated'));
+  } else {
+   alert(t('Please enter a valid quantity.'));
+  }
+ }}>
+  <Text style={styles.addToCartButtonText}>{t('Make a change')}</Text>
+ </TouchableOpacity>
           </>
         ) : (
           <View style={styles.notAvailableContainer}>
@@ -251,12 +255,6 @@ const ProductDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10,
-  },
   quantityInput: {
     width: 100, 
     height: 40,
@@ -266,11 +264,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     backgroundColor: '#fff',
-  },
-  quantityLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#666',
   },
   productDetailText: {
     fontSize: 16,
@@ -299,6 +292,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#dc3545',
     fontWeight: 'bold',
+  },
+  quantityLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#666',
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around', 
+    marginTop: 20,
+    marginBottom: 20,
+    paddingHorizontal: 20, 
   },
   quantityButton: {
     backgroundColor: '#e0e0e0',
