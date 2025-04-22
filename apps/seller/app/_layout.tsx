@@ -190,7 +190,7 @@ export default function RootLayout() {
         if (data && data.orderId) {
           console.log(`User tapped notification for Order ID: ${data.orderId}. Navigating...`);
           router.push({
-            pathname: '/(CRUD)/narudzba_detalji',
+            pathname: './(CRUD)/narudzba_detalji',
             params: { id: data.orderId.toString() },
           });
           /*const handleNotificationTap = async () => {
