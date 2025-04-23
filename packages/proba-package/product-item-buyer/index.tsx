@@ -21,7 +21,7 @@ interface Product {
   volumeUnit?: string;
   storeId: number;                 // Promijenjeno iz storeID (usklađeno s formatom)
   photos: string[];                // Promijenjeno iz imageUrl u niz stringova
-  isAvailable: boolean;
+  isActive: boolean;
   wholesaleThreshold?: number;
 }
 
@@ -33,7 +33,7 @@ interface ProductItemProps {
 
 const ProductItem: React.FC<ProductItemProps> = ({ product, onPress, onAddToCart }) => {
   // Destrukturiranje svojstava iz novog Product objekta
-  const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit, isAvailable } = product;
+  const { name, retailPrice, photos, weight, weightUnit, volume, volumeUnit, isActive } = product;
   // <Image source={{ uri: "http://192.168.0.25:5054" + firstImageUrl }} style={styles.image} />
 
   // Dohvaćanje prve slike iz niza 'photos', ako postoji
@@ -54,7 +54,7 @@ const ProductItem: React.FC<ProductItemProps> = ({ product, onPress, onAddToCart
         )}
       </View>
       <View style={styles.actionContainer}>
-        {isAvailable ? (
+        {isActive ? (
         <TouchableOpacity onPress={() => {if (onAddToCart) {onAddToCart(product); ToastAndroid.show('Dodano u korpu!', ToastAndroid.SHORT);}}} style={styles.addButton}>
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>) : 

@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "446776699186",
+    "project_id": "bazaar-system",
+    "storage_bucket": "bazaar-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446776699186:android:91c8a3ce087fecb1d30f2b",
+        "android_client_info": {
+          "package_name": "com.anonymous.buyer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrc_IR75HUt--CfutJB5rVj34mpg3d7lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446776699186:android:25dc6aac74d86badd30f2b",
+        "android_client_info": {
+          "package_name": "com.anonymous.monorepo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrc_IR75HUt--CfutJB5rVj34mpg3d7lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446776699186:android:c94f8a81c5a13218d30f2b",
+        "android_client_info": {
+          "package_name": "com.anonymous.seller"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrc_IR75HUt--CfutJB5rVj34mpg3d7lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
