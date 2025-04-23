@@ -11,6 +11,7 @@
     "ios": {
       "bundleIdentifier": "com.anonymous.seller",
       "supportsTablet": true,
+      "googleServicesFile": "./ios/seller/GoogleService-info.plist",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
         "SKAdNetworkItems": [
@@ -29,9 +30,11 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.seller",
+      "googleServicesFile": "./android/app/google-services.json",
       "permissions": [
         "android.permission.INTERNET",
-        "com.google.android.gms.permission.AD_ID"
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.VIBRATE"
       ]
     },
     "web": {
@@ -71,7 +74,14 @@
           "iosUserTrackingPermission": "This identifier will be used to deliver personalized ads to you."
         }
       ],
-      "expo-tracking-transparency"
+      "expo-tracking-transparency",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/adaptive-icon.png", 
+          "color": "#FFFFFF"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
