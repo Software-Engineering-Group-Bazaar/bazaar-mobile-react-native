@@ -6,6 +6,7 @@ export default function StoresLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="products/[storeId]" />
+      <Stack.Screen name="products/[storeId]/[productId]" />
     </Stack>
   );
 }
