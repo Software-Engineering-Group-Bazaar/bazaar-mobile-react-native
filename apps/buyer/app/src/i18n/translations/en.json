@@ -105,5 +105,9 @@
     "close":"Close",
     "apply_filters":"Apply filters",
     "filter":"Filter",
-    "reset_filters": "Reset filters"
+    "reset_filters": "Reset filters",
+    "search-stores":"Search stores",
+    "no_stores_found": "No stores found.",
+    "quantity-updated": "Product quantity updated in cart",
+    "valid-quantity":"Enter a valid quantity"
 }

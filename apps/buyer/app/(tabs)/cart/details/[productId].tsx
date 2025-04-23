@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity , TextInput} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -63,6 +63,7 @@ const ProductDetailsScreen = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { cartItems, addToCart, handleQuantityChange } = useCart();
   const [quantity, setQuantity] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty || 1);
+  const [quantityInput, setQuantityInput] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty?.toString() || '1');
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -70,21 +71,20 @@ const ProductDetailsScreen = () => {
     }
   };
 
+  useEffect(() => {
+    setQuantityInput(quantity.toString());
+   }, [quantity]);
+
   const previousImage = () => {
     if (currentImageIndex > 0) {
       setCurrentImageIndex(prev => prev - 1);
     }
   };
 
-  const incrementQuantity = () => {
-    setQuantity(prev => prev + 1);
-  };
-
-  const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(prev => prev - 1);
-    }
-  };
+  const handleQuantityInputChange = (text: React.SetStateAction<string>) => {
+      setQuantityInput(text);
+    };
+  
 
   useEffect(() => {
     navigation.setOptions({
@@ -211,20 +211,38 @@ const ProductDetailsScreen = () => {
           <>
             {/*odabir količine */}
             <View style={styles.quantityContainer}>
-              <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
-              <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
-                <Text style={styles.quantityButtonText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.quantityText}>{quantity}</Text>
-              <TouchableOpacity style={styles.quantityButton} onPress={incrementQuantity}>
-                <Text style={styles.quantityButtonText}>+</Text>
-              </TouchableOpacity>
-            </View>
+                          <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
+                          <TextInput
+                            style={styles.quantityInput}
+                            value={quantityInput}
+                            onChangeText={handleQuantityInputChange}
+                            keyboardType="numeric"
+                            onBlur={() => {
+                              if (!quantityInput || isNaN(parseInt(quantityInput, 10))) {
+                                setQuantityInput('1');
+                              }
+                            }}
+                            onFocus={() => {
+                              if (quantityInput === '1') {
+                                setQuantityInput('');
+                              }
+                            }}
+                          />
+                        </View>
 
-            {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
-            <TouchableOpacity style={styles.addToCartButton} onPress={() => {handleQuantityChange(product,quantity); alert(t('Product added to cart'))}}>
-              <Text style={styles.addToCartButtonText}>{t('Make a change')}</Text>
-            </TouchableOpacity>
+            {/*ovdje dodati dio mijenja količina u korpi*/}
+            <TouchableOpacity style={styles.addToCartButton} onPress={() => {
+  const newQuantity = parseInt(quantityInput, 10);
+  if (!isNaN(newQuantity) && newQuantity >= 0) {
+   handleQuantityChange(product, newQuantity);
+   setQuantity(newQuantity); // Ažurirajte i quantity stanje
+   alert(t('quantity-updated'));
+  } else {
+   alert(t('valid-quantity'));
+  }
+ }}>
+  <Text style={styles.addToCartButtonText}>{t('Make a change')}</Text>
+ </TouchableOpacity>
           </>
         ) : (
           <View style={styles.notAvailableContainer}>
@@ -237,6 +255,16 @@ const ProductDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  quantityInput: {
+    width: 100, 
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    textAlign: 'center',
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
   productDetailText: {
     fontSize: 16,
     color: '#555',
