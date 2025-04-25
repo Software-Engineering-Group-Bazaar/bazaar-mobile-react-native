@@ -110,6 +110,11 @@
     "search-stores":"Pretraži prodavnice",
     "no_stores_found": "Nema pronađenih prodavnica",
     "quantity-updated": "Ažurirana količina proizvoda u korpi",
-    "valid-quantity":"Unesite ispravnu količinu"
+    "valid-quantity":"Unesite ispravnu količinu",
+    "out of stock": "Van zaliha",
+    "You can only add up to": "Možete dodati samo do",
+  "more of": "komada",
+  "Your current cart contains": "Vaša korpa sadrži",
+  "items of this product.": "komada ovog proizvoda."
 }
   
