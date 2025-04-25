@@ -114,5 +114,10 @@
     "You can only add up to": "You can only add up to",
   "more of": "more of",
   "Your current cart contains": "Your current cart contains",
-  "items of this product": "items of this product"
+  "items of this product": "items of this product",
+   "quantity_changed_title": "Product Quantity Updated",
+  "quantity_changed_message": "The quantity for {{productName}} has changed. The selected quantity was {{selectedQuantity}}, and now only {{availableQuantity}} are available. Your cart has been updated.",
+  "There are only": "There are only",
+  "items of": "items of",
+  "available.": "available."
 }

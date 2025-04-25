@@ -115,6 +115,11 @@
     "You can only add up to": "Možete dodati samo do",
   "more of": "komada",
   "Your current cart contains": "Vaša korpa sadrži",
-  "items of this product.": "komada ovog proizvoda."
+  "items of this product.": "komada ovog proizvoda.",
+  "quantity_changed_title": "Ažurirana količina proizvoda",
+  "quantity_changed_message": "Količina za proizvod {{productName}} se promijenila. Odabrana količina je bila {{selectedQuantity}}, a sada je dostupno samo {{availableQuantity}}. Vaša korpa je ažurirana.",
+  "There are only": "Preostalo je samo",
+  "items of": "komada od",
+  "available.": "dostupno."
 }
   

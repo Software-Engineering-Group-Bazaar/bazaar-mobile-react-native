@@ -259,7 +259,7 @@ const ProductDetailsScreen = () => {
       } else {
         const authToken = await SecureStore.getItemAsync('auth_token');
         const response = await fetch(
-          `https://bazaar-system.duckdns.org/api/Inventory/Quantity?productId=${productId}&storeId=${product.storeId}`,
+          `https://bazaar-system.duckdns.org/api/Inventory/productId=${productId}&storeId=${product.storeId}`,
           {
             method: 'GET',
             headers: {
@@ -286,7 +286,7 @@ const ProductDetailsScreen = () => {
         alert(t('quantity-updated'));
       } else {
         Alert.alert(
-          t('Out of Stock'),
+          t('out of stock'),
           `${t('There are only')} ${availableQuantity} ${t('items of')} ${product.name} ${t('available.')}`
         );
       }

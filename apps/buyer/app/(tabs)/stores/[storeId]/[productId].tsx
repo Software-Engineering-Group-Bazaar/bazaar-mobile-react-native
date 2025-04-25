@@ -104,7 +104,7 @@ const checkAndAddToCart = async () => {
     } else {
       const authToken = await SecureStore.getItemAsync('auth_token');
       const response = await fetch(
-        `https://bazaar-system.duckdns.org/api/Inventory/Quantity?productId=${productId}&storeId=${product.storeId}`,
+        `https://bazaar-system.duckdns.org/api/Inventory/productId=${productId}&storeId=${product.storeId}`,
         {
           method: 'GET',
           headers: {

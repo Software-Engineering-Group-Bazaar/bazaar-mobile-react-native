@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { useCart } from '../../../apps/buyer/context/CartContext';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 
 interface ProductCategory {
   id: number;
@@ -36,6 +37,7 @@ const CartItem: React.FC<CartItemProps> = ({
   onPress,
 }) => {
   const { handleQuantityChange, removeFromCart } = useCart();
+  const { t } = useTranslation();
 
   const increment = () => handleQuantityChange(product, quantity + 1);
   const decrement = () => {
@@ -75,6 +77,8 @@ const CartItem: React.FC<CartItemProps> = ({
           {firstImageUrl && (
             <Image source={{ uri: firstImageUrl }} style={styles.image} />
           )}
+          
+          {/* Levak: naziv, cena, težina, zapremina */}
           <View style={styles.infoContainer}>
             <Text style={styles.name}>{product.name}</Text>
             <Text style={[styles.price, { color: 'green' }]}>
@@ -87,20 +91,14 @@ const CartItem: React.FC<CartItemProps> = ({
               <Text style={styles.details}>{product.volume} {product.volumeUnit}</Text>
             )}
           </View>
-          <Text style={styles.totalPrice}>{totalPrice.toFixed(2)} KM</Text>
+  
+          {/* Desna strana: ukupna cena i količina */}
+          <View style={styles.rightInfoContainer}>
+            <Text style={styles.totalPrice}>{totalPrice.toFixed(2)} KM</Text>
+            <Text style={{ marginTop: 8 }}>{t('quantity')}: {quantity}</Text>
+          </View>
         </TouchableOpacity>
       </Swipeable>
-
-      <View style={styles.quantityWrapper}>
-      <Text style={{ marginRight: 8 }}>Količina</Text>
-        <TouchableOpacity onPress={decrement} style={styles.qtyButton}>
-          <Text style={styles.qtyButtonText}>−</Text>
-        </TouchableOpacity>
-        <Text style={styles.quantityText}>{quantity}</Text>
-        <TouchableOpacity onPress={increment} style={styles.qtyButton}>
-          <Text style={styles.qtyButtonText}>+</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -130,6 +128,10 @@ const styles = StyleSheet.create({
   infoContainer: {
     flex: 1,
     justifyContent: 'center',
+  },
+  rightInfoContainer: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   name: {
     fontSize: 16,
