@@ -1,28 +1,25 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import ProductItem from '../product-item'; 
 import { useCart } from '../../../apps/buyer/context/CartContext';
 import { Swipeable } from 'react-native-gesture-handler';
 
-// Definicija za kategoriju proizvoda (ugniježđeni objekt)
 interface ProductCategory {
   id: number;
   name: string;
 }
 
-// Nova Product interface prema zadatom formatu
 interface Product {
   id: number;
   name: string;
-  productCategory: ProductCategory; // Promijenjeno iz productcategoryid
-  retailPrice: number;             // Promijenjeno iz price (koristit ćemo maloprodajnu cijenu)
-  wholesalePrice: number;         // Dodano
-  weight?: number;                 // Promijenjeno iz wieght (ispravljen typo)
-  weightUnit?: string;             // Promijenjeno iz wieghtunit (ispravljen typo)
+  productCategory: ProductCategory;
+  retailPrice: number;
+  wholesalePrice: number;
+  weight?: number;
+  weightUnit?: string;
   volume?: number;
   volumeUnit?: string;
-  storeId: number;                 // Promijenjeno iz storeID (usklađeno s formatom)
-  photos: string[];                // Promijenjeno iz imageUrl u niz stringova
+  storeId: number;
+  photos: string[];
   isActive: boolean;
   wholesaleThreshold?: number;
 }
@@ -38,14 +35,13 @@ const CartItem: React.FC<CartItemProps> = ({
   quantity,
   onPress,
 }) => {
-  const { cartItems, removeFromCart, handleQuantityChange } = useCart();
-  // Funkcije za + i –
+  const { handleQuantityChange, removeFromCart } = useCart();
+
   const increment = () => handleQuantityChange(product, quantity + 1);
   const decrement = () => {
     if (quantity > 1) {
       handleQuantityChange(product, quantity - 1);
-    }
-    else {
+    } else {
       removeFromCart(product.id);
     }
   };
@@ -58,7 +54,7 @@ const CartItem: React.FC<CartItemProps> = ({
     });
 
     return (
-      <TouchableOpacity onPress={() => {handleQuantityChange(product,0); removeFromCart(product.id)}}>
+      <TouchableOpacity onPress={() => { handleQuantityChange(product, 0); removeFromCart(product.id); }}>
         <Animated.View style={[styles.deleteButton, { transform: [{ scale }] }]}>
           <Text style={styles.deleteButtonText}>Ukloni</Text>
         </Animated.View>
@@ -66,19 +62,37 @@ const CartItem: React.FC<CartItemProps> = ({
     );
   };
 
+  const isWholesale = product.wholesaleThreshold !== undefined && quantity > product.wholesaleThreshold;
+  const unitPrice = isWholesale ? product.wholesalePrice : product.retailPrice;
+  const totalPrice = unitPrice * quantity;
+
+  const firstImageUrl = product.photos && product.photos.length > 0 ? product.photos[0] : undefined;
 
   return (
     <View style={styles.cartItemContainer}>
-      {/* Iskoristi postojeći ProductItem za prikaz osnovnih podataka */}
       <Swipeable renderRightActions={renderRightActions}>
-      <ProductItem
-        product={product}
-        onPress={onPress}
-      />
+        <TouchableOpacity style={styles.productContainer} onPress={() => onPress?.(product)}>
+          {firstImageUrl && (
+            <Image source={{ uri: firstImageUrl }} style={styles.image} />
+          )}
+          <View style={styles.infoContainer}>
+            <Text style={styles.name}>{product.name}</Text>
+            <Text style={[styles.price, { color: 'green' }]}>
+              {isWholesale ? `${unitPrice.toFixed(2)} KM` : `${unitPrice.toFixed(2)} KM`}
+            </Text>
+            {product.weight && product.weightUnit && (
+              <Text style={styles.details}>{product.weight} {product.weightUnit}</Text>
+            )}
+            {product.volume && product.volumeUnit && (
+              <Text style={styles.details}>{product.volume} {product.volumeUnit}</Text>
+            )}
+          </View>
+          <Text style={styles.totalPrice}>{totalPrice.toFixed(2)} KM</Text>
+        </TouchableOpacity>
       </Swipeable>
 
-      {/* UI za prikaz i upravljanje količinom */}
       <View style={styles.quantityWrapper}>
+      <Text style={{ marginRight: 8 }}>Količina</Text>
         <TouchableOpacity onPress={decrement} style={styles.qtyButton}>
           <Text style={styles.qtyButtonText}>−</Text>
         </TouchableOpacity>
@@ -95,6 +109,47 @@ const styles = StyleSheet.create({
   cartItemContainer: {
     marginBottom: 12,
   },
+  productContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  image: {
+    width: 100,
+    height: 80,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  infoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 3,
+  },
+  price: {
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  details: {
+    fontSize: 12,
+    color: 'gray',
+  },
+  totalPrice: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'green',
+    marginLeft: 10,
+  },
   quantityWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -103,7 +158,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafafa',
     borderRadius: 6,
     alignSelf: 'flex-end',
-    marginTop: -3,            // pozicioniranje iznad ili ispod ProductItem-a
+    marginTop: -3,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 1 },

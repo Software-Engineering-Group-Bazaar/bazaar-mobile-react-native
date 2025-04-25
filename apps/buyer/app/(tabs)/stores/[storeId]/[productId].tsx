@@ -28,7 +28,7 @@ interface Product {
   wholesaleThreshold?: number;
 }
 
-const USE_DUMMY_DATA = false;
+const USE_DUMMY_DATA = true;
 
 const DUMMY_PRODUCTS: Product[] = [
   { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10 },
@@ -80,6 +80,14 @@ const ProductDetailsScreen = () => {
   const handleQuantityInputChange = (text: React.SetStateAction<string>) => {
     setQuantityInput(text);
   };
+
+  const incrementQuantity = () => {
+    setQuantityInput(prev => (parseInt(prev, 10) + 1).toString());
+};
+
+const decrementQuantity = () => {
+    setQuantityInput(prev => (Math.max(1, parseInt(prev, 10) - 1)).toString());
+};
 
   useEffect(() => {
     navigation.setOptions({
@@ -216,24 +224,30 @@ const ProductDetailsScreen = () => {
           <>
             {/*odabir količine */}
             <View style={styles.quantityContainer}>
-              <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
-              <TextInput
-                style={styles.quantityInput}
-                value={quantityInput}
-                onChangeText={handleQuantityInputChange}
-                keyboardType="numeric"
-                onBlur={() => {
-                  if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
-                    setQuantityInput('1');
-                  }
-                }}
-                onFocus={() => {
-                  if (quantityInput === '1') {
-                    setQuantityInput('');
-                  }
-                }}
-              />
-            </View>
+    <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
+    <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
+        <FontAwesome name="minus" size={18} color="#000" />
+    </TouchableOpacity>
+    <TextInput
+        style={styles.quantityInput}
+        value={quantityInput}
+        onChangeText={handleQuantityInputChange}
+        keyboardType="numeric"
+        onBlur={() => {
+            if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
+                setQuantityInput('1');
+            }
+        }}
+        onFocus={() => {
+            if (quantityInput === '1') {
+                setQuantityInput('');
+            }
+        }}
+    />
+    <TouchableOpacity style={styles.quantityButton} onPress={incrementQuantity}>
+        <FontAwesome name="plus" size={18} color="#000" />
+    </TouchableOpacity>
+</View>
 
             {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
             <TouchableOpacity style={styles.addToCartButton} onPress={() => {addToCart(product, quantity); alert(t('Product added to cart'))}}>
@@ -303,8 +317,8 @@ const styles = StyleSheet.create({
   quantityButton: {
     backgroundColor: '#e0e0e0',
     borderRadius: 15,
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 15,

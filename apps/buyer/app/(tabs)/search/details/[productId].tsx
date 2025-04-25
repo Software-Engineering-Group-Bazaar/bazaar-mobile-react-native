@@ -77,6 +77,15 @@ const ProductDetailsScreen = () => {
     }
   };
 
+  const incrementQuantity = () => {
+    setQuantityInput(prev => (parseInt(prev, 10) + 1).toString());
+};
+
+const decrementQuantity = () => {
+    setQuantityInput(prev => (Math.max(1, parseInt(prev, 10) - 1)).toString());
+};
+
+
   const handleQuantityInputChange = (text: React.SetStateAction<string>) => {
     setQuantityInput(text);
   };
@@ -216,23 +225,29 @@ const ProductDetailsScreen = () => {
           <>
             {/*odabir količine */}
             <View style={styles.quantityContainer}>
-              <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
-              <TextInput
-                style={styles.quantityInput}
-                value={quantityInput}
-                onChangeText={handleQuantityInputChange}
-                keyboardType="numeric"
-                onBlur={() => {
-                  if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
-                    setQuantityInput('1');
-                  }
-                }}
-                onFocus={() => {
-                  if (quantityInput === '1') {
-                    setQuantityInput('');
-                  }
-                }}
-              />
+                <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
+                <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
+                    <FontAwesome name="minus" size={18} color="#000" />
+                </TouchableOpacity>
+                <TextInput
+                    style={styles.quantityInput}
+                    value={quantityInput}
+                    onChangeText={handleQuantityInputChange}
+                    keyboardType="numeric"
+                    onBlur={() => {
+                        if (!quantityInput || isNaN(parseInt(quantityInput, 10)) || parseInt(quantityInput, 10) < 1) {
+                            setQuantityInput('1');
+                        }
+                    }}
+                    onFocus={() => {
+                        if (quantityInput === '1') {
+                            setQuantityInput('');
+                        }
+                    }}
+                />
+                <TouchableOpacity style={styles.quantityButton} onPress={incrementQuantity}>
+                    <FontAwesome name="plus" size={18} color="#000" />
+                </TouchableOpacity>
             </View>
 
             {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
@@ -303,8 +318,8 @@ const styles = StyleSheet.create({
   quantityButton: {
     backgroundColor: '#e0e0e0',
     borderRadius: 15,
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 15,
