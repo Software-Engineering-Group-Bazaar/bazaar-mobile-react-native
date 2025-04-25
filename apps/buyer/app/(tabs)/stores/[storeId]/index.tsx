@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 // Importuj ažurirani ProductItem koji očekuje novi format
 import ProductItem from 'proba-package/product-item-buyer/index';
@@ -161,6 +161,20 @@ const StoreProductsScreen = () => {
 
   return (
     <View style={styles.container}>
+
+      <TouchableOpacity 
+        onPress={() => router.push({
+          pathname: '/screens/store/[storeId]',
+          params: { storeId: storeIdString },})}
+        style={{ margin: 20, alignSelf: 'center', borderWidth: 1, borderRadius: 10, padding: 10, backgroundColor: '#fff' }}>
+        <Text style={{ fontSize: 21, color: '#4e8d7c' }}>
+          {t('store_details')}
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 , alignSelf: 'center'}}>
+        {t('store_products') || 'Proizvodi u prodavnici'}
+      </Text>
       <View style={styles.listContainer}>
         {products.length === 0 ? (
           <Text style={styles.noProductsText}>{t('no_products_in_store') || 'Nema proizvoda u ovoj prodavnici.'}</Text>

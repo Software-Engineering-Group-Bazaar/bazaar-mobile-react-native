@@ -106,6 +106,9 @@
     "close":"Zatvori",
     "apply_filters":"Primijeni filtere",
     "filter":"Filtriraj",
-    "reset_filters": "Resetuj filtere"
+    "reset_filters": "Resetuj filtere",
+    "details": "Detalji",
+    "store_products":"Proizvodi prodavnice",
+    "store_details":"Detalji prodavnice"
 }
   

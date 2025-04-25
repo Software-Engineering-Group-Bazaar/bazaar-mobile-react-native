@@ -105,5 +105,8 @@
     "close":"Close",
     "apply_filters":"Apply filters",
     "filter":"Filter",
-    "reset_filters": "Reset filters"
+    "reset_filters": "Reset filters",
+    "details": "Details",
+    "store_products":"Store products",
+    "store_details":"Store details"
 }
