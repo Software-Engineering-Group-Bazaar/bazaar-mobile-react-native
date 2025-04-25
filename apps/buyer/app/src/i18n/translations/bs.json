@@ -109,6 +109,17 @@
     "reset_filters": "Resetuj filtere",
     "details": "Detalji",
     "store_products":"Proizvodi prodavnice",
-    "store_details":"Detalji prodavnice"
+    "store_details":"Detalji prodavnice",
+    "address":"Adresa",
+    "description":"Opis",
+    "category":"Kategorija",
+    "location":"Lokacija",
+    "status":"Status",
+    "average_rating":"Prosječna ocjena",
+    "rating":"Ocjena",
+    "reviews":"Recenzije",
+    "comment":"Komentar",
+    "date":"Datum",
+    "response":"Odgovor"
 }
   

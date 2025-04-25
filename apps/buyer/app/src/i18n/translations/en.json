@@ -108,5 +108,16 @@
     "reset_filters": "Reset filters",
     "details": "Details",
     "store_products":"Store products",
-    "store_details":"Store details"
+    "store_details":"Store details",
+    "address":"Address",
+    "category":"Category",
+    "location":"Location",
+    "description":"Description",
+    "status":"Status",
+    "average_rating":"Average rating",
+    "rating":"Rating",
+    "reviews":"Reviews",
+    "comment":"Comment",
+    "date":"Date",
+    "response":"Response"
 }

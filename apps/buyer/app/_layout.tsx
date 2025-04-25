@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CartProvider } from '@/context/CartContext';
+import CustomHeader from 'proba-package/custom-header';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -38,7 +39,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="screens/orders" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/store/[storeId]" options={{ headerShown: false }} />
+        <Stack.Screen name="screens/store/[storeId]" options={{ headerShown: false }}/>
         <Stack.Screen name="+not-found" />
       </Stack>
       </CartProvider>
