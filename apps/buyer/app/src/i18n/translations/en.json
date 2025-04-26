@@ -119,5 +119,9 @@
     "reviews":"Reviews",
     "comment":"Comment",
     "date":"Date",
-    "response":"Response"
+    "response":"Response",
+    "search-stores":"Search stores",
+    "no_stores_found": "No stores found.",
+    "quantity-updated": "Product quantity updated in cart",
+    "valid-quantity":"Enter a valid quantity"
 }

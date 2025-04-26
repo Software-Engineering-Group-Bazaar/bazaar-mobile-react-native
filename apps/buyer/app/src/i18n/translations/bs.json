@@ -120,6 +120,10 @@
     "reviews":"Recenzije",
     "comment":"Komentar",
     "date":"Datum",
-    "response":"Odgovor"
+    "response":"Odgovor",
+    "search-stores":"Pretraži prodavnice",
+    "no_stores_found": "Nema pronađenih prodavnica",
+    "quantity-updated": "Ažurirana količina proizvoda u korpi",
+    "valid-quantity":"Unesite ispravnu količinu"
 }
   

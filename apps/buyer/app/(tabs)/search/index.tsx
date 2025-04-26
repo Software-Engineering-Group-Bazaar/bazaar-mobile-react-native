@@ -27,7 +27,7 @@ interface Product {
   volumeUnit?: string;
   storeId: number;
   photos: string[];
-  isAvailable: boolean;
+  isActive: boolean;
   wholesaleThreshold?: number;
 }
 
@@ -43,77 +43,80 @@ interface Store {
 }
 
 interface StoreWithProducts {
-  Store: Store;
-  Products: Product[];
+//   Store: Store;
+  id: number;
+  name: string;
+  products: Product[];
 }
 
 interface Region {
   id: number;
-  naziv: string;
+  name: string;
+  countryCode: string;
 }
 
-interface Municipality {
+interface Place {
   id: number;
-  naziv: string;
-  idRegije: number;
+  name: string;
+  postalCode: string;
 }
 
-const USE_DUMMY_DATA = true; // Postavite na true za testiranje s dummy podacima
+const USE_DUMMY_DATA = false; // Postavite na true za testiranje s dummy podacima
 
 const DUMMY_PRODUCTS: Product[] = [
-  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 1, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isAvailable: true, wholesaleThreshold: 10 },
-  { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 1, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isAvailable: true },
-  { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 1, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isAvailable: true, wholesaleThreshold: 50 },
-  { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 1, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isAvailable: false },
-  { id: 105, name: 'Kruh pšenični', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.50, wholesalePrice: 1.30, storeId: 2, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Kruh'], isAvailable: true, wholesaleThreshold: 20 },
-  { id: 106, name: 'Jogurt 500g', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 1.10, wholesalePrice: 0.90, weight: 500, weightUnit: 'g', storeId: 2, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Jogurt'], isAvailable: true },
-  { id: 107, name: 'Apple iPhone 13', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 999, wholesalePrice: 950, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Iphone'], isAvailable: true, wholesaleThreshold: 5 },
-  { id: 108, name: 'Samsung Galaxy S21', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 950, wholesalePrice: 900, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Samsung'], isAvailable: true },
-  { id: 109, name: 'Slušalice Bose', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 200, wholesalePrice: 180, storeId: 4, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Slušalice'], isAvailable: true, wholesaleThreshold: 15 },
-  { id: 110, name: 'Dell Monitor 24" Full HD', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 300, wholesalePrice: 280, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Monitor'], isAvailable: true },
-  { id: 111, name: 'Čaj Zeleni', productCategory: { id: 5, name: 'Pića' }, retailPrice: 3.00, wholesalePrice: 2.50, storeId: 2, photos: ['https://via.placeholder.com/300/32CD32/000000?Text=Čaj'], isAvailable: true, wholesaleThreshold: 100 },
-  { id: 112, name: 'Kafa Moka', productCategory: { id: 5, name: 'Pića' }, retailPrice: 5.50, wholesalePrice: 5.00, storeId: 3, photos: ['https://via.placeholder.com/300/D2691E/000000?Text=Kafa'], isAvailable: true },
-  { id: 113, name: 'Vino Cabernet Sauvignon', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 15.00, wholesalePrice: 13.00, storeId: 5, photos: ['https://via.placeholder.com/300/8B0000/FFFFFF?Text=Vino'], isAvailable: true, wholesaleThreshold: 30 },
-  { id: 114, name: 'Pivo Heineken', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 1.80, wholesalePrice: 1.50, storeId: 5, photos: ['https://via.placeholder.com/300/00FF00/FFFFFF?Text=Pivo'], isAvailable: true },
-  { id: 115, name: 'Računarski miš Logitech', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 25.00, wholesalePrice: 22.00, storeId: 5, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Miš'], isAvailable: true, wholesaleThreshold: 25 },
-  { id: 116, name: 'Gaming Monitor 27"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 400, wholesalePrice: 380, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Gaming+Monitor'], isAvailable: true },
-  { id: 117, name: 'LED TV 40"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 350, wholesalePrice: 330, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=TV'], isAvailable: true, wholesaleThreshold: 10 },
-  { id: 118, name: 'Knjiga "The Great Gatsby"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 15.00, wholesalePrice: 12.00, storeId: 1, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isAvailable: true },
-  { id: 119, name: 'Knjiga "1984"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 10.00, wholesalePrice: 8.00, storeId: 4, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isAvailable: true, wholesaleThreshold: 50 },
+  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 1, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10 },
+  { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 1, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isActive: true },
+  { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 1, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isActive: true, wholesaleThreshold: 50 },
+  { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 1, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isActive: false },
+  { id: 105, name: 'Kruh pšenični', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.50, wholesalePrice: 1.30, storeId: 2, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Kruh'], isActive: true, wholesaleThreshold: 20 },
+  { id: 106, name: 'Jogurt 500g', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 1.10, wholesalePrice: 0.90, weight: 500, weightUnit: 'g', storeId: 2, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Jogurt'], isActive: true },
+  { id: 107, name: 'Apple iPhone 13', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 999, wholesalePrice: 950, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Iphone'], isActive: true, wholesaleThreshold: 5 },
+  { id: 108, name: 'Samsung Galaxy S21', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 950, wholesalePrice: 900, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Samsung'], isActive: true },
+  { id: 109, name: 'Slušalice Bose', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 200, wholesalePrice: 180, storeId: 4, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Slušalice'], isActive: true, wholesaleThreshold: 15 },
+  { id: 110, name: 'Dell Monitor 24" Full HD', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 300, wholesalePrice: 280, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Monitor'], isActive: true },
+  { id: 111, name: 'Čaj Zeleni', productCategory: { id: 5, name: 'Pića' }, retailPrice: 3.00, wholesalePrice: 2.50, storeId: 2, photos: ['https://via.placeholder.com/300/32CD32/000000?Text=Čaj'], isActive: true, wholesaleThreshold: 100 },
+  { id: 112, name: 'Kafa Moka', productCategory: { id: 5, name: 'Pića' }, retailPrice: 5.50, wholesalePrice: 5.00, storeId: 3, photos: ['https://via.placeholder.com/300/D2691E/000000?Text=Kafa'], isActive: true },
+  { id: 113, name: 'Vino Cabernet Sauvignon', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 15.00, wholesalePrice: 13.00, storeId: 5, photos: ['https://via.placeholder.com/300/8B0000/FFFFFF?Text=Vino'], isActive: true, wholesaleThreshold: 30 },
+  { id: 114, name: 'Pivo Heineken', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 1.80, wholesalePrice: 1.50, storeId: 5, photos: ['https://via.placeholder.com/300/00FF00/FFFFFF?Text=Pivo'], isActive: true },
+  { id: 115, name: 'Računarski miš Logitech', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 25.00, wholesalePrice: 22.00, storeId: 5, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Miš'], isActive: true, wholesaleThreshold: 25 },
+  { id: 116, name: 'Gaming Monitor 27"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 400, wholesalePrice: 380, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Gaming+Monitor'], isActive: true },
+  { id: 117, name: 'LED TV 40"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 350, wholesalePrice: 330, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=TV'], isActive: true, wholesaleThreshold: 10 },
+  { id: 118, name: 'Knjiga "The Great Gatsby"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 15.00, wholesalePrice: 12.00, storeId: 1, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isActive: true },
+  { id: 119, name: 'Knjiga "1984"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 10.00, wholesalePrice: 8.00, storeId: 4, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isActive: true, wholesaleThreshold: 50 },
 ];
 
-const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
-  {
-    Store: { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA',place:1 },
-    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 1),
-  },
-  {
-    Store: { id: 2, isActive: false, categoryid: 202, name: 'Elektronika Centar', address: 'Sporedna ulica 5, Tuzla', description: 'Najnovija elektronika po povoljnim cijenama', logoUrl: 'https://via.placeholder.com/150/2196F3/FFFFFF?Text=LogoE',place:2 },
-    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 2),
-  },
-  {
-    Store: { id: 4, isActive: true, categoryid: 303, name: 'Knjižara Z', address: 'Pored rijeke 15, Banja Luka', description: 'Širok asortiman knjiga i uredskog materijala', logoUrl: 'https://via.placeholder.com/150/9C27B0/FFFFFF?Text=LogoK',place:1 },
-    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 4),
-  },
-  {
-    Store: { id: 5, isActive: true, categoryid: 101, name: 'Pekara Mlin', address: 'Novo Sarajevo 1', description: 'Svježi kruh i peciva', logoUrl: 'https://via.placeholder.com/150/FF9800/FFFFFF?Text=LogoP', place: 3 },
-    Products: DUMMY_PRODUCTS.filter(product => product.storeId === 5),
-  },
-];
+// const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
+//   {
+//     Store: { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA',place:1 },
+//     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 1),
+//   },
+//   {
+//     Store: { id: 2, isActive: false, categoryid: 202, name: 'Elektronika Centar', address: 'Sporedna ulica 5, Tuzla', description: 'Najnovija elektronika po povoljnim cijenama', logoUrl: 'https://via.placeholder.com/150/2196F3/FFFFFF?Text=LogoE',place:2 },
+//     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 2),
+//   },
+//   {
+//     Store: { id: 4, isActive: true, categoryid: 303, name: 'Knjižara Z', address: 'Pored rijeke 15, Banja Luka', description: 'Širok asortiman knjiga i uredskog materijala', logoUrl: 'https://via.placeholder.com/150/9C27B0/FFFFFF?Text=LogoK',place:1 },
+//     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 4),
+//   },
+//   {
+//     Store: { id: 5, isActive: true, categoryid: 101, name: 'Pekara Mlin', address: 'Novo Sarajevo 1', description: 'Svježi kruh i peciva', logoUrl: 'https://via.placeholder.com/150/FF9800/FFFFFF?Text=LogoP', place: 3 },
+//     Products: DUMMY_PRODUCTS.filter(product => product.storeId === 5),
+//   },
+// ];
 
 const DUMMY_REGIONS: Region[] = [
-  { id: 1, naziv: 'Sarajevski kanton' },
-  { id: 2, naziv: 'Tuzlanski kanton' },
-  { id: 3, naziv: 'Republika Srpska' },
+  { id: 1, name: 'Sarajevski kanton', countryCode: 'BA' },
+  { id: 2, name: 'Tuzlanski kanton', countryCode: 'BA' }, 
+  { id: 3, name: 'Republika Srpska', countryCode: 'BA' }
 ];
 
-const DUMMY_MUNICIPALITIES: Municipality[] = [
-  { id: 1, naziv: 'Sarajevo Centar', idRegije: 1 },
-  { id: 2, naziv: 'Sarajevo Novi Grad', idRegije: 1 },
-  { id: 3, naziv: 'Tuzla', idRegije: 2 },
-  { id: 4, naziv: 'Lukavac', idRegije: 2 },
-  { id: 5, naziv: 'Banja Luka', idRegije: 3 },
-  { id: 6, naziv: 'Bijeljina', idRegije: 3 },
+const DUMMY_MUNICIPALITIES: Place[] = [
+  { id: 1, name: 'Sarajevo Centar', postalCode: '71000' },
+  { id: 2, name: 'Sarajevo Novi Grad', postalCode: '71000' },
+  { id: 3, name: 'Tuzla', postalCode: '75000' },
+  { id: 4, name: 'Lukavac', postalCode: '75300' },
+  { id: 5, name: 'Banja Luka', postalCode: '78000' },
+  { id: 6, name: 'Bijeljina', postalCode: '76300' }
 ];
 
 const SearchProductsScreen = () => {
@@ -126,7 +129,7 @@ const SearchProductsScreen = () => {
   //za filtriranje 
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [regions, setRegions] = useState<Region[]>(DUMMY_REGIONS); // Koristimo dummy regije
-  const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
+  const [municipalities, setMunicipalities] = useState<Place[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
   const [selectedMunicipalities, setSelectedMunicipalities] = useState<number[]>([]);
@@ -179,7 +182,7 @@ const SearchProductsScreen = () => {
         setCategories(categoriesData);
 
         // dohvacanje regija
-        const regionsResponse = await fetch('https://bazaar-system.duckdns.org/api/locations/regions', {
+        const regionsResponse = await fetch('https://bazaar-system.duckdns.org/api/Geography/regions', {
           headers: {
             'Authorization': `Bearer ${authToken}`,
           },
@@ -205,7 +208,8 @@ const SearchProductsScreen = () => {
   useEffect(() => {
     const fetchMunicipalitiesForRegion = (regionId: number | null) => {
       if (USE_DUMMY_DATA) {
-        setMunicipalities(DUMMY_MUNICIPALITIES.filter(m => m.idRegije === regionId));
+        // setMunicipalities(DUMMY_MUNICIPALITIES.filter(m => m.idRegije === regionId));
+        setMunicipalities(DUMMY_MUNICIPALITIES);
         return;
       }
 
@@ -219,7 +223,7 @@ const SearchProductsScreen = () => {
               throw new Error('Authentication token not found.');
             }
 
-            const url = `https://bazaar-system.duckdns.org/api/locations/municipalities?region=${regionId}`;
+            const url = `https://bazaar-system.duckdns.org/api/Geography/region/${regionId}`;
 
             const municipalitiesResponse = await fetch(url, {
               headers: {
@@ -230,7 +234,7 @@ const SearchProductsScreen = () => {
               const errorBody = await municipalitiesResponse.text();
               throw new Error(`HTTP error! status: ${municipalitiesResponse.status}, message: ${errorBody}`);
             }
-            const municipalitiesData: Municipality[] = await municipalitiesResponse.json();
+            const municipalitiesData: Place[] = await municipalitiesResponse.json();
             setMunicipalities(municipalitiesData);
           } catch (e: any) {
             console.error("Error fetching municipalities:", e);
@@ -249,55 +253,129 @@ const SearchProductsScreen = () => {
   }, [selectedRegion]);
 
   const fetchStoreProducts = async () => {
-    console.log("Odabrana regija: ",selectedRegion, " odabrane opcine: ",selectedMunicipalities, " i odabrana kategorija: ",selectedCategory)
-    setLoading(true);
-    setError(null);
+    console.log("Odabrana regija: ",selectedRegion, " odabrane opcine: ",selectedMunicipalities, " i odabrana kategorija: ",selectedCategory);
 
-    if (USE_DUMMY_DATA) {
-      let filteredStores = DUMMY_STORES_WITH_PRODUCTS.map(storeWithProducts => ({
-        ...storeWithProducts,
-        Products: storeWithProducts.Products.filter(product =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          (selectedCategory === null || product.productCategory.id === selectedCategory)
-        ),
-      }));
+    const regionName = selectedRegion
+      ? regions.find(r => r.id === selectedRegion)?.name // Pronađi regiju po ID-u
+      : null; // Ako nije odabrana regija
 
-      if (selectedRegion) {
-        filteredStores = filteredStores.filter(store => {
-          const storeMunicipalityId = store.Store.place;
-          const municipality = DUMMY_MUNICIPALITIES.find(m => m.id === storeMunicipalityId);
-          return municipality && municipality.idRegije === selectedRegion &&
-                 (selectedMunicipalities.length === 0 || selectedMunicipalities.includes(storeMunicipalityId));
-        });
-      } else if (selectedMunicipalities.length > 0) {
-        filteredStores = filteredStores.filter(store => selectedMunicipalities.includes(store.Store.place));
-      }
+    const categoryName = selectedCategory
+      ? categories.find(c => c.id === selectedCategory)?.name // Pronađi kategoriju po ID-u
+      : null; // Ako nije odabrana kategorija
 
-      setStoresWithProducts(filteredStores.filter(storeWithProducts => storeWithProducts.Products.length > 0));
-      setLoading(false);
-      return;
+    let selectedMunicipalityNames: string[] = []; // Inicijalizujemo prazan niz za imena
+
+    // Proveravamo da li imamo učitane opštine i da li je neka odabrana
+    if (municipalities && municipalities.length > 0 && selectedMunicipalities && selectedMunicipalities.length > 0) {
+      selectedMunicipalityNames = selectedMunicipalities
+        .map(id => {
+          // Za svaki odabrani ID, pronađi odgovarajući objekat opštine
+          const municipality = municipalities.find(m => m.id === id);
+          // Vrati ime opštine ako je pronađena, inače undefined
+          return municipality?.name;
+        })
+        // Filtriraj sve rezultate koji su undefined (ako opština nije pronađena iz nekog razloga)
+        // i osiguraj da TypeScript zna da je rezultat niz stringova
+        .filter((name): name is string => name !== undefined);
     }
 
+    // Ispiši nazive umesto ID-jeva
+    console.log(
+      `Pokretanje pretrage - Regija: ${regionName}, Općine: ${selectedMunicipalityNames}, Kategorija: ${categoryName}, Upit: ${searchQuery || 'Nema'}`
+    );
+
+    setLoading(false);
+    setError(null);
+
+    // if (USE_DUMMY_DATA) {
+    //   let filteredStores = DUMMY_STORES_WITH_PRODUCTS.map(storeWithProducts => ({
+    //     ...storeWithProducts,
+    //     Products: storeWithProducts.Products.filter(product =>
+    //       product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    //       (selectedCategory === null || product.productCategory.id === selectedCategory)
+    //     ),
+    //   }));
+
+    //   if (selectedRegion) {
+    //     filteredStores = filteredStores.filter(store => {
+    //       const storeMunicipalityId = store.Store.place;
+    //       const municipality = DUMMY_MUNICIPALITIES.find(m => m.id === storeMunicipalityId);
+    //       return municipality &&
+    //              (selectedMunicipalities.length === 0 || selectedMunicipalities.includes(storeMunicipalityId));
+    //     });
+    //   } else if (selectedMunicipalities.length > 0) {
+    //     filteredStores = filteredStores.filter(store => selectedMunicipalities.includes(store.Store.place));
+    //   }
+
+    //   setStoresWithProducts(filteredStores.filter(storeWithProducts => storeWithProducts.Products.length > 0));
+    //   setLoading(false);
+    //   return;
+    // }
+
+    const authToken = await SecureStore.getItemAsync('auth_token');
+    if (!authToken) {
+      throw new Error('Authentication token not found.');
+    }
+
+    // const body = {
+    //   region: selectedRegion,
+    //   municipality: selectedMunicipalities.length > 0 ? selectedMunicipalities : null,
+    //   category: selectedCategory,
+    //   searchQuery: searchQuery,
+    // };
+
+    // const response = await fetch('https://bazaar-system.duckdns.org/api/Catalog/filter', {
+    //   method: 'GET',
+    //   headers: {
+    //     'Authorization': `Bearer ${authToken}`,
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(body),
+    // });
+
+    const baseUrl = 'https://bazaar-system.duckdns.org/api/Catalog/filter';
+
+    // Koristimo URLSearchParams za lako kreiranje query stringa
+    const params = new URLSearchParams();
+
+    // Dodajemo parametre samo ako imaju vrednost
+    if (regionName) {
+      params.append('region', regionName);
+    }
+
+    // Za niz 'municipality', dodajemo svaki element kao poseban parametar sa istim imenom
+    if (selectedMunicipalityNames && selectedMunicipalityNames.length > 0) {
+      selectedMunicipalityNames.forEach(municipality => {
+        // Server bi trebalo da bude konfigurisan da prihvati više parametara sa istim imenom kao niz
+        params.append('places', municipality);
+      });
+    }
+
+    if (categoryName) {
+      params.append('category', categoryName);
+    }
+
+    if (searchQuery) {
+      params.append('query', searchQuery);
+    }
+
+    // Kreiramo kompletan URL sa query parametrima
+    // params.toString() će automatski enkodirati vrednosti i spojiti ih sa '&'
+    const queryString = params.toString();
+    const url = `${baseUrl}${queryString ? `?${queryString}` : ''}`; // Dodajemo '?' samo ako ima parametara
+
+    console.log('Fetching URL:', url); // Za debugovanje
+
     try {
-      const authToken = await SecureStore.getItemAsync('auth_token');
-      if (!authToken) {
-        throw new Error('Authentication token not found.');
-      }
-
-      const body = {
-        region: selectedRegion,
-        municipality: selectedMunicipalities.length > 0 ? selectedMunicipalities : null,
-        category: selectedCategory,
-        searchQuery: searchQuery,
-      };
-
-      const response = await fetch('https://bazaar-system.duckdns.org/api/Catalog/filter', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: 'GET', // Metoda je GET
         headers: {
           'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
+          // 'Content-Type' nije potreban za GET bez body-ja
+          // Možda želite 'Accept' header ako očekujete JSON nazad:
+          // 'Accept': 'application/json',
         },
-        body: JSON.stringify(body),
+        // NEMA 'body' property za GET zahteve
       });
 
       if (!response.ok) {
@@ -305,7 +383,14 @@ const SearchProductsScreen = () => {
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
       }
 
+      console.log("Odgovor");
+      console.log(response.body);
+
       const data: StoreWithProducts[] = await response.json();
+
+      console.log("parsirano");
+      console.log(data);
+
       setStoresWithProducts(data);
 
     } catch (e: any) {
@@ -381,11 +466,10 @@ const SearchProductsScreen = () => {
     visible={isFilterModalVisible}
     onRequestClose={closeFilterModal}
 >
-<TouchableWithoutFeedback onPress={() => { 
-        closeFilterModal();  // Close the modal
-    }}>
+<TouchableWithoutFeedback onPress={() => { closeFilterModal(); }}>
     <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
+        <View style={styles.modalContainer}
+          onStartShouldSetResponder={() => true}>
             <Text style={styles.modalTitle}>{t('filter_products')}</Text>
 
             {/* Regije */}
@@ -397,7 +481,7 @@ const SearchProductsScreen = () => {
                         onPress={() => setIsRegionDropdownVisible(!isRegionDropdownVisible)}
                     >
                         <Text style={styles.filterItemText}>
-                        {selectedRegion ? regions.find(r => r.id === selectedRegion)?.naziv : t('all')}
+                        {selectedRegion ? regions.find(r => r.id === selectedRegion)?.name : t('all')}
                         </Text>
                     </TouchableOpacity>
 
@@ -448,7 +532,7 @@ const SearchProductsScreen = () => {
             selectedRegion === region.id && styles.selectedFilterItemText,
           ]}
         >
-          {region.naziv}
+          {region.name}
         </Text>
       </TouchableOpacity>
     ))}
@@ -469,7 +553,7 @@ const SearchProductsScreen = () => {
                                     value={selectedMunicipalities.includes(municipality.id)}
                                     onValueChange={() => handleMunicipalityCheckboxChange(municipality.id)}
                                 />
-                                <Text style={styles.checkboxLabel}>{municipality.naziv}</Text>
+                                <Text style={styles.checkboxLabel}>{municipality.name}</Text>
                             </View>
                         ))}
                     </View>
@@ -561,16 +645,16 @@ const SearchProductsScreen = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.storeContainer}>
-            <Text style={styles.storeName}>{item.Store.name}</Text>
+            <Text style={styles.storeName}>{item.name}</Text>
             <TouchableOpacity style={styles.storeButton} onPress={() => router.push({
               pathname: `/screens/store/[storeId]`,
-              params: { storeId: item.Store.id },
+              params: { storeId: item.id },
             })}>
               <Text style = {{color:'white'}}>{t('details')}</Text>
             </TouchableOpacity>          
-            {item.Products.length > 0 ? (
+            {item.products.length > 0 ? (
               <FlatList
-                data={item.Products}
+                data={item.products}
                 keyExtractor={(product) => product.id.toString()}
                 renderItem={({ item: product }) => (
                   <View style={styles.productWrapper}>
