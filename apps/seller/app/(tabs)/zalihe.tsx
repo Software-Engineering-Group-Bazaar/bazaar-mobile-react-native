@@ -1,12 +1,29 @@
-import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import {
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
+import React, { useState } from "react";
 import ProductQuantityCard from "@/components/ui/cards/ProductQuantityCard";
 
 const ZaliheScreen = () => {
+  const [value, setvalue] = useState(0);
+
   return (
-    <View style={styles.container}>
-      <ProductQuantityCard />
-    </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <ProductQuantityCard value={value} onChange={setvalue} />
+          <ProductQuantityCard value={value} onChange={setvalue} />
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -17,6 +34,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
   },
 });

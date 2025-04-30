@@ -1,17 +1,37 @@
 import { View, Text, StyleSheet, Image } from "react-native";
-import React from "react";
+import { Product } from "@/app/types/proizvod";
+import QuantityPicker from "../input/QuantityPicker";
 
-const ProductQuantityCard = () => {
+interface ProductQuantityProps {
+  item: Product;
+  value: number;
+  onChange: (newQuantity: number) => void;
+}
+
+const ProductQuantityCard: React.FC<ProductQuantityProps> = ({
+  item,
+  value,
+  onChange,
+}) => {
   return (
     <View style={styles.cardBody}>
-      <Image
-        source={require("../../../assets/images/logo.png")}
-        style={styles.productImage}
-      />
-      <View>
-        <Text>Ime proizvoda</Text>
-        <Text>Kategorija: Kategorija</Text>
+      {/* <View style={styles.line} /> */}
+      <View style={styles.cardInnerBody}>
+        <Image
+          source={require("../../../assets/images/logo.png")}
+          style={styles.productImage}
+        />
+        <View>
+          <Text>Ime proizvoda</Text>
+          <Text>Kategorija: Kategorija</Text>
+        </View>
+        <QuantityPicker
+          value={value}
+          onChange={onChange}
+          style={{ marginLeft: 30 }}
+        />
       </View>
+      {/* <View style={styles.line} /> */}
     </View>
   );
 };
@@ -21,7 +41,9 @@ export default ProductQuantityCard;
 const styles = StyleSheet.create({
   cardBody: {
     width: "100%",
-    height: "20%",
+    marginVertical: 10,
+  },
+  cardInnerBody: {
     flexDirection: "row",
     backgroundColor: "#fff",
     alignItems: "center",
@@ -31,5 +53,11 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "contain",
     marginHorizontal: 10,
+  },
+  line: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginHorizontal: 16, // makes the line not reach the edges
+    marginVertical: 5,
   },
 });
