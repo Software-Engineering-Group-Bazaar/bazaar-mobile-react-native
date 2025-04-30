@@ -6,11 +6,24 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductQuantityCard from "@/components/ui/cards/ProductQuantityCard";
+import { apiFetchAllProductsForStore } from "../api/productApi";
+import { Product } from "../types/proizvod";
 
 const ZaliheScreen = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [value, setvalue] = useState(0);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const productsFetched = await apiFetchAllProductsForStore(1); // Tmp store ID
+      console.log(productsFetched);
+      setProducts(productsFetched);
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -19,8 +32,20 @@ const ZaliheScreen = () => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
-          <ProductQuantityCard value={value} onChange={setvalue} />
-          <ProductQuantityCard value={value} onChange={setvalue} />
+          {products.length != 0 && (
+            <>
+              <ProductQuantityCard
+                item={products[0]}
+                value={value}
+                onChange={setvalue}
+              />
+              <ProductQuantityCard
+                item={products[0]}
+                value={value}
+                onChange={setvalue}
+              />
+            </>
+          )}
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

@@ -24,11 +24,6 @@ const QuantityPicker: React.FC<Props> = ({
 }: Props) => {
   const [inputValue, setInputValue] = useState(value.toString());
 
-  const handleChange = (newVal: number) => {
-    const clamped = Math.max(min, Math.min(max, newVal));
-    onChange(clamped);
-  };
-
   const handleBlur = () => {
     const parsed = parseInt(inputValue, 10);
     if (!isNaN(parsed) && parsed !== value) {
@@ -67,7 +62,11 @@ const QuantityPicker: React.FC<Props> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { flexDirection: "row", alignItems: "center" },
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    // marginHorizontal: 10,
+  },
   button: { padding: 5, borderRadius: 4 },
   buttonText: { fontSize: 30, color: "#4E8D7C" },
   input: {

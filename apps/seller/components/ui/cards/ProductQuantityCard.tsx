@@ -17,19 +17,17 @@ const ProductQuantityCard: React.FC<ProductQuantityProps> = ({
     <View style={styles.cardBody}>
       {/* <View style={styles.line} /> */}
       <View style={styles.cardInnerBody}>
-        <Image
-          source={require("../../../assets/images/logo.png")}
-          style={styles.productImage}
-        />
-        <View>
-          <Text>Ime proizvoda</Text>
-          <Text>Kategorija: Kategorija</Text>
+        <View style={styles.imageAdnTextContainer}>
+          <Image
+            source={require("../../../assets/images/logo.png")}
+            style={styles.productImage}
+          />
+          <View>
+            <Text style={styles.titleText}>{item.name}</Text>
+            <Text style={styles.categoryText}>{item.productCategory.name}</Text>
+          </View>
         </View>
-        <QuantityPicker
-          value={value}
-          onChange={onChange}
-          style={{ marginLeft: 30 }}
-        />
+        <QuantityPicker value={value} onChange={onChange} />
       </View>
       {/* <View style={styles.line} /> */}
     </View>
@@ -40,16 +38,17 @@ export default ProductQuantityCard;
 
 const styles = StyleSheet.create({
   cardBody: {
-    width: "100%",
     marginVertical: 10,
+    width: "100%",
   },
   cardInnerBody: {
+    paddingRight: 10,
+    justifyContent: "space-between",
     flexDirection: "row",
     backgroundColor: "#fff",
-    alignItems: "center",
   },
   productImage: {
-    width: "15%",
+    width: "26%",
     height: "100%",
     resizeMode: "contain",
     marginHorizontal: 10,
@@ -59,5 +58,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     marginHorizontal: 16, // makes the line not reach the edges
     marginVertical: 5,
+  },
+  imageAdnTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  titleText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: "#333",
+  },
+  categoryText: {
+    fontWeight: "200",
+    fontSize: 14,
   },
 });
