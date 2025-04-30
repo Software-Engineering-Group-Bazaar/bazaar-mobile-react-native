@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity , TextInput} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
+import * as SecureStore from 'expo-secure-store';
 
 interface ProductCategory {
   id: number;
@@ -23,32 +24,32 @@ interface Product {
   volumeUnit?: string;
   storeId: number;
   photos: string[];
-  isAvailable: boolean;
+  isActive: boolean;
   wholesaleThreshold?: number;
 }
 
-const USE_DUMMY_DATA = true;
+const USE_DUMMY_DATA = false;
 
 const DUMMY_PRODUCTS: Product[] = [
-  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isAvailable: true, wholesaleThreshold: 10 },
-  { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 123, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isAvailable: true },
-  { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isAvailable: true, wholesaleThreshold: 50 },
-  { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isAvailable: false },
-  { id: 105, name: 'Kruh pšenični', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.50, wholesalePrice: 1.30, storeId: 123, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Kruh'], isAvailable: true, wholesaleThreshold: 20 },
-  { id: 106, name: 'Jogurt 500g', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 1.10, wholesalePrice: 0.90, weight: 500, weightUnit: 'g', storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Jogurt'], isAvailable: true },
-  { id: 107, name: 'Apple iPhone 13', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 999, wholesalePrice: 950, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Iphone'], isAvailable: true, wholesaleThreshold: 5 },
-  { id: 108, name: 'Samsung Galaxy S21', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 950, wholesalePrice: 900, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Samsung'], isAvailable: true },
-  { id: 109, name: 'Slušalice Bose', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 200, wholesalePrice: 180, storeId: 456, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Slušalice'], isAvailable: true, wholesaleThreshold: 15 },
-  { id: 110, name: 'Dell Monitor 24" Full HD', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 300, wholesalePrice: 280, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Monitor'], isAvailable: true },
-  { id: 111, name: 'Čaj Zeleni', productCategory: { id: 5, name: 'Pića' }, retailPrice: 3.00, wholesalePrice: 2.50, storeId: 789, photos: ['https://via.placeholder.com/300/32CD32/000000?Text=Čaj'], isAvailable: true, wholesaleThreshold: 100 },
-  { id: 112, name: 'Kafa Moka', productCategory: { id: 5, name: 'Pića' }, retailPrice: 5.50, wholesalePrice: 5.00, storeId: 789, photos: ['https://via.placeholder.com/300/D2691E/000000?Text=Kafa'], isAvailable: true },
-  { id: 113, name: 'Vino Cabernet Sauvignon', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 15.00, wholesalePrice: 13.00, storeId: 789, photos: ['https://via.placeholder.com/300/8B0000/FFFFFF?Text=Vino'], isAvailable: true, wholesaleThreshold: 30 },
-  { id: 114, name: 'Pivo Heineken', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 1.80, wholesalePrice: 1.50, storeId: 789, photos: ['https://via.placeholder.com/300/00FF00/FFFFFF?Text=Pivo'], isAvailable: true },
-  { id: 115, name: 'Računarski miš Logitech', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 25.00, wholesalePrice: 22.00, storeId: 456, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Miš'], isAvailable: true, wholesaleThreshold: 25 },
-  { id: 116, name: 'Gaming Monitor 27"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 400, wholesalePrice: 380, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Gaming+Monitor'], isAvailable: true },
-  { id: 117, name: 'LED TV 40"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 350, wholesalePrice: 330, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=TV'], isAvailable: true, wholesaleThreshold: 10 },
-  { id: 118, name: 'Knjiga "The Great Gatsby"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 15.00, wholesalePrice: 12.00, storeId: 999, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isAvailable: true },
-  { id: 119, name: 'Knjiga "1984"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 10.00, wholesalePrice: 8.00, storeId: 999, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isAvailable: true, wholesaleThreshold: 50 },
+  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10 },
+  { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 123, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isActive: true },
+  { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isActive: true, wholesaleThreshold: 50 },
+  { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isActive: false },
+  { id: 105, name: 'Kruh pšenični', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.50, wholesalePrice: 1.30, storeId: 123, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Kruh'], isActive: true, wholesaleThreshold: 20 },
+  { id: 106, name: 'Jogurt 500g', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 1.10, wholesalePrice: 0.90, weight: 500, weightUnit: 'g', storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Jogurt'], isActive: true },
+  { id: 107, name: 'Apple iPhone 13', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 999, wholesalePrice: 950, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Iphone'], isActive: true, wholesaleThreshold: 5 },
+  { id: 108, name: 'Samsung Galaxy S21', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 950, wholesalePrice: 900, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Samsung'], isActive: true },
+  { id: 109, name: 'Slušalice Bose', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 200, wholesalePrice: 180, storeId: 456, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Slušalice'], isActive: true, wholesaleThreshold: 15 },
+  { id: 110, name: 'Dell Monitor 24" Full HD', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 300, wholesalePrice: 280, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Monitor'], isActive: true },
+  { id: 111, name: 'Čaj Zeleni', productCategory: { id: 5, name: 'Pića' }, retailPrice: 3.00, wholesalePrice: 2.50, storeId: 789, photos: ['https://via.placeholder.com/300/32CD32/000000?Text=Čaj'], isActive: true, wholesaleThreshold: 100 },
+  { id: 112, name: 'Kafa Moka', productCategory: { id: 5, name: 'Pića' }, retailPrice: 5.50, wholesalePrice: 5.00, storeId: 789, photos: ['https://via.placeholder.com/300/D2691E/000000?Text=Kafa'], isActive: true },
+  { id: 113, name: 'Vino Cabernet Sauvignon', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 15.00, wholesalePrice: 13.00, storeId: 789, photos: ['https://via.placeholder.com/300/8B0000/FFFFFF?Text=Vino'], isActive: true, wholesaleThreshold: 30 },
+  { id: 114, name: 'Pivo Heineken', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 1.80, wholesalePrice: 1.50, storeId: 789, photos: ['https://via.placeholder.com/300/00FF00/FFFFFF?Text=Pivo'], isActive: true },
+  { id: 115, name: 'Računarski miš Logitech', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 25.00, wholesalePrice: 22.00, storeId: 456, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Miš'], isActive: true, wholesaleThreshold: 25 },
+  { id: 116, name: 'Gaming Monitor 27"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 400, wholesalePrice: 380, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Gaming+Monitor'], isActive: true },
+  { id: 117, name: 'LED TV 40"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 350, wholesalePrice: 330, storeId: 456, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=TV'], isActive: true, wholesaleThreshold: 10 },
+  { id: 118, name: 'Knjiga "The Great Gatsby"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 15.00, wholesalePrice: 12.00, storeId: 999, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isActive: true },
+  { id: 119, name: 'Knjiga "1984"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 10.00, wholesalePrice: 8.00, storeId: 999, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isActive: true, wholesaleThreshold: 50 },
 ];
 
 const ProductDetailsScreen = () => {
@@ -62,6 +63,7 @@ const ProductDetailsScreen = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { cartItems, addToCart, handleQuantityChange } = useCart();
   const [quantity, setQuantity] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty || 1);
+  const [quantityInput, setQuantityInput] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty?.toString() || '1');
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -69,21 +71,20 @@ const ProductDetailsScreen = () => {
     }
   };
 
+  useEffect(() => {
+    setQuantityInput(quantity.toString());
+   }, [quantity]);
+
   const previousImage = () => {
     if (currentImageIndex > 0) {
       setCurrentImageIndex(prev => prev - 1);
     }
   };
 
-  const incrementQuantity = () => {
-    setQuantity(prev => prev + 1);
-  };
-
-  const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(prev => prev - 1);
-    }
-  };
+  const handleQuantityInputChange = (text: React.SetStateAction<string>) => {
+      setQuantityInput(text);
+    };
+  
 
   useEffect(() => {
     navigation.setOptions({
@@ -101,7 +102,14 @@ const ProductDetailsScreen = () => {
         setLoading(false);
       } else {
         try {
-          const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products/${productId}`);
+          const authToken = await SecureStore.getItemAsync('auth_token');
+          const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products/${productId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+              'Content-Type': 'application/json'
+            }
+          });
           if (!response.ok) {
             throw new Error('Product not found');
           }
@@ -168,17 +176,14 @@ const ProductDetailsScreen = () => {
       {/* Podaci o proizvodu */}
       <View style={styles.infoSection}>
         <Text style={styles.productName}>{product.name}</Text>
-        <Text style={[styles.availabilityText, !product.isAvailable && styles.notAvailableText]}>
-          {product.isAvailable ? t('available') : t('not-available')}
-        </Text>
 
-        {product.weight && (
+        {typeof product.weight === 'number' && product.weight > 0 && product.weight && (
           <Text style={styles.productDetailText}>
             {t('weight')}: {product.weight} {product.weightUnit}
           </Text>
         )}
 
-        {product.volume && (
+        {typeof product.volume === 'number' && product.volume > 0 && product.volume && (
           <Text style={styles.productDetailText}>
             {t('volume')}: {product.volume} {product.volumeUnit}
           </Text>
@@ -202,24 +207,42 @@ const ProductDetailsScreen = () => {
           <Text style={styles.price}>{product.retailPrice.toFixed(2)} KM</Text>
         )}
 
-        {product.isAvailable ? (
+        {product.isActive ? (
           <>
             {/*odabir količine */}
             <View style={styles.quantityContainer}>
-              <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
-              <TouchableOpacity style={styles.quantityButton} onPress={decrementQuantity}>
-                <Text style={styles.quantityButtonText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.quantityText}>{quantity}</Text>
-              <TouchableOpacity style={styles.quantityButton} onPress={incrementQuantity}>
-                <Text style={styles.quantityButtonText}>+</Text>
-              </TouchableOpacity>
-            </View>
+                          <Text style={[styles.quantityLabel, { marginRight: 10 }]}>{t('quantity')}:</Text>
+                          <TextInput
+                            style={styles.quantityInput}
+                            value={quantityInput}
+                            onChangeText={handleQuantityInputChange}
+                            keyboardType="numeric"
+                            onBlur={() => {
+                              if (!quantityInput || isNaN(parseInt(quantityInput, 10))) {
+                                setQuantityInput('1');
+                              }
+                            }}
+                            onFocus={() => {
+                              if (quantityInput === '1') {
+                                setQuantityInput('');
+                              }
+                            }}
+                          />
+                        </View>
 
-            {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
-            <TouchableOpacity style={styles.addToCartButton} onPress={() => {handleQuantityChange(product,quantity); alert(t('Product added to cart'))}}>
-              <Text style={styles.addToCartButtonText}>{t('Make a change')}</Text>
-            </TouchableOpacity>
+            {/*ovdje dodati dio mijenja količina u korpi*/}
+            <TouchableOpacity style={styles.addToCartButton} onPress={() => {
+  const newQuantity = parseInt(quantityInput, 10);
+  if (!isNaN(newQuantity) && newQuantity >= 0) {
+   handleQuantityChange(product, newQuantity);
+   setQuantity(newQuantity); // Ažurirajte i quantity stanje
+   alert(t('quantity-updated'));
+  } else {
+   alert(t('valid-quantity'));
+  }
+ }}>
+  <Text style={styles.addToCartButtonText}>{t('Make a change')}</Text>
+ </TouchableOpacity>
           </>
         ) : (
           <View style={styles.notAvailableContainer}>
@@ -232,6 +255,16 @@ const ProductDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  quantityInput: {
+    width: 100, 
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    textAlign: 'center',
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
   productDetailText: {
     fontSize: 16,
     color: '#555',

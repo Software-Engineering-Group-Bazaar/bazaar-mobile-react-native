@@ -25,108 +25,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// --- Helper Funkcije ---
-
-// Funkcija za dohvat tokena iz SecureStore
-async function getAuthTokenFromStorage(): Promise<string | null> {
-  try {
-    const token = await SecureStore.getItemAsync('accessToken'); // Koristi isti ključ kao u login.tsx
-    // console.log("Retrieved token from storage:", token ? "Exists" : "null");
-    return token;
-  } catch (e) {
-    console.error("Error getting auth token from storage:", e);
-    return null;
-  }
-}
-
-// ➤➤➤ ZAMIJENI SA SVOJIM BACKEND URL-om ➤➤➤
-const DEVICES_API_ENDPOINT = 'https://bazaar-system.duckdns.org/api/Devices/pushNotification';
-// Primjer za Android emulator: 'http://10.0.2.2:5000/api/Devices/me/device'
-
-async function sendTokenToBackend(nativeToken: string) {
-  const authToken = await getAuthTokenFromStorage(); // Koristi funkciju za dohvat iz storage-a
-  if (!authToken) {
-    console.error("Cannot send device token: User not authenticated (token not found in storage).");
-    return; // Ne šalji ako nema tokena
-  }
-  console.log(`Sending native FCM token [${nativeToken.substring(0,10)}...] to backend.`); // Loguj skraćeni token
-  try {
-    const response = await fetch(DEVICES_API_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({ deviceToken: nativeToken }),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error sending token to backend:', response.status, errorText);
-       // Ne prikazuj Alert korisniku za pozadinske greške
-       // Alert.alert("Greška", `Neuspješno registrovanje uređaja: ${response.status}`);
-    } else {
-      console.log('Device token successfully registered with backend.');
-       // Sačuvaj poslani token da ga ne šalješ svaki put ako se nije promijenio
-       await SecureStore.setItemAsync('sentPushToken', nativeToken);
-    }
-  } catch (error: any) {
-     console.error('Network or other error sending token to backend:', error);
-     // Alert.alert("Mrežna Greška", `Greška u komunikaciji sa serverom: ${error.message}`);
-  }
-}
-
-async function registerForPushNotificationsAsync(): Promise<string | undefined> {
-   let token: string | undefined;
-    if (!Device.isDevice) {
-        console.warn('Push notifications require a physical device.');
-        return;
-    }
-    if (Platform.OS === 'android') {
-        try {
-             await Notifications.setNotificationChannelAsync('default', {
-                name: 'default',
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: '#FF231F7C',
-             });
-        } catch (e) { console.error("Failed to set notification channel:", e); }
-    }
-
-    console.log('Checking notification permissions...');
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-        console.log('Requesting notification permissions...');
-        try { // Dodaj try-catch oko requestPermissionsAsync
-             const { status } = await Notifications.requestPermissionsAsync();
-             finalStatus = status;
-        } catch (permError) {
-             console.error("Error requesting notification permissions:", permError);
-             Alert.alert('Greška Dozvola', 'Došlo je do greške prilikom traženja dozvola za notifikacije.');
-             return; // Ne nastavljaj ako je došlo do greške
-        }
-    }
-    if (finalStatus !== 'granted') {
-        console.warn('Notification permissions not granted!');
-        // Ne prikazuj alert svaki put, možda samo prvi put?
-        // Alert.alert('Upozorenje', 'Niste omogućili dozvole za notifikacije.');
-        return;
-    }
-    console.log('Notification permissions granted.');
-
-    try {
-        console.log('Getting native device token...');
-        const pushTokenData = await Notifications.getDevicePushTokenAsync();
-        console.log('Native push token data:', pushTokenData);
-        token = pushTokenData.data;
-    } catch (e: unknown) {
-        // Alert.alert('Greška', `Neuspješno dobijanje push tokena: ${e}`);
-        console.error("Error getting device push token:", e);
-    }
-    return token;
-}
-
-
 // --- Glavna Layout Komponenta ---
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -139,43 +37,10 @@ export default function RootLayout() {
   // Stanje da pratimo da li smo pokušali registraciju
   const [hasAttemptedPushRegistration, setHasAttemptedPushRegistration] = useState(false);
 
-
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-
-      // --- Provjera Autentifikacije i Pokretanje Registracije ---
-      const checkAuthAndRegisterPush = async () => {
-          const userToken = await getAuthTokenFromStorage();
-          // Pokreni registraciju samo ako korisnik ima token I ako nismo već pokušali
-          if (userToken && !hasAttemptedPushRegistration) {
-              console.log("User authenticated, attempting push registration...");
-              setHasAttemptedPushRegistration(true); // Označi da smo pokušali
-
-              const pushToken = await registerForPushNotificationsAsync();
-              if (pushToken) {
-                  console.log("Obtained native token in _layout:", pushToken);
-                  // Provjeri da li smo već poslali ovaj token
-                  const lastSentToken = await SecureStore.getItemAsync('sentPushToken');
-                  if (lastSentToken !== pushToken) {
-                      console.log("New or changed push token, sending to backend...");
-                      await sendTokenToBackend(pushToken);
-                  } else {
-                      console.log("Push token already sent to backend.");
-                  }
-              } else {
-                  console.log("Could not get push token in _layout.");
-              }
-          } else if (!userToken) {
-               console.log("User not authenticated, skipping push registration.");
-               // Resetuj flag ako korisnik uradi logout negdje drugdje
-               setHasAttemptedPushRegistration(false);
-               SecureStore.deleteItemAsync('sentPushToken'); // Obriši poslani token pri logoutu
-          }
-      };
-
-      checkAuthAndRegisterPush(); // Pozovi provjeru
-
+      
       // Postavi Listenere (uvijek ih postavi, možda stigne notifikacija i za neulogovanog?)
       // Listener za primljene notifikacije (foreground)
       notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -223,7 +88,7 @@ export default function RootLayout() {
         }
       };
     }
-  }, [loaded, hasAttemptedPushRegistration]);
+  }, [loaded, router]);
 
 
   if (!loaded) {

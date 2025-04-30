@@ -39,9 +39,11 @@
         "android.permission.INTERNET",
         "com.google.android.gms.permission.AD_ID",
         "android.permission.INTERNET",
-        "com.google.android.gms.permission.AD_ID"
+        "com.google.android.gms.permission.AD_ID",
+        "android.permission.VIBRATE"
       ],
-      "package": "com.anonymous.buyer"
+      "package": "com.anonymous.buyer",
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -79,7 +81,14 @@
           "iosUrlScheme": "com.googleusercontent.apps.792696522665-dvhgjia0avus08gcni5rbvift7eki3qt"
         }
       ],
-      "expo-tracking-transparency"
+      "expo-tracking-transparency",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/adaptive-icon.png", 
+          "color": "#FFFFFF"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
