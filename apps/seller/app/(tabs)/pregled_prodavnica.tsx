@@ -5,8 +5,8 @@ import React, { useState, useEffect } from "react";
 import { apiFetchActiveStore } from "../api/storeApi";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import { Store } from "../types/prodavnica";
-import LanguageButton from "@/components/ui/LanguageButton";
-import CreateButton from "@/components/ui/CreateButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
+import CreateButton from "@/components/ui/buttons/CreateButton";
 import TouchableCard from "@/components/ui/cards/TouchableCard";
 
 export default function StoresScreen() {

@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { useTranslation } from "react-i18next";
 import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import { logoutApi } from "../api/auth/logoutApi";
-import LanguageButton from "@/components/ui/LanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import SetHeaderRight from '../../components/ui/NavHeader';
 

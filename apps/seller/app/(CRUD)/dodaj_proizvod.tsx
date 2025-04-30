@@ -15,7 +15,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useLocalSearchParams, useRouter } from "expo-router";
 import api from "../api/defaultApi";
 //-------------------Route Explorer---------------------------------
-import LanguageButton from "@/components/ui/LanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
