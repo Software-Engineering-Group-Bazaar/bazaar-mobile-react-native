@@ -119,5 +119,12 @@
   "quantity_changed_message": "The quantity for {{productName}} has changed. The selected quantity was {{selectedQuantity}}, and now only {{availableQuantity}} are available. Your cart has been updated.",
   "There are only": "There are only",
   "items of": "items of",
-  "available.": "available."
+  "available.": "available.",
+  "order_store":"Store",
+  "details":"Details",
+  "review":"Review",
+  "rating":"Rating",
+  "comment":"Comment",
+  "comment_placeholder":"Enter your comment",
+  "submit_review":"Submit review"
 }
