@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    // marginHorizontal: 10,
   },
   button: { padding: 5, borderRadius: 4 },
   buttonText: { fontSize: 30, color: "#4E8D7C" },

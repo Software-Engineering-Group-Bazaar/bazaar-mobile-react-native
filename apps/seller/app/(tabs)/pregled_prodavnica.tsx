@@ -8,6 +8,7 @@ import { Store } from "../types/prodavnica";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import CreateButton from "@/components/ui/buttons/CreateButton";
 import TouchableCard from "@/components/ui/cards/TouchableCard";
+import * as SecureStore from "expo-secure-store";
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function StoresScreen() {
       const activeStore = await apiFetchActiveStore();
       console.log(activeStore);
       if (activeStore) {
+        await SecureStore.setItem("storeId", activeStore.id.toString());
         setStore(activeStore);
       }
       setLoading(false);
