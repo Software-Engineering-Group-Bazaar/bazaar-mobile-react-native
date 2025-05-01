@@ -31,7 +31,7 @@ interface Order {
   orderItems: OrderItem[];
 }
 
-const USE_DUMMY_DATA = false;
+const USE_DUMMY_DATA = true;
 
 const DUMMY_ORDERS: Order[] = [
   {

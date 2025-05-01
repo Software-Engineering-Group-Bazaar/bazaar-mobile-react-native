@@ -1,21 +1,18 @@
 // app/screens/orders/_layout.tsx
 import { Stack } from 'expo-router';
 import React from 'react';
+import CustomHeader from 'proba-package/custom-header/index'; 
 
 export default function OrdersLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: '#4E8D7C' },
-        headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: '600' },
-      }}
-    >
-      {/* This tells Expo Router to render your index.tsx here */}
-      <Stack.Screen
-        name="index"
-        options={{ title: 'Moje narudžbe' }}
-      />
-    </Stack>
+    <>
+      <CustomHeader />
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{ headerShown: false }} 
+        />
+      </Stack>
+    </>
   );
 }
