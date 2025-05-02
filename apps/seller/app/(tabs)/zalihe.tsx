@@ -13,23 +13,24 @@ import ProductQuantityCard from "@/components/ui/cards/ProductQuantityCard";
 import { apiFetchAllProductsForStore } from "../api/productApi";
 import { Product } from "../types/proizvod";
 import * as SecureStore from "expo-secure-store";
-import { apiFetchInventoryForProduct } from "../api/inventoryApi";
+import {
+  apiFetchInventoryForProduct,
+  apiUpdateProductQuantity,
+} from "../api/inventoryApi";
 import { t } from "i18next";
 import { InventoryItem } from "../types/InventoryItem";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 
 const ZaliheScreen = () => {
+  const [storeId, setStoreId] = useState<number>(-1);
   const [productInventories, setProductInventories] = useState<
     { product: Product; inventory: InventoryItem }[]
   >([]);
-  const [value, setValue] = useState(0);
 
   useEffect(() => {
-    const storeId = SecureStore.getItem("storeId");
     const fetchAndCombineProductInventory = async (storeId: number) => {
       try {
         const products = await apiFetchAllProductsForStore(storeId);
-        // console.log(`Products: ${JSON.stringify(products, null, 2)}`);
 
         const combinedData = await Promise.all(
           products.map(async (product) => {
@@ -37,61 +38,108 @@ const ZaliheScreen = () => {
               storeId,
               product.id
             );
-            // console.log(
-            //   `Inventory of product ${product.name}: ${JSON.stringify(
-            //     inventory,
-            //     null,
-            //     2
-            //   )}`
-            // );
             return { product, inventory };
           })
         );
 
-        // console.log(`CombinedData: ${JSON.stringify(combinedData, null, 2)}`);
-
-        setProductInventories(combinedData); // or setInventoryItems(combinedData)
+        setProductInventories(combinedData);
       } catch (err) {
         console.error("Failed to fetch product inventories", err);
       }
     };
 
-    if (storeId) {
-      fetchAndCombineProductInventory(parseInt(storeId));
+    const storeIdString = SecureStore.getItem("storeId");
+    if (storeIdString) {
+      setStoreId(parseInt(storeIdString));
+      console.log(`StoreId state: ${storeId}`);
+      fetchAndCombineProductInventory(parseInt(storeIdString));
     } else {
       Alert.alert(t("store_id_error"));
     }
   }, []);
 
+  const handleQuantityChange = (productId: number, newQuantity: number) => {
+    setProductInventories((prev) =>
+      prev.map((item) =>
+        item.product.id === productId
+          ? { ...item, inventory: { ...item.inventory, quantity: newQuantity } }
+          : item
+      )
+    );
+  };
+
+  const handleSubmit = async () => {
+    if (!storeId) {
+      Alert.alert(t("store_id_error"));
+      return;
+    }
+
+    const failures: number[] = [];
+
+    for (const { product, inventory } of productInventories) {
+      const updatedInventory = await apiUpdateProductQuantity(
+        product.id,
+        storeId,
+        inventory.quantity
+      );
+
+      if (updatedInventory) {
+        // Update that specific inventory entry in local state
+        setProductInventories((prev) =>
+          prev.map((item) =>
+            item.product.id === product.id
+              ? { ...item, inventory: updatedInventory }
+              : item
+          )
+        );
+      } else {
+        failures.push(product.id);
+      }
+    }
+
+    if (failures.length === 0) {
+      Alert.alert(t("success"), t("all_quantities_updated"));
+    } else {
+      Alert.alert(
+        t("partial_error"),
+        `${t("failed_to_update")} ${failures.length} ${t("products")}.`
+      );
+    }
+  };
+
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <TouchableWithoutFeedback
-        onPress={Keyboard.dismiss}
-        style={{ paddingBottom: "20%" }}
+    <>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.container}>
-          {productInventories.length != 0 && (
-            <FlatList
-              data={productInventories}
-              keyExtractor={(item) => item.product.id.toString()}
-              renderItem={({ item }) => (
-                <ProductQuantityCard
-                  item={item.product}
-                  value={value}
-                  onChange={setValue}
-                />
-              )}
-            />
-          )}
-          <View style={styles.buttonWrapper}>
-            <SubmitButton buttonText={t("save_changes")} />
+        <TouchableWithoutFeedback
+          onPress={Keyboard.dismiss}
+          style={{ paddingBottom: "20%" }}
+        >
+          <View style={styles.container}>
+            {productInventories.length != 0 && (
+              <FlatList
+                data={productInventories}
+                keyExtractor={(item) => item.product.id.toString()}
+                renderItem={({ item }) => (
+                  <ProductQuantityCard
+                    item={item.product}
+                    value={item.inventory.quantity}
+                    onChange={(newQuantity) =>
+                      handleQuantityChange(item.product.id, newQuantity)
+                    }
+                  />
+                )}
+              />
+            )}
           </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+      <View style={styles.buttonWrapper}>
+        <SubmitButton buttonText={t("save_changes")} onPress={handleSubmit} />
+      </View>
+    </>
   );
 };
 
