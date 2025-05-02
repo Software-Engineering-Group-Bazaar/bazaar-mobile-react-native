@@ -16,7 +16,6 @@ export default function HomeScreen() {
   useEffect(() => {
     async function getStore() {
       const activeStore = await apiFetchActiveStore();
-      console.log(activeStore);
       if (activeStore) {
         await SecureStore.setItem("storeId", activeStore.id.toString());
       }

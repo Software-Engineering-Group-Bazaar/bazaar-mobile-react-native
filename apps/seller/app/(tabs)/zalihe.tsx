@@ -16,19 +16,20 @@ import * as SecureStore from "expo-secure-store";
 import { apiFetchInventoryForProduct } from "../api/inventoryApi";
 import { t } from "i18next";
 import { InventoryItem } from "../types/InventoryItem";
+import SubmitButton from "@/components/ui/input/SubmitButton";
 
 const ZaliheScreen = () => {
   const [productInventories, setProductInventories] = useState<
     { product: Product; inventory: InventoryItem }[]
   >([]);
-  const [value, setvalue] = useState(0);
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     const storeId = SecureStore.getItem("storeId");
     const fetchAndCombineProductInventory = async (storeId: number) => {
       try {
         const products = await apiFetchAllProductsForStore(storeId);
-        console.log(`Products: ${JSON.stringify(products, null, 2)}`);
+        // console.log(`Products: ${JSON.stringify(products, null, 2)}`);
 
         const combinedData = await Promise.all(
           products.map(async (product) => {
@@ -36,18 +37,18 @@ const ZaliheScreen = () => {
               storeId,
               product.id
             );
-            console.log(
-              `Inventory of product ${product.name}: ${JSON.stringify(
-                inventory,
-                null,
-                2
-              )}`
-            );
+            // console.log(
+            //   `Inventory of product ${product.name}: ${JSON.stringify(
+            //     inventory,
+            //     null,
+            //     2
+            //   )}`
+            // );
             return { product, inventory };
           })
         );
 
-        console.log(`CombinedData: ${JSON.stringify(combinedData, null, 2)}`);
+        // console.log(`CombinedData: ${JSON.stringify(combinedData, null, 2)}`);
 
         setProductInventories(combinedData); // or setInventoryItems(combinedData)
       } catch (err) {
@@ -67,7 +68,10 @@ const ZaliheScreen = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss}
+        style={{ paddingBottom: "20%" }}
+      >
         <View style={styles.container}>
           {productInventories.length != 0 && (
             <FlatList
@@ -77,11 +81,14 @@ const ZaliheScreen = () => {
                 <ProductQuantityCard
                   item={item.product}
                   value={value}
-                  onChange={setvalue}
+                  onChange={setValue}
                 />
               )}
             />
           )}
+          <View style={styles.buttonWrapper}>
+            <SubmitButton buttonText={t("save_changes")} />
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -95,6 +102,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    // justifyContent: "center",
+  },
+  buttonWrapper: {
+    position: "absolute",
+    backgroundColor: "white",
+    bottom: 80,
+    padding: 20,
   },
 });
