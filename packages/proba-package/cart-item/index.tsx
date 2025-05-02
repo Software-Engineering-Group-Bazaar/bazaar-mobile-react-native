@@ -29,12 +29,14 @@ interface CartItemProps {
   product: Product;
   quantity: number;
   onPress?: (product: Product) => void;
+  isSwipeable?: boolean;
 }
 
 const CartItem: React.FC<CartItemProps> = ({
   product,
   quantity,
   onPress,
+  isSwipeable = true
 }) => {
   const { handleQuantityChange, removeFromCart } = useCart();
   const { t } = useTranslation();
@@ -72,13 +74,35 @@ const CartItem: React.FC<CartItemProps> = ({
 
   return (
     <View style={styles.cartItemContainer}>
-      <Swipeable renderRightActions={renderRightActions}>
+      {isSwipeable ? (
+        <Swipeable renderRightActions={renderRightActions}>
+          <TouchableOpacity style={styles.productContainer} onPress={() => onPress?.(product)}>
+            {firstImageUrl && (
+              <Image source={{ uri: firstImageUrl }} style={styles.image} />
+            )}
+            <View style={styles.infoContainer}>
+              <Text style={styles.name}>{product.name}</Text>
+              <Text style={[styles.price, { color: 'green' }]}>
+                {isWholesale ? `${unitPrice.toFixed(2)} KM` : `${unitPrice.toFixed(2)} KM`}
+              </Text>
+              {product.weight && product.weightUnit && (
+                <Text style={styles.details}>{product.weight} {product.weightUnit}</Text>
+              )}
+              {product.volume && product.volumeUnit && (
+                <Text style={styles.details}>{product.volume} {product.volumeUnit}</Text>
+              )}
+            </View>
+            <View style={styles.rightInfoContainer}>
+              <Text style={styles.totalPrice}>{totalPrice.toFixed(2)} KM</Text>
+              <Text style={{ marginTop: 8 }}>{t('quantity')}: {quantity}</Text>
+            </View>
+          </TouchableOpacity>
+        </Swipeable>
+      ) : (
         <TouchableOpacity style={styles.productContainer} onPress={() => onPress?.(product)}>
           {firstImageUrl && (
             <Image source={{ uri: firstImageUrl }} style={styles.image} />
           )}
-          
-          {/* Levak: naziv, cena, težina, zapremina */}
           <View style={styles.infoContainer}>
             <Text style={styles.name}>{product.name}</Text>
             <Text style={[styles.price, { color: 'green' }]}>
@@ -91,14 +115,12 @@ const CartItem: React.FC<CartItemProps> = ({
               <Text style={styles.details}>{product.volume} {product.volumeUnit}</Text>
             )}
           </View>
-  
-          {/* Desna strana: ukupna cena i količina */}
           <View style={styles.rightInfoContainer}>
             <Text style={styles.totalPrice}>{totalPrice.toFixed(2)} KM</Text>
             <Text style={{ marginTop: 8 }}>{t('quantity')}: {quantity}</Text>
           </View>
         </TouchableOpacity>
-      </Swipeable>
+      )}
     </View>
   );
 };

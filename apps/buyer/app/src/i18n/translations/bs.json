@@ -126,6 +126,12 @@
   "rating":"Ocjena",
   "comment":"Komentar",
   "comment_placeholder":"Unesite komentar",
-  "submit_review":"Pošalji recenziju"
+  "submit_review":"Pošalji recenziju",
+  "order_details":"Detalji narudžbe",
+  "ordered_items":"Naručeni proizvodi",
+  "total_price":"Ukupna cijena",
+  "date_time":"Datum i vrijeme",
+  "store":"Prodavnica",
+  "status":"Status"
 }
   

@@ -25,7 +25,7 @@ interface OrderItem {
 interface Order {
   id: string;
   buyerId: string;
-  storeId: string;
+  storeId: number;
   status: string;
   time: string;
   total: number;
@@ -39,34 +39,34 @@ const DUMMY_ORDERS: Order[] = [
     id: 'A123',
     time: '2025-04-18T14:23:00Z',
     buyerId: 'B001',
-    storeId: 'S01',
-    status: 'requested',
-    total: 45.5,
+    storeId: 1,
+    status: 'Requested',
+    total: 6.20,
     orderItems: [
-      { id: '1', productId: 'P001', price: 15.0, quantity: 2 },
-      { id: '2', productId: 'P002', price: 7.25, quantity: 1 },
+      { id: '1', productId: '1', price: 2.50, quantity: 2 },
+      { id: '2', productId: '2', price: 1.20, quantity: 1 },
     ],
   },
   {
     id: 'B456',
     time: '2025-04-17T09:15:00Z',
     buyerId: 'B001',
-    storeId: 'S02',
-    status: 'ready',
-    total: 120.0,
+    storeId: 2,
+    status: 'Ready',
+    total: 5.00, 
     orderItems: [
-      { id: '3', productId: 'P010', price: 60.0, quantity: 2 },
+      { id: '1', productId: '1', price: 2.50, quantity: 2 },
     ],
   },
   {
     id: 'C789',
     time: '2025-04-15T18:40:00Z',
     buyerId: 'B001',
-    storeId: 'S03',
-    status: 'delivered',
-    total: 75.25,
+    storeId: 3,
+    status: 'Delivered',
+    total: 3.60,
     orderItems: [
-      { id: '4', productId: 'P005', price: 25.25, quantity: 3 },
+      { id: '2', productId: '2', price: 1.20, quantity: 3 },
     ],
   },
 ];

@@ -126,5 +126,11 @@
   "rating":"Rating",
   "comment":"Comment",
   "comment_placeholder":"Enter your comment",
-  "submit_review":"Submit review"
+  "submit_review":"Submit review",
+  "order_details":"Order details",
+  "ordered_items":"Ordered items",
+  "total_price":"Total price",
+  "date_time":"Date and time",
+  "store":"Store",
+  "status":"Status"
 }
