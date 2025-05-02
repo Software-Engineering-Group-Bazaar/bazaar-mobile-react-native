@@ -34,12 +34,15 @@ const QuantityPicker: React.FC<Props> = ({
   };
 
   const increment = () => {
-    onChange(value + 1);
-    setInputValue(value.toString());
+    const newValue = value + 1;
+    onChange(newValue);
+    setInputValue(newValue.toString());
   };
+
   const decrement = () => {
-    onChange(Math.max(0, value - 1));
-    setInputValue(value.toString());
+    const newValue = Math.max(min, value - 1);
+    onChange(newValue);
+    setInputValue(newValue.toString());
   };
 
   return (

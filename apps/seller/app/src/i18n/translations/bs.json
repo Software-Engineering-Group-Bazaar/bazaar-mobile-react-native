@@ -155,5 +155,6 @@
   "region": "Region",
   "select_region": "Odaberite region",
   "select_place": "Odaberite mjesto",
-  "store_id_error": "Prodavnica nije ucitana"
+  "store_id_error": "Prodavnica nije ucitana",
+  "all_quantities_updated": "Sve količine ažurirane"
 }
