@@ -51,7 +51,6 @@ const ZaliheScreen = () => {
     const storeIdString = SecureStore.getItem("storeId");
     if (storeIdString) {
       setStoreId(parseInt(storeIdString));
-      console.log(`StoreId state: ${storeId}`);
       fetchAndCombineProductInventory(parseInt(storeIdString));
     } else {
       Alert.alert(t("store_id_error"));

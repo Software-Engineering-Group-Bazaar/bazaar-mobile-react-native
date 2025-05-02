@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { apiFetchActiveStore } from "../api/storeApi";
 
 export default function HomeScreen() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
 
   useEffect(() => {

@@ -20,13 +20,11 @@ export default function StoresScreen() {
     async function getStore() {
       setLoading(true);
       const activeStore = await apiFetchActiveStore();
-      console.log(activeStore);
       if (activeStore) {
         await SecureStore.setItem("storeId", activeStore.id.toString());
         setStore(activeStore);
       }
       setLoading(false);
-      console.log(activeStore);
     }
     getStore();
   }, []);

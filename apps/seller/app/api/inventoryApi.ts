@@ -35,7 +35,6 @@ export const apiUpdateProductQuantity = async (
   storeId: number,
   newQuantity: number
 ): Promise<InventoryItem | null> => {
-  console.log(`newQuantity from api call: ${newQuantity}`);
   try {
     const response = await api.put("/Inventory/update/quantity", {
       productId,
