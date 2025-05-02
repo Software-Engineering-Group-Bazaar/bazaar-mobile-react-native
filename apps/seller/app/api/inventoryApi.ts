@@ -2,9 +2,9 @@ import { InventoryItem } from "../types/InventoryItem";
 import api from "./defaultApi";
 import { AxiosError } from "axios";
 
-export const getInventory = async (
-  storeId: string,
-  productId: string
+export const apiFetchInventoryForProduct = async (
+  storeId: number,
+  productId: number
 ): Promise<InventoryItem> => {
   try {
     const response = await api.get<InventoryItem>("/Inventory", {

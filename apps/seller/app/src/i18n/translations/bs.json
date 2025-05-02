@@ -154,5 +154,6 @@
   "unauthorized_access": "Neuspješna prijava",
   "region": "Region",
   "select_region": "Odaberite region",
-  "select_place": "Odaberite mjesto"
+  "select_place": "Odaberite mjesto",
+  "store_id_error": "Prodavnica nije ucitana"
 }

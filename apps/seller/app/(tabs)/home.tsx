@@ -1,17 +1,28 @@
 import { Alert, View, Text, StyleSheet, Image } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useTranslation } from "react-i18next";
-import ScreenExplorer from "@/components/debug/ScreenExplorer";
 import { logoutApi } from "../api/auth/logoutApi";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
-import SetHeaderRight from '../../components/ui/NavHeader';
+import SetHeaderRight from "../../components/ui/NavHeader";
+import { useEffect } from "react";
+import { apiFetchActiveStore } from "../api/storeApi";
 
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+
+  useEffect(() => {
+    async function getStore() {
+      const activeStore = await apiFetchActiveStore();
+      console.log(activeStore);
+      if (activeStore) {
+        await SecureStore.setItem("storeId", activeStore.id.toString());
+      }
+    }
+    getStore();
+  }, []);
 
   const handleLogout = async () => {
     try {
