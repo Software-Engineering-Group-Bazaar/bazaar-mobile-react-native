@@ -7,15 +7,14 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { apiFetchAllProductsForStore } from "../api/productApi";
 
 import { Product } from "../types/proizvod";
-import LanguageButton from "@/components/ui/LanguageButton";
-import SetHeaderRight from "../../components/ui/NavHeader";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import ProductCard from "@/components/ui/cards/ProductCard";
-import CreateButton from "@/components/ui/CreateButton";
+import CreateButton from "@/components/ui/buttons/CreateButton";
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
@@ -24,19 +23,12 @@ const ITEM_WIDTH = (width - COLUMN_GAP * 3) / 2;
 
 export default function ProductsScreen() {
   const router = useRouter();
-  const { t, i18n } = useTranslation();
-  const navigation = useNavigation();
+  const { t } = useTranslation();
   const params = useLocalSearchParams();
   const storeId = params.storeId ? Number(params.storeId) : null;
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: t("products_overview"),
-    });
-  }, [i18n.language, navigation]);
 
   useFocusEffect(
     useCallback(() => {
@@ -58,7 +50,6 @@ export default function ProductsScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <SetHeaderRight title="Pregled proizvoda" />
       {/* Fiksirano dugme za promjenu jezika */}
       <LanguageButton />
 

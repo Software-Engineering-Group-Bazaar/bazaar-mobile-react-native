@@ -11,7 +11,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 import InputField from "@/components/ui/input/InputField";
-import LanguageButton from "@/components/ui/LanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 
 const isValidEmail = (email: string): boolean => {
