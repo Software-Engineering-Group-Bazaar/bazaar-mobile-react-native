@@ -13,15 +13,23 @@ const ProductQuantityCard: React.FC<ProductQuantityProps> = ({
   value,
   onChange,
 }) => {
+  console.log(`Photos length: ${item.photos.length}`);
+  console.log(`Photos: ${item.photos}`);
+  const productImageUri =
+    item.photos.length != 0
+      ? item.photos[0]
+      : require("../../../assets/images/no_product.png");
+
+  console.log(`productImageUri: ${productImageUri}`);
+
   return (
     <View style={styles.cardBody}>
       {/* <View style={styles.line} /> */}
       <View style={styles.cardInnerBody}>
         <View style={styles.imageAdnTextContainer}>
-          <Image
-            source={require("../../../assets/images/logo.png")}
-            style={styles.productImage}
-          />
+          <View style={styles.imageContainer}>
+            <Image source={productImageUri} style={styles.productImage} />
+          </View>
           <View>
             <Text style={styles.titleText}>{item.name}</Text>
             <Text style={styles.categoryText}>{item.productCategory.name}</Text>
@@ -38,8 +46,9 @@ export default ProductQuantityCard;
 
 const styles = StyleSheet.create({
   cardBody: {
-    marginVertical: 10,
+    marginVertical: 20,
     width: "100%",
+    height: 20,
   },
   cardInnerBody: {
     paddingRight: 10,
@@ -48,10 +57,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   productImage: {
-    width: "26%",
     height: "100%",
+    width: "100%",
     resizeMode: "contain",
+  },
+  imageContainer: {
     marginHorizontal: 10,
+    height: 50,
+    width: 50,
   },
   line: {
     height: 1,

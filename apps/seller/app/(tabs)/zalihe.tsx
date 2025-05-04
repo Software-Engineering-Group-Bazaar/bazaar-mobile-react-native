@@ -119,6 +119,7 @@ const ZaliheScreen = () => {
           <View style={styles.container}>
             {productInventories.length != 0 && (
               <FlatList
+                style={{ width: "100%" }}
                 data={productInventories}
                 keyExtractor={(item) => item.product.id.toString()}
                 renderItem={({ item }) => (
