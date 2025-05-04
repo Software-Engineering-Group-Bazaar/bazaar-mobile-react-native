@@ -43,7 +43,7 @@ const NotificationList = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const markAsRead = async (notificationId: number, orderId: number) => {
+  const markAsRead = async (notificationId: number, orderId: number, message: string) => {
     try {
       await apiSetNotificationsAsRead(notificationId);
   
@@ -52,10 +52,14 @@ const NotificationList = () => {
       );
       setNotifications(updated);
 
-      router.push({
-        pathname: '/(CRUD)/narudzba_detalji',
-        params: { id: orderId.toString() },
-      });
+      if (/narudžb/i.test(message)) {
+        router.push({
+          pathname: '/(CRUD)/narudzba_detalji',
+          params: { id: orderId.toString() },
+        });
+      } else {
+        router.push('../(tabs)/zalihe');
+      }
     } catch (error) {
       console.error("Error marking notification as read and redirecting:", error);
     }
@@ -68,12 +72,12 @@ const NotificationList = () => {
       data={notifications}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => markAsRead(item.id, item.orderId)}>
+        <TouchableOpacity onPress={() => markAsRead(item.id, item.orderId, item.message)}>
           <View
             style={{ padding: 16, backgroundColor: item.isRead ? '#eee' : '#fff' }}
           >
             <Text>
-              Narudzba #{item.orderId} je kreirana.
+              {item.message}
             </Text>
             <Text style={{ fontSize: 12, color: 'gray' }}>
               {formatDate(item.timestamp)} 

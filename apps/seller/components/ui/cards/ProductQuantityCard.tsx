@@ -5,6 +5,7 @@ import QuantityPicker from "../input/QuantityPicker";
 interface ProductQuantityProps {
   item: Product;
   value: number;
+  outOfStock?: boolean;
   onChange: (newQuantity: number) => void;
 }
 
@@ -12,6 +13,7 @@ const ProductQuantityCard: React.FC<ProductQuantityProps> = ({
   item,
   value,
   onChange,
+  outOfStock,
 }) => {
   console.log(`Photos length: ${item.photos.length}`);
   console.log(`Photos: ${item.photos}`);
@@ -31,7 +33,14 @@ const ProductQuantityCard: React.FC<ProductQuantityProps> = ({
             <Image source={productImageUri} style={styles.productImage} />
           </View>
           <View>
-            <Text style={styles.titleText}>{item.name}</Text>
+            <Text
+              style={[
+                styles.titleText,
+                outOfStock && { color: "#FF4500" }, 
+              ]}
+            >
+              {item.name}
+            </Text>
             <Text style={styles.categoryText}>{item.productCategory.name}</Text>
           </View>
         </View>

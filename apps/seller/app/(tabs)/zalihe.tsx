@@ -131,15 +131,20 @@ const ZaliheScreen = () => {
                 style={{ width: "100%" }}
                 data={productInventories}
                 keyExtractor={(item) => item.product.id.toString()}
-                renderItem={({ item }) => (
-                  <ProductQuantityCard
-                    item={item.product}
-                    value={item.inventory.quantity}
-                    onChange={(newQuantity) =>
-                      handleQuantityChange(item.product.id, newQuantity)
-                    }
-                  />
-                )}
+                renderItem={({ item }) => {
+                  const isOutOfStock = item.inventory.quantity === 0;
+
+                  return (
+                    <ProductQuantityCard
+                      item={item.product}
+                      value={item.inventory.quantity}
+                      outOfStock={isOutOfStock} 
+                      onChange={(newQuantity) =>
+                        handleQuantityChange(item.product.id, newQuantity)
+                      }
+                    />
+                  );
+                }}
               />
             )}
           </View>

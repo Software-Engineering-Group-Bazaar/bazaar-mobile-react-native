@@ -54,10 +54,14 @@ export default function RootLayout() {
         const data = response.notification.request.content.data;
         if (data && data.orderId) {
           console.log(`User tapped notification for Order ID: ${data.orderId}. Navigating...`);
-          router.push({
-            pathname: './(CRUD)/narudzba_detalji',
-            params: { id: data.orderId.toString() },
-          });
+          if (/narudžb/i.test(data.message)) {
+            router.push({
+              pathname: '/(CRUD)/narudzba_detalji',
+              params: { id: data.orderId.toString() },
+            });
+          } else {
+            router.push('../(tabs)/zalihe');
+          }
           /*const handleNotificationTap = async () => {
             router.push({
               pathname: '/(CRUD)/narudzba_detalji',
