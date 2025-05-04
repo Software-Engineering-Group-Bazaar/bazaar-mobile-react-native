@@ -3,11 +3,11 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect } from "react";
 import { apiFetchActiveStore } from "../api/storeApi";
-import SetHeaderRight from "../../components/ui/NavHeader";
 import { Store } from "../types/prodavnica";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import CreateButton from "@/components/ui/buttons/CreateButton";
 import TouchableCard from "@/components/ui/cards/TouchableCard";
+import * as SecureStore from "expo-secure-store";
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -19,12 +19,11 @@ export default function StoresScreen() {
     async function getStore() {
       setLoading(true);
       const activeStore = await apiFetchActiveStore();
-      console.log(activeStore);
       if (activeStore) {
+        await SecureStore.setItem("storeId", activeStore.id.toString());
         setStore(activeStore);
       }
       setLoading(false);
-      console.log(activeStore);
     }
     getStore();
   }, []);
@@ -39,7 +38,6 @@ export default function StoresScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <SetHeaderRight title="Pregled prodavnice" />
       <LanguageButton />
 
       <ScrollView

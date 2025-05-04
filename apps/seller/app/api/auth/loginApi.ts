@@ -41,7 +41,7 @@ export const apiLogin = async (email: string, password: string) => {
     if (error.response) {
       const status = error.response.status;
       const responseData = error.response.data;
-  
+
       if (status === 401) {
         const message = responseData?.message || "";
         // Customize messages based on backend's response
@@ -55,19 +55,19 @@ export const apiLogin = async (email: string, password: string) => {
       } else {
         Alert.alert(t("login_failed"), t("unexpected_error"));
       }
-  
+
       //console.error("Login error response:", error.response);
     } else {
       Alert.alert(t("login_failed"), t("network_error"));
-      console.error("Login error:", error);
-    }  
+      console.error("Login error:", error.response);
+    }
 
     throw { message: "login_failed_handled", details: error.response?.data };
   }
 };
 
 export const fbLoginApi = async () => {
-  try { 
+  try {
     const result = await LoginManager.logInWithPermissions([
       "public_profile",
       "email",
@@ -86,21 +86,24 @@ export const fbLoginApi = async () => {
       let payload = {
         accessToken: data.accessToken,
         app: "seller",
-      }
+      };
       // call your backend
-      const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/login/facebook', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "https://bazaar-system.duckdns.org/api/Auth/login/facebook",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       console.log(response);
 
       if (!response.ok) {
         let errorData = { message: "Došlo je do greške." };
-    
+
         const contentType = response.headers.get("Content-Type") || "";
         if (contentType.includes("application/json")) {
           errorData = await response.json();
@@ -108,19 +111,18 @@ export const fbLoginApi = async () => {
           const text = await response.text();
           errorData.message = text;
         }
-    
+
         console.log("Error response:", errorData);
-    
+
         if (errorData.message.includes("unapproved")) {
           Alert.alert(t("access_denied"), t("account_not_approved"));
-        }
-        else if (errorData.message.includes("inactive")) {
+        } else if (errorData.message.includes("inactive")) {
           Alert.alert(t("access_denied"), t("account_not_active"));
         } else {
           Alert.alert(t("login_failed"), t("unexpected_error"));
         }
-    
-        return; 
+
+        return;
       }
 
       const result = await response.json();
