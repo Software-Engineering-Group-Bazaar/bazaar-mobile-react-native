@@ -71,7 +71,7 @@ const ZaliheScreen = () => {
           : item
       )
     );
-  };  
+  };
 
   const handleSubmit = async () => {
     if (!storeId) {
