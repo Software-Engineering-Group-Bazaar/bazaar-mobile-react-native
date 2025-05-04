@@ -15,14 +15,10 @@ const ProductQuantityCard: React.FC<ProductQuantityProps> = ({
   onChange,
   outOfStock,
 }) => {
-  console.log(`Photos length: ${item.photos.length}`);
-  console.log(`Photos: ${item.photos}`);
   const productImageUri =
     item.photos.length != 0
       ? { uri: item.photos[0] }
       : require("../../../assets/images/no_product.png");
-
-  console.log(`productImageUri: ${productImageUri}`);
 
   return (
     <View style={styles.cardBody}>
