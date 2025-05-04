@@ -646,6 +646,12 @@ const SearchProductsScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.storeContainer}>
             <Text style={styles.storeName}>{item.name}</Text>
+            <TouchableOpacity style={styles.storeButton} onPress={() => router.push({
+              pathname: `/screens/store/[storeId]`,
+              params: { storeId: item.id },
+            })}>
+              <Text style = {{color:'white'}}>{t('details')}</Text>
+            </TouchableOpacity>          
             {item.products.length > 0 ? (
               <FlatList
                 data={item.products}
@@ -671,6 +677,19 @@ const SearchProductsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  storeButton: {
+    backgroundColor: '#4e8d7c',
+    padding: 7,
+    borderRadius: 9,
+    alignItems: 'center',
+    marginBottom: 10,
+    position: 'absolute',
+    right: 27,
+    top: 7,
+    elevation: 3,
+    height: 33,
+    width: 90,
+  },
   dropdownContainer: {
     borderWidth: 1,
     borderColor: '#ccc',
