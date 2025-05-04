@@ -36,6 +36,7 @@ const ZaliheScreen = () => {
       const fetchAndCombineProductInventory = async (storeId: number) => {
         try {
           const products = await apiFetchAllProductsForStore(storeId);
+          console.log(`Products: ${JSON.stringify(products, null, 2)}`);
 
           const combinedData = await Promise.all(
             products.map(async (product) => {
@@ -45,6 +46,10 @@ const ZaliheScreen = () => {
               );
               return { product, inventory };
             })
+          );
+
+          console.log(
+            `Combined data: ${JSON.stringify(combinedData, null, 2)}`
           );
 
           setProductInventories(combinedData);
