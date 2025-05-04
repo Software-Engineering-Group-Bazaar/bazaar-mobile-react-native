@@ -3,7 +3,6 @@ import {View, ScrollView, RefreshControl, ActivityIndicator, Text, TouchableOpac
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons"; 
-import SetHeaderRight from "../../components/ui/NavHeader";
 import LanguageButton from "../../components/ui/buttons/LanguageButton";
 import StatusBadge from "../../components/ui/StatusBadge";
 import StatusButtons from "../../components/ui/StatusButtons";
@@ -102,7 +101,6 @@ export default function NarudzbaDetalji() {
 
   return (
     <View style={styles.wrapper}>
-      <SetHeaderRight title={t("order_overview")} />
       <View style={styles.header}>
         <TouchableOpacity onPress={handleDeleteOrder}> <FontAwesome name="trash" size={28} color="#e57373" /> </TouchableOpacity>
         <Text style={styles.orderId}>
@@ -158,15 +156,63 @@ export default function NarudzbaDetalji() {
 }
 
 const styles = StyleSheet.create({
-  wrapper: { flex: 1, paddingTop: 70 },
-  container: { flex: 1, backgroundColor: "#F2F2F7", padding: 16 },
-  header: {flexDirection: "row", alignItems: "center", paddingHorizontal: 16, marginBottom: 8,},
-  orderId: { fontSize: 20, fontWeight: "600", marginLeft: 12 },
-  section: { backgroundColor: "#fff", borderRadius: 12,  padding: 16,  marginVertical: 8,},
-  sectionTitle: { fontSize: 16, fontWeight: "600", marginBottom: 12 },
-  product: {flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 8,},
-  img: { width: 50, height: 50, borderRadius: 8 },
-  totalContainer: {flexDirection: "row",justifyContent: "space-between", marginTop: 12, borderTopWidth: 1, borderTopColor: "#eee", paddingTop: 8,},
-  totalLabel: { fontSize: 16, fontWeight: "600" },
-  totalAmount: { fontSize: 16, color: "#4E8D7C", fontWeight: "600" },
+  wrapper: {
+    flex: 1,
+    paddingTop: 70,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#F2F2F7",
+    padding: 16,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  orderId: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  section: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  product: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 8,
+  },
+  img: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+  },
+  totalContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingTop: 8,
+  },
+  totalLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  totalAmount: {
+    fontSize: 16,
+    color: "#4E8D7C",
+    fontWeight: "600",
+  },
 });
