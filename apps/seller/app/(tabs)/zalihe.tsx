@@ -36,7 +36,6 @@ const ZaliheScreen = () => {
       const fetchAndCombineProductInventory = async (storeId: number) => {
         try {
           const products = await apiFetchAllProductsForStore(storeId);
-          console.log(`Products: ${JSON.stringify(products, null, 2)}`);
 
           const combinedData = await Promise.all(
             products.map(async (product) => {
@@ -48,10 +47,6 @@ const ZaliheScreen = () => {
             })
           );
 
-          console.log(
-            `Combined data: ${JSON.stringify(combinedData, null, 2)}`
-          );
-
           setProductInventories(combinedData);
         } catch (err) {
           console.error("Failed to fetch product inventories", err);
@@ -59,7 +54,6 @@ const ZaliheScreen = () => {
       };
 
       const storeIdString = SecureStore.getItem("storeId");
-      console.log(`Store Id: ${storeIdString}`);
       if (storeIdString) {
         setStoreId(parseInt(storeIdString));
         fetchAndCombineProductInventory(parseInt(storeIdString));
