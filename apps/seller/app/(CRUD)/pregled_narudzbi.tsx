@@ -10,11 +10,10 @@ import {
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../api/defaultApi";
-import SetHeaderRight from "../../components/ui/NavHeader";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
-import StatusFilter from '../../components/ui/StatusFilter';
-import OrderCard from '../../components/ui//cards/OrderCard';
-import { OrderStatusEnum } from '../../constants/statusTypes';
+import StatusFilter from "../../components/ui/StatusFilter";
+import OrderCard from "../../components/ui//cards/OrderCard";
+import { OrderStatusEnum } from "../../constants/statusTypes";
 
 const { height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
@@ -81,7 +80,6 @@ export default function OrdersScreen() {
   return (
     <>
       <View style={{ flex: 1 }}>
-        <SetHeaderRight title={t("orders")} />
         <LanguageButton />
 
         <ScrollView

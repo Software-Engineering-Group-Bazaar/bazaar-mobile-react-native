@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import api from "../api/defaultApi";
-import SetHeaderRight from "../../components/ui/NavHeader";
 
 const OrderStatusEnum = [
   "Requested",
@@ -195,8 +194,6 @@ export default function OrderDetailsScreen() {
 
   return (
     <View style={styles.rootWrapper}>
-      <SetHeaderRight title={t("order_overview")} />
-
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={handleDelete} style={{ marginRight: 8 }}>
           <MaterialIcons name="delete" size={28} color="#e57373" />

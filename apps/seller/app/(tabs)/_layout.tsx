@@ -11,6 +11,7 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import * as SecureStore from "expo-secure-store";
 import { Platform, Alert } from "react-native";
+import NotificationIcon from "@/components/ui/NotificationIcon";
 
 const AUTH_TOKEN_KEY = "accessToken";
 const SENT_PUSH_TOKEN_KEY = "sentPushToken";
@@ -199,6 +200,8 @@ export default function TabLayout() {
           ios: { position: "absolute" },
           default: {},
         }),
+        headerRight: () => <NotificationIcon />,
+        // headerRightContainerStyle: { paddingRight: 16 },
       }}
     >
       <Tabs.Screen

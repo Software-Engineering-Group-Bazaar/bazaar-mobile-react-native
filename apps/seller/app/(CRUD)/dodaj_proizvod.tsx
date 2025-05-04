@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
-import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import api from "../api/defaultApi";
@@ -20,15 +19,13 @@ import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
-import SetHeaderRight from "../../components/ui/NavHeader";
 import { apiFetchCategories } from "../api/productApi";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
 
 export default function AddProductScreen() {
-  const { t, i18n } = useTranslation();
-  const navigation = useNavigation();
+  const { t } = useTranslation();
   const params = useLocalSearchParams();
   const router = useRouter(); // Premesti ovde
   const storeId = params.storeId ? Number(params.storeId) : null; // Dodaj i storeId ovde
@@ -88,14 +85,6 @@ export default function AddProductScreen() {
 
     fetchCategories();
   }, []);
-
-  // Postavljanje naslova ekrana dinamički (Dodaj/Uredi Proizvod)
-  useEffect(() => {
-    navigation.setOptions({
-      title: t("add_a_product"),
-    });
-    // Ponovo izvrši ako se promeni mod (isEditing), jezik ili sama navigation instanca
-  }, [navigation, i18n.language, t]);
 
   const handleSave = async () => {
     if (
@@ -181,7 +170,6 @@ export default function AddProductScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <SetHeaderRight title={t("add_a_product")} />
       <LanguageButton />
 
       <KeyboardAwareScrollView
