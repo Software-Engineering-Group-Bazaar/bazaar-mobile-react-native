@@ -4,40 +4,50 @@ import { useRouter, useLocalSearchParams, Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
+import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 interface ReviewResponse {
-    id: number;
-    reviewId: number;
-    response: string;
-    dateTime: string;
-  }
-  
-  interface Review {
-    id: number;
-    buyerId: string;
-    storeId: number;
-    orderId: number;
-    rating: number;
-    comment: string;
-    dateTime: string;
-    isApproved: boolean;
-    response: ReviewResponse | null;
-  }
-  
-  // Store details
-  interface Store {
-    id: number;
-    name: string;
-    address: string;
-    description: string;
-    isActive: boolean;
-    categoryName: string;
-    placeName: string;
-    regionName: string;
-  }
+  id: number;
+  reviewId: number;
+  response: string;
+  dateTime: string;
+}
+
+interface Review {
+  id: number;
+  buyerId: string;
+  storeId: number;
+  orderId: number;
+  rating: number;
+  comment: string;
+  dateTime: string;
+  isApproved: boolean;
+}
+
+// Store details
+interface Store {
+  id: number;
+  name: string;
+  address: string;
+  description: string;
+  isActive: boolean;
+  categoryName: string;
+  placeName: string;
+  regionName: string;
+}
+
+interface ReviewResponseContainer {
+  review: Review,
+  response: ReviewResponse | null
+}
+
+interface Rating {
+  rating: string
+}
   
 // Toggle this to switch between dummy data and real API calls
-const USE_DUMMY_DATA = true;
+// const USE_DUMMY_DATA = false;
 
 // Dummy data based on provided JSON specs
 const DUMMY_STORE = {
@@ -51,8 +61,9 @@ const DUMMY_STORE = {
   regionName: 'Demo Region',
 };
 
-const DUMMY_REVIEWS = [
+const DUMMY_REVIEWS : ReviewResponseContainer[] = [
   {
+    review: {
     id: 101,
     buyerId: 'alice',
     storeId: 1,
@@ -60,7 +71,8 @@ const DUMMY_REVIEWS = [
     rating: 4,
     comment: 'Great service!',
     dateTime: '2025-04-01T10:30:00Z',
-    isApproved: true,
+    isApproved: true
+    },
     response: {
       id: 201,
       reviewId: 101,
@@ -69,25 +81,26 @@ const DUMMY_REVIEWS = [
     },
   },
   {
-    id: 102,
+    review: {id: 102,
     buyerId: 'bob',
     storeId: 1,
     orderId: 5002,
     rating: 5,
     comment: 'Excellent products.',
     dateTime: '2025-04-05T14:20:00Z',
-    isApproved: true,
+    isApproved: true
+  },
     response: null,
   },
   {
-    id: 103,
+    review: {id: 103,
     buyerId: 'alice',
     storeId: 1,
     orderId: 5001,
     rating: 3,
     comment: 'Great service!',
     dateTime: '2025-04-01T10:30:00Z',
-    isApproved: true,
+    isApproved: true},
     response: {
       id: 202,
       reviewId: 103,
@@ -96,25 +109,25 @@ const DUMMY_REVIEWS = [
     },
   },
   {
-    id: 104,
+    review: {id: 104,
     buyerId: 'bob',
     storeId: 1,
     orderId: 5002,
     rating: 3,
     comment: 'Excellent products.',
     dateTime: '2025-04-05T14:20:00Z',
-    isApproved: true,
+    isApproved: true},
     response: null,
   },
   {
-    id: 105,
+    review: {id: 105,
     buyerId: 'alice',
     storeId: 1,
     orderId: 5001,
     rating: 4,
     comment: 'Great service!',
     dateTime: '2025-04-01T10:30:00Z',
-    isApproved: true,
+    isApproved: true},
     response: {
       id: 203,
       reviewId: 105,
@@ -123,14 +136,14 @@ const DUMMY_REVIEWS = [
     },
   },
   {
-    id: 106,
+    review: {id: 106,
     buyerId: 'bob',
     storeId: 1,
     orderId: 5002,
     rating: 2.5,
     comment: 'Excellent products.',
     dateTime: '2025-04-05T14:20:00Z',
-    isApproved: true,
+    isApproved: true},
     response: null,
   },
 ];
@@ -155,8 +168,8 @@ export default function StoreScreen() {
   const { storeId } = useLocalSearchParams();
 
   const [store, setStore] = useState<Store | null>(null); 
-  const [reviews, setReviews] = useState<Review[]>([]);  
-  const [rating, setRating] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<ReviewResponseContainer[]>([]);  
+  const [rating, setRating] = useState<Rating | null>(null);
   const [loading, setLoading] = useState(true);
 
   const dateFmt = new Intl.DateTimeFormat('de-DE', {
@@ -179,29 +192,64 @@ export default function StoreScreen() {
         setStore(DUMMY_STORE);
         setReviews(DUMMY_REVIEWS);
         const avgRating = (
-          DUMMY_REVIEWS.reduce((sum, r) => sum + r.rating, 0) / DUMMY_REVIEWS.length
+          DUMMY_REVIEWS.reduce((sum, r) => sum + r.review.rating, 0) / DUMMY_REVIEWS.length
         ).toFixed(1);
-        setRating(avgRating);
+        setRating({rating: avgRating});
       } else {
         try {
+          const authToken = await SecureStore.getItemAsync('auth_token');
+          if (!authToken) {
+            throw new Error('Authentication token not found.');
+          }
+
           const [storeRes, reviewsRes, ratingRes] = await Promise.all([
-            fetch(`https://bazaar-system.duckdns.org/api/Stores/${storeId}`),
-            fetch(`https://bazaar-system.duckdns.org/api/Review/store/${storeId}`),
-            fetch(`https://bazaar-system.duckdns.org/api/Review/store/${storeId}/rating`),
+            fetch(baseURL + `/api/Stores/${storeId}`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+              }
+            }),
+            fetch(baseURL + `/api/Review/store/${storeId}/approved`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+              }
+            }),
+            fetch(baseURL + `/api/Review/store/${storeId}/rating`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+              }
+            })
           ]);
+
+          console.log(baseURL + `/api/Stores/${storeId}`);
+          console.log(storeRes);
+          console.log(storeRes.body);
+
 
           const storeData = await storeRes.json();
           const reviewsData = await reviewsRes.json();
           const ratingData = await ratingRes.json();
 
+          console.log(storeData);
+          console.log(reviewsData);
+          console.log(ratingData);
+
           setStore(storeData);
-          setReviews(
-            reviewsData.map((r: { reviewResponse: any; }) => ({
-              ...r,
-              response: r.reviewResponse || null,
-            }))
-          );
+          // setReviews(
+          //   reviewsData.map((r: { reviewResponse: any; }) => ({
+          //     ...r,
+          //     response: r.reviewResponse || null,
+          //   }))
+          // );
+          setReviews(reviewsData);
           setRating(ratingData);
+          console.log("Valja?");
+          console.log(reviews[0]);
         } catch (error) {
           console.error('Error fetching store data:', error);
         }
@@ -243,7 +291,7 @@ export default function StoreScreen() {
 
             <View style={[styles.section, styles.avgrating]}>
                 <Text style={styles.sectionTitle}>{t('average_rating')}</Text>
-                {rating !== null && renderStars(rating)}
+                {rating !== null && renderStars(rating.rating)}
             </View>
         </View>
 
@@ -253,11 +301,11 @@ export default function StoreScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('reviews')}</Text>
           {reviews.map(review => (
-            <View key={review.id} style={styles.reviewCard}>
-              <Text style={styles.reviewBuyer}>{review.buyerId}</Text>
-              {renderStars(review.rating.toString())}
-              <Text style={[styles.plain, styles.bold]}>{t('comment')}: {review.comment}</Text> 
-              <Text style={styles.responseDate}>{formatted(new Date(review.dateTime))}</Text>
+            <View key={review.review.id} style={styles.reviewCard}>
+              <Text style={styles.reviewBuyer}>{review.review.buyerId}</Text>
+              {renderStars(review.review.rating.toString())}
+              <Text style={[styles.plain, styles.bold]}>{t('comment')}: {review.review.comment}</Text> 
+              <Text style={styles.responseDate}>{formatted(new Date(review.review.dateTime))}</Text>
               {review.response && (
                 <View style={styles.responseCard}>
                   <Text style={styles.responseLabel}>{t('response')}:</Text>

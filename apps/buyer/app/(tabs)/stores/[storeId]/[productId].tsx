@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 interface ProductCategory {
   id: number;
@@ -29,7 +30,17 @@ interface Product {
   quantity: number;
 }
 
-const USE_DUMMY_DATA = true;
+interface Inventory {
+  id: number;
+  productId: number;
+  storeId: number;
+  productionName: string;
+  quantity: number;
+  outOfStock: boolean;
+  lastUpdated: string;
+}
+
+// const USE_DUMMY_DATA = false;
 
 const DUMMY_PRODUCTS: Product[] = [
   { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15 },
@@ -103,14 +114,15 @@ const checkAndAddToCart = async () => {
       availableQuantity = dummyProduct?.quantity;
     } else {
       const authToken = await SecureStore.getItemAsync('auth_token');
+      console.log(baseURL + `/api/Inventory?productId=${productId}&storeId=${product.storeId}`);
       const response = await fetch(
-        `https://bazaar-system.duckdns.org/api/Inventory/productId=${productId}&storeId=${product.storeId}`,
+        baseURL + `/api/Inventory?productId=${productId}&storeId=${product.storeId}`,
         {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`,
-          },
+          }
         }
       );
 
@@ -118,7 +130,10 @@ const checkAndAddToCart = async () => {
         throw new Error('Failed to fetch inventory quantity');
       }
 
-      availableQuantity = await response.json();
+      let tmp = (await response.json());
+      console.log(tmp);
+      availableQuantity = (tmp != null && tmp != undefined && tmp.length > 0)? tmp[0].quantity : undefined;
+      console.log(availableQuantity);
     }
 
     if (availableQuantity === undefined) {
@@ -163,7 +178,7 @@ const checkAndAddToCart = async () => {
       } else {
         try {
           const authToken = await SecureStore.getItemAsync('auth_token');
-          const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products/${productId}`, {
+          const response = await fetch(baseURL + `/api/Catalog/products/${productId}`, {
             // Dodaj method i headers ako je potrebno (posebno Authorization)
             method: 'GET',
             headers: {
