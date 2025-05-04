@@ -47,7 +47,6 @@ const ZaliheScreen = () => {
             })
           );
 
-          console.log(`Setting product inventories`);
           setProductInventories(combinedData);
         } catch (err) {
           console.error("Failed to fetch product inventories", err);

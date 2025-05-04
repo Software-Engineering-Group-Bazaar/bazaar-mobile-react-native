@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
@@ -23,6 +23,10 @@ const QuantityPicker: React.FC<Props> = ({
   ...rest
 }: Props) => {
   const [inputValue, setInputValue] = useState(value.toString());
+
+  useEffect(() => {
+    setInputValue(value.toString());
+  }, [value]);
 
   const handleBlur = () => {
     const parsed = parseInt(inputValue, 10);
