@@ -15,7 +15,8 @@ const StatusButtons: React.FC<StatusButtonsProps> = ({ statuses, onChange, disab
       {statuses.map((status) => (
         <TouchableOpacity
           key={status}
-          style={[styles.button, { backgroundColor: STATUS_COLORS[status] }]}
+          
+          style={[styles.button, { backgroundColor: STATUS_COLORS[status as keyof typeof STATUS_COLORS]          }]}
           onPress={() => onChange(status)}
           disabled={disabled}
         >
