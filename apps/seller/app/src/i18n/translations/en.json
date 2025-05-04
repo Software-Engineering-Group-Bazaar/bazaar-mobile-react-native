@@ -91,7 +91,7 @@
   "unavailable": "Unavailable",
   "Product not found": "Product not found",
   "Go Back": "Go Back",
-  "view_orders": "Order Overview",
+  "view_orders": "View Orders",
   "view_orders_description": "View all orders for this store",
   "orders": "Orders",
   "All": "All",
@@ -158,5 +158,10 @@
   "select_place": "Select place",
   "store_id_error": "Store not loaded",
   "all_quantities_updated": "All quantities updated",
-  "inventory_title": "Product Inventory"
+  "inventory_title": "Product Inventory",
+  "store_details": "Store Details",
+  "add_product": "Add Product",
+  "order_details": "Order Details",
+  "view_products": "View Products",
+  "product_details": "Product Details"
 }

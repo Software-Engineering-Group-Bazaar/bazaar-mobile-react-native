@@ -17,7 +17,7 @@ const ProductQuantityCard: React.FC<ProductQuantityProps> = ({
   console.log(`Photos: ${item.photos}`);
   const productImageUri =
     item.photos.length != 0
-      ? item.photos[0]
+      ? { uri: item.photos[0] }
       : require("../../../assets/images/no_product.png");
 
   console.log(`productImageUri: ${productImageUri}`);

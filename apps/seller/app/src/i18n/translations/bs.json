@@ -37,7 +37,7 @@
   "logout_title": "Odjava",
   "logout_message": "Uspješno ste odjavljeni.",
   "create_store": "Kreiraj prodavnicu",
-  "store_settings": "Postavke prodavnice",
+  "store_settings": "Postavke Prodavnice",
   "store_name": "Naziv prodavnice",
   "address": "Adresa",
   "description": "Opis",
@@ -91,7 +91,7 @@
   "unavailable": "Nedostupno",
   "Product not found": "Proizvod nije pronađen",
   "Go Back": "Nazad",
-  "view_orders": "Pregled narudžbi",
+  "view_orders": "Pregled Narudžbi",
   "view_orders_description": "Pogledaj sve narudžbe za ovu prodavnicu",
   "orders": "Narudžbe",
   "All": "Sve",
@@ -158,5 +158,10 @@
   "select_place": "Odaberite mjesto",
   "store_id_error": "Prodavnica nije ucitana",
   "all_quantities_updated": "Sve količine ažurirane",
-  "inventory_title": "Zalihe Proizvoda"
+  "inventory_title": "Zalihe Proizvoda",
+  "store_details": "Detalji Prodavnice",
+  "add_product": "Dodaj Proizvod",
+  "order_details": "Detalji Narudzbe",
+  "view_products": "Pregled Proizvoda",
+  "product_details": "Detalji Proizvoda"
 }

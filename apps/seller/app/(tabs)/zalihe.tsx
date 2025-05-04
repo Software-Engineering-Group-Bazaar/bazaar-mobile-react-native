@@ -9,7 +9,8 @@ import {
   FlatList,
   Text,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import ProductQuantityCard from "@/components/ui/cards/ProductQuantityCard";
 import { apiFetchAllProductsForStore } from "../api/productApi";
 import { Product } from "../types/proizvod";
@@ -30,35 +31,37 @@ const ZaliheScreen = () => {
     { product: Product; inventory: InventoryItem }[]
   >([]);
 
-  useEffect(() => {
-    const fetchAndCombineProductInventory = async (storeId: number) => {
-      try {
-        const products = await apiFetchAllProductsForStore(storeId);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchAndCombineProductInventory = async (storeId: number) => {
+        try {
+          const products = await apiFetchAllProductsForStore(storeId);
 
-        const combinedData = await Promise.all(
-          products.map(async (product) => {
-            const inventory = await apiFetchInventoryForProduct(
-              storeId,
-              product.id
-            );
-            return { product, inventory };
-          })
-        );
+          const combinedData = await Promise.all(
+            products.map(async (product) => {
+              const inventory = await apiFetchInventoryForProduct(
+                storeId,
+                product.id
+              );
+              return { product, inventory };
+            })
+          );
 
-        setProductInventories(combinedData);
-      } catch (err) {
-        console.error("Failed to fetch product inventories", err);
+          setProductInventories(combinedData);
+        } catch (err) {
+          console.error("Failed to fetch product inventories", err);
+        }
+      };
+
+      const storeIdString = SecureStore.getItem("storeId");
+      if (storeIdString) {
+        setStoreId(parseInt(storeIdString));
+        fetchAndCombineProductInventory(parseInt(storeIdString));
+      } else {
+        Alert.alert(t("store_id_error"));
       }
-    };
-
-    const storeIdString = SecureStore.getItem("storeId");
-    if (storeIdString) {
-      setStoreId(parseInt(storeIdString));
-      fetchAndCombineProductInventory(parseInt(storeIdString));
-    } else {
-      Alert.alert(t("store_id_error"));
-    }
-  }, []);
+    }, [])
+  );
 
   const handleQuantityChange = (productId: number, newQuantity: number) => {
     setProductInventories((prev) =>
