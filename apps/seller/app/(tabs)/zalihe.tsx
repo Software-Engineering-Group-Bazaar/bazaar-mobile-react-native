@@ -7,6 +7,7 @@ import {
   Keyboard,
   Alert,
   FlatList,
+  Text,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import ProductQuantityCard from "@/components/ui/cards/ProductQuantityCard";
@@ -17,12 +18,13 @@ import {
   apiFetchInventoryForProduct,
   apiUpdateProductQuantity,
 } from "../api/inventoryApi";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { InventoryItem } from "../types/InventoryItem";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 
 const ZaliheScreen = () => {
+  const { t } = useTranslation();
   const [storeId, setStoreId] = useState<number>(-1);
   const [productInventories, setProductInventories] = useState<
     { product: Product; inventory: InventoryItem }[]
@@ -120,6 +122,7 @@ const ZaliheScreen = () => {
           style={{ paddingBottom: "20%" }}
         >
           <View style={styles.container}>
+            <Text style={styles.titleText}>{t("inventory_title")}</Text>
             {productInventories.length != 0 && (
               <FlatList
                 style={{ width: "100%" }}
@@ -153,6 +156,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#4E8D7C",
+    paddingTop: 50,
+    marginVertical: 0,
   },
   buttonWrapper: {
     position: "absolute",

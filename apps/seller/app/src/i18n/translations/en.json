@@ -157,5 +157,6 @@
   "select_region": "Select region",
   "select_place": "Select place",
   "store_id_error": "Store not loaded",
-  "all_quantities_updated": "All quantities updated"
+  "all_quantities_updated": "All quantities updated",
+  "inventory_title": "Product Inventory"
 }
