@@ -3,7 +3,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 
-import LanguageButton from "@/components/ui/LanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import { InfoCard } from "@/components/ui/cards/InfoCard";

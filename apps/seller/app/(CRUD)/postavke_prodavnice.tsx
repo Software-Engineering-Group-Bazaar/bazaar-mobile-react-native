@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
-import LanguageButton from "@/components/ui/LanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";

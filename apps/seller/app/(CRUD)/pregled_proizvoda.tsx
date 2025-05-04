@@ -12,10 +12,10 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { apiFetchAllProductsForStore } from "../api/productApi";
 
 import { Product } from "../types/proizvod";
-import LanguageButton from "@/components/ui/LanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import ProductCard from "@/components/ui/cards/ProductCard";
-import CreateButton from "@/components/ui/CreateButton";
+import CreateButton from "@/components/ui/buttons/CreateButton";
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_GAP = 16;

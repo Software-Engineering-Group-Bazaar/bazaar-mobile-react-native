@@ -14,7 +14,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import LanguageButton from "@/components/ui/LanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SetHeaderRight from "../../components/ui/NavHeader";
 import {
   apiUpdateProductPrices,
