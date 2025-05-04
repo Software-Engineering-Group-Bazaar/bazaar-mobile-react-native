@@ -15,7 +15,7 @@ interface Store {
   logoUrl?: string;
 }
 
-const USE_DUMMY_DATA = false; // Postavite na true za testiranje sa dummy podacima
+const USE_DUMMY_DATA = true; // Postavite na true za testiranje sa dummy podacima
 
 const DUMMY_STORES: Store[] = [
   { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },

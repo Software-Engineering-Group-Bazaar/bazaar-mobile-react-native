@@ -50,6 +50,53 @@ const CartScreen = () => {
     return sum + pricePerUnit * qty;
   }, 0);
 
+  const checkAndUpdateQuantitiesOnLoad = async () => {
+    let hasQuantityChanged = false;
+  
+    for (const cartItem of cartItems) {
+      try {
+        const authToken = await SecureStore.getItemAsync('auth_token');
+        const response = await fetch(
+          `https://bazaar-system.duckdns.org/api/Inventory/productId=${cartItem.product.id}&storeId=${cartItem.product.storeId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`,
+            },
+          }
+        );
+  
+        if (!response.ok) {
+          console.error(`Failed to fetch quantity for product ID: ${cartItem.product.id}`);
+          continue;
+        }
+  
+        const availableQuantity: number = await response.json();
+  
+        if (availableQuantity < cartItem.qty) {
+          hasQuantityChanged = true;
+          Alert.alert(
+            t('quantity_changed_title'),
+            t('quantity_changed_message', {
+              productName: cartItem.product.name,
+              availableQuantity,
+              selectedQuantity: cartItem.qty,
+            })
+          );
+          handleQuantityChange(cartItem.product, availableQuantity);
+        }
+      } catch (error) {
+        console.error('Error checking inventory:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (cartItems.length > 0)
+      checkAndUpdateQuantitiesOnLoad();
+  }, [cartItems]);
+
   const handleProductPress = (product: Product) => {
     router.push(`/cart/details/${product.id}`);
   };
