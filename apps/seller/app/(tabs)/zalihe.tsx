@@ -20,6 +20,7 @@ import {
 import { t } from "i18next";
 import { InventoryItem } from "../types/InventoryItem";
 import SubmitButton from "@/components/ui/input/SubmitButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 
 const ZaliheScreen = () => {
   const [storeId, setStoreId] = useState<number>(-1);
@@ -107,7 +108,9 @@ const ZaliheScreen = () => {
   };
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
+      <LanguageButton />
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -139,7 +142,7 @@ const ZaliheScreen = () => {
       <View style={styles.buttonWrapper}>
         <SubmitButton buttonText={t("save_changes")} onPress={handleSubmit} />
       </View>
-    </>
+    </View>
   );
 };
 

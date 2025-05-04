@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { logoutApi } from "../api/auth/logoutApi";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
-import SetHeaderRight from "../../components/ui/NavHeader";
 import { useEffect } from "react";
 import { apiFetchActiveStore } from "../api/storeApi";
 
@@ -46,12 +45,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <SetHeaderRight title="Početna" />
       <LanguageButton />
-
-      {/*---------------------Screen Explorer Button----------------------
-      <ScreenExplorer route="../(tabs)/screen_explorer" />
-      -----------------------------------------------------------------*/}
 
       {/* Dodan logo */}
       <Image

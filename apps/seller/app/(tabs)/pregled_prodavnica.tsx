@@ -3,7 +3,6 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect } from "react";
 import { apiFetchActiveStore } from "../api/storeApi";
-import SetHeaderRight from "../../components/ui/NavHeader";
 import { Store } from "../types/prodavnica";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import CreateButton from "@/components/ui/buttons/CreateButton";
@@ -39,7 +38,6 @@ export default function StoresScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <SetHeaderRight title="Pregled prodavnice" />
       <LanguageButton />
 
       <ScrollView

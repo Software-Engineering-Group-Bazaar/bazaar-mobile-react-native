@@ -64,6 +64,7 @@
   "tab_home": "Home",
   "tab_stores": "My Store",
   "tab_products": "My Products",
+  "tab_inventory": "Inventory",
   "products_overview": "Product Overview",
   "slogan": "Manage your store and products with ease.",
   "Price": "Price",
@@ -156,6 +157,5 @@
   "select_region": "Select region",
   "select_place": "Select place",
   "store_id_error": "Store not loaded",
-  "all_quantities_updated": "All quantities updated",
-  "tab_inventory": "Inventory"
+  "all_quantities_updated": "All quantities updated"
 }
