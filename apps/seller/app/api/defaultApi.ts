@@ -2,7 +2,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 const api = axios.create({
-  baseURL: "http://192.168.1.15:5054/api",
+  baseURL: "http://192.168.0.27:5054/api",
 });
 
 api.interceptors.request.use(async (config) => {
