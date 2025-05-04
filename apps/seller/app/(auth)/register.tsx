@@ -12,7 +12,7 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { registerApi } from "../api/auth/registerApi";
 import { fbLoginApi } from "../api/auth/loginApi";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
+import LanguageButton from '../../components/ui/buttons/LanguageButton';
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 
