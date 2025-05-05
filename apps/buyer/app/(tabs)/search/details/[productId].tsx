@@ -101,7 +101,7 @@ const checkAndAddToCart = async () => {
     } else {
       const authToken = await SecureStore.getItemAsync('auth_token');
       const response = await fetch(
-        baseURL + `/api/Inventory/productId=${productId}&storeId=${product.storeId}`,
+        baseURL + `/api/Inventory?productId=${productId}&storeId=${product.storeId}`,
         {
           method: 'GET',
           headers: {
@@ -115,7 +115,10 @@ const checkAndAddToCart = async () => {
         throw new Error('Failed to fetch inventory quantity');
       }
 
-      availableQuantity = await response.json();
+      let tmp = (await response.json());
+      console.log(tmp);
+      availableQuantity = (tmp != null && tmp != undefined && tmp.length > 0)? tmp[0].quantity : undefined;
+      console.log(availableQuantity);
     }
 
     if (availableQuantity === undefined) {

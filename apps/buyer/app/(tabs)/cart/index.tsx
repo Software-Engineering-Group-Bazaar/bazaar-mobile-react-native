@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useCart } from '@/context/CartContext';
 import { router } from 'expo-router';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
 interface ProductCategory {
@@ -57,7 +58,7 @@ const CartScreen = () => {
       try {
         const authToken = await SecureStore.getItemAsync('auth_token');
         const response = await fetch(
-          `https://bazaar-system.duckdns.org/api/Inventory/productId=${cartItem.product.id}&storeId=${cartItem.product.storeId}`,
+          baseURL + `/api/Inventory?productId=${cartItem.product.id}&storeId=${cartItem.product.storeId}`,
           {
             method: 'GET',
             headers: {
@@ -124,7 +125,7 @@ const CartScreen = () => {
       console.log(JSON.stringify(orderPayload));
 
       const authToken = await SecureStore.getItemAsync('auth_token');
-      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/OrderBuyer/order/create', {
+      const loginRes = await fetch(baseURL + '/api/OrderBuyer/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, Alert } from 'react-native';
 import { useCart } from '../../../apps/buyer/context/CartContext';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
@@ -66,6 +66,15 @@ const CartItem: React.FC<CartItemProps> = ({
     );
   };
 
+  
+  console.log("jel ovo obrisan");
+  console.log(product);
+
+  if(product === undefined){
+    Alert.alert("Khm", "obrisan proizvod");
+  }
+  else{
+
   const isWholesale = product.wholesaleThreshold !== undefined && quantity > product.wholesaleThreshold;
   const unitPrice = isWholesale ? product.wholesalePrice : product.retailPrice;
   const totalPrice = unitPrice * quantity;
@@ -85,10 +94,10 @@ const CartItem: React.FC<CartItemProps> = ({
               <Text style={[styles.price, { color: 'green' }]}>
                 {isWholesale ? `${unitPrice.toFixed(2)} KM` : `${unitPrice.toFixed(2)} KM`}
               </Text>
-              {product.weight && product.weightUnit && (
+              {typeof product.weight === 'number' && product.weight > 0 && product.weight && (
                 <Text style={styles.details}>{product.weight} {product.weightUnit}</Text>
               )}
-              {product.volume && product.volumeUnit && (
+              {typeof product.volume === 'number' && product.volume > 0 && product.volume && (
                 <Text style={styles.details}>{product.volume} {product.volumeUnit}</Text>
               )}
             </View>
@@ -108,21 +117,23 @@ const CartItem: React.FC<CartItemProps> = ({
             <Text style={[styles.price, { color: 'green' }]}>
               {isWholesale ? `${unitPrice.toFixed(2)} KM` : `${unitPrice.toFixed(2)} KM`}
             </Text>
-            {product.weight && product.weightUnit && (
+            {typeof product.weight === 'number' && product.weight > 0 && product.weight &&(
               <Text style={styles.details}>{product.weight} {product.weightUnit}</Text>
             )}
-            {product.volume && product.volumeUnit && (
+            {typeof product.volume === 'number' && product.volume > 0 && product.volume && (
               <Text style={styles.details}>{product.volume} {product.volumeUnit}</Text>
             )}
           </View>
           <View style={styles.rightInfoContainer}>
             <Text style={styles.totalPrice}>{totalPrice.toFixed(2)} KM</Text>
-            <Text style={{ marginTop: 8 }}>{t('quantity')}: {quantity}</Text>
+            <Text style={{ marginTop: 8 }}>{t('quantity', 'Količina')}: {quantity}</Text>
           </View>
         </TouchableOpacity>
       )}
     </View>
   );
+
+}
 };
 
 const styles = StyleSheet.create({

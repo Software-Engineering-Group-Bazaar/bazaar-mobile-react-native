@@ -30,6 +30,16 @@ interface Product {
   quantity: number
 }
 
+interface Inventory {
+  id: number;
+  productId: number;
+  storeId: number;
+  productionName: string;
+  quantity: number;
+  outOfStock: boolean;
+  lastUpdated: string;
+}
+
 // const USE_DUMMY_DATA = true;
 
 const DUMMY_PRODUCTS: Product[] = [
@@ -92,7 +102,7 @@ const ProductDetailsScreen = () => {
   };
   
   const decrementQuantity = () => {
-      setQuantityInput(prev => (Math.max(1, parseInt(prev, 10) - 1)).toString());
+      setQuantityInput(prev => (Math.max(0, parseInt(prev, 10) - 1)).toString());
   };
   
 
@@ -260,7 +270,7 @@ const ProductDetailsScreen = () => {
       } else {
         const authToken = await SecureStore.getItemAsync('auth_token');
         const response = await fetch(
-          baseURL + `/api/Inventory/productId=${productId}&storeId=${product.storeId}`,
+          baseURL + `/api/Inventory?productId=${productId}&storeId=${product.storeId}`,
           {
             method: 'GET',
             headers: {
@@ -274,8 +284,11 @@ const ProductDetailsScreen = () => {
           throw new Error('Failed to fetch inventory quantity');
         }
 
-        availableQuantity = await response.json();
-      }
+        let tmp = (await response.json());
+        console.log(tmp);
+        availableQuantity = (tmp != null && tmp != undefined && tmp.length > 0)? tmp[0].quantity : undefined;
+        console.log(availableQuantity);
+    }
 
       if (availableQuantity === undefined) {
         throw new Error('Quantity not found');

@@ -6,6 +6,7 @@ import { t } from 'i18next';
 import CartItem from 'proba-package/cart-item/index';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 interface Store {
   id: number;
@@ -57,7 +58,8 @@ interface Product {
 }
 
 // Dummy podaci
-const USE_DUMMY_DATA = true;
+// const USE_DUMMY_DATA = true;
+
 const DUMMY_ORDERS: Order[] = [
   {
     id: 'A123',
@@ -136,7 +138,7 @@ export default function DetailsScreen() {
       } else {
         try {
           const authToken = await SecureStore.getItemAsync('auth_token');
-          const storesResponse = await fetch(`https://bazaar-system.duckdns.org/api/Stores`, {
+          const storesResponse = await fetch(baseURL + `/api/Stores`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -177,7 +179,15 @@ export default function DetailsScreen() {
             setError(t('order_not_found', 'Narudžba nije pronađena.'));
           }
         } else {
-          const orderResponse = await fetch(`https://bazaar-system.duckdns.org/api/orders/${orderId}`);
+          const authToken = await SecureStore.getItemAsync('auth_token');
+          const orderResponse = await fetch(baseURL + `/api/OrderBuyer/order/${orderId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+
           if (!orderResponse.ok) {
             throw new Error(`Greška pri dohvaćanju narudžbe: ${orderResponse.status}`);
           }
@@ -188,8 +198,15 @@ export default function DetailsScreen() {
           const detailedItems = await Promise.all(
             orderData.orderItems.map(async (item) => {
               try {
-                const productResponse = await fetch(
-                  `https://bazaar-system.duckdns.org/api/Catalog/products/${item.productId}`
+          const authToken = await SecureStore.getItemAsync('auth_token');
+          const productResponse = await fetch(
+                  baseURL + `/api/Catalog/products/${item.productId}`, {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${authToken}`
+                    }
+                  }
                 );
                 if (!productResponse.ok) {
                   console.warn(`Nije pronađen proizvod sa ID: ${item.productId}`);
