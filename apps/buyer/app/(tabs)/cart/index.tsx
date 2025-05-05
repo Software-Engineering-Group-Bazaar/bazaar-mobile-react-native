@@ -72,8 +72,12 @@ const CartScreen = () => {
           console.error(`Failed to fetch quantity for product ID: ${cartItem.product.id}`);
           continue;
         }
-  
-        const availableQuantity: number = await response.json();
+        
+        let tmp = (await response.json());
+        console.log(tmp);
+        const availableQuantity = (tmp != null && tmp != undefined && tmp.length > 0)? tmp[0].quantity : undefined;
+        console.log(availableQuantity);
+        // const availableQuantity: number = await response.json();
   
         if (availableQuantity < cartItem.qty) {
           hasQuantityChanged = true;
