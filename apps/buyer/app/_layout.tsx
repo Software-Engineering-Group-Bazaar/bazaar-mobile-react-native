@@ -12,6 +12,7 @@ import { Alert } from 'react-native'; // Keep Alert
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CartProvider } from '@/context/CartContext';
+import CustomHeader from 'proba-package/custom-header';
 // Ne treba SecureStore ovdje ako ne provjeravate token za registraciju
 // Ne trebaju funkcije registerForPushNotificationsAsync, sendTokenToBackend, getAuthTokenFromStorage ovdje
 
@@ -84,6 +85,7 @@ export default function RootLayout() {
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="screens/orders" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/store/[storeId]" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
         </CartProvider>

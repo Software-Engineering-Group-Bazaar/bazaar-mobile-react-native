@@ -1,8 +1,9 @@
 // app/(tabs)/orders/index.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator,TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
+import { useRouter } from 'expo-router';
 
 interface Store {
   id: number;
@@ -24,48 +25,48 @@ interface OrderItem {
 interface Order {
   id: string;
   buyerId: string;
-  storeId: string;
+  storeId: number;
   status: string;
   time: string;
   total: number;
   orderItems: OrderItem[];
 }
 
-const USE_DUMMY_DATA = false;
+const USE_DUMMY_DATA = true;
 
 const DUMMY_ORDERS: Order[] = [
   {
     id: 'A123',
     time: '2025-04-18T14:23:00Z',
     buyerId: 'B001',
-    storeId: 'S01',
-    status: 'requested',
-    total: 45.5,
+    storeId: 1,
+    status: 'Requested',
+    total: 6.20,
     orderItems: [
-      { id: '1', productId: 'P001', price: 15.0, quantity: 2 },
-      { id: '2', productId: 'P002', price: 7.25, quantity: 1 },
+      { id: '1', productId: '1', price: 2.50, quantity: 2 },
+      { id: '2', productId: '2', price: 1.20, quantity: 1 },
     ],
   },
   {
     id: 'B456',
     time: '2025-04-17T09:15:00Z',
     buyerId: 'B001',
-    storeId: 'S02',
-    status: 'ready',
-    total: 120.0,
+    storeId: 2,
+    status: 'Ready',
+    total: 5.00, 
     orderItems: [
-      { id: '3', productId: 'P010', price: 60.0, quantity: 2 },
+      { id: '1', productId: '1', price: 2.50, quantity: 2 },
     ],
   },
   {
     id: 'C789',
     time: '2025-04-15T18:40:00Z',
     buyerId: 'B001',
-    storeId: 'S03',
-    status: 'delivered',
-    total: 75.25,
+    storeId: 3,
+    status: 'Delivered',
+    total: 3.60,
     orderItems: [
-      { id: '4', productId: 'P005', price: 25.25, quantity: 3 },
+      { id: '2', productId: '2', price: 1.20, quantity: 3 },
     ],
   },
 ];
@@ -85,6 +86,7 @@ export default function OrdersScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [stores, setStores] = useState<Record<string, string>>({});
+  const router = useRouter();
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -154,23 +156,50 @@ export default function OrdersScreen() {
             const color = statusColors[item.status];
             return (
               <View style={styles.card}>
-                <Text style={styles.smallText}>
-                  {t('order_id', 'ID')}: <Text style={styles.bold}>{item.id}</Text>
-                </Text>
-                <Text style={styles.normalText}>
-                  {t('order_price', 'Cijena')}: <Text style={styles.bold}>{item.total.toFixed(2)} KM</Text>
-                </Text>
-                <Text style={styles.normalText}>
-                  {t('order_status', 'Status')}:{' '}
-                  <Text style={[styles.bold, { color }]}>
-                    {t(`status_${item.status}`, item.status)}
+                <View style={styles.infoContainer}>
+                  <Text style={styles.smallText}>
+                    {t('order_id', 'ID')}: <Text style={styles.bold}>{item.id}</Text>
                   </Text>
-                </Text>
-                <Text style={styles.normalText}>
-                  {t('order_store', 'Prodavnica')}: <Text style={styles.bold}>
-                    {stores[item.storeId] || item.storeId}
+                  <Text style={styles.normalText}>
+                    {t('order_price', 'Cijena')}: <Text style={styles.bold}>{item.total.toFixed(2)} KM</Text>
                   </Text>
-                </Text>
+                  <Text style={styles.normalText}>
+                    {t('order_status', 'Status')}:{' '}
+                    <Text style={[styles.bold, { color }]}>
+                      {t(`status_${item.status}`, item.status)}
+                    </Text>
+                  </Text>
+                  <Text style={styles.normalText}>
+                    {t('order_store', 'Prodavnica')}: <Text style={styles.bold}>
+                      {stores[item.storeId] || item.storeId}
+                    </Text>
+                  </Text>
+                </View>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    //otvaranje forme za unos recenzije
+                    onPress={() => {
+                      router.push({
+                        pathname: './orders/review',
+                        params: { orderId: item.id, storeId: item.storeId },
+                      });
+                    }}
+                  >
+                    <Text style={styles.buttonText}>{t('review')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => {
+                      router.push({
+                        pathname: './orders/details',
+                        params: {orderId: item.id, storeId: item.storeId}
+                      });
+                    }}
+                  >
+                    <Text style={styles.buttonText}>{t('details')}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             );
           }}
@@ -207,6 +236,12 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 3 },
     elevation: 5,
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+  },
+  infoContainer: {
+    flex: 1, 
   },
   smallText: {
     fontSize: 12,
@@ -230,5 +265,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#6B7280',
     marginTop: 40,
+  },
+  buttonContainer: {
+    flexDirection: 'column', 
+    alignItems: 'flex-end',
+  },
+  button: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+    marginBottom: 8,
+    backgroundColor: "#4E8D7C",
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
