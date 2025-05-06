@@ -4,6 +4,7 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator,TouchableOpacity } 
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 interface Store {
   id: number;
@@ -32,7 +33,7 @@ interface Order {
   orderItems: OrderItem[];
 }
 
-const USE_DUMMY_DATA = true;
+// const USE_DUMMY_DATA = true;
 
 const DUMMY_ORDERS: Order[] = [
   {
@@ -98,7 +99,7 @@ export default function OrdersScreen() {
           setOrders(DUMMY_ORDERS);
         } else {
           const authToken = await SecureStore.getItemAsync('auth_token');
-          const response = await fetch(`https://bazaar-system.duckdns.org/api/OrderBuyer/order`, {
+          const response = await fetch(baseURL + `/api/OrderBuyer/order`, {
             // Dodaj method i headers ako je potrebno (posebno Authorization)
             method: 'GET',
             headers: {
@@ -114,7 +115,7 @@ export default function OrdersScreen() {
           // const response = await fetch('https://your-api/orders');
           const data : Order[] = await response.json();
 
-          const storesResponse = await fetch(`https://bazaar-system.duckdns.org/api/Stores`, {
+          const storesResponse = await fetch(baseURL + `/api/Stores`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

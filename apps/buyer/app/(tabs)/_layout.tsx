@@ -14,6 +14,7 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import * as SecureStore from 'expo-secure-store'; // Treba SecureStore ovdje
 import { Platform, Alert } from 'react-native';
+import { baseURL } from 'proba-package';
 
 const AUTH_TOKEN_KEY = 'auth_token'; // Koristite konstantu
 const SENT_PUSH_TOKEN_KEY = 'sentPushToken'; // Koristite konstantu
@@ -31,7 +32,7 @@ async function getAuthTokenFromStorage(): Promise<string | null> {
 }
 
 // ➤➤➤ ZAMIJENI SA SVOJIM BACKEND URL-om ➤➤➤
-const DEVICES_API_ENDPOINT = 'https://bazaar-system.duckdns.org/api/Devices/pushNotification';
+const DEVICES_API_ENDPOINT = baseURL + '/api/Devices/pushNotification';
 
 async function sendTokenToBackend(nativeToken: string) {
   const authToken = await getAuthTokenFromStorage();

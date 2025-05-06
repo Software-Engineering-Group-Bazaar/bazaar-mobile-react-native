@@ -30,6 +30,8 @@ import {
 
 import * as SecureStore from "expo-secure-store";
 
+import { baseURL } from 'proba-package';
+
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -63,7 +65,7 @@ export default function SignIn() {
   
         console.log("User Info:", { idToken });
   
-         const apiResponse = await fetch("https://bazaar-system.duckdns.org/api/Auth/login/google", {
+         const apiResponse = await fetch(baseURL + "/api/Auth/login/google", {
            method: "POST",
            headers: {
              "Content-Type": "application/json",
@@ -124,7 +126,7 @@ export default function SignIn() {
       if (data?.accessToken) {
         // call your backend
         const response = await fetch(
-          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          baseURL + '/api/Auth/login/facebook',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -163,7 +165,7 @@ export default function SignIn() {
       console.log(JSON.stringify({ email, password, app:"buyer" }));
 
       // Step 1: Send login request
-      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/Auth/login', {
+      const loginRes = await fetch( baseURL + '/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, app:"buyer" }) 

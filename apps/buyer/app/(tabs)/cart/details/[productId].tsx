@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 interface ProductCategory {
   id: number;
@@ -29,7 +30,17 @@ interface Product {
   quantity: number
 }
 
-const USE_DUMMY_DATA = true;
+interface Inventory {
+  id: number;
+  productId: number;
+  storeId: number;
+  productionName: string;
+  quantity: number;
+  outOfStock: boolean;
+  lastUpdated: string;
+}
+
+// const USE_DUMMY_DATA = true;
 
 const DUMMY_PRODUCTS: Product[] = [
   { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15 },
@@ -91,7 +102,7 @@ const ProductDetailsScreen = () => {
   };
   
   const decrementQuantity = () => {
-      setQuantityInput(prev => (Math.max(1, parseInt(prev, 10) - 1)).toString());
+      setQuantityInput(prev => (Math.max(0, parseInt(prev, 10) - 1)).toString());
   };
   
 
@@ -112,7 +123,7 @@ const ProductDetailsScreen = () => {
       } else {
         try {
           const authToken = await SecureStore.getItemAsync('auth_token');
-          const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products/${productId}`, {
+          const response = await fetch(baseURL + `/api/Catalog/products/${productId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${authToken}`,
@@ -259,7 +270,7 @@ const ProductDetailsScreen = () => {
       } else {
         const authToken = await SecureStore.getItemAsync('auth_token');
         const response = await fetch(
-          `https://bazaar-system.duckdns.org/api/Inventory/productId=${productId}&storeId=${product.storeId}`,
+          baseURL + `/api/Inventory?productId=${productId}&storeId=${product.storeId}`,
           {
             method: 'GET',
             headers: {
@@ -273,8 +284,11 @@ const ProductDetailsScreen = () => {
           throw new Error('Failed to fetch inventory quantity');
         }
 
-        availableQuantity = await response.json();
-      }
+        let tmp = (await response.json());
+        console.log(tmp);
+        availableQuantity = (tmp != null && tmp != undefined && tmp.length > 0)? tmp[0].quantity : undefined;
+        console.log(availableQuantity);
+    }
 
       if (availableQuantity === undefined) {
         throw new Error('Quantity not found');

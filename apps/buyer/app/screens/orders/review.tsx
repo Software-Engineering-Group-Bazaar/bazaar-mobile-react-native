@@ -5,8 +5,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
-const USE_DUMMY_DATA = true;
+// const USE_DUMMY_DATA = true;
 
 export default function ReviewScreen() {
   const { orderId, storeId } = useLocalSearchParams();
@@ -39,7 +40,7 @@ export default function ReviewScreen() {
     if (!USE_DUMMY_DATA) {
       try {
         const authToken = await SecureStore.getItemAsync('auth_token');
-        const response = await fetch('https://bazaar-system.duckdns.org/api/Review', {
+        const response = await fetch(baseURL + '/api/Review', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
