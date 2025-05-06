@@ -151,7 +151,7 @@ const checkAndAddToCart = async () => {
     } else {
       Alert.alert(
         t('out of stock'),
-        `${t('You can only add up to')} ${availableQuantity - currentQuantityInCart} ${t('more of')} ${product.name}. ${t('Your current cart contains')} ${currentQuantityInCart} ${t('items of this product.')}`
+        t('Cannot add that many items. Not enough stock available.')
       );      
     }
   } catch (error) {
