@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useCart } from '@/context/CartContext';
 import { router } from 'expo-router';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
 interface ProductCategory {
@@ -50,6 +51,57 @@ const CartScreen = () => {
     return sum + pricePerUnit * qty;
   }, 0);
 
+  const checkAndUpdateQuantitiesOnLoad = async () => {
+    let hasQuantityChanged = false;
+  
+    for (const cartItem of cartItems) {
+      try {
+        const authToken = await SecureStore.getItemAsync('auth_token');
+        const response = await fetch(
+          baseURL + `/api/Inventory?productId=${cartItem.product.id}&storeId=${cartItem.product.storeId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`,
+            },
+          }
+        );
+  
+        if (!response.ok) {
+          console.error(`Failed to fetch quantity for product ID: ${cartItem.product.id}`);
+          continue;
+        }
+        
+        let tmp = (await response.json());
+        console.log(tmp);
+        const availableQuantity = (tmp != null && tmp != undefined && tmp.length > 0)? tmp[0].quantity : undefined;
+        console.log(availableQuantity);
+        // const availableQuantity: number = await response.json();
+  
+        if (availableQuantity < cartItem.qty) {
+          hasQuantityChanged = true;
+          Alert.alert(
+            t('quantity_changed_title'),
+            t('quantity_changed_message', {
+              productName: cartItem.product.name,
+              availableQuantity,
+              selectedQuantity: cartItem.qty,
+            })
+          );
+          handleQuantityChange(cartItem.product, availableQuantity);
+        }
+      } catch (error) {
+        console.error('Error checking inventory:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (cartItems.length > 0)
+      checkAndUpdateQuantitiesOnLoad();
+  }, [cartItems]);
+
   const handleProductPress = (product: Product) => {
     router.push(`/cart/details/${product.id}`);
   };
@@ -77,7 +129,7 @@ const CartScreen = () => {
       console.log(JSON.stringify(orderPayload));
 
       const authToken = await SecureStore.getItemAsync('auth_token');
-      const loginRes = await fetch('https://bazaar-system.duckdns.org/api/OrderBuyer/order/create', {
+      const loginRes = await fetch(baseURL + '/api/OrderBuyer/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

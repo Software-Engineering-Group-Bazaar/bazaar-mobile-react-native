@@ -6,6 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import { TouchableOpacity, Modal, Button, Dimensions, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import Checkbox from 'expo-checkbox';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 const screenWidth = Dimensions.get('window').width;
 const buttonWidth = screenWidth * 0.3; // 30% širine ekrana
@@ -61,7 +62,7 @@ interface Place {
   postalCode: string;
 }
 
-const USE_DUMMY_DATA = false; // Postavite na true za testiranje s dummy podacima
+// const USE_DUMMY_DATA = false; // Postavite na true za testiranje s dummy podacima
 
 const DUMMY_PRODUCTS: Product[] = [
   { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 1, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10 },
@@ -169,7 +170,7 @@ const SearchProductsScreen = () => {
         }
 
         //dohvacanje kategorija
-        const categoriesResponse = await fetch('https://bazaar-system.duckdns.org/api/Catalog/categories', {
+        const categoriesResponse = await fetch(baseURL + '/api/Catalog/categories', {
           headers: {
             'Authorization': `Bearer ${authToken}`,
           },
@@ -182,7 +183,7 @@ const SearchProductsScreen = () => {
         setCategories(categoriesData);
 
         // dohvacanje regija
-        const regionsResponse = await fetch('https://bazaar-system.duckdns.org/api/Geography/regions', {
+        const regionsResponse = await fetch(baseURL + '/api/Geography/regions', {
           headers: {
             'Authorization': `Bearer ${authToken}`,
           },
@@ -223,7 +224,7 @@ const SearchProductsScreen = () => {
               throw new Error('Authentication token not found.');
             }
 
-            const url = `https://bazaar-system.duckdns.org/api/Geography/region/${regionId}`;
+            const url = baseURL + `/api/Geography/region/${regionId}`;
 
             const municipalitiesResponse = await fetch(url, {
               headers: {
@@ -333,7 +334,7 @@ const SearchProductsScreen = () => {
     //   body: JSON.stringify(body),
     // });
 
-    const baseUrl = 'https://bazaar-system.duckdns.org/api/Catalog/filter';
+    const baseUrl = baseURL + '/api/Catalog/filter';
 
     // Koristimo URLSearchParams za lako kreiranje query stringa
     const params = new URLSearchParams();
@@ -646,6 +647,12 @@ const SearchProductsScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.storeContainer}>
             <Text style={styles.storeName}>{item.name}</Text>
+            <TouchableOpacity style={styles.storeButton} onPress={() => router.push({
+              pathname: `/screens/store/[storeId]`,
+              params: { storeId: item.id },
+            })}>
+              <Text style = {{color:'white'}}>{t('details')}</Text>
+            </TouchableOpacity>          
             {item.products.length > 0 ? (
               <FlatList
                 data={item.products}
@@ -671,6 +678,19 @@ const SearchProductsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  storeButton: {
+    backgroundColor: '#4e8d7c',
+    padding: 7,
+    borderRadius: 9,
+    alignItems: 'center',
+    marginBottom: 10,
+    position: 'absolute',
+    right: 27,
+    top: 7,
+    elevation: 3,
+    height: 33,
+    width: 90,
+  },
   dropdownContainer: {
     borderWidth: 1,
     borderColor: '#ccc',

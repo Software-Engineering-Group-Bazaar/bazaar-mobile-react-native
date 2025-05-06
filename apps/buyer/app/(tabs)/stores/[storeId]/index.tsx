@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 // Importuj ažurirani ProductItem koji očekuje novi format
 import ProductItem from 'proba-package/product-item/index';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 // Importuj SecureStore ako planirate da koristite token za pravi API poziv
 import * as SecureStore from 'expo-secure-store';
 import { useCart } from '@/context/CartContext';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 // Definicija za kategoriju proizvoda (ista kao u ProductItem i SearchProductsScreen)
 interface ProductCategory {
@@ -33,7 +34,7 @@ interface Product {
 }
 
 // Postavite na false za korištenje pravog API-ja
-const USE_DUMMY_DATA = false;
+// const USE_DUMMY_DATA = false;
 
 // AŽURIRANI DUMMY_PRODUCTS prema novom formatu
 // Dodao sam wholesalePrice i primere za weight/volume gde ima smisla
@@ -106,7 +107,7 @@ const StoreProductsScreen = () => {
         // console.log(`http://192.168.0.25:5054/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`);
         // Proveri da li ovaj endpoint zaista vraća proizvode za SPECIFIČNI storeId i u NOVOM formatu
         // const response = await fetch(`https://bazaar-system.duckdns.org/api/catalog/store/${storeId}/products`, {
-        const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
+        const response = await fetch(baseURL + `/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
           // Dodaj method i headers ako je potrebno (posebno Authorization)
           method: 'GET',
           headers: {
@@ -161,6 +162,20 @@ const StoreProductsScreen = () => {
 
   return (
     <View style={styles.container}>
+
+      <TouchableOpacity 
+        onPress={() => router.push({
+          pathname: '/screens/store/[storeId]',
+          params: { storeId: storeIdString },})}
+        style={{ margin: 20, alignSelf: 'center', borderWidth: 1, borderRadius: 10, padding: 10, backgroundColor: '#fff' }}>
+        <Text style={{ fontSize: 21, color: '#4e8d7c' }}>
+          {t('store_details')}
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 , alignSelf: 'center'}}>
+        {t('store_products') || 'Proizvodi u prodavnici'}
+      </Text>
       <View style={styles.listContainer}>
         {products.length === 0 ? (
           <Text style={styles.noProductsText}>{t('no_products_in_store') || 'Nema proizvoda u ovoj prodavnici.'}</Text>

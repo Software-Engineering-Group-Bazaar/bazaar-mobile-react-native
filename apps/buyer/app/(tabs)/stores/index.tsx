@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import StoreItem from 'proba-package/store-item/index';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+
 
 interface Store {
   id: number;
@@ -15,7 +17,7 @@ interface Store {
   logoUrl?: string;
 }
 
-const USE_DUMMY_DATA = false; // Postavite na true za testiranje sa dummy podacima
+// const USE_DUMMY_DATA = false; // Postavite na true za testiranje sa dummy podacima
 
 const DUMMY_STORES: Store[] = [
   { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA' },
@@ -53,7 +55,7 @@ const StoresScreen = () => {
           throw new Error('Authentication token not found.');
         }
 
-        const endpoint = `https://bazaar-system.duckdns.org/api/Stores/search?query=${encodeURIComponent(searchQuery)}`;
+        const endpoint = baseURL + `/api/Stores/search?query=${encodeURIComponent(searchQuery)}`;
 
         const response = await fetch(endpoint, {
           method: 'GET',

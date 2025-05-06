@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
-import LanguageButton from "@/components/ui/LanguageButton";
-import SetHeaderRight from "../../components/ui/NavHeader";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
@@ -35,8 +34,12 @@ export default function PostavkeProdavnice() {
   const [selectedPlaceId, setSelectedPlaceId] = useState(null);
 
   // Dropdown Data
-  const [categoryItems, setCategoryItems] = useState<{ label: string; value: number }[]>([]);
-  const [regions, setRegions] = useState<{ label: string; value: number }[]>([]);
+  const [categoryItems, setCategoryItems] = useState<
+    { label: string; value: number }[]
+  >([]);
+  const [regions, setRegions] = useState<{ label: string; value: number }[]>(
+    []
+  );
   const [places, setPlaces] = useState<{ label: string; value: number }[]>([]);
 
   // Fetch Initial Data
@@ -48,10 +51,12 @@ export default function PostavkeProdavnice() {
 
     async function fetchRegions() {
       const data = await apiGetRegionsAsync();
-      setRegions(data.map((region: { id: number; name: string }) => ({ 
-        label: region.name, 
-        value: region.id 
-      })));      
+      setRegions(
+        data.map((region: { id: number; name: string }) => ({
+          label: region.name,
+          value: region.id,
+        }))
+      );
     }
 
     fetchCategories();
@@ -63,17 +68,26 @@ export default function PostavkeProdavnice() {
     async function fetchPlaces() {
       if (!selectedRegionId) return;
       const data = await apiGetPlacesAsync(selectedRegionId);
-      setPlaces(data.map((place: { id: number; name: string }) => ({
-        label: place.name, 
-        value: place.id 
-      })));      
+      setPlaces(
+        data.map((place: { id: number; name: string }) => ({
+          label: place.name,
+          value: place.id,
+        }))
+      );
     }
 
     fetchPlaces();
   }, [selectedRegionId]);
 
   const handleSave = async () => {
-    if (!name.trim() || !streetAndNumber.trim() || !selectedRegionId || !selectedPlaceId || !description.trim() || selectedCategoryId == null) {
+    if (
+      !name.trim() ||
+      !streetAndNumber.trim() ||
+      !selectedRegionId ||
+      !selectedPlaceId ||
+      !description.trim() ||
+      selectedCategoryId == null
+    ) {
       Alert.alert(t("error"), t("fill_all_fields"));
       return;
     }
@@ -99,55 +113,74 @@ export default function PostavkeProdavnice() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-      <SetHeaderRight title="Postavke prodavnice" />
       <LanguageButton />
       <View style={styles.container}>
         <Text style={styles.title}>{t("store_settings")}</Text>
 
-        <InputField icon="store" placeholder={t("store_name")} value={name} onChangeText={setName} />
-        <InputField icon="map-marker" placeholder={t("street_and_number")} value={streetAndNumber} onChangeText={setStreetAndNumber} />
+        <InputField
+          icon="store"
+          placeholder={t("store_name")}
+          value={name}
+          onChangeText={setName}
+        />
+        <InputField
+          icon="map-marker"
+          placeholder={t("street_and_number")}
+          value={streetAndNumber}
+          onChangeText={setStreetAndNumber}
+        />
 
         {/* Region Dropdown */}
         <View style={styles.dropdownWrapperTopTop}>
-          <DropdownPicker 
-            open={openRegion} 
-            value={selectedRegionId} 
-            items={regions} 
-            setOpen={setOpenRegion} 
-            setValue={setSelectedRegionId} 
-            setItems={setRegions} 
-            placeholder={t("select_region")} 
+          <DropdownPicker
+            open={openRegion}
+            value={selectedRegionId}
+            items={regions}
+            setOpen={setOpenRegion}
+            setValue={setSelectedRegionId}
+            setItems={setRegions}
+            placeholder={t("select_region")}
           />
         </View>
 
         {/* Place Dropdown */}
         <View style={styles.dropdownWrapperTop}>
-          <DropdownPicker 
-            open={openPlace} 
-            value={selectedPlaceId} 
-            items={places} 
-            setOpen={setOpenPlace} 
-            setValue={setSelectedPlaceId} 
-            setItems={setPlaces} 
-            placeholder={t("select_place")} 
+          <DropdownPicker
+            open={openPlace}
+            value={selectedPlaceId}
+            items={places}
+            setOpen={setOpenPlace}
+            setValue={setSelectedPlaceId}
+            setItems={setPlaces}
+            placeholder={t("select_place")}
           />
         </View>
 
         {/* Category Dropdown */}
         <View style={styles.dropdownWrapperBottom}>
-          <DropdownPicker 
-            open={openCategory} 
-            value={selectedCategoryId} 
-            items={categoryItems} 
-            setOpen={setOpenCategory} 
-            setValue={setSelectedCategoryId} 
-            setItems={setCategoryItems} 
-            placeholder={t("select_category")} 
+          <DropdownPicker
+            open={openCategory}
+            value={selectedCategoryId}
+            items={categoryItems}
+            setOpen={setOpenCategory}
+            setValue={setSelectedCategoryId}
+            setItems={setCategoryItems}
+            placeholder={t("select_category")}
           />
         </View>
 
-        <InputField icon="align-left" placeholder={t("description")} value={description} onChangeText={setDescription} />
-        <SubmitButton onPress={handleSave} disabled={loading} icon="file" buttonText={t("save_changes")} />
+        <InputField
+          icon="align-left"
+          placeholder={t("description")}
+          value={description}
+          onChangeText={setDescription}
+        />
+        <SubmitButton
+          onPress={handleSave}
+          disabled={loading}
+          icon="file"
+          buttonText={t("save_changes")}
+        />
       </View>
     </ScrollView>
   );
@@ -156,7 +189,13 @@ export default function PostavkeProdavnice() {
 const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, backgroundColor: "#fff", paddingBottom: 40 },
   container: { paddingHorizontal: 20, paddingTop: 100, alignItems: "center" },
-  title: { fontSize: 26, fontWeight: "bold", color: "#4E8D7C", textAlign: "center", marginBottom: 30 },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#4E8D7C",
+    textAlign: "center",
+    marginBottom: 30,
+  },
   dropdownWrapperTopTop: {
     zIndex: 3000,
     position: "relative",
