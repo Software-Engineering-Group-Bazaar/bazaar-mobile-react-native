@@ -276,7 +276,7 @@ export default function DetailsScreen() {
       </View>
 
       <Text style={[styles.title, styles.itemsTitle]}>{t('ordered_items')}</Text>
-      {detailedOrderItems.map((item) => (
+      {detailedOrderItems.filter(item=>item.product).map((item) => (
         <CartItem
         key={item.id}
         product={item.product!}
