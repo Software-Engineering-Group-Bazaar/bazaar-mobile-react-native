@@ -12,7 +12,7 @@ export interface SellerResponse {
 export interface Review {
   id: string;
   storeId: number;
-  orderId: number; // ➕ neophodno za backend GET
+  orderId: number; 
   buyer: BuyerInfo;
   rating: number;
   comment: string;
@@ -22,6 +22,6 @@ export interface Review {
 
 export interface SubmitResponsePayload {
   reviewId: string | number;
-  orderId: number; // ➕ dodato
+  orderId: number; 
   responseText: string;
 }

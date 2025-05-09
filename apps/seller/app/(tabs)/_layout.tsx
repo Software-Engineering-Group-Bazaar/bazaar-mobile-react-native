@@ -33,7 +33,7 @@ async function getAuthTokenFromStorage(): Promise<string | null> {
 
 // ➤➤➤ ZAMIJENI SA SVOJIM BACKEND URL-om ➤➤➤
 const DEVICES_API_ENDPOINT =
-  "http://10.0.2.2:5054/api/Devices/pushNotification";
+  "https://bazaar-system.duckdns.org/api/Devices/pushNotification";
 
 async function sendTokenToBackend(nativeToken: string) {
   const authToken = await getAuthTokenFromStorage();

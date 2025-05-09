@@ -35,6 +35,14 @@ export default function StoresScreen() {
   const handleViewOrders = () => {
     router.push("../(CRUD)/pregled_narudzbi");
   };
+  const handleViewReviews = () => {
+    if (store) {
+      router.push(`../(CRUD)/pregled_reviews?storeId=${store.id}&storeName=${encodeURIComponent(store.name)}`);
+    } else {
+      // Opciono: obavesti korisnika
+      console.warn("Store is not defined, cannot view reviews.");
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -71,6 +79,11 @@ export default function StoresScreen() {
                 ]}
                 onPress={handleViewOrders}
               />
+              <TouchableCard
+                 title={t("store_reviews")}
+                        textRows={[t("store_reviews_description")]}
+                        onPress={handleViewReviews} 
+                         />
             </View>
           )}
         </View>
