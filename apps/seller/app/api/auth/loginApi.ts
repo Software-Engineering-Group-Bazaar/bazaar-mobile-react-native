@@ -89,7 +89,7 @@ export const fbLoginApi = async () => {
       };
       // call your backend
       const response = await fetch(
-        "https://bazaar-system.duckdns.org/api/Auth/login/facebook",
+        "http://192.168.15.105:5054/api/Auth/login/facebook",
         {
           method: "POST",
           headers: {
