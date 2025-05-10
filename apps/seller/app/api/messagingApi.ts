@@ -9,7 +9,7 @@ export async function apiFetchFormattedConversations(): Promise<{
   otherParticipantName: string;
   lastMessageSnippet: string;
   lastMessageTimestamp: string;
-  unreadCount: number;
+  unreadMessagesCount: number;
 }[]> {
   try {
     const response = await api.get("/Chat/conversations");
@@ -25,7 +25,7 @@ export async function apiFetchFormattedConversations(): Promise<{
         lastMessageTimestamp: conv.lastMessage?.sentAt
           ? formatDistanceToNow(new Date(conv.lastMessage.sentAt), { addSuffix: true })
           : '',
-        unreadCount: conv.unreadMessagesCount,
+        unreadMessagesCount: conv.unreadMessagesCount,
       };
     });
 

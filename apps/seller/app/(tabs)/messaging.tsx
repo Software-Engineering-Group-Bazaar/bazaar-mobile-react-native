@@ -63,7 +63,7 @@ const ChatListScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <LanguageButton />
-      <Text style={styles.header}>{t("messages")}</Text>
+      <Text style={styles.header}></Text>
       <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation} />
     </View>
   );
@@ -76,10 +76,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    marginBottom: 20,
+    marginBottom: 50,
     paddingLeft: 15,
-    fontSize: 22,
-    fontWeight: '600',
   },
 });
 
