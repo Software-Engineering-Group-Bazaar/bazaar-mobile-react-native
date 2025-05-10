@@ -3,7 +3,7 @@ export interface ConversationDto {
     otherParticipantName: string;
     lastMessageSnippet: string;
     lastMessageTimestamp: string;
-    unreadCount: number;
+    unreadMessagesCount: number;
     orderId?: number;
     storeId?: number;
 }  

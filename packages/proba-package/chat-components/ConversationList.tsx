@@ -11,15 +11,15 @@ const ConversationList: React.FC<Props> = ({ conversations, onSelectConversation
   const renderItem = ({ item }: { item: ConversationDto }) => (
     <TouchableOpacity style={styles.item} onPress={() => onSelectConversation(item.id)}>
       <Text style={styles.username}>{item.otherParticipantName}</Text>
-      <Text style={[styles.lastMessage, item.unreadCount > 0 && styles.unreadText]}>
+      <Text style={[styles.lastMessage, item.unreadMessagesCount > 0 && styles.unreadText]}>
         {item.lastMessageSnippet}
       </Text>
       <View style={styles.footer}>
         <Text style={styles.timestamp}>{item.lastMessageTimestamp}</Text>
         {/* Display unread count if there are unread messages */}
-        {item.unreadCount > 0 && (
+        {item.unreadMessagesCount > 0 && (
           <View style={styles.unreadBadge}>
-            <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+            <Text style={styles.unreadCount}>{item.unreadMessagesCount}</Text>
           </View>
         )}
       </View>
