@@ -5,16 +5,16 @@ import { ConversationDto } from 'proba-package/chat-components/models';
 import { useTranslation } from "react-i18next";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import * as signalR from '@microsoft/signalr';
-import * as SecureStore from 'expo-secure-store'; // Import SecureStore
+import * as SecureStore from 'expo-secure-store'; 
+import { useRouter } from 'expo-router';
 import { apiFetchFormattedConversations } from '../api/messagingApi';
 
 const ChatListScreen: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationDto[]>([]);
-  const { t } = useTranslation();
+  const router = useRouter();
 
-  const handleSelectConversation = (conversationId: number) => {
-    console.log('Selected conversation:', conversationId);
-    // Navigate to the individual chat screen
+  const handleConversationSelect = (conversationId: number) => {
+    router.push(`../(CRUD)/pregled_chata?conversationId=${conversationId}`);
   };
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const ChatListScreen: React.FC = () => {
 
         // Setup SignalR connection
         const connection = new signalR.HubConnectionBuilder()
-          .withUrl("https://bazaar-system.duckdns.org/chathub", {
+          .withUrl("http://192.168.15.105:5054/chathub", {
             accessTokenFactory: async () => storedToken, // Use token for auth
           })
           .withAutomaticReconnect()
@@ -82,7 +82,7 @@ const ChatListScreen: React.FC = () => {
     <View style={styles.container}>
       <LanguageButton />
       <Text style={styles.header}></Text>
-      <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation} />
+      <ConversationList conversations={conversations} onSelectConversation={handleConversationSelect} />
     </View>
   );
 };
