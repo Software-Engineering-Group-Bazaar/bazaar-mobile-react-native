@@ -2,13 +2,18 @@ import React from 'react';
 import { FlatList, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ConversationDto } from './models'; 
 
-type Props = {
-  conversations: ConversationDto[];
+interface Props {
+  conversations: ExtendedConversationDto[];
   onSelectConversation: (conversationId: number) => void;
-};
+}
+
+interface ExtendedConversationDto extends ConversationDto {
+  buyerUserId: string;
+  lastMessageSender: string;
+}
 
 const ConversationList: React.FC<Props> = ({ conversations, onSelectConversation }) => {
-  const renderItem = ({ item }: { item: ConversationDto }) => (
+  const renderItem = ({ item }: { item: ExtendedConversationDto }) => (
     <TouchableOpacity style={styles.item} onPress={() => onSelectConversation(item.id)}>
       <Text style={styles.username}>{item.otherParticipantName}</Text>
       <Text style={[styles.lastMessage, item.unreadMessagesCount > 0 && styles.unreadText]}>
@@ -17,17 +22,18 @@ const ConversationList: React.FC<Props> = ({ conversations, onSelectConversation
       <View style={styles.footer}>
         <Text style={styles.timestamp}>{item.lastMessageTimestamp}</Text>
         {/* Display unread count if there are unread messages */}
-        {item.unreadMessagesCount > 0 && (
+        {item.unreadMessagesCount > 0 && item.buyerUserId !== item.lastMessageSender && (
           <View style={styles.unreadBadge}>
             <Text style={styles.unreadCount}>{item.unreadMessagesCount}</Text>
           </View>
         )}
+
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <FlatList
+    <FlatList<ExtendedConversationDto>
       data={conversations}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}

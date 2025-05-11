@@ -24,7 +24,7 @@ export const useSignalR = (conversationId?: number) => {
       }
 
       const connection = new signalR.HubConnectionBuilder()
-        .withUrl(`http://172.20.10.3:5054/chathub`, {
+        .withUrl(`http://192.168.15.105:5054/chathub`, {
           accessTokenFactory: async () => storedToken,
         })
         .withAutomaticReconnect()

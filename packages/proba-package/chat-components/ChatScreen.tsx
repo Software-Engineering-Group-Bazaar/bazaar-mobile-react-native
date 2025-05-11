@@ -43,8 +43,23 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
       }
     };
 
+    const markAsRead = async () => {
+      if (!conversationId) return;
+
+      try {
+        const response = await api.post(
+          `/Chat/conversations/${conversationId}/markasread`
+        );
+      } catch (error) {
+        console.error("Failed to set read", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (conversationId) {
       fetchMessages();
+      markAsRead();
     }
   }, [conversationId]);
 
