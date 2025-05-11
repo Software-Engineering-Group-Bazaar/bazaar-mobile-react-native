@@ -3,11 +3,11 @@ import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, FlatList, StyleSheet } from "react-native";
 import { useSignalR } from "./useSignalR";
 import { ChatMessageItem } from "./ChatMessage";
-import * as SecureStore from 'expo-secure-store';
-import api from '../../../apps/seller/app/api/defaultApi';
+import * as SecureStore from "expo-secure-store";
+import api from "../../../apps/seller/app/api/defaultApi";
 
 type ChatScreenProps = {
-  conversationId: number;  // Assuming this is passed to the component
+  conversationId: number; // Assuming this is passed to the component
 };
 
 const ChatScreen = ({ conversationId }: ChatScreenProps) => {
@@ -32,7 +32,9 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
       if (!conversationId) return;
 
       try {
-        const response = await api.get(`/Chat/conversations/${conversationId}/all-messages`);
+        const response = await api.get(
+          `/Chat/conversations/${conversationId}/all-messages`
+        );
         setMessages(response.data);
       } catch (error) {
         console.error("Failed to fetch messages", error);
@@ -48,7 +50,8 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
 
   // Use SignalR to handle real-time messaging
   const conversationIdNumber = Number(conversationId);
-  const { messages: signalRMessages, sendMessage } = useSignalR(conversationIdNumber);
+  const { messages: signalRMessages, sendMessage } =
+    useSignalR(conversationIdNumber);
 
   // Combine API messages and SignalR messages into a single list
   useEffect(() => {
@@ -59,7 +62,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
 
   const handleSend = () => {
     if (input.trim().length > 0 && token) {
-      sendMessage("Zlatan", input.trim()); // Replace "Zlatan" with actual username if needed
+      sendMessage(input.trim()); // Replace "Zlatan" with actual username if needed
       setInput(""); // Clear the input field after sending
     }
   };

@@ -10,7 +10,9 @@ type Props = {
 export const ChatMessageItem: React.FC<Props> = ({ message }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.user}>{message.senderUsername}</Text>
+      {message.senderUsername && (
+        <Text style={styles.user}>{message.senderUsername}</Text>
+      )}
       <Text style={styles.content}>{message.content}</Text>
     </View>
   );

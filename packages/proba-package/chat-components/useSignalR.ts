@@ -1,17 +1,16 @@
 // shared/hooks/useSignalR.ts
 import { useEffect, useRef, useState } from "react";
-import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { ChatMessage } from "./models";
+import { HubConnection, LogLevel } from "@microsoft/signalr";
+import { ChatMessage, MessageDto } from "./models";
 import * as signalR from "@microsoft/signalr";
 import * as SecureStore from "expo-secure-store";
-
 
 export const useSignalR = (conversationId?: number) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const connectionRef = useRef<HubConnection | null>(null);
 
   // Fetch token from secure store
-  const fetchToken = async () => await SecureStore.getItemAsync('accessToken');
+  const fetchToken = async () => await SecureStore.getItemAsync("accessToken");
 
   useEffect(() => {
     // Connect to SignalR
@@ -25,7 +24,7 @@ export const useSignalR = (conversationId?: number) => {
       }
 
       const connection = new signalR.HubConnectionBuilder()
-        .withUrl(`http://192.168.15.105:5054/chathub`, {
+        .withUrl(`http://172.20.10.3:5054/chathub`, {
           accessTokenFactory: async () => storedToken,
         })
         .withAutomaticReconnect()
@@ -33,10 +32,14 @@ export const useSignalR = (conversationId?: number) => {
         .build();
 
       // Listen for new messages
-      connection.on("ReceiveMessage", (senderUsername: string, content: string) => {
+      connection.on("ReceiveMessage", (receivedMessage: MessageDto) => {
+        console.log(JSON.stringify(receivedMessage, null, 2));
+        const senderUsername = receivedMessage.senderUsername;
+        const content = receivedMessage.content;
+        const timestamp = receivedMessage.sentAt;
         setMessages((prevMessages) => [
           ...prevMessages,
-          { senderUsername, content, timestamp: new Date().toISOString() },
+          { senderUsername, content, timestamp },
         ]);
       });
 
@@ -46,7 +49,9 @@ export const useSignalR = (conversationId?: number) => {
         connectionRef.current = connection;
 
         // Join conversation-specific group
-        connection.invoke("JoinGroup", conversationId).catch((err) => console.error("Error joining group:", err));
+        connection
+          .invoke("JoinConversation", conversationId)
+          .catch((err) => console.error("Error joining group:", err));
       } catch (err) {
         console.error("SignalR connection error:", err);
       }
@@ -60,10 +65,14 @@ export const useSignalR = (conversationId?: number) => {
   }, [conversationId]); // Rerun when conversationId or mock changes
 
   // Send message to the SignalR hub
-  const sendMessage = (senderUsername: string, content: string) => {
+  const sendMessage = (content: string, isPrivate: boolean = false) => {
     if (connectionRef.current) {
       connectionRef.current
-        .invoke("SendMessage", senderUsername, content, conversationId)
+        .invoke("SendMessage", {
+          ConversationId: conversationId,
+          Content: content,
+          IsPrivate: isPrivate,
+        })
         .catch((err) => console.error("Send failed:", err));
     }
   };
