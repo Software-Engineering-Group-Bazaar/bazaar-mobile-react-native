@@ -57,6 +57,10 @@ const NotificationList = () => {
           pathname: '/(CRUD)/narudzba_detalji',
           params: { id: orderId.toString() },
         });
+      } else if (/poruk/i.test(message)) {
+        router.push('../(tabs)/messaging');
+      } else if (/recenzij/i.test(message)) {
+        router.push('./pregled_reviews');
       } else {
         router.push('../(tabs)/zalihe');
       }
