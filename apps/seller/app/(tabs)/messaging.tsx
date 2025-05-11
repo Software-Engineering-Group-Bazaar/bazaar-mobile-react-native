@@ -5,6 +5,7 @@ import { ConversationDto } from 'proba-package/chat-components/models';
 import { useTranslation } from "react-i18next";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import * as signalR from '@microsoft/signalr';
+import { apiFetchFormattedConversations } from '../api/messagingApi'
 
 const ChatListScreen: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationDto[]>([]);
@@ -16,31 +17,9 @@ const ChatListScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    setConversations([
-      {
-        id: 1,
-        otherParticipantName: 'John Doe',
-        lastMessageSnippet: 'Hey, are you still interested in the product?',
-        lastMessageTimestamp: '2 hours ago',
-        unreadCount: 1,
-      },
-      {
-        id: 2,
-        otherParticipantName: 'Jane Smith',
-        lastMessageSnippet: 'Can you provide more details?',
-        lastMessageTimestamp: '5 hours ago',
-        unreadCount: 0,
-      },
-      {
-        id: 3,
-        otherParticipantName: 'Samuel Lee',
-        lastMessageSnippet: 'Let me check and get back to you.',
-        lastMessageTimestamp: '1 day ago',
-        unreadCount: 5,
-      },
-    ]);
+    apiFetchFormattedConversations().then(setConversations);
 
-    // SignalR connection setup
+    /*// SignalR connection setup
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("http://<YOUR_API_URL>/chathub") // Replace with actual URL -- napraviti hub
       .withAutomaticReconnect()
@@ -78,7 +57,7 @@ const ChatListScreen: React.FC = () => {
 
     return () => {
       connection.stop();
-    };
+    };*/
   }, []);
 
   return (
