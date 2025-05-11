@@ -187,13 +187,17 @@ const ProductDetailsScreen = () => {
   )}
 
       </View>
+          {/* Chat button */}
+          <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('screens/chat')}>
+            <FontAwesome name="comments" size={24} color="white" />
+          </TouchableOpacity>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   quantityInput: {
-    width: 100, 
+    width: 100,
     height: 40,
     borderWidth: 1,
     borderColor: '#ccc',
@@ -238,10 +242,10 @@ const styles = StyleSheet.create({
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around', 
+    justifyContent: 'space-around',
     marginTop: 20,
     marginBottom: 20,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
   },
   quantityButton: {
     backgroundColor: '#e0e0e0',
@@ -388,6 +392,19 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: '600',
     },
+        chatButton: {
+        position: 'absolute',
+        marginTop:450,
+        right: 30,
+        backgroundColor: '#4E8D7C',
+        padding: 15,
+        borderRadius: 50,
+        shadowColor: '#000',
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        zIndex: 999
+        },
    });
-   
-   export default ProductDetailsScreen;   
+
+   export default ProductDetailsScreen;

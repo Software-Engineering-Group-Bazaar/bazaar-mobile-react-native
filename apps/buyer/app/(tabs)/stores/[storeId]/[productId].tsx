@@ -152,7 +152,7 @@ const checkAndAddToCart = async () => {
       Alert.alert(
         t('out of stock'),
         `${t('You can only add up to')} ${availableQuantity - currentQuantityInCart} ${t('more of')} ${product.name}. ${t('Your current cart contains')} ${currentQuantityInCart} ${t('items of this product.')}`
-      );      
+      );
     }
   } catch (error) {
     console.error('Error checking inventory:', error);
@@ -332,6 +332,10 @@ const checkAndAddToCart = async () => {
           </View>
         )}
       </View>
+            {/* Chat button */}
+            <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('screens/chat')}>
+              <FontAwesome name="comments" size={24} color="white" />
+            </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -344,7 +348,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   quantityInput: {
-    width: 100, 
+    width: 100,
     height: 40,
     borderWidth: 1,
     borderColor: '#ccc',
@@ -531,6 +535,19 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: '600',
     },
+    chatButton: {
+    position: 'absolute',
+    marginTop:450,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    padding: 15,
+    borderRadius: 50,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 999
+    },
    });
-   
-   export default ProductDetailsScreen;   
+
+   export default ProductDetailsScreen;

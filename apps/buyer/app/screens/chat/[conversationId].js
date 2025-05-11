@@ -17,7 +17,7 @@ import { useLocalSearchParams, Stack, useRouter } // Import from expo-router
 from 'expo-router';
 
 // --- CONFIGURATION & MOCKS ---
-const USE_DUMMY_DATA = false; // SET TO false TO USE LIVE API/SIGNALR
+const USE_DUMMY_DATA = true; // SET TO false TO USE LIVE API/SIGNALR
 const API_BASE_URL = 'http://192.168.0.25:5054/api/Chat'; // YOUR ACTUAL API BASE URL
 const HUB_URL = 'http://192.168.0.25:5054/chathub'; // YOUR ACTUAL SIGNALR HUB URL
 const MOCK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYzE0OTg2YS00Y2E2LTQ4YzctOTkyMS04NjExZjNmYmRkYzgiLCJlbWFpbCI6InByb2JhQHRlc3QuY29tIiwianRpIjoiY2YzZGE5NTMtNDA0MS00ZmYyLTg5NTItNDQ0MWVjNzMxNjk5Iiwicm9sZSI6IkJ1eWVyIiwibmJmIjoxNzQ2ODkyMDk4LCJleHAiOjE3NDY4OTU2OTgsImlhdCI6MTc0Njg5MjA5OCwiaXNzIjoiaHR0cHM6Ly9iYXphYXIuYXBpIiwiYXVkIjoiaHR0cHM6Ly9iYXphYXIuY2xpZW50cyJ9.qYZ3LF7KYXUXGKOsciDRif79Q1p3ZKPrdMWo7ObwyDs"; // REPLACE with a real token if USE_DUMMY_DATA is false

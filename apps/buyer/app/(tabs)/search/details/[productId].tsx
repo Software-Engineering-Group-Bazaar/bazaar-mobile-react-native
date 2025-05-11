@@ -322,6 +322,10 @@ const checkAndAddToCart = async () => {
           </View>
         )}
       </View>
+          {/* Chat button */}
+          <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('screens/chat')}>
+            <FontAwesome name="comments" size={24} color="white" />
+          </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -521,6 +525,19 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: '600',
     },
+        chatButton: {
+        position: 'absolute',
+        marginTop:450,
+        right: 30,
+        backgroundColor: '#4E8D7C',
+        padding: 15,
+        borderRadius: 50,
+        shadowColor: '#000',
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        zIndex: 999
+        },
    });
    
    export default ProductDetailsScreen;   

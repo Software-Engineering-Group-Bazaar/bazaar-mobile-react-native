@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Button, ActivityIndicator, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
@@ -171,6 +172,8 @@ export default function StoreScreen() {
   const [reviews, setReviews] = useState<ReviewResponseContainer[]>([]);  
   const [rating, setRating] = useState<Rating | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
 
   const dateFmt = new Intl.DateTimeFormat('de-DE', {
     day:   '2-digit',
@@ -293,6 +296,10 @@ export default function StoreScreen() {
                 <Text style={styles.sectionTitle}>{t('average_rating')}</Text>
                 {rating !== null && renderStars(rating.rating)}
             </View>
+          {/* Chat button */}
+          <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('screens/chat')}>
+            <FontAwesome name="comments" size={24} color="white" />
+          </TouchableOpacity>
         </View>
 
         
@@ -322,6 +329,19 @@ export default function StoreScreen() {
 }
 
 const styles = StyleSheet.create({
+  chatButton: {
+  position: 'absolute',
+  marginTop:3,
+  right: 10,
+  backgroundColor: '#4E8D7C',
+  padding: 15,
+  borderRadius: 50,
+  shadowColor: '#000',
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+  zIndex: 999
+  },
     safeArea: {
         backgroundColor: '#4e8d7c',
     },

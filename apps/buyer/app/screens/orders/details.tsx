@@ -1,7 +1,9 @@
 // screens/orders/details.tsx (ili screens/orders/details/index.tsx)
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { t } from 'i18next';
 import CartItem from 'proba-package/cart-item/index';
 import { router } from 'expo-router';
@@ -125,6 +127,7 @@ export default function DetailsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [detailedOrderItems, setDetailedOrderItems] = useState<({ product: Product | undefined } & OrderItem)[]>([]);
   const [storeName, setStoreName] = useState<string | null>(null);
+  const navigation = useNavigation();
 
   const handleProductPress = (product: Product, quantity: number) => {
     router.push(`./productDetails/${product.id}?quantity=${quantity}`);
@@ -292,6 +295,10 @@ export default function DetailsScreen() {
         <Text style={styles.totalPriceValue}>{order.total.toFixed(2)} KM</Text>
       </View>
     )}
+      {/* Chat button */}
+      <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('screens/chat')}>
+        <FontAwesome name="comments" size={10} color="white" />
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -357,5 +364,17 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 20,
+  },
+  chatButton: {
+  position: 'absolute',
+  right: 10,
+  backgroundColor: '#4E8D7C',
+  padding: 15,
+  borderRadius: 30,
+  shadowColor: '#000',
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+  zIndex: 999
   },
 });
