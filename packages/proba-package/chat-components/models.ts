@@ -16,3 +16,9 @@ export interface MessageDto {
   sentAt: string;
   readAt?: string | null; 
 }
+
+export type ChatMessage = {
+  senderUsername: string;
+  content: string;
+  timestamp?: string;
+};
