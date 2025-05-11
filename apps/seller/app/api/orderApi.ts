@@ -26,7 +26,7 @@ export const apiCreateConversation = async (targetUserId: number, storeId: numbe
       productId: null,
     });
 
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
       const conversationId = response.data.id;
       return conversationId;
     } else {

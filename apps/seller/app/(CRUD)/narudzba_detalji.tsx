@@ -38,7 +38,7 @@ export default function NarudzbaDetalji() {
 
   const handleStartConversation = async (buyerId: number, storeId: number, orderId: number) => {
     try {
-      const conversationId = apiCreateConversation(buyerId, storeId, orderId);
+      const conversationId = await apiCreateConversation(buyerId, storeId, orderId);
 
       router.push(`./pregled_chata?conversationId=${conversationId}`);
     } catch (error) {
