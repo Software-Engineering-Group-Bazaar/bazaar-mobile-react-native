@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import ConversationList from 'proba-package/chat-components/ConversationList'
+import ConversationList from 'proba-package/chat-components/ConversationList';
 import { ConversationDto } from 'proba-package/chat-components/models';
 import { useTranslation } from "react-i18next";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import * as signalR from '@microsoft/signalr';
-import { apiFetchFormattedConversations } from '../api/messagingApi'
+import * as SecureStore from 'expo-secure-store'; // Import SecureStore
+import { apiFetchFormattedConversations } from '../api/messagingApi';
 
 const ChatListScreen: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationDto[]>([]);
@@ -17,47 +18,64 @@ const ChatListScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    apiFetchFormattedConversations().then(setConversations);
+    const fetchTokenAndLoadConversations = async () => {
+      try {
+        const storedToken = await SecureStore.getItemAsync('accessToken');
 
-    /*// SignalR connection setup
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://<YOUR_API_URL>/chathub") // Replace with actual URL -- napraviti hub
-      .withAutomaticReconnect()
-      .build();
-
-    connection.start().catch((err) => console.error("SignalR connection error:", err));
-
-    // Handler for new messages
-    connection.on("ReceiveMessage", (newMessage: any) => {
-      setConversations((prev) => {
-        const updated = [...prev];
-        const index = updated.findIndex(c => c.id === newMessage.conversationId);
-
-        if (index !== -1) {
-          updated[index] = {
-            ...updated[index],
-            lastMessageSnippet: newMessage.text,
-            lastMessageTimestamp: 'Just now',
-            unreadCount: updated[index].unreadCount + 1,
-          };
-        } else {
-          // Optional: add new conversation if it doesn't exist
-          updated.unshift({
-            id: newMessage.conversationId,
-            otherParticipantName: newMessage.senderName,
-            lastMessageSnippet: newMessage.text,
-            lastMessageTimestamp: 'Just now',
-            unreadCount: 1,
-          });
+        if (!storedToken) {
+          console.error("No token found in SecureStore!");
+          return;
         }
 
-        return updated;
-      });
-    });
+        const fetchedConversations = await apiFetchFormattedConversations();
+        setConversations(fetchedConversations);
 
-    return () => {
-      connection.stop();
-    };*/
+        // Setup SignalR connection
+        const connection = new signalR.HubConnectionBuilder()
+          .withUrl("https://bazaar-system.duckdns.org/chathub", {
+            accessTokenFactory: async () => storedToken, // Use token for auth
+          })
+          .withAutomaticReconnect()
+          .build();
+
+        connection.start().catch((err) => console.error("SignalR connection error:", err));
+
+        // Handle incoming messages
+        connection.on("ReceiveMessage", (newMessage: any) => {
+          setConversations((prev) => {
+            const updated = [...prev];
+            const index = updated.findIndex(c => c.id === newMessage.conversationId);
+
+            if (index !== -1) {
+              updated[index] = {
+                ...updated[index],
+                lastMessageSnippet: newMessage.text,
+                lastMessageTimestamp: 'Just now',
+                unreadMessagesCount: updated[index].unreadMessagesCount + 1,
+              };
+            } else {
+              updated.unshift({
+                id: newMessage.conversationId,
+                otherParticipantName: newMessage.senderName,
+                lastMessageSnippet: newMessage.text,
+                lastMessageTimestamp: 'Just now',
+                unreadMessagesCount: 1,
+              });
+            }
+
+            return updated;
+          });
+        });
+
+        return () => {
+          connection.stop();
+        };
+      } catch (error) {
+        console.error("Error loading conversations:", error);
+      }
+    };
+
+    fetchTokenAndLoadConversations();
   }, []);
 
   return (
