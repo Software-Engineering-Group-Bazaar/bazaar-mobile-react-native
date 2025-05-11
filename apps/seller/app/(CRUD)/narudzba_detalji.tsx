@@ -7,7 +7,8 @@ import LanguageButton from "../../components/ui/buttons/LanguageButton";
 import StatusBadge from "../../components/ui/StatusBadge";
 import StatusButtons from "../../components/ui/StatusButtons";
 import { InfoCard } from "../../components/ui/cards/InfoCard";
-import { getOrderById, updateOrderStatus, deleteOrder as deleteOrderApi} from "../api/orderApi"; 
+import { getOrderById, updateOrderStatus, apiCreateConversation, deleteOrder as deleteOrderApi} from "../api/orderApi"; 
+import OrderCard from "@/components/ui/cards/OrderCard";
 
 const ORDER_STATUS_FLOW: Record<string, string[]> = {
   Requested: ["Confirmed", "Rejected"],
@@ -34,6 +35,16 @@ export default function NarudzbaDetalji() {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  const handleStartConversation = async (buyerId: number, storeId: number, orderId: number) => {
+    try {
+      const conversationId = apiCreateConversation(buyerId, storeId, orderId);
+
+      router.push(`./pregled_chata?conversationId=${conversationId}`);
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+    }
+  };
 
   const fetchOrder = async () => {
     if (!id) return;
@@ -110,6 +121,17 @@ export default function NarudzbaDetalji() {
         <StatusBadge status={order.status} />
       </View>
       <LanguageButton />
+
+      <View style={styles.buyerContainer}>
+        <Text style={styles.buyerText}>{t("Buyer")}: {order.buyerUserName}</Text>
+        <TouchableOpacity
+          style={styles.messageButton}
+          onPress={() => handleStartConversation(order.buyerId, order.storeId, order.id)}
+        >
+          <Text style={styles.messageButtonText}>{t("send_message")}</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         style={styles.container}
         refreshControl={
@@ -160,6 +182,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 70,
   },
+  messageButton: {
+    backgroundColor: "#4E8D7C",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  messageButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F2F2F7",
@@ -175,6 +207,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
     marginLeft: 12,
+  },
+  buyerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 8,
+    marginTop: 10,
+  },
+  buyerText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    flexShrink: 1,
+    marginRight: 8,
   },
   section: {
     backgroundColor: "#fff",

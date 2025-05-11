@@ -178,5 +178,7 @@
   "submit_response": "Submit Response",
   "store_id_missing": "Store ID is missing. Cannot display reviews.",
   "no_reviews_yet": "No reviews for this store yet.",
-  "failed_to_load_reviews": "Failed to load reviews. Please try again."
+  "failed_to_load_reviews": "Failed to load reviews. Please try again.",
+  "Buyer": "Buyer",
+  "send_message": "Send Message"
 }
