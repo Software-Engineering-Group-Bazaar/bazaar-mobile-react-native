@@ -9,8 +9,13 @@ import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import { apiFetchFormattedConversations } from '../api/messagingApi';
 
+interface ExtendedConversationDto extends ConversationDto {
+  buyerUserId: string;
+  lastMessageSender: string;
+}
+
 const ChatListScreen: React.FC = () => {
-  const [conversations, setConversations] = useState<ConversationDto[]>([]);
+  const [conversations, setConversations] = useState<ExtendedConversationDto[]>([]);
   const router = useRouter();
 
   const handleConversationSelect = (conversationId: number) => {
@@ -57,6 +62,8 @@ const ChatListScreen: React.FC = () => {
               updated.unshift({
                 id: newMessage.conversationId,
                 otherParticipantName: newMessage.senderName,
+                buyerUserId: newMessage.buyerUserId ?? '',
+                lastMessageSender: newMessage.senderUserId ?? '',
                 lastMessageSnippet: newMessage.text,
                 lastMessageTimestamp: 'Just now',
                 unreadMessagesCount: 1,
