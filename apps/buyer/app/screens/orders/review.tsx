@@ -1,6 +1,6 @@
 // screens/orders/review.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView , Alert} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { t } from 'i18next';
@@ -24,6 +24,10 @@ export default function ReviewScreen() {
     if (!rating) {
       setError(t('review_error_rating', 'Molimo odaberite ocjenu.'));
       return;
+    }
+    if(comment.length<4 || comment.length>1000){
+      setError(t('review_error_comment'));
+      return
     }
 
     setError('');
@@ -54,8 +58,14 @@ export default function ReviewScreen() {
           router.back(); // vracanje na prethodni ekran
         } else {
           const errorBody = await response.text();
-          console.error('Greška pri slanju recenzije:', response.status, errorBody);
-          setError(t('review_error_submit', 'Došlo je do greške pri slanju recenzije.'));
+          if (response.status === 409) {
+            Alert.alert(
+              t('review_already_exists_title', 'Recenzija već postoji'),
+              t('review_already_exists_message', 'Već ste poslali recenziju za ovu narudžbu.')
+              );}
+            else {
+              setError(t('review_error_submit', 'Došlo je do greške pri slanju recenzije.'));
+            }
         }
       } catch (error: any) {
         console.error('Greška pri komunikaciji s API-jem:', error.message);

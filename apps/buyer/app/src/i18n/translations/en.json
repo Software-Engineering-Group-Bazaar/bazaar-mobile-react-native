@@ -135,10 +135,7 @@
   "items of": "items of",
   "available.": "available.",
   "order_store":"Store",
-  "details":"Details",
   "review":"Review",
-  "rating":"Rating",
-  "comment":"Comment",
   "comment_placeholder":"Enter your comment",
   "submit_review":"Submit review",
   "order_details":"Order details",
@@ -146,5 +143,8 @@
   "total_price":"Total price",
   "date_time":"Date and time",
   "store":"Store",
-  "status":"Status"
+  "review_error_comment":"Comment must be between 5 and 1000 characters",
+  "Cannot add that many items. Not enough stock available.": "Cannot add that many items. Not enough stock available.",
+  "add_suggestion": "Add another {{count}} pieces for {{price}} KM",
+  "remove_suggestion": "Remove {{count}} pieces for {{price}} KM"
 }
