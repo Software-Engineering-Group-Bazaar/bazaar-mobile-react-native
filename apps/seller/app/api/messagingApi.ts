@@ -14,7 +14,9 @@ export async function apiFetchFormattedConversations(): Promise<ExtendedConversa
   try {
     const response = await api.get("/Chat/conversations");
     const rawConversations = response.data;
-    await SecureStore.setItem("sellerId", rawConversations.sellerUserId.toString());
+    if (rawConversations.length > 0) {
+      await SecureStore.setItem("sellerId", rawConversations[0].sellerUserId.toString());
+    }
 
     const formatted = rawConversations.map((conv: any) => {
       const otherParticipantName = conv.buyerUsername;
