@@ -9,6 +9,7 @@ import api from "../../../apps/seller/app/api/defaultApi";
 export const useSignalR = (conversationId?: number) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const connectionRef = useRef<HubConnection | null>(null);
+  const [ownId, setOwnId] = useState<string | null>(null);
 
   const fetchUsername = async (userId: string): Promise<string> => {
     try {
@@ -31,6 +32,8 @@ export const useSignalR = (conversationId?: number) => {
     // Connect to SignalR
     const connect = async () => {
       const storedToken = await SecureStore.getItemAsync("accessToken");
+      const fetchId = await SecureStore.getItemAsync("sellerId");
+      setOwnId(fetchId);
 
       // Ensure conversationId is available
       if (!conversationId) {
@@ -60,10 +63,16 @@ export const useSignalR = (conversationId?: number) => {
 
         const content = receivedMessage.content;
         const timestamp = receivedMessage.sentAt;
+        console.log(receivedMessage.senderUserId, ownId);
 
         setMessages((prevMessages) => [
           ...prevMessages,
-          { senderUsername, content, timestamp },
+          {
+            senderUsername,
+            content,
+            timestamp,
+            isOwnMessage: receivedMessage.senderUserId == ownId, // Check if it's from the current user
+          },
         ]);
       });
 
