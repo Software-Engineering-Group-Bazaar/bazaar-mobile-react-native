@@ -15,7 +15,6 @@ const formatTimestamp = (timestamp?: string) => {
 };
 
 export const ChatMessageItem: React.FC<Props> = ({ message, isOwnMessage }) => {
-  const initial = message.senderUsername?.charAt(0).toUpperCase() || "?";
 
   return (
     <View
@@ -44,6 +43,7 @@ export const ChatMessageItem: React.FC<Props> = ({ message, isOwnMessage }) => {
             hour: "2-digit",
             minute: "2-digit",
           })}
+          {message.isPrivate && <Text style={styles.privateTag}>  Private</Text>}
         </Text>
       )}
     </View>
@@ -54,6 +54,10 @@ const styles = StyleSheet.create({
   messageContainer: {
     marginVertical: 6,
     maxWidth: "80%",
+  },
+  privateTag: {
+    fontStyle: "italic",
+    color: "#999",
   },
   header: {
     flexDirection: "row",
@@ -87,22 +91,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   bubble: {
-    padding: 10,
+    padding: 12,
     borderRadius: 16,
-  },
-  bubbleOwn: {
-    backgroundColor: "#DCF8C6",
-    borderTopRightRadius: 0,
-  },
-  bubbleOther: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 0,
-    borderWidth: 1,
-    borderColor: "#eee",
   },
   messageText: {
     fontSize: 15,
     color: "#333",
+  },
+  bubbleOwn: {
+    backgroundColor: "#FFFFFF", // white
+    borderTopRightRadius: 0,
+  },
+
+  bubbleOwnPrivate: {
+    backgroundColor: "#E0E0E0", // light gray for private own messages
+    borderTopRightRadius: 0,
+  },
+
+  bubbleOther: {
+    backgroundColor: "#E6F0FF", // light blue
+    borderTopLeftRadius: 0,
+    borderWidth: 1,
+    borderColor: "#eee",
+  },
+
+  bubbleOtherPrivate: {
+    backgroundColor: "#A7C7E7", // darker blue for private messages from others
+    borderTopLeftRadius: 0,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   timestamp: {
     fontSize: 10,

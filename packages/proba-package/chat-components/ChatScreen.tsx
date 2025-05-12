@@ -41,7 +41,6 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
     };
 
     getToken();
-    flatListRef.current?.scrollToEnd({ animated: true });
     navigation.setOptions({ title: "Chat" });
   }, []);
 
@@ -53,8 +52,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
         const response = await api.get(
           `/Chat/conversations/${conversationId}/all-messages`
         );
-        console.log(response.data)
-
+        console.log(response.data);
         setMessages(response.data);
       } catch (error) {
         console.error("Failed to fetch messages", error);
@@ -84,8 +82,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
   }, [conversationId]);
 
   const conversationIdNumber = Number(conversationId);
-  const { messages: signalRMessages, sendMessage } =
-    useSignalR(conversationIdNumber);
+  const { messages: signalRMessages, sendMessage } = useSignalR(conversationIdNumber);
 
   useEffect(() => {
     if (signalRMessages && signalRMessages.length > 0) {
@@ -98,12 +95,6 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
           ...prevMessages,
           signalRMessages[signalRMessages.length - 1],
         ];
-        // Assuming there's a FlatList ref to control scrolling
-        flatListRef.current.scrollToIndex({
-          index: messages.length - 1,
-          animated: true,
-          viewPosition: 1,
-        });
         return updatedMessages;
       });
     }
@@ -111,9 +102,14 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
 
   const handleSend = () => {
     if (input.trim().length > 0 && token) {
-      sendMessage(input.trim(), isPrivate); 
+      sendMessage(input.trim(), isPrivate);
       setInput("");
     }
+  };
+
+  // Scroll to the bottom whenever messages change
+  const onContentSizeChange = () => {
+    flatListRef.current?.scrollToEnd({ animated: true });
   };
 
   return (
@@ -134,6 +130,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
           )}
           contentContainerStyle={styles.list}
           ref={flatListRef}
+          onContentSizeChange={onContentSizeChange} // Add this line to trigger scroll
         />
 
         {/* 🔹 Private Message Toggle */}

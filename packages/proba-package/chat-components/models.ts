@@ -23,4 +23,5 @@ export type ChatMessage = {
   content: string;
   sentAt?: string;
   isOwnMessage?: boolean;
+  isPrivate?: boolean;
 };
