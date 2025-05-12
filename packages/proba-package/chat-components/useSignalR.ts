@@ -39,16 +39,14 @@ export const useSignalR = (conversationId?: number) => {
       }
 
       const connection = new signalR.HubConnectionBuilder()
-<<<<<<< Updated upstream
-        .withUrl(`http://192.168.15.105:5054/chathub`, {
-=======
-        .withUrl(`http://192.168.0.37:5054/chathub`, {
->>>>>>> Stashed changes
+        .withUrl(`https://bazaar-system.duckdns.org/chathub`, {
           accessTokenFactory: async () => storedToken,
         })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
+
+      connection.serverTimeoutInMilliseconds = 60000;
 
       // Listen for new messages
       connection.on("ReceiveMessage", async (receivedMessage: MessageDto) => {
