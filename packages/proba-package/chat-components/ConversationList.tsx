@@ -22,7 +22,7 @@ const ConversationList: React.FC<Props> = ({ conversations, onSelectConversation
       <View style={styles.footer}>
         <Text style={styles.timestamp}>{item.lastMessageTimestamp}</Text>
         {/* Display unread count if there are unread messages */}
-        {item.unreadMessagesCount > 0 && item.buyerUserId !== item.lastMessageSender && (
+        {item.unreadMessagesCount > 0 && item.buyerUserId == item.lastMessageSender && (
           <View style={styles.unreadBadge}>
             <Text style={styles.unreadCount}>{item.unreadMessagesCount}</Text>
           </View>

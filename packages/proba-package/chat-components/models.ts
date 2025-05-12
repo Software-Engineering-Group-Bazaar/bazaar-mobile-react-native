@@ -21,5 +21,6 @@ export interface MessageDto {
 export type ChatMessage = {
   senderUsername: string;
   content: string;
-  timestamp?: string;
+  sentAt?: string;
+  isOwnMessage?: boolean;
 };

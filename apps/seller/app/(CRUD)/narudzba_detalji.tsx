@@ -39,6 +39,7 @@ export default function NarudzbaDetalji() {
   const handleStartConversation = async (buyerId: number, storeId: number, orderId: number) => {
     try {
       const conversationId = await apiCreateConversation(buyerId, storeId, orderId);
+      console.log(conversationId)
 
       router.push(`./pregled_chata?conversationId=${conversationId}`);
     } catch (error) {
@@ -123,7 +124,9 @@ export default function NarudzbaDetalji() {
       <LanguageButton />
 
       <View style={styles.buyerContainer}>
-        <Text style={styles.buyerText}>{t("Buyer")}: {order.buyerUserName}</Text>
+        <Text style={styles.buyerText}>
+          Kupac: <Text style={{ fontWeight: '400' }}>{order.buyerUserName}</Text>
+        </Text>
         <TouchableOpacity
           style={styles.messageButton}
           onPress={() => handleStartConversation(order.buyerId, order.storeId, order.id)}

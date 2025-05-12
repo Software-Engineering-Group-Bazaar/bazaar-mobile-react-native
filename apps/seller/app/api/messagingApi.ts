@@ -1,6 +1,7 @@
 import api from "./defaultApi";
 import { ConversationDto } from 'proba-package/chat-components/models';
 import { formatDistanceToNow } from 'date-fns';
+import * as SecureStore from "expo-secure-store";
 
 // Dohvacanje svih chatova za listu
 
@@ -13,6 +14,7 @@ export async function apiFetchFormattedConversations(): Promise<ExtendedConversa
   try {
     const response = await api.get("/Chat/conversations");
     const rawConversations = response.data;
+    await SecureStore.setItem("sellerId", rawConversations.sellerUserId.toString());
 
     const formatted = rawConversations.map((conv: any) => {
       const otherParticipantName = conv.buyerUsername;

@@ -29,10 +29,14 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
   const [isPrivate, setIsPrivate] = useState(true);
   const flatListRef = useRef(null);
   const navigation = useNavigation();
+  const [ownId, setOwnId] = useState<string | null>(null);
 
   useEffect(() => {
     const getToken = async () => {
       const fetchedToken = await SecureStore.getItemAsync("accessToken");
+      const fetchId = await SecureStore.getItemAsync("sellerId");
+
+      setOwnId(fetchId);
       setToken(fetchedToken);
     };
 
@@ -49,6 +53,8 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
         const response = await api.get(
           `/Chat/conversations/${conversationId}/all-messages`
         );
+        console.log(response.data)
+
         setMessages(response.data);
       } catch (error) {
         console.error("Failed to fetch messages", error);
@@ -105,7 +111,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
 
   const handleSend = () => {
     if (input.trim().length > 0 && token) {
-      sendMessage(input.trim(), isPrivate); // 🔹 Updated to pass `isPrivate`
+      sendMessage(input.trim(), isPrivate); 
       setInput("");
     }
   };
@@ -120,7 +126,12 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
         <FlatList
           data={messages}
           keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item }) => <ChatMessageItem message={item} />}
+          renderItem={({ item }) => (
+            <ChatMessageItem
+              message={item}
+              isOwnMessage={item.senderUserId === ownId}
+            />
+          )}
           contentContainerStyle={styles.list}
           ref={flatListRef}
         />

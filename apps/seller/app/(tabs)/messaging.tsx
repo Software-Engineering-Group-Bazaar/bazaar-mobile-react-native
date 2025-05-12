@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import ConversationList from 'proba-package/chat-components/ConversationList';
 import { ConversationDto } from 'proba-package/chat-components/models';
@@ -8,6 +8,7 @@ import * as signalR from '@microsoft/signalr';
 import * as SecureStore from 'expo-secure-store'; 
 import { useRouter } from 'expo-router';
 import { apiFetchFormattedConversations } from '../api/messagingApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface ExtendedConversationDto extends ConversationDto {
   buyerUserId: string;
@@ -17,6 +18,21 @@ interface ExtendedConversationDto extends ConversationDto {
 const ChatListScreen: React.FC = () => {
   const [conversations, setConversations] = useState<ExtendedConversationDto[]>([]);
   const router = useRouter();
+
+  const loadConversations = async () => {
+    try {
+      const fetchedConversations = await apiFetchFormattedConversations();
+      setConversations(fetchedConversations);
+    } catch (error) {
+      console.error('Failed to load conversations:', error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadConversations();
+    }, [])
+  );
 
   const handleConversationSelect = (conversationId: number) => {
     router.push(`../(CRUD)/pregled_chata?conversationId=${conversationId}`);
