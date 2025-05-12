@@ -13,12 +13,78 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter, useFocusEffect, Stack } from 'expo-router'; // Import useRouter and useFocusEffect from expo-router
+import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+
 
 // --- CONFIGURATION & MOCKS ---
-const USE_DUMMY_DATA = true; // SET TO false TO USE LIVE API
-const API_BASE_URL = 'http://192.168.0.25:5054/api/Chat'; // YOUR ACTUAL API BASE URL
-const MOCK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYzE0OTg2YS00Y2E2LTQ4YzctOTkyMS04NjExZjNmYmRkYzgiLCJlbWFpbCI6InByb2JhQHRlc3QuY29tIiwianRpIjoiY2YzZGE5NTMtNDA0MS00ZmYyLTg5NTItNDQ0MWVjNzMxNjk5Iiwicm9sZSI6IkJ1eWVyIiwibmJmIjoxNzQ2ODkyMDk4LCJleHAiOjE3NDY4OTU2OTgsImlhdCI6MTc0Njg5MjA5OCwiaXNzIjoiaHR0cHM6Ly9iYXphYXIuYXBpIiwiYXVkIjoiaHR0cHM6Ly9iYXphYXIuY2xpZW50cyJ9.qYZ3LF7KYXUXGKOsciDRif79Q1p3ZKPrdMWo7ObwyDs"; // REPLACE with a real token if USE_DUMMY_DATA is false
-const MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one backend extracts from MOCK_TOKEN
+// const USE_DUMMY_DATA = true; // SET TO false TO USE LIVE API
+const API_BASE_URL = baseURL + '/api/Chat'; // YOUR ACTUAL API BASE URL
+let MOCK_TOKEN = "JWT_TOKEN"; // REPLACE with a real token if USE_DUMMY_DATA is false
+let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one backend extracts from MOCK_TOKEN
+
+(async () => {
+  if (USE_DUMMY_DATA) {
+    console.log("USE_DUMMY_DATA is true. Skipping live token/user-profile fetch. Using predefined MOCK_TOKEN and MOCK_CURRENT_USER_ID.");
+    return;
+  }
+
+  console.log("USE_DUMMY_DATA is false. Attempting to fetch live token and user profile.");
+  try {
+    const authToken = await SecureStore.getItemAsync('auth_token');
+    if (!authToken) {
+      console.warn('Authentication token not found in SecureStore. MOCK_TOKEN will remain its default placeholder "JWT_TOKEN".');
+      // MOCK_TOKEN remains "JWT_TOKEN". The app might show a warning or fail API calls if this is not a valid test token.
+      return; // Exit if no token, MOCK_CURRENT_USER_ID will also remain default.
+    }
+
+    MOCK_TOKEN = authToken;
+    console.log("MOCK_TOKEN successfully updated from SecureStore.");
+
+    // Note: baseURL is from proba-package. Ensure it's correctly formatted (e.g., http://localhost:3000)
+    const endpoint = `${baseURL}/api/user-profile/my-username`; // Corrected endpoint string
+
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${MOCK_TOKEN}`, // Use the token we just fetched
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(`HTTP error fetching user profile: ${response.status}, message: ${errorBody}. MOCK_CURRENT_USER_ID will remain its default.`);
+      // MOCK_CURRENT_USER_ID remains default if fetching profile fails
+      return;
+    }
+
+    console.log("Dosao do ovdje?");
+
+    console.log("sta je u ovome ",response);
+
+    const userData = await response.text();
+    console.log("User profile data fetched:", userData);
+
+    // Update MOCK_CURRENT_USER_ID based on fetched data, e.g., from userData.id or userData.username
+    // Adjust these fields based on your actual API response structure for user profile
+    if (userData && userData.id) {
+      MOCK_CURRENT_USER_ID = userData.id;
+      console.log("MOCK_CURRENT_USER_ID updated from API (using id):", MOCK_CURRENT_USER_ID);
+    } else if (userData && userData.username) {
+      MOCK_CURRENT_USER_ID = userData.username;
+      console.log("MOCK_CURRENT_USER_ID updated from API (using username):", MOCK_CURRENT_USER_ID);
+    } else {
+      console.warn("Fetched user profile data does not contain 'id' or 'username'. MOCK_CURRENT_USER_ID will remain its default.", userData);
+    }
+
+  } catch (e) {
+    // Catch any other errors during the async IIFE (e.g., network issues, SecureStore.getItemAsync failure)
+    console.error("Error during initial token/user-profile fetch:", e instanceof Error ? e.message : String(e));
+    // MOCK_TOKEN might be its default or updated if SecureStore succeeded but profile fetch failed.
+    // MOCK_CURRENT_USER_ID will be its default.
+  }
+})();
 
 const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?u=default';
 
@@ -26,7 +92,7 @@ const dummyConversationsData = [
   {
     id: 1,
     otherUserId: 'user456',
-    otherUserName: 'Ana Anić (Dummy)',
+    sellerUsername: 'Ana Anić (Dummy)',
     otherUserAvatar: 'https://i.pravatar.cc/150?u=ana',
     lastMessageContent: 'Hey, are you free for a call later today? I wanted to discuss the project.',
     lastMessageSentAt: new Date(Date.now() - 60000 * 5).toISOString(), // 5 minutes ago
@@ -36,7 +102,7 @@ const dummyConversationsData = [
   {
     id: 2,
     otherUserId: 'user789',
-    otherUserName: 'Pero Perić (Dummy)',
+    sellerUsername: 'Pero Perić (Dummy)',
     otherUserAvatar: 'https://i.pravatar.cc/150?u=pero',
     lastMessageContent: 'Sure, sounds good! Let me know when.',
     lastMessageSentAt: new Date(Date.now() - 60000 * 60 * 3).toISOString(), // 3 hours ago
@@ -46,7 +112,7 @@ const dummyConversationsData = [
   {
     id: 3,
     otherUserId: 'userABC',
-    otherUserName: 'Iva Ivić (Dummy)',
+    sellerUsername: 'Iva Ivić (Dummy)',
     otherUserAvatar: null, // Will use default avatar
     lastMessageContent: 'Thanks for the update!',
     lastMessageSentAt: new Date(Date.now() - 60000 * 60 * 24 * 2).toISOString(), // 2 days ago
@@ -91,6 +157,16 @@ const fetchMyConversationsAPI = () => {
   console.log("Fetching conversations from LIVE API.");
   return fetchApi('conversations');
 };
+
+const fetchConversationDetailsAPI = (conversationId) => {
+  if (USE_DUMMY_DATA) {
+    console.log(`Using DUMMY details data for conversation ${conversationId}.`);
+    return Promise.resolve(dummyConversationDetails[conversationId] || { extraInfo: "No specific dummy details.", participantCount: 2, lastActivityByType: "Unknown"});
+  }
+  console.log(`Fetching details for conversation ${conversationId} from LIVE API.`);
+  // Replace 'conversations/${conversationId}/details' with your actual endpoint structure
+  return fetchApi(`conversations/${conversationId}/all-messages?page=1&pageSize=1`);
+};
 // --- END API HELPER ---
 
 // --- DATE FORMATTER (Self-contained) ---
@@ -124,7 +200,37 @@ const ConversationsListScreen = () => {
     if (!isRefresh) setLoading(true);
     setError(null);
     try {
-      const fetchedConversations = await fetchMyConversationsAPI();
+      let fetchedConversations;
+      if(USE_DUMMY_DATA){
+        fetchedConversations = await fetchMyConversationsAPI();
+      }else{
+        let initialConversations = await fetchMyConversationsAPI();
+
+        // 2. Fetch additional details for each conversation
+        const conversationsWithDetailsPromises = initialConversations.map(async (conversation) => {
+          try {
+            // const details = await fetchConversationDetailsAPI(conversation.id); // Assuming 'conversation.id' is the correct identifier
+            // Merge the original conversation object with the new details
+            // If details is null or undefined, it will just return the original conversation
+
+            // console.log("detalji");
+            // console.log(details[0].content);
+
+            // console.log({ ...conversation, lastMessageContent: details[0].content, lastMessageSentAt: details[0].sentAt});
+            // console.log({ ...conversation});
+            
+            return { ...conversation, lastMessageContent: conversation.lastMessage.content, lastMessageSentAt: conversation.lastMessage.sentAt};
+          } catch (detailError) {
+            console.warn(`Failed to fetch details for conversation ${conversation.id}:`, detailError);
+            // Return the original conversation, perhaps with an error flag or default details
+            return { ...conversation};
+          }
+        });
+
+        // Wait for all detail-fetching promises to resolve
+        fetchedConversations = await Promise.all(conversationsWithDetailsPromises);
+      }
+      // console.log(fetchedConversations);
       fetchedConversations.sort((a, b) => {
         if (!a.lastMessageSentAt && !b.lastMessageSentAt) return 0;
         if (!a.lastMessageSentAt) return 1;
@@ -161,12 +267,12 @@ const ConversationsListScreen = () => {
     // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
     // Params passed here will be available in ChatScreen via `useLocalSearchParams`
     router.push({
-      pathname: `screens/chat/${item.id}`, // Dynamic route using conversation ID
+      pathname: `(tabs)/chat/${item.id}`, // Dynamic route using conversation ID
       params: {
         // conversationId is already part of the path, but you can pass it explicitly if needed
         // or if your ChatScreen expects it as a query param rather than a path segment.
         // For this example, assuming [conversationId].js handles the path segment.
-        otherUserName: item.otherUserName,
+        sellerUsername: item.sellerUsername,
         otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
         // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
       },
@@ -181,7 +287,7 @@ const ConversationsListScreen = () => {
       />
       <View style={styles.textContainer}>
         <View style={styles.row}>
-          <Text style={styles.name}>{item.otherUserName || "Unknown User"}</Text>
+          <Text style={styles.name}>{item.sellerUsername || "Unknown User"}</Text>
           {item.lastMessageSentAt && (
             <Text style={styles.time}>{formatConversationTimestamp(item.lastMessageSentAt)}</Text>
           )}
@@ -205,7 +311,7 @@ const ConversationsListScreen = () => {
     return (
       <View style={styles.centered}>
         {/* Set title for this screen in the layout file or here if dynamic */}
-        <Stack.Screen options={{ title: 'My Chats' }} />
+        {/*<Stack.Screen options={{ title: 'My Chats' }} />*/}
         <ActivityIndicator size="large" color="#007AFF" />
         <Text style={styles.loadingText}>Loading conversations...</Text>
         {USE_DUMMY_DATA && <Text style={styles.modeText}>(Using Dummy Data)</Text>}
@@ -233,7 +339,7 @@ const ConversationsListScreen = () => {
       {/* Expo Router: Screen options are typically set in _layout.tsx or via <Stack.Screen /> */}
       {/* If this is the 'index' screen of a stack, its options are set in _layout.tsx's <Stack.Screen name="index" /> */}
       {/* Or you can use <Stack.Screen options={{...}} /> here if it's not an index route of a layout */}
-      <Stack.Screen options={{ title: 'My Chats' }} />
+      {/*<Stack.Screen options={{ title: 'My Chats' }} />*/}
 
       {USE_DUMMY_DATA && (
         <View style={styles.modeBanner}>

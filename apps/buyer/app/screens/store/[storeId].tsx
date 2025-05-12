@@ -164,6 +164,7 @@ function renderStars(ratingString: string) {
     return <View style={styles.starContainer}>{stars}</View>;
   }
 
+
 export default function StoreScreen() {
   const router = useRouter();
   const { storeId } = useLocalSearchParams();
@@ -174,6 +175,32 @@ export default function StoreScreen() {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
+  // const handleConversationPress = () => {
+  //   const requestBody = {
+  //     targetUserId: item.sellerUserId, // ID korisnika sa kojim četujemo
+  //     storeId: item.storeId || 0,     // ID prodavnice (ako postoji, inače 0 ili null)
+  //     orderId: item.orderId || 0,     // ID narudžbine (ako postoji)
+  //     productId: item.productId || 0,   // ID proizvoda (ako postoji)
+  //     // Možda treba dodati i buyerUserId (currentUserId) ovde, zavisno od API implementacije,
+  //     // ali API specifikacija koju ste dali to ne zahteva eksplicitno u request body-u.
+  //     // Pretpostavlja se da backend zna ko poziva API (iz tokena, sesije, itd.)
+  //   };
+
+  //   // Navigate using expo-router
+  //   // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
+  //   // Params passed here will be available in ChatScreen via `useLocalSearchParams`
+  //   router.push({
+  //     pathname: `(tabs)/chat/${item.id}`, // Dynamic route using conversation ID
+  //     params: {
+  //       // conversationId is already part of the path, but you can pass it explicitly if needed
+  //       // or if your ChatScreen expects it as a query param rather than a path segment.
+  //       // For this example, assuming [conversationId].js handles the path segment.
+  //       sellerUsername: item.sellerUsername,
+  //       otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
+  //       // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
+  //     },
+  //   });
+  // };
 
   const dateFmt = new Intl.DateTimeFormat('de-DE', {
     day:   '2-digit',

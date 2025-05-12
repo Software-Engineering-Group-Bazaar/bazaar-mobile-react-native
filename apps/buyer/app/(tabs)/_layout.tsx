@@ -205,6 +205,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="chat"
+        options={{
+          title: t('chat', 'Poruke'),
+          tabBarIcon: ({ color }) => (<FontAwesome size={28} name="comments" color={color} />)
+        }}
+      />
+      <Tabs.Screen
         name="profil"
         options={{
           title: t('profile'),

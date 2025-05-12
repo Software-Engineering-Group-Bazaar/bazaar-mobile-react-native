@@ -11,16 +11,81 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import { HubConnectionBuilder, LogLevel, HubConnectionState } from '@microsoft/signalr';
 import { useLocalSearchParams, Stack, useRouter } // Import from expo-router
 from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 // --- CONFIGURATION & MOCKS ---
-const USE_DUMMY_DATA = true; // SET TO false TO USE LIVE API/SIGNALR
-const API_BASE_URL = 'http://192.168.0.25:5054/api/Chat'; // YOUR ACTUAL API BASE URL
-const HUB_URL = 'http://192.168.0.25:5054/chathub'; // YOUR ACTUAL SIGNALR HUB URL
-const MOCK_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYzE0OTg2YS00Y2E2LTQ4YzctOTkyMS04NjExZjNmYmRkYzgiLCJlbWFpbCI6InByb2JhQHRlc3QuY29tIiwianRpIjoiY2YzZGE5NTMtNDA0MS00ZmYyLTg5NTItNDQ0MWVjNzMxNjk5Iiwicm9sZSI6IkJ1eWVyIiwibmJmIjoxNzQ2ODkyMDk4LCJleHAiOjE3NDY4OTU2OTgsImlhdCI6MTc0Njg5MjA5OCwiaXNzIjoiaHR0cHM6Ly9iYXphYXIuYXBpIiwiYXVkIjoiaHR0cHM6Ly9iYXphYXIuY2xpZW50cyJ9.qYZ3LF7KYXUXGKOsciDRif79Q1p3ZKPrdMWo7ObwyDs"; // REPLACE with a real token if USE_DUMMY_DATA is false
+// const USE_DUMMY_DATA = true; // SET TO false TO USE LIVE API/SIGNALR
+const API_BASE_URL = baseURL + '/api/Chat'; // YOUR ACTUAL API BASE URL
+const HUB_URL = baseURL + '/chathub'; // YOUR ACTUAL SIGNALR HUB URL
+let MOCK_TOKEN = "JWT_TOKEN"; // REPLACE with a real token if USE_DUMMY_DATA is false
+
+(async () => {
+  if (USE_DUMMY_DATA) {
+    console.log("USE_DUMMY_DATA is true. Skipping live token/user-profile fetch. Using predefined MOCK_TOKEN and MOCK_CURRENT_USER_ID.");
+    return;
+  }
+
+  console.log("USE_DUMMY_DATA is false. Attempting to fetch live token and user profile.");
+  try {
+    const authToken = await SecureStore.getItemAsync('auth_token');
+    if (!authToken) {
+      console.warn('Authentication token not found in SecureStore. MOCK_TOKEN will remain its default placeholder "JWT_TOKEN".');
+      // MOCK_TOKEN remains "JWT_TOKEN". The app might show a warning or fail API calls if this is not a valid test token.
+      return; // Exit if no token, MOCK_CURRENT_USER_ID will also remain default.
+    }
+
+    MOCK_TOKEN = authToken;
+    console.log("MOCK_TOKEN successfully updated from SecureStore.");
+
+    // Note: baseURL is from proba-package. Ensure it's correctly formatted (e.g., http://localhost:3000)
+    const endpoint = `${baseURL}/api/user-profile/my-username`; // Corrected endpoint string
+
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${MOCK_TOKEN}`, // Use the token we just fetched
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(`HTTP error fetching user profile: ${response.status}, message: ${errorBody}. MOCK_CURRENT_USER_ID will remain its default.`);
+      // MOCK_CURRENT_USER_ID remains default if fetching profile fails
+      return;
+    }
+
+    // console.log("Dosao do ovdje?");
+
+    // console.log("sta je u ovome ",response);
+
+    const userData = await response.text();
+    console.log("User profile data fetched:", userData);
+
+    // Update MOCK_CURRENT_USER_ID based on fetched data, e.g., from userData.id or userData.username
+    // Adjust these fields based on your actual API response structure for user profile
+    if (userData && userData.id) {
+      MOCK_CURRENT_USER_ID = userData.id;
+      console.log("MOCK_CURRENT_USER_ID updated from API (using id):", MOCK_CURRENT_USER_ID);
+    } else if (userData && userData.username) {
+      MOCK_CURRENT_USER_ID = userData.username;
+      console.log("MOCK_CURRENT_USER_ID updated from API (using username):", MOCK_CURRENT_USER_ID);
+    } else {
+      console.warn("Fetched user profile data does not contain 'id' or 'username'. MOCK_CURRENT_USER_ID will remain its default.", userData);
+    }
+
+  } catch (e) {
+    // Catch any other errors during the async IIFE (e.g., network issues, SecureStore.getItemAsync failure)
+    console.error("Error during initial token/user-profile fetch:", e instanceof Error ? e.message : String(e));
+    // MOCK_TOKEN might be its default or updated if SecureStore succeeded but profile fetch failed.
+    // MOCK_CURRENT_USER_ID will be its default.
+  }
+})();
 
 const MOCK_CURRENT_USER = {
   _id: '1c14986a-4ca6-48c7-9921-8611f3fbddc8', // Ensure this matches a valid user ID for your token
@@ -107,7 +172,9 @@ const markAsReadAPIInline = (convId) => {
 const ChatScreen = () => {
   const params = useLocalSearchParams();
   const pathConversationId = params.conversationId;
-  const paramOtherUserName = params.otherUserName;
+  const paramOtherUserName = params.sellerUsername;
+
+  
 
   const [conversationId, setConversationId] = useState(
     pathConversationId ? parseInt(pathConversationId, 10) : (USE_DUMMY_DATA ? 1 : null)
@@ -289,6 +356,38 @@ const ChatScreen = () => {
   const toggleIsPrivate = () => setIsPrivateChat(p => !p);
   const loadEarlier = () => { if (hasNextPage && !loadingEarlier && conversationId) fetchMessages(page + 1, false); };
 
+  const renderCustomBubble = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.isPrivateMessage) {
+      return (
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            left: {
+              // Style for private messages received from others
+              backgroundColor: '#e6e6fa', // Example: Light Lavender
+            },
+            right: {
+              // Style for private messages sent by current user
+              backgroundColor: '#add8e6', // Example: Light Blue
+            },
+          }}
+          textStyle={{
+            left: {
+              color: '#333', // Optional: text color for received private messages
+            },
+            right: {
+              color: '#000', // Optional: text color for sent private messages
+            },
+          }}
+        />
+      );
+    }
+    // Default bubble rendering for non-private messages
+    return <Bubble {...props} />;
+  };
+
+
   if (!USE_DUMMY_DATA && !conversationId) {
       return (
           <View style={styles.centered}>
@@ -312,17 +411,17 @@ const ChatScreen = () => {
     <View style={styles.container}>
       <Stack.Screen options={{ title: otherUserName || 'Chat' }} />
 
-      {!USE_DUMMY_DATA && (
+      {/*!USE_DUMMY_DATA && (
         <Text style={[styles.connectionStatus, { backgroundColor: signalRStatus === 'Connected!' ? '#4CAF50' : (signalRStatus.includes('Failed') || signalRStatus.includes('Disconnected') ? '#F44336' : '#FFC107')}]}>
           SignalR: {signalRStatus}
         </Text>
-      )}
+      )*/}
       {USE_DUMMY_DATA && (
          <View style={styles.modeBanner}><Text style={styles.modeBannerText}>DEMO MODE: Using Dummy Data</Text></View>
       )}
       <View style={styles.controls}>
         <Text>Mark new as "Private":</Text>
-        <Switch value={isPrivateChat} onValueChange={toggleIsPrivate} trackColor={{ false: "#767577", true: "#81b0ff" }} thumbColor={isPrivateChat ? "#f5dd4b" : (Platform.OS === 'ios' ? "#f4f3f4" : "#ffffff")} ios_backgroundColor="#3e3e3e" />
+        <Switch value={isPrivateChat} onValueChange={toggleIsPrivate} trackColor={{ false: "#767577", true: "#4e8d7c" }} thumbColor={isPrivateChat ? "#ffffff" : "#ffffff"} ios_backgroundColor="#3e3e3e" />
       </View>
       <GiftedChat
         messages={messages}
@@ -334,6 +433,7 @@ const ChatScreen = () => {
         onLoadEarlier={loadEarlier}
         messagesContainerStyle={{ paddingBottom: USE_DUMMY_DATA ? 0 : (Platform.OS === 'android' ? 10 : 0) }}
         renderLoading={() => <View style={styles.centered}><ActivityIndicator size="small" color="#007AFF" /></View>}
+        renderBubble={renderCustomBubble}
       />
     </View>
   );

@@ -12,7 +12,7 @@ export default function RootLayout() {
         // Screen options can be configured globally here
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#f4511e', // Example header color
+            backgroundColor: '#4e8d7c', // Example header color
           },
           headerTintColor: '#fff', // Example header text/icon color
           headerTitleStyle: {
@@ -34,6 +34,7 @@ export default function RootLayout() {
           name="index" // This refers to `app/index.tsx` if this _layout is in `app/`
                       // or `app/conversations/index.tsx` if this is `app/conversations/_layout.tsx`
           options={{
+            headerShown: false,
             title: 'My Chats',
           }}
         />
