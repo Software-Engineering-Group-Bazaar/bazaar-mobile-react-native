@@ -86,7 +86,7 @@ let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one
   }
 })();
 
-const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?u=default';
+const DEFAULT_AVATAR = '';
 
 const dummyConversationsData = [
   {
