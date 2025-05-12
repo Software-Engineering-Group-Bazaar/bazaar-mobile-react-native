@@ -38,9 +38,11 @@ export default function NarudzbaDetalji() {
 
   const handleStartConversation = async (buyerId: number, storeId: number, orderId: number) => {
     try {
-      const conversationId = apiCreateConversation(buyerId, storeId, orderId);
+      const conversationId = await apiCreateConversation(buyerId, storeId, orderId);
+      console.log(conversationId)
+      console.log(order.buyerUserName)
 
-      router.push(`./pregled_chata?conversationId=${conversationId}`);
+      router.push(`./pregled_chata?conversationId=${conversationId}&buyerUsername=${order.buyerUserName}`);
     } catch (error) {
       console.error('Error starting conversation:', error);
     }
@@ -105,6 +107,14 @@ export default function NarudzbaDetalji() {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#4E8D7C" />
+      </View>
+    );
+  }
+
   if (!order)
     return (
       <View style={styles.container}> <Text>{t("Order not found")}</Text> </View>
@@ -115,15 +125,16 @@ export default function NarudzbaDetalji() {
       <View style={styles.header}>
         <TouchableOpacity onPress={handleDeleteOrder}> <FontAwesome name="trash" size={28} color="#e57373" /> </TouchableOpacity>
         <Text style={styles.orderId}>
-          {t("Order")} #{order.id}
+          {`${t("Order")} #${order.id}`}
         </Text>
         <View style={{ flex: 1 }} />
         <StatusBadge status={order.status} />
       </View>
       <LanguageButton />
-
       <View style={styles.buyerContainer}>
-        <Text style={styles.buyerText}>{t("Buyer")}: {order.buyerUserName}</Text>
+        <Text style={styles.buyerText}>
+          {t("buyer")}: <Text style={{ fontWeight: '400' }}>{String(order.buyerUserName)}</Text>
+        </Text>
         <TouchableOpacity
           style={styles.messageButton}
           onPress={() => handleStartConversation(order.buyerId, order.storeId, order.id)}
@@ -131,7 +142,6 @@ export default function NarudzbaDetalji() {
           <Text style={styles.messageButtonText}>{t("send_message")}</Text>
         </TouchableOpacity>
       </View>
-
       <ScrollView
         style={styles.container}
         refreshControl={

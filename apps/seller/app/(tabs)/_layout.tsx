@@ -33,7 +33,7 @@ async function getAuthTokenFromStorage(): Promise<string | null> {
 
 // ➤➤➤ ZAMIJENI SA SVOJIM BACKEND URL-om ➤➤➤
 const DEVICES_API_ENDPOINT =
-  "http://192.168.15.105:5054/api/Devices/pushNotification";
+  "https://bazaar-system.duckdns.org/api/Devices/pushNotification";
 
 async function sendTokenToBackend(nativeToken: string) {
   const authToken = await getAuthTokenFromStorage();
@@ -228,6 +228,15 @@ export default function TabLayout() {
           title: t("tab_inventory"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="shippingbox" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="messaging"
+        options={{
+          title: t("messages"),
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="message.fill" color={color} />
           ),
         }}
       />
