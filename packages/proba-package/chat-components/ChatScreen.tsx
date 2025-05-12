@@ -32,13 +32,11 @@ const ChatScreen = () => {
   useEffect(() => {
     const getToken = async () => {
       const fetchedToken = await SecureStore.getItemAsync("accessToken");
-      const fetchId = await SecureStore.getItemAsync("sellerId");
+      const fetchId = SecureStore.getItem("sellerId");
 
       setOwnId(fetchId);
       setToken(fetchedToken);
     };
-
-    console.log(`buyerUsername: ${buyerUsername}`);
 
     getToken();
     flatListRef.current?.scrollToEnd({ animated: true });
@@ -83,7 +81,8 @@ const ChatScreen = () => {
   }, [conversationId]);
 
   const conversationIdNumber = Number(conversationId);
-  const { messages: signalRMessages, sendMessage } = useSignalR(conversationIdNumber);
+  const { messages: signalRMessages, sendMessage } =
+    useSignalR(conversationIdNumber);
 
   useEffect(() => {
     if (signalRMessages && signalRMessages.length > 0) {

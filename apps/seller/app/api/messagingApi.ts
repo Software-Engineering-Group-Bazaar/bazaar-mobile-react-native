@@ -18,7 +18,7 @@ export async function apiFetchFormattedConversations(): Promise<
     const response = await api.get("/Chat/conversations");
     const rawConversations = response.data;
     if (rawConversations.length > 0) {
-      await SecureStore.setItem(
+      SecureStore.setItem(
         "sellerId",
         rawConversations[0].sellerUserId.toString()
       );
@@ -46,7 +46,6 @@ export async function apiFetchFormattedConversations(): Promise<
       };
     });
 
-    console.log(formatted);
     return formatted;
   } catch (error) {
     console.error("Failed to fetch and format conversations:", error);

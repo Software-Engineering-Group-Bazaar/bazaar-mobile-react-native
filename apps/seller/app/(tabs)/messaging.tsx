@@ -41,7 +41,6 @@ const ChatListScreen: React.FC = () => {
     conversationId: number,
     buyerUsername: string
   ) => {
-    console.log(`buyerUserId from handleConversationSelect: ${buyerUsername}`);
     router.push(
       `../(CRUD)/pregled_chata?conversationId=${conversationId}&buyerUsername=${buyerUsername}`
     );
