@@ -24,6 +24,12 @@ const API_BASE_URL = baseURL + '/api/Chat'; // YOUR ACTUAL API BASE URL
 const HUB_URL = baseURL + '/chathub'; // YOUR ACTUAL SIGNALR HUB URL
 let MOCK_TOKEN = "JWT_TOKEN"; // REPLACE with a real token if USE_DUMMY_DATA is false
 
+let MOCK_CURRENT_USER = {
+  _id: 'id', // Ensure this matches a valid user ID for your token
+  name: 'Proba',
+  avatar: 'https://i.pravatar.cc/150?u=currentuser_chatscreen',
+};
+
 (async () => {
   if (USE_DUMMY_DATA) {
     console.log("USE_DUMMY_DATA is true. Skipping live token/user-profile fetch. Using predefined MOCK_TOKEN and MOCK_CURRENT_USER_ID.");
@@ -87,11 +93,7 @@ let MOCK_TOKEN = "JWT_TOKEN"; // REPLACE with a real token if USE_DUMMY_DATA is 
   }
 })();
 
-const MOCK_CURRENT_USER = {
-  _id: '1c14986a-4ca6-48c7-9921-8611f3fbddc8', // Ensure this matches a valid user ID for your token
-  name: 'Proba',
-  avatar: 'https://i.pravatar.cc/150?u=currentuser_chatscreen',
-};
+
 
 const generateMessageId = () => Math.random().toString(36).substr(2, 9) + Date.now();
 
@@ -155,7 +157,7 @@ const fetchMessagesAPIInline = (convId, page = 1, pageSize = 30, otherUserNameFo
     return Promise.resolve(dummyInitialMessages(convId, MOCK_CURRENT_USER, otherUserNameForDummy));
   }
   console.log(`Fetching messages from LIVE API for conv ${convId}, page ${page}`);
-  return fetchApiInline(`conversations/${convId}/messages?page=${page}&pageSize=${pageSize}`);
+  return fetchApiInline(`conversations/${convId}/all-messages?page=${page}&pageSize=${pageSize}`);
 };
 
 const markAsReadAPIInline = (convId) => {
@@ -172,9 +174,13 @@ const markAsReadAPIInline = (convId) => {
 const ChatScreen = () => {
   const params = useLocalSearchParams();
   const pathConversationId = params.conversationId;
+  const paramMyId = params.buyerUserId;
+  const paramMyUserName = params.buyerUsername;
   const paramOtherUserName = params.sellerUsername;
 
-  
+  console.log("Moj id: ", paramMyId);
+  MOCK_CURRENT_USER._id = paramMyId;
+  MOCK_CURRENT_USER.name = paramMyUserName;
 
   const [conversationId, setConversationId] = useState(
     pathConversationId ? parseInt(pathConversationId, 10) : (USE_DUMMY_DATA ? 1 : null)

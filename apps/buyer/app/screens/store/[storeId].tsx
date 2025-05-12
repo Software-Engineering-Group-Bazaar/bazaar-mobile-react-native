@@ -175,32 +175,60 @@ export default function StoreScreen() {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
-  // const handleConversationPress = () => {
-  //   const requestBody = {
-  //     targetUserId: item.sellerUserId, // ID korisnika sa kojim četujemo
-  //     storeId: item.storeId || 0,     // ID prodavnice (ako postoji, inače 0 ili null)
-  //     orderId: item.orderId || 0,     // ID narudžbine (ako postoji)
-  //     productId: item.productId || 0,   // ID proizvoda (ako postoji)
-  //     // Možda treba dodati i buyerUserId (currentUserId) ovde, zavisno od API implementacije,
-  //     // ali API specifikacija koju ste dali to ne zahteva eksplicitno u request body-u.
-  //     // Pretpostavlja se da backend zna ko poziva API (iz tokena, sesije, itd.)
-  //   };
+  const handleConversationPress = async () => {
+    const requestBody = {
+      storeId: Number(storeId),
+      orderId: null,
+      productId: null,
+    };
+    
+    const authToken = await SecureStore.getItemAsync('auth_token');
 
-  //   // Navigate using expo-router
-  //   // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
-  //   // Params passed here will be available in ChatScreen via `useLocalSearchParams`
-  //   router.push({
-  //     pathname: `(tabs)/chat/${item.id}`, // Dynamic route using conversation ID
-  //     params: {
-  //       // conversationId is already part of the path, but you can pass it explicitly if needed
-  //       // or if your ChatScreen expects it as a query param rather than a path segment.
-  //       // For this example, assuming [conversationId].js handles the path segment.
-  //       sellerUsername: item.sellerUsername,
-  //       otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
-  //       // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
-  //     },
-  //   });
-  // };
+    console.log(JSON.stringify(requestBody));
+    
+    const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Dodajte Autorizacioni header ako vaš API to zahteva
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log(response);
+
+    // 3. Obradi odgovor od API-ja
+    if (!response.ok) {
+      // Ako HTTP status nije 2xx, nešto nije u redu
+      const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
+      console.error('API Error Response Status:', response.status);
+      console.error('API Error Response Body:', errorText);
+      throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
+    }
+
+    const data = await response.json(); // Parsiraj JSON odgovor
+
+    console.log("Chat? ", data);
+
+    // Navigate using expo-router
+    // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
+    // Params passed here will be available in ChatScreen via `useLocalSearchParams`
+
+      router.push({
+      pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+      params: {
+        // conversationId is already part of the path, but you can pass it explicitly if needed
+        // or if your ChatScreen expects it as a query param rather than a path segment.
+        // For this example, assuming [conversationId].js handles the path segment.
+        sellerUsername: data.sellerUsername,
+        buyerUserId: data.buyerUserId,
+        buyerUsername: data.buyerUserName,
+        otherUserAvatar: data.otherUserAvatar, // || DEFAULT_AVATAR,
+        // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
+      },
+    });
+  };
 
   const dateFmt = new Intl.DateTimeFormat('de-DE', {
     day:   '2-digit',
@@ -324,7 +352,7 @@ export default function StoreScreen() {
                 {rating !== null && renderStars(rating.rating)}
             </View>
           {/* Chat button */}
-          <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('screens/chat')}>
+          <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
             <FontAwesome name="comments" size={24} color="white" />
           </TouchableOpacity>
         </View>

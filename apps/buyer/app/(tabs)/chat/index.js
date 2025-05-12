@@ -205,7 +205,7 @@ const ConversationsListScreen = () => {
         fetchedConversations = await fetchMyConversationsAPI();
       }else{
         let initialConversations = await fetchMyConversationsAPI();
-
+        console.log(initialConversations);
         // 2. Fetch additional details for each conversation
         const conversationsWithDetailsPromises = initialConversations.map(async (conversation) => {
           try {
@@ -230,7 +230,7 @@ const ConversationsListScreen = () => {
         // Wait for all detail-fetching promises to resolve
         fetchedConversations = await Promise.all(conversationsWithDetailsPromises);
       }
-      // console.log(fetchedConversations);
+      console.log(fetchedConversations);
       fetchedConversations.sort((a, b) => {
         if (!a.lastMessageSentAt && !b.lastMessageSentAt) return 0;
         if (!a.lastMessageSentAt) return 1;
@@ -273,6 +273,8 @@ const ConversationsListScreen = () => {
         // or if your ChatScreen expects it as a query param rather than a path segment.
         // For this example, assuming [conversationId].js handles the path segment.
         sellerUsername: item.sellerUsername,
+        buyerUserId: item.buyerUserId,
+        buyerUsername: item.buyerUserName,
         otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
         // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
       },

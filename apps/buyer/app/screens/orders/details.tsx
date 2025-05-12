@@ -129,6 +129,64 @@ export default function DetailsScreen() {
   const [storeName, setStoreName] = useState<string | null>(null);
   const navigation = useNavigation();
 
+      const handleConversationPress = async () => {
+        if (!order) {
+          return;
+        }
+        const requestBody = {
+          storeId: Number(order.storeId),
+          orderId: orderId,
+          productId: null,
+        };
+        
+        const authToken = await SecureStore.getItemAsync('auth_token');
+    
+        console.log(JSON.stringify(requestBody));
+        
+        const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Dodajte Autorizacioni header ako vaš API to zahteva
+            'Authorization': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
+    
+        console.log(response);
+    
+        // 3. Obradi odgovor od API-ja
+        if (!response.ok) {
+          // Ako HTTP status nije 2xx, nešto nije u redu
+          const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
+          console.error('API Error Response Status:', response.status);
+          console.error('API Error Response Body:', errorText);
+          throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
+        }
+    
+        const data = await response.json(); // Parsiraj JSON odgovor
+    
+        console.log("Chat? ", data);
+    
+        // Navigate using expo-router
+        // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
+        // Params passed here will be available in ChatScreen via `useLocalSearchParams`
+    
+          router.push({
+          pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+          params: {
+            // conversationId is already part of the path, but you can pass it explicitly if needed
+            // or if your ChatScreen expects it as a query param rather than a path segment.
+            // For this example, assuming [conversationId].js handles the path segment.
+            sellerUsername: data.sellerUsername,
+            buyerUserId: data.buyerUserId,
+            buyerUsername: data.buyerUserName,
+            otherUserAvatar: data.otherUserAvatar, // || DEFAULT_AVATAR,
+            // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
+          },
+        });
+      };
+
   const handleProductPress = (product: Product, quantity: number) => {
     router.push(`./productDetails/${product.id}?quantity=${quantity}`);
   };
@@ -296,7 +354,7 @@ export default function DetailsScreen() {
       </View>
     )}
       {/* Chat button */}
-      <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('screens/chat')}>
+      <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
         <FontAwesome name="comments" size={10} color="white" />
       </TouchableOpacity>
     </ScrollView>
