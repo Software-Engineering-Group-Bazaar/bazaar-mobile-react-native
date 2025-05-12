@@ -19,13 +19,14 @@ export const getOrderById = async (id: string) => {
 // Kreiranje konverzacije
 export const apiCreateConversation = async (targetUserId: number, storeId: number, orderId: number) => {
   try {
+    console.log(targetUserId, storeId, orderId);
     const response = await api.post("/Chat/conversations/find-or-create", {
       targetUserId: targetUserId,
       storeId: storeId,
       orderId: orderId,
       productId: null,
     });
-    console.log(response.data);
+    console.log("ovdje", response.data);
 
     if (response.status === 200 || response.status === 201) {
       const conversationId = response.data.id;

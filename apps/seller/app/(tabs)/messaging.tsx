@@ -79,21 +79,27 @@ const ChatListScreen: React.FC = () => {
               (c) => c.id === newMessage.conversationId
             );
 
+            const currentUserId = SecureStore.getItem("sellerId");
+            const isOwnMessage = newMessage.senderUserId == currentUserId;
+
             if (index !== -1) {
               updated[index] = {
                 ...updated[index],
-                lastMessageSnippet: newMessage.text,
-                lastMessageTimestamp: "Just now",
-                unreadMessagesCount: updated[index].unreadMessagesCount + 1,
+                lastMessageSnippet: newMessage.content, 
+                lastMessageTimestamp: "Just now",    
+                unreadMessagesCount: isOwnMessage
+                                  ? updated[index].unreadMessagesCount
+                                  : updated[index].unreadMessagesCount + 1,
+                lastMessageSender: newMessage.senderUserId,
               };
             } else {
               updated.unshift({
                 id: newMessage.conversationId,
-                otherParticipantName: newMessage.senderName,
-                buyerUserId: newMessage.buyerUserId ?? "",
-                lastMessageSender: newMessage.senderUserId ?? "",
-                lastMessageSnippet: newMessage.text,
-                lastMessageTimestamp: "Just now",
+                otherParticipantName: newMessage.senderUsername,
+                buyerUserId: "", // fallback or infer if needed
+                lastMessageSender: newMessage.senderUserId,
+                lastMessageSnippet: newMessage.content,
+                lastMessageTimestamp: newMessage.sentAt,
                 unreadMessagesCount: 1,
               });
             }

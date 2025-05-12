@@ -67,7 +67,8 @@ export const useSignalR = (conversationId?: number) => {
           {
             senderUsername,
             content,
-            timestamp,
+            sentAt: receivedMessage.sentAt,   
+            isPrivate: receivedMessage.isPrivate,
             senderUserId,
           },
         ]);

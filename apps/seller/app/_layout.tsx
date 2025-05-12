@@ -13,6 +13,12 @@ import { apiSetNotificationsAsRead } from '../app/api/inboxApi';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs([
+  "Warning: Text strings must be rendered within a <Text> component.",
+]);
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 

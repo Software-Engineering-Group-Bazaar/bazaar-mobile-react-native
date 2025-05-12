@@ -43,6 +43,16 @@ const ChatScreen = () => {
     navigation.setOptions({ title: buyerUsername });
   }, []);
 
+  const markAsRead = async () => {
+    if (!conversationId) return;
+
+    try {
+      await api.post(`/Chat/conversations/${conversationId}/markasread`);
+    } catch (error) {
+      console.error("Failed to mark as read", error);
+    }
+  };
+
   useEffect(() => {
     const fetchMessages = async () => {
       if (!conversationId) return;
@@ -55,20 +65,6 @@ const ChatScreen = () => {
         setMessages(response.data);
       } catch (error) {
         console.error("Failed to fetch messages", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const markAsRead = async () => {
-      if (!conversationId) return;
-
-      try {
-        const response = await api.post(
-          `/Chat/conversations/${conversationId}/markasread`
-        );
-      } catch (error) {
-        console.error("Failed to set read", error);
       } finally {
         setLoading(false);
       }
@@ -93,6 +89,7 @@ const ChatScreen = () => {
         ];
         return updatedMessages;
       });
+      markAsRead();
     }
   }, [signalRMessages]);
 
