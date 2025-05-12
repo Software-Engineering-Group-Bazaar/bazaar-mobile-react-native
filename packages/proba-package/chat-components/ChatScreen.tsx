@@ -16,12 +16,9 @@ import { ChatMessageItem } from "./ChatMessage";
 import * as SecureStore from "expo-secure-store";
 import api from "../../../apps/seller/app/api/defaultApi";
 import { useNavigation } from "@react-navigation/native";
+import { useLocalSearchParams } from "expo-router";
 
-type ChatScreenProps = {
-  conversationId: number;
-};
-
-const ChatScreen = ({ conversationId }: ChatScreenProps) => {
+const ChatScreen = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +27,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
   const flatListRef = useRef(null);
   const navigation = useNavigation();
   const [ownId, setOwnId] = useState<string | null>(null);
+  const { conversationId, buyerUsername } = useLocalSearchParams();
 
   useEffect(() => {
     const getToken = async () => {
@@ -40,9 +38,11 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
       setToken(fetchedToken);
     };
 
+    console.log(`buyerUsername: ${buyerUsername}`);
+
     getToken();
     flatListRef.current?.scrollToEnd({ animated: true });
-    navigation.setOptions({ title: "Chat" });
+    navigation.setOptions({ title: buyerUsername });
   }, []);
 
   useEffect(() => {
@@ -53,7 +53,6 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
         const response = await api.get(
           `/Chat/conversations/${conversationId}/all-messages`
         );
-        console.log(response.data)
 
         setMessages(response.data);
       } catch (error) {
@@ -89,10 +88,6 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
 
   useEffect(() => {
     if (signalRMessages && signalRMessages.length > 0) {
-      console.log(
-        "signalRMessages",
-        JSON.stringify(signalRMessages[signalRMessages.length - 1], null, 2)
-      );
       setMessages((prevMessages) => {
         const updatedMessages = [
           ...prevMessages,
@@ -111,7 +106,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
 
   const handleSend = () => {
     if (input.trim().length > 0 && token) {
-      sendMessage(input.trim(), isPrivate); 
+      sendMessage(input.trim(), isPrivate);
       setInput("");
     }
   };
