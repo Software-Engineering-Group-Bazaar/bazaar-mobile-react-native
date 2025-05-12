@@ -1,6 +1,6 @@
 export const greeting = 'Hello!';
 
-export const baseURL = 'https://bazaar-system.duckdns.org'; // 'http://192.168.0.25:5054'; 
+export const baseURL = 'http://192.168.0.25:5054'; //'https://bazaar-system.duckdns.org'; // 'http://192.168.0.25:5054'; 
 export const USE_DUMMY_DATA = false;
 
 

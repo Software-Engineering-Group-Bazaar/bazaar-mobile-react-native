@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Button, ActivityIndicator, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
@@ -163,6 +164,7 @@ function renderStars(ratingString: string) {
     return <View style={styles.starContainer}>{stars}</View>;
   }
 
+
 export default function StoreScreen() {
   const router = useRouter();
   const { storeId } = useLocalSearchParams();
@@ -171,6 +173,62 @@ export default function StoreScreen() {
   const [reviews, setReviews] = useState<ReviewResponseContainer[]>([]);  
   const [rating, setRating] = useState<Rating | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
+  const handleConversationPress = async () => {
+    const requestBody = {
+      storeId: Number(storeId),
+      orderId: null,
+      productId: null,
+    };
+    
+    const authToken = await SecureStore.getItemAsync('auth_token');
+
+    console.log(JSON.stringify(requestBody));
+    
+    const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Dodajte Autorizacioni header ako vaš API to zahteva
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log(response);
+
+    // 3. Obradi odgovor od API-ja
+    if (!response.ok) {
+      // Ako HTTP status nije 2xx, nešto nije u redu
+      const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
+      console.error('API Error Response Status:', response.status);
+      console.error('API Error Response Body:', errorText);
+      throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
+    }
+
+    const data = await response.json(); // Parsiraj JSON odgovor
+
+    console.log("Chat? ", data);
+
+    // Navigate using expo-router
+    // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
+    // Params passed here will be available in ChatScreen via `useLocalSearchParams`
+
+      router.push({
+      pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+      params: {
+        // conversationId is already part of the path, but you can pass it explicitly if needed
+        // or if your ChatScreen expects it as a query param rather than a path segment.
+        // For this example, assuming [conversationId].js handles the path segment.
+        sellerUsername: data.sellerUsername,
+        buyerUserId: data.buyerUserId,
+        buyerUsername: data.buyerUserName,
+        otherUserAvatar: data.otherUserAvatar, // || DEFAULT_AVATAR,
+        // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
+      },
+    });
+  };
 
   const dateFmt = new Intl.DateTimeFormat('de-DE', {
     day:   '2-digit',
@@ -293,6 +351,10 @@ export default function StoreScreen() {
                 <Text style={styles.sectionTitle}>{t('average_rating')}</Text>
                 {rating !== null && renderStars(rating.rating)}
             </View>
+          {/* Chat button */}
+          <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+            <FontAwesome name="comments" size={24} color="white" />
+          </TouchableOpacity>
         </View>
 
         
@@ -322,6 +384,19 @@ export default function StoreScreen() {
 }
 
 const styles = StyleSheet.create({
+  chatButton: {
+  position: 'absolute',
+  marginTop:3,
+  right: 10,
+  backgroundColor: '#4E8D7C',
+  padding: 15,
+  borderRadius: 50,
+  shadowColor: '#000',
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+  zIndex: 999
+  },
     safeArea: {
         backgroundColor: '#4e8d7c',
     },

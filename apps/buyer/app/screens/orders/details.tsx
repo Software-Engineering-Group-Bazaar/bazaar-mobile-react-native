@@ -1,7 +1,9 @@
 // screens/orders/details.tsx (ili screens/orders/details/index.tsx)
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { t } from 'i18next';
 import CartItem from 'proba-package/cart-item/index';
 import { router } from 'expo-router';
@@ -125,6 +127,65 @@ export default function DetailsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [detailedOrderItems, setDetailedOrderItems] = useState<({ product: Product | undefined } & OrderItem)[]>([]);
   const [storeName, setStoreName] = useState<string | null>(null);
+  const navigation = useNavigation();
+
+      const handleConversationPress = async () => {
+        if (!order) {
+          return;
+        }
+        const requestBody = {
+          storeId: Number(order.storeId),
+          orderId: orderId,
+          productId: null,
+        };
+        
+        const authToken = await SecureStore.getItemAsync('auth_token');
+    
+        console.log(JSON.stringify(requestBody));
+        
+        const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Dodajte Autorizacioni header ako vaš API to zahteva
+            'Authorization': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
+    
+        console.log(response);
+    
+        // 3. Obradi odgovor od API-ja
+        if (!response.ok) {
+          // Ako HTTP status nije 2xx, nešto nije u redu
+          const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
+          console.error('API Error Response Status:', response.status);
+          console.error('API Error Response Body:', errorText);
+          throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
+        }
+    
+        const data = await response.json(); // Parsiraj JSON odgovor
+    
+        console.log("Chat? ", data);
+    
+        // Navigate using expo-router
+        // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
+        // Params passed here will be available in ChatScreen via `useLocalSearchParams`
+    
+          router.push({
+          pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+          params: {
+            // conversationId is already part of the path, but you can pass it explicitly if needed
+            // or if your ChatScreen expects it as a query param rather than a path segment.
+            // For this example, assuming [conversationId].js handles the path segment.
+            sellerUsername: data.sellerUsername,
+            buyerUserId: data.buyerUserId,
+            buyerUsername: data.buyerUserName,
+            otherUserAvatar: data.otherUserAvatar, // || DEFAULT_AVATAR,
+            // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
+          },
+        });
+      };
 
   const handleProductPress = (product: Product, quantity: number) => {
     router.push(`./productDetails/${product.id}?quantity=${quantity}`);
@@ -292,6 +353,10 @@ export default function DetailsScreen() {
         <Text style={styles.totalPriceValue}>{order.total.toFixed(2)} KM</Text>
       </View>
     )}
+      {/* Chat button */}
+      <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+        <FontAwesome name="comments" size={10} color="white" />
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -357,5 +422,17 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 20,
+  },
+  chatButton: {
+  position: 'absolute',
+  right: 10,
+  backgroundColor: '#4E8D7C',
+  padding: 15,
+  borderRadius: 30,
+  shadowColor: '#000',
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5,
+  zIndex: 999
   },
 });
