@@ -15,6 +15,7 @@ import { useSignalR } from "./useSignalR";
 import { ChatMessageItem } from "./ChatMessage";
 import * as SecureStore from "expo-secure-store";
 import api from "../../../apps/seller/app/api/defaultApi";
+import { useNavigation } from "@react-navigation/native";
 
 type ChatScreenProps = {
   conversationId: number;
@@ -27,6 +28,7 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
   const [token, setToken] = useState<string | null>(null);
   const [isPrivate, setIsPrivate] = useState(true);
   const flatListRef = useRef(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const getToken = async () => {
@@ -34,8 +36,9 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
       setToken(fetchedToken);
     };
 
-    flatListRef.current?.scrollToEnd({ animated: true });
     getToken();
+    flatListRef.current?.scrollToEnd({ animated: true });
+    navigation.setOptions({ title: "Chat" });
   }, []);
 
   useEffect(() => {
