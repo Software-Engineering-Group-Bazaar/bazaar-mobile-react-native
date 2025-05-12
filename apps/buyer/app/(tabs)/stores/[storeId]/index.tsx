@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 // Importuj SecureStore ako planirate da koristite token za pravi API poziv
 import * as SecureStore from 'expo-secure-store';
 import { useCart } from '@/context/CartContext';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 // Definicija za kategoriju proizvoda (ista kao u ProductItem i SearchProductsScreen)
 interface ProductCategory {
@@ -33,7 +34,7 @@ interface Product {
 }
 
 // Postavite na false za korištenje pravog API-ja
-const USE_DUMMY_DATA = true;
+// const USE_DUMMY_DATA = false;
 
 // AŽURIRANI DUMMY_PRODUCTS prema novom formatu
 // Dodao sam wholesalePrice i primere za weight/volume gde ima smisla
@@ -106,7 +107,7 @@ const StoreProductsScreen = () => {
         // console.log(`http://192.168.0.25:5054/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`);
         // Proveri da li ovaj endpoint zaista vraća proizvode za SPECIFIČNI storeId i u NOVOM formatu
         // const response = await fetch(`https://bazaar-system.duckdns.org/api/catalog/store/${storeId}/products`, {
-        const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
+        const response = await fetch(baseURL + `/api/Catalog/products?storeId=${encodeURIComponent(storeId)}`, {
           // Dodaj method i headers ako je potrebno (posebno Authorization)
           method: 'GET',
           headers: {

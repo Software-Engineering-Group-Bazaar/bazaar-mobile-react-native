@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 interface ProductCategory {
   id: number;
@@ -29,7 +30,7 @@ interface Product {
   quantity: number
 }
 
-const USE_DUMMY_DATA = true;
+// const USE_DUMMY_DATA = true;
 
 const DUMMY_PRODUCTS: Product[] = [
     { id: 1, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15 },
@@ -75,7 +76,7 @@ const ProductDetailsScreen = () => {
       } else {
         try {
           const authToken = await SecureStore.getItemAsync('auth_token');
-          const response = await fetch(`https://bazaar-system.duckdns.org/api/Catalog/products/${productId}`, {
+          const response = await fetch(baseURL + `/api/Catalog/products/${productId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${authToken}`,
