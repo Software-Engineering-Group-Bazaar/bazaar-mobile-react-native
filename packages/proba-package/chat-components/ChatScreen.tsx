@@ -1,13 +1,23 @@
-// screens/ChatScreen.tsx
-import React, { useState, useEffect } from "react";
-import { View, TextInput, Button, FlatList, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  TextInput,
+  Button,
+  FlatList,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Switch,
+  Text,
+} from "react-native";
 import { useSignalR } from "./useSignalR";
 import { ChatMessageItem } from "./ChatMessage";
 import * as SecureStore from "expo-secure-store";
 import api from "../../../apps/seller/app/api/defaultApi";
 
 type ChatScreenProps = {
-  conversationId: number; // Assuming this is passed to the component
+  conversationId: number;
 };
 
 const ChatScreen = ({ conversationId }: ChatScreenProps) => {
@@ -15,18 +25,19 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const [isPrivate, setIsPrivate] = useState(true);
+  const flatListRef = useRef(null);
 
-  // Fetch token from Secure Store on mount
   useEffect(() => {
     const getToken = async () => {
       const fetchedToken = await SecureStore.getItemAsync("accessToken");
       setToken(fetchedToken);
     };
 
+    flatListRef.current?.scrollToEnd({ animated: true });
     getToken();
   }, []);
 
-  // Fetch initial messages from the API
   useEffect(() => {
     const fetchMessages = async () => {
       if (!conversationId) return;
@@ -63,58 +74,103 @@ const ChatScreen = ({ conversationId }: ChatScreenProps) => {
     }
   }, [conversationId]);
 
-  // Use SignalR to handle real-time messaging
   const conversationIdNumber = Number(conversationId);
   const { messages: signalRMessages, sendMessage } =
     useSignalR(conversationIdNumber);
 
-  // Combine API messages and SignalR messages into a single list
   useEffect(() => {
-    if (signalRMessages) {
-      setMessages((prevMessages) => [...prevMessages, ...signalRMessages]);
+    if (signalRMessages && signalRMessages.length > 0) {
+      console.log(
+        "signalRMessages",
+        JSON.stringify(signalRMessages[signalRMessages.length - 1], null, 2)
+      );
+      setMessages((prevMessages) => {
+        const updatedMessages = [
+          ...prevMessages,
+          signalRMessages[signalRMessages.length - 1],
+        ];
+        // Assuming there's a FlatList ref to control scrolling
+        flatListRef.current.scrollToIndex({
+          index: messages.length - 1,
+          animated: true,
+          viewPosition: 1,
+        });
+        return updatedMessages;
+      });
     }
   }, [signalRMessages]);
 
   const handleSend = () => {
     if (input.trim().length > 0 && token) {
-      sendMessage(input.trim()); // Replace "Zlatan" with actual username if needed
-      setInput(""); // Clear the input field after sending
+      sendMessage(input.trim(), isPrivate); // 🔹 Updated to pass `isPrivate`
+      setInput("");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={messages}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => <ChatMessageItem message={item} />}
-        contentContainerStyle={styles.list}
-      />
-      <View style={styles.inputContainer}>
-        <TextInput
-          value={input}
-          onChangeText={setInput}
-          style={styles.input}
-          placeholder="Type a message"
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      >
+        <FlatList
+          data={messages}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item }) => <ChatMessageItem message={item} />}
+          contentContainerStyle={styles.list}
+          ref={flatListRef}
         />
-        <Button title="Send" onPress={handleSend} />
-      </View>
-    </View>
+
+        {/* 🔹 Private Message Toggle */}
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Private</Text>
+          <Switch value={isPrivate} onValueChange={setIsPrivate} />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            value={input}
+            onChangeText={setInput}
+            style={styles.input}
+            placeholder="Type a message"
+          />
+          <Button title="Send" onPress={handleSend} />
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
   },
   list: {
-    paddingBottom: 10,
+    padding: 10,
+    flexGrow: 1,
+    justifyContent: "flex-end",
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    justifyContent: "flex-end",
+    gap: 10,
+  },
+  switchLabel: {
+    fontSize: 16,
+    color: "#333",
   },
   inputContainer: {
     flexDirection: "row",
-    gap: 8,
+    padding: 10,
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+    backgroundColor: "#fff",
     alignItems: "center",
+    gap: 8,
   },
   input: {
     flex: 1,
