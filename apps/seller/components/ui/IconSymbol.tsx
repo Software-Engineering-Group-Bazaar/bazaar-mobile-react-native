@@ -12,6 +12,7 @@ const MAPPING = {
   "chevron.left.forwardslash.chevron.right": "code", // Custom mapping
   "chevron.right": "chevron-right", // SF Symbol mapped to Material 'chevron-right'
   shippingbox: "inventory",
+  "message.fill": "message",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],

@@ -135,10 +135,7 @@
   "There are only": "Preostalo je samo",
   "items of": "komada od",
   "available.": "dostupno.",
-  "details":"Detalji",
   "review":"Recenzija",
-  "rating":"Ocjena",
-  "comment":"Komentar",
   "comment_placeholder":"Unesite komentar",
   "submit_review":"Pošalji recenziju",
   "order_details":"Detalji narudžbe",
@@ -146,6 +143,9 @@
   "total_price":"Ukupna cijena",
   "date_time":"Datum i vrijeme",
   "store":"Prodavnica",
-  "status":"Status"
+  "review_error_comment":"Komentar mora biti između 5 i 1000 karaktera",
+  "Cannot add that many items. Not enough stock available.": "Ne može se dodati toliko komada. Nema dovoljno zaliha.",
+  "add_suggestion": "Dodaj još {{count}} komada za {{price}} KM",
+  "remove_suggestion": "Ukloni {{count}} komada za {{price}} KM"
 }
   

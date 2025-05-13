@@ -7,6 +7,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as SecureStore from "expo-secure-store";
+import { apiFetchActiveStore } from "../api/storeApi";
+import { Store } from "../types/prodavnica";
 
 import { Notification } from '../types/notifikacija';
 import { apiFetchAllNotifications, apiSetNotificationsAsRead } from '../api/inboxApi';
@@ -19,6 +22,7 @@ const NotificationList = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [store, setStore] = useState<Store>();
 
   const fetchNotifications = async () => {
     console.log("Fetching notifications...");
@@ -34,6 +38,17 @@ const NotificationList = () => {
   };
 
   useEffect(() => {
+    async function getStore() {
+      setLoading(true);
+      const activeStore = await apiFetchActiveStore();
+      if (activeStore) {
+        await SecureStore.setItem("storeId", activeStore.id.toString());
+        setStore(activeStore);
+      }
+      setLoading(false);
+    }
+    getStore();
+
     console.log('Fetching notifications...');
     fetchNotifications();
     const intervalId = setInterval(() => {
@@ -57,6 +72,12 @@ const NotificationList = () => {
           pathname: '/(CRUD)/narudzba_detalji',
           params: { id: orderId.toString() },
         });
+      } else if (/poruk/i.test(message)) {
+        router.push('../(tabs)/messaging');
+      } else if (/recenzij/i.test(message)) {
+        if(store){
+          router.push(`/(CRUD)/pregled_reviews?storeId=${store.id}&storeName=${encodeURIComponent(store.name)}`);
+        }
       } else {
         router.push('../(tabs)/zalihe');
       }
