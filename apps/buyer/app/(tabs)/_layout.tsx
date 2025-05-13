@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
 import { HapticTab } from '@/components/HapticTab';
@@ -203,6 +203,25 @@ export default function TabLayout() {
           title: t('cart'),
           tabBarIcon: ({ color }) => (<FontAwesome size={28} name="shopping-cart" color={color} />)
         }}
+      />
+      <Tabs.Screen
+        name="chat" // This name corresponds to the 'chat' directory
+        options={{
+          title: t('chat', 'Poruke'),
+          tabBarIcon: ({ color }) => (<FontAwesome size={28} name="comments" color={color} />),
+          // Other options...
+        }}
+        // --- Move the listeners prop here, outside of options ---
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            // Prevent the default action
+            e.preventDefault();
+
+            // Navigate to the root screen of this tab's stack ('chat/index')
+            router.navigate('/chat');
+          },
+        })}
+        // -------------------------------------------------------
       />
       <Tabs.Screen
         name="profil"
