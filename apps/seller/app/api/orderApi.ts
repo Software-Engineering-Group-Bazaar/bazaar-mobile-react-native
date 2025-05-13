@@ -16,6 +16,29 @@ export const getOrderById = async (id: string) => {
   return { ...res.data, items: enrichedItems };
 };
 
+// Kreiranje konverzacije
+export const apiCreateConversation = async (targetUserId: number, storeId: number, orderId: number) => {
+  try {
+    console.log(targetUserId, storeId, orderId);
+    const response = await api.post("/Chat/conversations/find-or-create", {
+      targetUserId: targetUserId,
+      storeId: storeId,
+      orderId: orderId,
+      productId: null,
+    });
+    console.log("ovdje", response.data);
+
+    if (response.status === 200 || response.status === 201) {
+      const conversationId = response.data.id;
+      return conversationId;
+    } else {
+      console.error("Failed to start conversation. Status:", response.status);
+    }
+  } catch (error) {
+    console.error("Error starting conversation:", error);
+  }
+};
+
 // Ažuriranje statusa narudžbe
 export const updateOrderStatus = (id: string, newStatus: string) => {
   return api.put(`/Order/update/status/${id}`, { newStatus });
