@@ -9,6 +9,7 @@ import CartItem from 'proba-package/cart-item/index';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { setParams } from 'expo-router/build/global-state/routing';
 
 interface Store {
   id: number;
@@ -336,6 +337,10 @@ export default function DetailsScreen() {
         </Text>
       </View>
 
+      <TouchableOpacity style={styles.routeButton} onPress={() => router.push({ pathname: `/screens/orderRoute`, params: { orderId: order.id } })}>
+        <Text style={styles.routeButton}>{t('order_route')}</Text>
+      </TouchableOpacity>
+
       <Text style={[styles.title, styles.itemsTitle]}>{t('ordered_items')}</Text>
       {detailedOrderItems.filter(item=>item.product).map((item) => (
         <CartItem
@@ -434,5 +439,16 @@ const styles = StyleSheet.create({
   shadowRadius: 4,
   elevation: 5,
   zIndex: 999
+  },
+  routeButton: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    paddingBottom: 10,
+    marginHorizontal: 40,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
   },
 });

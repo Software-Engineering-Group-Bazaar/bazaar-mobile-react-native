@@ -150,6 +150,7 @@
   "my_addresses": "Moje adrese",
   "confirm_address": "Potvrdite adresu",
   "submit_address": "Pošaljite adresu",
-  "confirm_remove_address": "Da li ste sigurni da želite ukloniti ovu adresu?"
+  "confirm_remove_address": "Da li ste sigurni da želite ukloniti ovu adresu?",
+  "order_route": "Ruta narudžbe"
 }
   

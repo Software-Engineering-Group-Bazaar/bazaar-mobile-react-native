@@ -150,5 +150,6 @@
   "my_addresses": "My Addresses",
   "confirm_address": "Confirm address",
   "submit_address": "Submit address",
-  "confirm_remove_address": "Are you sure you want to remove this address?"
+  "confirm_remove_address": "Are you sure you want to remove this address?",
+  "order_route":"Order route"
 }
