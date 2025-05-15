@@ -61,7 +61,7 @@ const ChatListScreen: React.FC = () => {
 
         // Setup SignalR connection
         const connection = new signalR.HubConnectionBuilder()
-          .withUrl("https://bazaar-system.duckdns.org/chathub", {
+          .withUrl("http://192.168.15.107:5054/chathub", {
             accessTokenFactory: async () => storedToken, // Use token for auth
           })
           .withAutomaticReconnect()
