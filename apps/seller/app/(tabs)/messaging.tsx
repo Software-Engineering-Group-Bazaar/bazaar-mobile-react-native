@@ -1,20 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import ConversationList from "proba-package/chat-components/ConversationList";
-import { ConversationDto } from "proba-package/chat-components/models";
-import { useTranslation } from "react-i18next";
+import { ExtendedConversationDto } from "proba-package/chat-components/models";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import * as signalR from "@microsoft/signalr";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { apiFetchFormattedConversations } from "../api/messagingApi";
 import { useFocusEffect } from "@react-navigation/native";
-
-interface ExtendedConversationDto extends ConversationDto {
-  buyerUserId: string;
-  lastMessageSender: string;
-  buyerUsername?: string;
-}
 
 const ChatListScreen: React.FC = () => {
   const [conversations, setConversations] = useState<ExtendedConversationDto[]>(
@@ -85,11 +78,11 @@ const ChatListScreen: React.FC = () => {
             if (index !== -1) {
               updated[index] = {
                 ...updated[index],
-                lastMessageSnippet: newMessage.content, 
-                lastMessageTimestamp: "Just now",    
+                lastMessageSnippet: newMessage.content,
+                lastMessageTimestamp: "Just now",
                 unreadMessagesCount: isOwnMessage
-                                  ? updated[index].unreadMessagesCount
-                                  : updated[index].unreadMessagesCount + 1,
+                  ? updated[index].unreadMessagesCount
+                  : updated[index].unreadMessagesCount + 1,
                 lastMessageSender: newMessage.senderUserId,
               };
             } else {
@@ -101,7 +94,7 @@ const ChatListScreen: React.FC = () => {
                 lastMessageSnippet: newMessage.content,
                 lastMessageTimestamp: newMessage.sentAt,
                 unreadMessagesCount: 1,
-              });
+              } as ExtendedConversationDto);
             }
 
             return updated;

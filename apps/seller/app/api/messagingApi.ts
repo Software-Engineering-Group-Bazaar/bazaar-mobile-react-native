@@ -1,15 +1,7 @@
 import api from "./defaultApi";
-import { ConversationDto } from "proba-package/chat-components/models";
+import { ExtendedConversationDto } from "proba-package/chat-components/models";
 import { formatDistanceToNow } from "date-fns";
 import * as SecureStore from "expo-secure-store";
-
-// Dohvacanje svih chatova za listu
-
-interface ExtendedConversationDto extends ConversationDto {
-  buyerUserId: string;
-  lastMessageSender: string;
-  buyerUsername?: string;
-}
 
 export async function apiFetchFormattedConversations(): Promise<
   ExtendedConversationDto[]

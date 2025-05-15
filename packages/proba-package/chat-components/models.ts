@@ -8,6 +8,11 @@ export interface ConversationDto {
   storeId?: number;
 }
 
+export interface ExtendedConversationDto extends ConversationDto {
+  buyerUsername: string;
+  lastMessageSender: string;
+  buyerUserId: string;
+}
 export interface MessageDto {
   id: number;
   senderUserId: string;

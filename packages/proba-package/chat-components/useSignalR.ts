@@ -1,14 +1,16 @@
 // shared/hooks/useSignalR.ts
 import { useEffect, useRef, useState } from "react";
 import { HubConnection, LogLevel } from "@microsoft/signalr";
-import { ChatMessage, MessageDto } from "./models";
+import { MessageDto } from "./models";
 import * as signalR from "@microsoft/signalr";
 import * as SecureStore from "expo-secure-store";
 import api from "../../../apps/seller/app/api/defaultApi";
-import { baseURL } from "../index";
+import { baseURL } from "../../../apps/seller/app/env";
+
+console.log("BASE URL: ", baseURL);
 
 export const useSignalR = (conversationId?: number) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<MessageDto[]>([]);
   const connectionRef = useRef<HubConnection | null>(null);
 
   const fetchUsername = async (userId: string): Promise<string> => {
@@ -28,12 +30,22 @@ export const useSignalR = (conversationId?: number) => {
     }
   };
 
+  const handleReceivedMessage = async (receivedMessage: MessageDto) => {
+    console.log(JSON.stringify(receivedMessage, null, 2));
+
+    if (!receivedMessage.senderUsername && receivedMessage.senderUserId) {
+      receivedMessage.senderUsername = await fetchUsername(
+        receivedMessage.senderUserId
+      );
+    }
+
+    setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+  };
+
   useEffect(() => {
-    // Connect to SignalR
     const connect = async () => {
       const storedToken = await SecureStore.getItemAsync("accessToken");
 
-      // Ensure conversationId is available
       if (!conversationId) {
         console.error("Conversation ID is required for SignalR connection.");
         return;
@@ -48,51 +60,23 @@ export const useSignalR = (conversationId?: number) => {
         .build();
 
       connection.serverTimeoutInMilliseconds = 60000;
-
-      // Listen for new messages
-      connection.on("ReceiveMessage", async (receivedMessage: MessageDto) => {
-        console.log(JSON.stringify(receivedMessage, null, 2));
-
-        // Get username from user ID if not provided
-        let senderUsername = receivedMessage.senderUsername;
-        if (!senderUsername && receivedMessage.senderUserId) {
-          senderUsername = await fetchUsername(receivedMessage.senderUserId);
-        }
-
-        const content = receivedMessage.content;
-        const timestamp = receivedMessage.sentAt;
-        const senderUserId = receivedMessage.senderUserId;
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            senderUsername,
-            content,
-            sentAt: timestamp,
-            isPrivate: receivedMessage.isPrivate,
-            senderUserId,
-          },
-        ]);
-      });
+      connection.on("ReceiveMessage", handleReceivedMessage);
 
       try {
         await connection.start();
         console.log("SignalR connected");
         connectionRef.current = connection;
-
-        // Join conversation-specific group
-        connection
-          .invoke("JoinConversation", conversationId)
-          .catch((err) => console.error("Error joining group:", err));
+        await connection.invoke("JoinConversation", conversationId);
       } catch (err) {
         console.error("SignalR connection error:", err);
       }
     };
 
     connect();
-
     return () => {
-      connectionRef.current?.stop();
+      if (connectionRef.current) {
+        connectionRef.current.stop();
+      }
     };
   }, [conversationId]);
 

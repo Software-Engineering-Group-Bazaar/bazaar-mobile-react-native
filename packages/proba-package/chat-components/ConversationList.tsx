@@ -6,17 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { ConversationDto } from "./models";
+import { ExtendedConversationDto } from "./models";
 
 interface Props {
   conversations: ExtendedConversationDto[];
   onSelectConversation: (conversationId: number, buyerUsername: string) => void;
-}
-
-interface ExtendedConversationDto extends ConversationDto {
-  buyerUsername: string;
-  lastMessageSender: string;
-  buyerUserId: string;
 }
 
 const ConversationList: React.FC<Props> = ({
