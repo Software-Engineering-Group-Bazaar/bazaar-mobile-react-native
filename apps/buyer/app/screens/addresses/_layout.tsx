@@ -17,6 +17,10 @@ export default function OrdersLayout() {
           name="ConfirmAddressScreen"
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="RemoveAddressScreen"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </>
   );

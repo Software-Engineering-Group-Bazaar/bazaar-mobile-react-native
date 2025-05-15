@@ -147,5 +147,8 @@
   "Cannot add that many items. Not enough stock available.": "Cannot add that many items. Not enough stock available.",
   "add_suggestion": "Add another {{count}} pieces for {{price}} KM",
   "remove_suggestion": "Remove {{count}} pieces for {{price}} KM",
-  "my_addresses": "My Addresses"
+  "my_addresses": "My Addresses",
+  "confirm_address": "Confirm address",
+  "submit_address": "Submit address",
+  "confirm_remove_address": "Are you sure you want to remove this address?"
 }

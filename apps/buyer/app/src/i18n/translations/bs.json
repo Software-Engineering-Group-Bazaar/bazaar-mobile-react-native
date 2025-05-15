@@ -147,6 +147,9 @@
   "Cannot add that many items. Not enough stock available.": "Ne može se dodati toliko komada. Nema dovoljno zaliha.",
   "add_suggestion": "Dodaj još {{count}} komada za {{price}} KM",
   "remove_suggestion": "Ukloni {{count}} komada za {{price}} KM",
-  "my_addresses": "Moje adrese"
+  "my_addresses": "Moje adrese",
+  "confirm_address": "Potvrdite adresu",
+  "submit_address": "Pošaljite adresu",
+  "confirm_remove_address": "Da li ste sigurni da želite ukloniti ovu adresu?"
 }
   
