@@ -46,6 +46,14 @@ export default function Profil() {
           {t('my_orders', 'Moje narudžbe')}
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push('../screens/addresses')}
+      >
+        <Text style={styles.buttonText}>
+          {t('my_addresses')}
+        </Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} >
         <Text style={styles.buttonText}>{t('logout_button')}</Text>
       </TouchableOpacity>
