@@ -174,7 +174,7 @@ export default function DetailsScreen() {
         // Params passed here will be available in ChatScreen via `useLocalSearchParams`
     
           router.push({
-          pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+          pathname: `(tabs)/chat/${data.id}` as any, // Dynamic route using conversation ID
           params: {
             // conversationId is already part of the path, but you can pass it explicitly if needed
             // or if your ChatScreen expects it as a query param rather than a path segment.
