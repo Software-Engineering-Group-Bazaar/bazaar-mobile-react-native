@@ -26,7 +26,17 @@ export default function RouteScreen() {
           const buyerCoord: LatLng = { latitude: 43.8525, longitude: 18.3625 };
           const routeCoords: LatLng[] = [
             sellerCoord,
-            { latitude: (sellerCoord.latitude + buyerCoord.latitude) / 2, longitude: (sellerCoord.longitude + buyerCoord.longitude) / 2 },
+            { latitude: 43.851086, longitude: 18.360783 },
+            { latitude: 43.851084, longitude: 18.36088 },
+            { latitude: 43.851072, longitude: 18.36079 },
+            { latitude: 43.851026, longitude: 18.36098 },
+            { latitude: 43.851055, longitude: 18.36099 },
+            { latitude: 43.851045, longitude: 18.3611 },
+            { latitude: 43.851009, longitude: 18.3610 },
+            { latitude: 43.851012, longitude: 18.3619 },
+            { latitude: 43.851031, longitude: 18.3609 },
+            { latitude: 43.851058, longitude: 18.3614 },
+            { latitude: 43.8525, longitude: 18.361 },
             buyerCoord,
           ];
           setCoords({ seller: sellerCoord, buyer: buyerCoord, route: routeCoords });
