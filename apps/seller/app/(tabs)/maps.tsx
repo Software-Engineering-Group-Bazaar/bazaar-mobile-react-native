@@ -3,6 +3,7 @@ import { View, Dimensions, Text, TouchableOpacity, Button, Alert } from 'react-n
 import MapView, { Polyline, Marker, LatLng, Region } from 'react-native-maps';
 import RNFS from 'react-native-fs';
 import polyline from '@mapbox/polyline';
+import { apiFetchActiveStore } from "../api/storeApi";
 
 async function saveDataToFile(data: any) {
   try {
@@ -30,18 +31,17 @@ async function getOptimalRoute(locations: string[], mode: string): Promise<any> 
     const origin = locations[0];
     const destination = locations[locations.length - 1];
     const waypoints = locations.slice(1, -1).map(loc => encodeURIComponent(loc)).join('|');
-    console.log(mode)
 
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&waypoints=optimize:true|${waypoints}&mode=${mode}&key=YOUR_API`;
+    //const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&waypoints=optimize:true|${waypoints}&mode=${mode}&key=YOUR_API`;
     //console.log("pozvana")
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Error fetching route: ${response.statusText}`);
+    //const response = await fetch(url);
+    //if (!response.ok) throw new Error(`Error fetching route: ${response.statusText}`);
 
-    const data = await response.json();
-    if (data.status !== "OK") throw new Error(`API error: ${data.status} - ${data.error_message}`);
+    //const data = await response.json();
+    //if (data.status !== "OK") throw new Error(`API error: ${data.status} - ${data.error_message}`);
 
-    await saveDataToFile(data);
-    //const data = await readDataFromFile();
+    //await saveDataToFile(data);
+    const data = await readDataFromFile();
     return data.routes[0];
   } catch (error) {
     console.error("Error fetching optimal route:", error);
@@ -80,32 +80,40 @@ type Regija = {
   longitudeDelta: number;
 };
 
-
 export default function OptimalRouteMap() {
   const [route, setRoute] = useState<Point[]>([]);
   const [region, setRegion] = useState<Regija | undefined>();
   const [waypoints, setWaypoints] = useState<Point[]>([]);
   const [mode, setMode] = useState<string>('driving'); // Default mode
   const [confirmedMode, setConfirmedMode] = useState<string>();
+  const [loading, setLoading] = useState(true);
 
   const confirmRouteMode = async () => {
     setConfirmedMode(mode);
     try {
-      /*const response = await fetch('https://your-backend-api.com/route', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode }),
-      });
-      if (!response.ok) throw new Error('Failed to update route mode');
-      Alert.alert('Success', `Route mode "${mode}" confirmed.`);*/
     } catch (error) {
       console.error('Error sending route mode:', error);
       Alert.alert('Error', 'Failed to send the selected route mode.');
     }
   };
 
+  async function getStore() {
+    setLoading(true);
+    const activeStore = await apiFetchActiveStore();
+    setLoading(false);
+    if(activeStore) return activeStore.address;
+  }
+
   async function fetchRoute() {
       try {
+        // Startna lokacija
+        const start_address = await getStore();
+        if (start_address && start_address != locations[0]) {
+            locations.unshift(start_address);
+        } else {
+            locations.unshift("Unknown Address");  
+        }
+
         const optimalRoute = await getOptimalRoute(locations, mode);
         if (!optimalRoute) return;
 
@@ -150,10 +158,10 @@ export default function OptimalRouteMap() {
         } catch (error) {
         console.error("Error processing route:", error);
         }
-    }
+  }
 
   // Function to update the mode and fetch the route
-    const updateRouteMode = (newMode: string) => {
+  const updateRouteMode = (newMode: string) => {
         // Only update if the mode is actually changing
         if (newMode !== mode) {
             setMode(newMode);
@@ -190,12 +198,7 @@ export default function OptimalRouteMap() {
     'Trg heroja 3, Sarajevo 71000',
     'Braće Begić 4, Sarajevo 71000',
     'Osmana Đikića 1, Sarajevo 71000, Bosnia and Herzegovina'
-];
-
-  useEffect(() => {
-    fetchRoute();
-  }, []);
-  
+  ];
 
   return (
     <View style={{ flex: 1 }}>
