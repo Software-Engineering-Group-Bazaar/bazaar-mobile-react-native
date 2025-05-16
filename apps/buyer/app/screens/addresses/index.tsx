@@ -38,9 +38,12 @@ export default function MapScreen() {
     longitudeDelta: 0.0421,
   });
   const [markerCoord, setMarkerCoord] = useState<Region>(region);
+  const [addressForRemoval, setAddressForRemoval] = useState<{id:number,address:string,latitude:number,longitude:number}>();
 
   // State for saved locations
   const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
+  const [buttonShouldRemove, setButtonShouldRemove] = useState(false);
+  let buttonTitle = buttonShouldRemove ? "Remove Address" : "Confirm Address";
 
   // Load saved locations
   useEffect(() => {
@@ -149,6 +152,8 @@ export default function MapScreen() {
         {/* Current marker */}
         <Marker
           coordinate={markerCoord}
+          title={'New Address (Drag to change)'}
+          pinColor="darkred"
           draggable
           onDragEnd={e => {
             const { latitude, longitude } = e.nativeEvent.coordinate;
@@ -167,7 +172,16 @@ export default function MapScreen() {
             coordinate={{ latitude: loc.latitude, longitude: loc.longitude }}
             title={loc.address}
             pinColor="#4e8d70"
-            onPress={() => router.push({ pathname: '/screens/addresses/RemoveAddressScreen', params: { address: loc.address, lat: loc.latitude, lng: loc.longitude } })}
+            onSelect={() => {
+              setButtonShouldRemove(true);
+              setAddressForRemoval({ id: Number(loc.id), address: loc.address, latitude: loc.latitude, longitude: loc.longitude });
+              }
+            }
+            onDeselect={() => {
+              setButtonShouldRemove(false);
+              setAddressForRemoval(undefined);
+            }
+            }
           />
         ))}
       </MapView>
@@ -176,13 +190,18 @@ export default function MapScreen() {
       <View style={styles.confirmButton}>
         <Button
           color="#4e8d70"
-          title="Confirm Address"
+          
+          title= {buttonTitle}
           onPress={() => {
-            if (!address) {
+            if (!address && buttonShouldRemove===false) {
               Alert.alert('No address selected', 'Please pick or drag the marker first.');
               return;
             }
-            router.push({ pathname: '/screens/addresses/ConfirmAddressScreen', params: { address, lat: markerCoord.latitude, lng: markerCoord.longitude } });
+            buttonShouldRemove===false
+            ? router.push({ pathname: '/screens/addresses/ConfirmAddressScreen', params: { address, lat: markerCoord.latitude, lng: markerCoord.longitude } })
+            : addressForRemoval
+              ? router.push({ pathname: '/screens/addresses/RemoveAddressScreen', params: { id: addressForRemoval.id, address: addressForRemoval.address } })
+              : Alert.alert('Error', 'No address selected for removal.');
           }}
         />
       </View>
