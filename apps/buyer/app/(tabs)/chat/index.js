@@ -54,7 +54,7 @@ let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error(`HTTP error fetching user profile: ${response.status}, message: ${errorBody}. MOCK_CURRENT_USER_ID will remain its default.`);
+      console.log(`HTTP error fetching user profile: ${response.status}, message: ${errorBody}. MOCK_CURRENT_USER_ID will remain its default.`);
       // MOCK_CURRENT_USER_ID remains default if fetching profile fails
       return;
     }
@@ -80,7 +80,7 @@ let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one
 
   } catch (e) {
     // Catch any other errors during the async IIFE (e.g., network issues, SecureStore.getItemAsync failure)
-    console.error("Error during initial token/user-profile fetch:", e instanceof Error ? e.message : String(e));
+    console.log("Error during initial token/user-profile fetch:", e instanceof Error ? e.message : String(e));
     // MOCK_TOKEN might be its default or updated if SecureStore succeeded but profile fetch failed.
     // MOCK_CURRENT_USER_ID will be its default.
   }
@@ -138,13 +138,13 @@ const fetchApi = async (endpoint, options = {}) => {
     if (!response.ok) {
       let errorData = 'Unknown error';
       try { errorData = await response.text(); } catch (e) { /* ignore */ }
-      console.error(`API Error ${response.status} for ${endpoint}:`, errorData);
+      console.log(`API Error ${response.status} for ${endpoint}:`, errorData);
       throw new Error(`HTTP error ${response.status}: ${errorData.substring(0,100)}`);
     }
     if (response.status === 204) return null;
     return response.json();
   } catch (error) {
-    console.error("Network or API call failed:", error);
+    console.log("Network or API call failed:", error);
     throw error;
   }
 };
@@ -239,7 +239,9 @@ const ConversationsListScreen = () => {
       });
       setConversations(fetchedConversations);
     } catch (err) {
-      console.error("Failed to load conversations:", err);
+      console.log("Failed to load conversations:", err);
+      Alert.alert(t('Error'), t('Failed to load conversations'));
+
       setError(err.message || "Couldn't load conversations. Please try again.");
       if (USE_DUMMY_DATA) {
           Alert.alert("Dummy Data Error", "There was an issue loading dummy data.");

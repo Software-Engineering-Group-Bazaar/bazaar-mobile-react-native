@@ -453,42 +453,42 @@ const styles = StyleSheet.create({
   connectionStatus: { textAlign: 'center', paddingVertical: 8, paddingHorizontal: 5, color: 'white', fontWeight: 'bold', fontSize: 12 },
   errorText: { color: '#D32F2F', fontSize: 16, textAlign: 'center', marginBottom: 10 },
  privateBubble: {
-    backgroundColor: '#D1C4E9', // Svijetlo ljubičasta
+    backgroundColor: '#B2DFDB',
   },
   privateText: {
-    color: '#311B92', // Tamno ljubičasta
+    color: '#263238',
     fontWeight: 'bold',
   },
   regularBubble: {
-    backgroundColor: '#4E8D7C', // Tvoja poruka
+    backgroundColor: '#4E8D7C',
   },
   otherBubble: {
-    backgroundColor: '#E8F5E9', // Tuđa poruka
+    backgroundColor: '#E8F5E9',
   },
   regularText: {
-    color: '#FFFFFF', // Tekst na tvojoj zelenoj
+    color: '#FFFFFF',
   },
   otherText: {
-    color: '#263238', // Tekst na tuđoj zelenoj
+    color: '#263238',
   },
   privateTagTopContainer: {
     position: 'absolute',
   },
   privateTagTop: {
-    backgroundColor: '#B39DDB', // Nešto tamnija nijansa ljubičaste
+    backgroundColor: '#B39DDB',
     borderRadius: 10,
     paddingVertical: 3,
     paddingHorizontal: 8
   },
   privateTagTopText: {
-    color: '#FFFFFF',
+    color: '#263238 ',
     fontSize: 10,
     fontWeight: 'bold',
   },
   privateTagInline: {
     alignSelf: 'flex-end',
-    backgroundColor: '#B39DDB',
-    color: '#FFFFFF',
+    backgroundColor: '#B2DFDB',
+    color: '#555555 ',
     fontSize: 10,
     fontWeight: 'bold',
     paddingVertical: 2,

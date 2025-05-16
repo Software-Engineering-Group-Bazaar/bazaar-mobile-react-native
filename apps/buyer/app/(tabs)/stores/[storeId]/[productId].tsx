@@ -108,8 +108,14 @@ const ProductDetailsScreen = () => {
       if (!response.ok) {
         // Ako HTTP status nije 2xx, nešto nije u redu
         const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
-        console.error('API Error Response Status:', response.status);
-        console.error('API Error Response Body:', errorText);
+        if (errorText.includes('No seller for store')) {
+            Alert.alert(
+              t('Error'),
+              t('Ne možete komunicirati s prodavačem jer nema prodavača povezanog sa ovim proizvodom.') // Pružite korisniku specifičnu poruku
+            );
+        }
+//         console.error('API Error Response Status:', response.status);
+//         console.error('API Error Response Body:', errorText);
         throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
       }
   
@@ -214,7 +220,8 @@ const checkAndAddToCart = async () => {
       );      
     }
   } catch (error) {
-    console.error('Error checking inventory:', error);
+     Alert.alert(t('Greska'), t('Trenutno nemamo informaciju o količini na stanju ovog proizvoda. Molimo pokušajte kasnije.'));
+    //console.error('Error checking inventory:', error);
   } finally {
     setLoading(false);
   }
