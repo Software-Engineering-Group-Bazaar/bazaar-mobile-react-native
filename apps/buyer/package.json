@@ -21,7 +21,7 @@
     "@react-native-firebase/analytics": "^21.14.0",
     "@react-native-firebase/app": "^21.14.0",
     "@react-native-google-signin/google-signin": "^13.2.0",
-    "@react-native-picker/picker": "2.9.0",
+    "@react-native-picker/picker": "^2.11.0",
     "@react-native/js-polyfills": "^0.79.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
