@@ -3,6 +3,7 @@ import api from "./defaultApi";
 // Dohvatanje narudžbe 
 export const getOrderById = async (id: string) => {
   const res = await api.get(`/Order/${id}`);
+
   const enrichedItems = await Promise.all(
     res.data.orderItems.map(async (item: any) => {
       const p = await api.get(`/Catalog/products/${item.productId}`);
@@ -13,8 +14,25 @@ export const getOrderById = async (id: string) => {
       };
     })
   );
-  return { ...res.data, items: enrichedItems };
+
+  let addressDetails = null;
+  if (res.data.addressId) {
+    try {
+      const addressRes = await api.get(`/user-profile/address/${res.data.addressId}`);
+      addressDetails = addressRes.data;
+    } catch (err) {
+      console.error("Failed to fetch address:", err);
+    }
+  }
+
+  return {
+    ...res.data,
+    items: enrichedItems,
+    expectedReadyAt: res.data.expectedReadyAt,
+    addressDetails, // nova polja
+  };
 };
+
 
 // Kreiranje konverzacije
 export const apiCreateConversation = async (targetUserId: number, storeId: number, orderId: number) => {
@@ -39,9 +57,18 @@ export const apiCreateConversation = async (targetUserId: number, storeId: numbe
   }
 };
 
-// Ažuriranje statusa narudžbe
-export const updateOrderStatus = (id: string, newStatus: string) => {
-  return api.put(`/Order/update/status/${id}`, { newStatus });
+// Ažuriranje statusa narudžbe s dodatnim podacima
+export const updateOrderStatus = (
+  id: string,
+  newStatus: string,
+  adminDelivery?: boolean,
+  estimatedPreparationTimeInMinutes?: number
+) => {
+  return api.put(`/Order/update/status/${id}`, {
+    newStatus,
+    adminDelivery,
+    estimatedPreparationTimeInMinutes,
+  });
 };
 
 // Brisanje narudžbe

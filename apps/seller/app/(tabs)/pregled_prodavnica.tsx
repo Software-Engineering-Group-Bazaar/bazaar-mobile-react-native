@@ -11,7 +11,7 @@ import * as SecureStore from "expo-secure-store";
 
 export default function StoresScreen() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [store, setStore] = useState<Store>();
 
