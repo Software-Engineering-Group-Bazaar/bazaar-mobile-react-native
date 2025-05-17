@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useCart } from '@/context/CartContext';
 import { router } from 'expo-router';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { Picker } from '@react-native-picker/picker';
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
 interface ProductCategory {
@@ -43,6 +44,15 @@ interface ProductPayload {
 const CartScreen = () => {
   const { t } = useTranslation();
   const { cartItems, handleQuantityChange, clearCart } = useCart();
+  interface SavedLocation {
+    id: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+  }
+
+  const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
+  const [selectedLocationId, setSelectedLocationId] = useState<string>('');
 
   const totalPrice = cartItems.reduce((sum, { product, qty }) => {
     const useWholesale =
@@ -98,6 +108,34 @@ const CartScreen = () => {
   };
 
   useEffect(() => {
+      if (USE_DUMMY_DATA) {
+        setSavedLocations([
+          { id: '1', address: '123 Main St, Springfield', latitude: 43.852, longitude: 18.361 },
+          { id: '2', address: '456 Elm St, Springfield', latitude: 43.853, longitude: 18.362 },
+        ]);
+      } else {
+        const authToken = SecureStore.getItem('auth_token');
+        if (!authToken) {
+          console.error("No login token");
+          return;
+        }
+        fetch(`${baseURL}/api/user-profile/address`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(res => res.json())
+          .then((data: SavedLocation[]) => setSavedLocations(data))
+          .catch(err => {
+            console.error('Load saved locations error:', err);
+            Alert.alert('Error', 'Could not load saved locations.');
+          });
+      }
+    }, []);
+
+  useEffect(() => {
     if (cartItems.length > 0)
       checkAndUpdateQuantitiesOnLoad();
   }, [cartItems]);
@@ -109,9 +147,10 @@ const CartScreen = () => {
   const checkoutOrder = async () => {
     console.log(cartItems);
     if(cartItems.length && cartItems.length > 0){
-      const orderPayload : {storeId: number; orderItems: ProductPayload[]} = {
+      const orderPayload : {storeId: number; orderItems: ProductPayload[], addressId: number} = {
         storeId: cartItems[0].product.storeId,
-        orderItems: []
+        orderItems: [],
+        addressId: parseInt(selectedLocationId)
       };
       console.log("storeId: " + cartItems[0].product.storeId);
       for(let i in cartItems){
@@ -173,7 +212,22 @@ const CartScreen = () => {
             <Text style={styles.totalText}>
               {t('total')}: {totalPrice.toFixed(2)} KM
             </Text>
-            <Button color={'#4e8d7c'} title={t('submit_order')} onPress={() => checkoutOrder()} />
+              <Picker
+                selectedValue={selectedLocationId}
+                onValueChange={setSelectedLocationId}
+              >
+                <Picker.Item label="Select address" value="" />
+                {savedLocations.map(loc => (
+                  <Picker.Item key={loc.id} label={loc.address} value={loc.id} />
+                ))}
+              </Picker>
+
+              <Button
+                title={t('submit_order')}
+                onPress={checkoutOrder}
+                disabled={!selectedLocationId || cartItems.length === 0}
+                color={'#4e8d7c'}
+              />
           </View>
         </>
       )}
