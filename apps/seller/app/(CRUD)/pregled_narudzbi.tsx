@@ -44,10 +44,8 @@ import {
   const [selectedStatuses, setSelectedStatuses] = useState<OrderStatus[]>([]);
   const [sortNewestFirst, setSortNewestFirst] = useState(true);
  
- 
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
- 
  
   const fetchOrders = useCallback(async () => {
     setRefreshing(true);
@@ -187,7 +185,7 @@ import {
               </TouchableOpacity>
             </View>
           )}
-          
+
           {selectionMode && selectedOrders.length > 0 && (
             <View>
               <View style={styles.submitCancelContainer}>
