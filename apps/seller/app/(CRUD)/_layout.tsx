@@ -1,10 +1,12 @@
 import NotificationIcon from "@/components/ui/NotificationIcon";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { TouchableOpacity, View } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function CRUDLayout() {
   const { t } = useTranslation();
-
+const router = useRouter();
   return (
     <Stack
       screenOptions={{
@@ -38,6 +40,38 @@ export default function CRUDLayout() {
       <Stack.Screen
         name="proizvod_detalji"
         options={{ title: t("product_details") }}
+      />
+      {/* NOVI EKRANI ZA TIKETE */}
+      <Stack.Screen
+        name="pregled_ticketa"
+        options={{
+          title: t("my_support_tickets") || "Moji tiketi podrške",
+          headerRight: () => ( // Kombinuj sa NotificationIcon ili zameni ako treba samo jedno
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity
+                onPress={() => router.push("/(CRUD)/kreiraj_ticket")} // Pazi na putanju
+                style={{ marginRight: 15, padding: 5 }}
+              >
+                <FontAwesome5 name="plus-circle" size={24} color="#4E8D7C" />
+              </TouchableOpacity>
+              <NotificationIcon />
+            </View>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="kreiraj_ticket"
+        options={{
+          title: t("create_new_ticket") || "Kreiraj novi tiket",
+          // headerRight ostaje NotificationIcon iz screenOptions
+        }}
+      />
+      <Stack.Screen
+        name="ticket_detalji"
+        options={{
+          title: t("ticket_details_title") || "Detalji tiketa",
+          // headerRight ostaje NotificationIcon iz screenOptions
+        }}
       />
     </Stack>
   );
