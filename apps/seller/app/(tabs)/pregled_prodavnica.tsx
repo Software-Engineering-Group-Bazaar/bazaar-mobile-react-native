@@ -44,6 +44,10 @@ export default function StoresScreen() {
     }
   };
 
+  const handleViewSupportTickets = () => {
+    router.push("../(CRUD)/pregled_ticketa");
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <LanguageButton />
@@ -84,6 +88,12 @@ export default function StoresScreen() {
                         textRows={[t("store_reviews_description")]}
                         onPress={handleViewReviews} 
                          />
+              {/* NOVA KARTICA ZA KORISNIČKU PODRŠKU */}
+              <TouchableCard
+                title={t("customer_support") || "Korisnička podrška"}
+                textRows={[t("customer_support_description") || "Kontaktirajte podršku ili pregledajte tikete"]}
+                onPress={handleViewSupportTickets}
+              />          
             </View>
           )}
         </View>

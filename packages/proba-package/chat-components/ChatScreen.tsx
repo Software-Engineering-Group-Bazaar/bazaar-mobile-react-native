@@ -18,7 +18,7 @@ import api from "../../../apps/seller/app/api/defaultApi";
 import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 
-const ChatScreen = () => {
+const ChatScreen = ({ conversationId }: { conversationId: number }) => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ const ChatScreen = () => {
   const flatListRef = useRef(null);
   const navigation = useNavigation();
   const [ownId, setOwnId] = useState<string | null>(null);
-  const { conversationId, buyerUsername } = useLocalSearchParams();
+  const { buyerUsername } = useLocalSearchParams();
 
   useEffect(() => {
     const getToken = async () => {

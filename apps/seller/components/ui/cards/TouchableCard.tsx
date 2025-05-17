@@ -9,7 +9,7 @@ import {
 
 interface TouchableCardProps extends TouchableOpacityProps {
   title: string;
-  textRows: string[];
+  textRows:(string | React.ReactNode)[];
 }
 
 const TouchableCard: React.FC<TouchableCardProps> = ({
