@@ -13,6 +13,7 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import * as SecureStore from 'expo-secure-store';
 
 interface Suggestion { place_id: string; description: string; }
 interface SavedLocation {
@@ -53,7 +54,18 @@ export default function MapScreen() {
         { id: '2', address: '456 Elm St, Springfield', latitude: 43.853, longitude: 18.362 },
       ]);
     } else {
-      fetch(`${baseURL}/api/user-profile/address`)
+      const authToken = SecureStore.getItem('auth_token');
+      if (!authToken) {
+        console.error("No login token");
+        return;
+      }
+      fetch(`${baseURL}/api/user-profile/address`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
         .then(res => res.json())
         .then((data: SavedLocation[]) => setSavedLocations(data))
         .catch(err => {

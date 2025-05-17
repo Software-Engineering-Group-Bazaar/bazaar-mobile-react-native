@@ -15,6 +15,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { t } from 'i18next';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import { Icon } from 'react-native-vector-icons/Icon';
+import * as SecureStore from 'expo-secure-store';
 
 export default function RemoveAddressScreen() {
   const params = useLocalSearchParams();
@@ -37,6 +38,11 @@ export default function RemoveAddressScreen() {
     }
 
     try {
+      const authToken = await SecureStore.getItemAsync('auth_token');
+      if (!authToken) {
+        console.error("No login token");
+        return;
+      }
       const res = await fetch(
         `${baseURL}/api/user-profile/address/${id}`,
         {
@@ -44,6 +50,7 @@ export default function RemoveAddressScreen() {
           headers: {
             'Content-Type': 'application/json',
             // add auth token header if needed
+            'Authorization': `Bearer ${authToken}`,
           },
         }
       );
@@ -85,7 +92,7 @@ export default function RemoveAddressScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, justifyContent: 'space-between' },
+  container: { flex: 1, padding: 16, justifyContent: 'space-between', backgroundColor: 'white' },
   content: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   label: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   addressText: { fontSize: 16, textAlign: 'center' },

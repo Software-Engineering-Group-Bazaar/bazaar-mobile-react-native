@@ -114,7 +114,18 @@ const CartScreen = () => {
           { id: '2', address: '456 Elm St, Springfield', latitude: 43.853, longitude: 18.362 },
         ]);
       } else {
-        fetch(`${baseURL}/api/user-profile/address`)
+        const authToken = SecureStore.getItem('auth_token');
+        if (!authToken) {
+          console.error("No login token");
+          return;
+        }
+        fetch(`${baseURL}/api/user-profile/address`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        })
           .then(res => res.json())
           .then((data: SavedLocation[]) => setSavedLocations(data))
           .catch(err => {
@@ -136,9 +147,10 @@ const CartScreen = () => {
   const checkoutOrder = async () => {
     console.log(cartItems);
     if(cartItems.length && cartItems.length > 0){
-      const orderPayload : {storeId: number; orderItems: ProductPayload[]} = {
+      const orderPayload : {storeId: number; orderItems: ProductPayload[], addressId: number} = {
         storeId: cartItems[0].product.storeId,
-        orderItems: []
+        orderItems: [],
+        addressId: parseInt(selectedLocationId)
       };
       console.log("storeId: " + cartItems[0].product.storeId);
       for(let i in cartItems){

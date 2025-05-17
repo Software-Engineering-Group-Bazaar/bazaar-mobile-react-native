@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, Text, TextInput, Button,
   Alert, ActivityIndicator,
-  KeyboardAvoidingView, Platform
+  KeyboardAvoidingView, Platform, TouchableOpacity
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { t } from 'i18next';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import * as SecureStore from 'expo-secure-store';
 
 export default function ConfirmAddressScreen() {
   const params = useLocalSearchParams();
@@ -36,6 +37,11 @@ export default function ConfirmAddressScreen() {
         return;
     }
     try {
+      const authToken = await SecureStore.getItemAsync('auth_token');
+      if (!authToken) {
+        console.error("No login token");
+        return;
+      }
       const res = await fetch(
         baseURL + '/api/user-profile/address',  // ← your real endpoint
         {
@@ -43,7 +49,7 @@ export default function ConfirmAddressScreen() {
           headers: {
             'Content-Type': 'application/json',
             // add auth token if needed:
-            // 'Authorization': `Bearer ${yourAuthToken}`,
+            'Authorization': `Bearer ${authToken}`,
           },
           body: JSON.stringify({
             address: formAddress,
@@ -89,16 +95,22 @@ export default function ConfirmAddressScreen() {
       {loading ? (
         <ActivityIndicator size="large" style={styles.loading} />
       ) : (
-        <View style={styles.submit}>
-          <Button title={t('submit_address')} onPress={onSubmit} />
-        </View>
+        <TouchableOpacity
+            style={[styles.submitButton, loading && styles.submitButtonDisabled]} // Dodat stil za onemogućeno dugme
+            onPress={onSubmit}
+            disabled={loading} // Onemogući dugme dok se učitava
+          >
+            <Text style={styles.submitButtonText}>
+              {t('submit_address') || 'Submit Address'}
+            </Text>
+          </TouchableOpacity>
       )}
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, justifyContent: 'space-between' },
+  container: { flex: 1, padding: 16, justifyContent: 'space-between', backgroundColor: 'white' },
   field: { flex: 1 },
   input: {
     maxHeight: 80,
@@ -111,4 +123,22 @@ const styles = StyleSheet.create({
   },
   submit: { marginBottom: 20 },
   loading: { marginBottom: 20 },
+  submitButton: {
+    backgroundColor: '#4e8d7c',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Platform.OS === 'ios' ? 20 : 10,
+    marginHorizontal: 10,
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#A9A9A9',
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
