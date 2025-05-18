@@ -24,7 +24,7 @@ export interface Ticket {
 
 export interface TicketCreationPayload {
   orderId: string;
-  subject: string;
+  title: string;
   description: string;
 }
 

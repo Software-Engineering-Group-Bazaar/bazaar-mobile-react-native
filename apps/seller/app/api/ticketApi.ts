@@ -30,6 +30,19 @@ export const apiFetchSellerOrders = async (): Promise<OrderSummary[]> => {
   );
 };
 
+export const apiCreateSellerTicket = async (
+  payload: TicketCreationPayload
+): Promise<Ticket | null> => {
+  console.log("payload", payload);
+  try {
+    const response = await api.post("/Tickets/create", payload);
+    return response.data as Ticket;
+  } catch (error) {
+    console.error("Error creating ticket:", error);
+    return null;
+  }
+};
+
 export const apiFetchSellerTickets = async (): Promise<Ticket[]> => {
   try {
     const response = await api.get("/Tickets");
@@ -39,45 +52,6 @@ export const apiFetchSellerTickets = async (): Promise<Ticket[]> => {
     console.error("Error fetching tickets:", error);
     return [];
   }
-};
-
-export const apiCreateSellerTicket = async (
-  payload: TicketCreationPayload
-): Promise<Ticket> => {
-  const sellerId = await getCurrentSellerId();
-  console.log(
-    `API: Creating seller ticket for sellerId: ${sellerId || "N/A"}...`,
-    payload
-  );
-
-  if (!sellerId) {
-    // Ovo je kritična greška za kreiranje, treba je obraditi
-    return Promise.reject(
-      new Error("Seller ID not found. Cannot create ticket.")
-    );
-  }
-
-  // Stvarni API poziv: POST /api/tickets, gde backend koristi autentifikovanog korisnika ili prosleđen sellerId
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newTicket: Ticket = {
-        id: `ticket${Math.random().toString(36).substring(2, 9)}`, // Malo bolji random ID
-        ...payload,
-        orderNumber:
-          mockSellerOrders.find((o) => o.id === payload.orderId)?.orderNumber ||
-          "N/A",
-        status: TicketStatus.OPEN,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        sellerId: sellerId, // Postavi sellerId
-      };
-      if (!mockTicketsStore[sellerId]) {
-        mockTicketsStore[sellerId] = [];
-      }
-      mockTicketsStore[sellerId] = [newTicket, ...mockTicketsStore[sellerId]]; // Dodaj na početak
-      resolve(newTicket);
-    }, 1000);
-  });
 };
 
 export const apiFetchTicketDetails = async (

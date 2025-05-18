@@ -13,8 +13,9 @@ import LanguageButton from "../../components/ui/buttons/LanguageButton";
 import InputField from "../../components/ui/input/InputField";
 import SubmitButton from "../../components/ui/input/SubmitButton";
 import DropdownPicker from "../../components/ui/input/DropdownPicker";
-import { apiCreateSellerTicket, apiFetchSellerOrders } from "../api/ticketApi";
-import { OrderSummary } from "../types/ticket";
+import { apiCreateSellerTicket } from "../api/ticketApi";
+import { apiFetchSellerOrders } from "../api/orderApi";
+import { Order } from "../types/order";
 
 export default function KreirajTicketScreen() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function KreirajTicketScreen() {
   const [description, setDescription] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [ordersForDropdown, setOrdersForDropdown] = useState<
-    { label: string; value: string }[]
+    { label: number; value: number }[]
   >([]);
   const [openOrderDropdown, setOpenOrderDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,10 +35,10 @@ export default function KreirajTicketScreen() {
     async function fetchOrders() {
       setLoadingOrders(true);
       try {
-        const fetchedOrders: OrderSummary[] = await apiFetchSellerOrders();
+        const fetchedOrders: Order[] = await apiFetchSellerOrders();
         setOrdersForDropdown(
           fetchedOrders.map((order) => ({
-            label: `${order.orderNumber}`,
+            label: order.id,
             value: order.id,
           }))
         );
@@ -76,7 +77,7 @@ export default function KreirajTicketScreen() {
     try {
       const payload = {
         orderId: selectedOrderId,
-        subject: subject.trim(),
+        title: subject.trim(),
         description: description.trim(),
       };
       const newTicket = await apiCreateSellerTicket(payload);

@@ -1,3 +1,4 @@
+import { Order } from "../types/order";
 import api from "./defaultApi";
 
 // Dohvatanje narudžbe
@@ -51,4 +52,14 @@ export const updateOrderStatus = (id: string, newStatus: string) => {
 // Brisanje narudžbe
 export const deleteOrder = (id: string) => {
   return api.delete(`/Order/${id}`);
+};
+
+export const apiFetchSellerOrders = async (): Promise<Order[] | []> => {
+  try {
+    const response = await api.get("/Order");
+    return response.data as Order[];
+  } catch (error) {
+    console.error("Error fetching seller orders:", error);
+    return [];
+  }
 };
