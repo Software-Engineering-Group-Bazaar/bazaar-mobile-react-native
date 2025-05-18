@@ -52,7 +52,14 @@ export default function Profil() {
         <Ionicons name="receipt-outline" size={24} color="#4e8d7c" />
         <Text style={styles.actionText}>{t('my_orders')}</Text>
       </TouchableOpacity>
-
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push('../screens/addresses')}
+      >
+        <Text style={styles.buttonText}>
+          {t('my_addresses')}
+        </Text>
+      </TouchableOpacity>
       <TouchableOpacity
         style={[styles.actionButton, styles.logoutButton]}
         onPress={handleLogout}

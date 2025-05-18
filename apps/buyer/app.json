@@ -43,7 +43,12 @@
         "android.permission.VIBRATE"
       ],
       "package": "com.anonymous.buyer",
-      "googleServicesFile": "./android/app/google-services.json"
+      "googleServicesFile": "./android/app/google-services.json",
+      "config": {
+        "googleMaps": {
+            "apiKey": "AIzaSyCr2UAxBSN0eZxa5ahJKokuzJZy9Em203Q"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
