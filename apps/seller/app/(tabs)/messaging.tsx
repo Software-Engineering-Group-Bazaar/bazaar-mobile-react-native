@@ -61,7 +61,7 @@ const ChatListScreen: React.FC = () => {
 
         // Setup SignalR connection
         const connection = new signalR.HubConnectionBuilder()
-          .withUrl("https://bazaar-system.duckdns.org/chathub", {
+          .withUrl("http://172.20.10.3:5054/chathub", {
             accessTokenFactory: async () => storedToken, // Use token for auth
           })
           .withAutomaticReconnect()
@@ -85,11 +85,11 @@ const ChatListScreen: React.FC = () => {
             if (index !== -1) {
               updated[index] = {
                 ...updated[index],
-                lastMessageSnippet: newMessage.content, 
-                lastMessageTimestamp: "Just now",    
+                lastMessageSnippet: newMessage.content,
+                lastMessageTimestamp: "Just now",
                 unreadMessagesCount: isOwnMessage
-                                  ? updated[index].unreadMessagesCount
-                                  : updated[index].unreadMessagesCount + 1,
+                  ? updated[index].unreadMessagesCount
+                  : updated[index].unreadMessagesCount + 1,
                 lastMessageSender: newMessage.senderUserId,
               };
             } else {
