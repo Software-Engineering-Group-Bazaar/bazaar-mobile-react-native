@@ -127,6 +127,7 @@ export default function KreirajTicketScreen() {
             setValue={setSelectedOrderId}
             setItems={setOrdersForDropdown} // Prosledi setItems
             placeholder={t("select_order_for_ticket") || "Izaberite narudžbu"}
+            
           />
         )}
         {ordersForDropdown.length === 0 && !loadingOrders && (
@@ -137,16 +138,15 @@ export default function KreirajTicketScreen() {
         )}
 
         <InputField
-          // icon="comment-alt" // Tvoj InputField ima drugačiji način za ikonicu, ili je nema za ovaj tip
-          label={t("ticket_subject") || "Naslov tiketa"} // Koristi label prop
+          label={t("ticket_subject") || "Naslov tiketa"}
           placeholder={
             t("ticket_subject_placeholder") || "Unesite naslov tiketa"
-          } // Placeholder je drugačiji
+          } 
           value={subject}
           onChangeText={setSubject}
-          multiline // Ovo je standardni TextInput prop, tvoj InputField bi trebalo da ga prosledi
+          multiline
           numberOfLines={2}
-          style={{ marginBottom: 5 }}
+          autoCapitalize="sentences"
           editable={!(loadingOrders || ordersForDropdown.length === 0)} // Koristi editable
           // isValid i errorText nisu potrebni ovde za sada
         />
@@ -161,7 +161,7 @@ export default function KreirajTicketScreen() {
           onChangeText={setDescription}
           multiline // Ovo je standardni TextInput prop, tvoj InputField bi trebalo da ga prosledi
           numberOfLines={5}
-          style={{ marginBottom: 25 }} // Tvoj InputField primenjuje marginBottom na textInputContainer, ovo je za mainContainer
+          autoCapitalize="sentences"
           editable={!(loadingOrders || ordersForDropdown.length === 0)}
         />
         <SubmitButton

@@ -8,12 +8,13 @@ import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { apiFetchFormattedConversations } from "../api/messagingApi";
 import { useFocusEffect } from "@react-navigation/native";
-import { baseURL } from "../env";
 
 interface ExtendedConversationDto extends ConversationDto {
   buyerUserId: string;
   lastMessageSender: string;
   buyerUsername?: string;
+  orderId?: number;
+  productId?: number;
 }
 
 const ChatListScreen: React.FC = () => {
@@ -71,7 +72,7 @@ const ChatListScreen: React.FC = () => {
 
         // Setup SignalR connection
         const connection = new signalR.HubConnectionBuilder()
-          .withUrl(`${baseURL}/chathub`, {
+          .withUrl("https://bazaar-system.duckdns.org/chathub", {
             accessTokenFactory: async () => storedToken, // Use token for auth
           })
           .withAutomaticReconnect()
