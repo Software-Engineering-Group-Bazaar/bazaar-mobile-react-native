@@ -137,7 +137,6 @@ export default function OptimalRouteMap() {
       } else {
         idsStringArray = [];
       }
-      console.log(idsStringArray)
       // Step 2: Convert to array of numbers
       const idsNumberArray = idsStringArray.map(id => Number(id));
 
