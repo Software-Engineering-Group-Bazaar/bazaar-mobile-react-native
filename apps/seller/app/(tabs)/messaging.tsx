@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import ConversationList from "proba-package/chat-components/ConversationList";
 import { ConversationDto } from "proba-package/chat-components/models";
-import { useTranslation } from "react-i18next";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import * as signalR from "@microsoft/signalr";
 import * as SecureStore from "expo-secure-store";
@@ -14,6 +13,8 @@ interface ExtendedConversationDto extends ConversationDto {
   buyerUserId: string;
   lastMessageSender: string;
   buyerUsername?: string;
+  orderId?: number;
+  productId?: number;
 }
 
 const ChatListScreen: React.FC = () => {
@@ -25,7 +26,9 @@ const ChatListScreen: React.FC = () => {
   const loadConversations = async () => {
     try {
       const fetchedConversations = await apiFetchFormattedConversations();
-      setConversations(fetchedConversations);
+      setConversations(
+        fetchedConversations.filter((conversation) => conversation.buyerUserId)
+      );
     } catch (error) {
       console.error("Failed to load conversations:", error);
     }
@@ -57,7 +60,15 @@ const ChatListScreen: React.FC = () => {
         }
 
         const fetchedConversations = await apiFetchFormattedConversations();
-        setConversations(fetchedConversations);
+        console.log(
+          "fetchedConversations",
+          JSON.stringify(fetchedConversations, null, 2)
+        );
+        setConversations(
+          fetchedConversations.filter(
+            (conversation) => conversation.buyerUserId
+          )
+        );
 
         // Setup SignalR connection
         const connection = new signalR.HubConnectionBuilder()
@@ -74,37 +85,41 @@ const ChatListScreen: React.FC = () => {
         // Handle incoming messages
         connection.on("ReceiveMessage", (newMessage: any) => {
           setConversations((prev) => {
-            const updated = [...prev];
-            const index = updated.findIndex(
-              (c) => c.id === newMessage.conversationId
-            );
+            if (newMessage.buyerUserId) {
+              const updated = [...prev];
+              const index = updated.findIndex(
+                (c) => c.id === newMessage.conversationId
+              );
 
-            const currentUserId = SecureStore.getItem("sellerId");
-            const isOwnMessage = newMessage.senderUserId == currentUserId;
+              const currentUserId = SecureStore.getItem("sellerId");
+              const isOwnMessage = newMessage.senderUserId == currentUserId;
 
-            if (index !== -1) {
-              updated[index] = {
-                ...updated[index],
-                lastMessageSnippet: newMessage.content, 
-                lastMessageTimestamp: "Just now",    
-                unreadMessagesCount: isOwnMessage
-                                  ? updated[index].unreadMessagesCount
-                                  : updated[index].unreadMessagesCount + 1,
-                lastMessageSender: newMessage.senderUserId,
-              };
+              if (index !== -1) {
+                updated[index] = {
+                  ...updated[index],
+                  lastMessageSnippet: newMessage.content,
+                  lastMessageTimestamp: "Just now",
+                  unreadMessagesCount: isOwnMessage
+                    ? updated[index].unreadMessagesCount
+                    : updated[index].unreadMessagesCount + 1,
+                  lastMessageSender: newMessage.senderUserId,
+                };
+              } else {
+                updated.unshift({
+                  id: newMessage.conversationId,
+                  otherParticipantName: newMessage.senderUsername,
+                  buyerUserId: "", // fallback or infer if needed
+                  lastMessageSender: newMessage.senderUserId,
+                  lastMessageSnippet: newMessage.content,
+                  lastMessageTimestamp: newMessage.sentAt,
+                  unreadMessagesCount: 1,
+                });
+              }
+
+              return updated;
             } else {
-              updated.unshift({
-                id: newMessage.conversationId,
-                otherParticipantName: newMessage.senderUsername,
-                buyerUserId: "", // fallback or infer if needed
-                lastMessageSender: newMessage.senderUserId,
-                lastMessageSnippet: newMessage.content,
-                lastMessageTimestamp: newMessage.sentAt,
-                unreadMessagesCount: 1,
-              });
+              return prev;
             }
-
-            return updated;
           });
         });
 

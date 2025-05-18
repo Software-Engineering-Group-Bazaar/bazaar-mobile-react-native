@@ -26,9 +26,7 @@ import {
  const { height } = Dimensions.get("window");
  const COLUMN_GAP = 16;
  
- 
  type OrderStatus = (typeof OrderStatusEnum)[number];
- 
  
  type Order = {
   id: number;
@@ -36,7 +34,6 @@ import {
   totalAmount: number;
   status: OrderStatus;
  };
- 
  
  export default function OrdersScreen() {
   const { t } = useTranslation();
@@ -181,15 +178,14 @@ import {
           <RefreshControl refreshing={refreshing} onRefresh={fetchOrders} />
         }
       >
-        <View style={styles.headerContainer}>
-          <StatusFilter
+        <StatusFilter
             selectedStatuses={selectedStatuses}
             toggleStatus={toggleStatus}
             sortNewestFirst={sortNewestFirst}
             setSortNewestFirst={setSortNewestFirst}
             setSelectedStatuses={setSelectedStatuses}
-          />
- 
+        />
+        <View style={styles.headerContainer}> 
           <View style={styles.actionContainer}>
             {selectableOrders.length > 0 && !selectionMode && (
               <TouchableOpacity
@@ -232,7 +228,6 @@ import {
           )}
         </View>
  
- 
         {selectionMode && selectedOrders.length > 0 && (
           <View style={styles.selectedCountContainer}>
             <Text style={styles.selectedCountText}>
@@ -240,7 +235,6 @@ import {
             </Text>
           </View>
         )}
- 
  
         {loading ? (
           <ActivityIndicator size="large" color="#4E8D7C" style={styles.loader} />
@@ -266,7 +260,6 @@ import {
     </View>
   );
  }
- 
  
  const styles = StyleSheet.create({
   scrollWrapper: {

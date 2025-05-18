@@ -1,6 +1,7 @@
+import { Order } from "../types/order";
 import api from "./defaultApi";
 
-// Dohvatanje narudžbe 
+// Dohvatanje narudžbe
 export const getOrderById = async (id: string) => {
   const res = await api.get(`/Order/${id}`);
 
@@ -35,7 +36,11 @@ export const getOrderById = async (id: string) => {
 
 
 // Kreiranje konverzacije
-export const apiCreateConversation = async (targetUserId: number, storeId: number, orderId: number) => {
+export const apiCreateConversation = async (
+  targetUserId: string,
+  storeId: number,
+  orderId: number
+) => {
   try {
     console.log(targetUserId, storeId, orderId);
     const response = await api.post("/Chat/conversations/find-or-create", {
@@ -74,4 +79,14 @@ export const updateOrderStatus = (
 // Brisanje narudžbe
 export const deleteOrder = (id: string) => {
   return api.delete(`/Order/${id}`);
+};
+
+export const apiFetchSellerOrders = async (): Promise<Order[] | []> => {
+  try {
+    const response = await api.get("/Order");
+    return response.data as Order[];
+  } catch (error) {
+    console.error("Error fetching seller orders:", error);
+    return [];
+  }
 };

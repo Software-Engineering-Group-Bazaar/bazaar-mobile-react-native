@@ -17,6 +17,8 @@ interface ExtendedConversationDto extends ConversationDto {
   buyerUsername: string;
   lastMessageSender: string;
   buyerUserId: string;
+  orderId?: number;
+  productId?: number;
 }
 
 const ConversationList: React.FC<Props> = ({
@@ -28,7 +30,14 @@ const ConversationList: React.FC<Props> = ({
       style={styles.item}
       onPress={() => onSelectConversation(item.id, item.buyerUsername)}
     >
-      <Text style={styles.username}>{item.otherParticipantName}</Text>
+      <Text style={styles.username}>
+        {item.otherParticipantName} 
+        {item.orderId ? (
+          <Text style={styles.grayText}> (Order #{item.orderId})</Text>
+        ) : item.productId ? (
+          <Text style={styles.grayText}> (Product #{item.productId})</Text>
+        ) : null}
+      </Text>
       <Text
         style={[
           styles.lastMessage,
@@ -63,6 +72,9 @@ const ConversationList: React.FC<Props> = ({
 const styles = StyleSheet.create({
   list: {
     padding: 16,
+  },
+  grayText: {
+    color: 'gray',
   },
   item: {
     padding: 15,
