@@ -192,5 +192,11 @@
   "Failed to update some orders.": "Neuspješno ažuriranje nekih narudžbi.",
   "Status Filter": "Filter statusa",
   "Loading": "Učitavanje",
-  "No orders found": "Nema narudžbi"
+  "No orders found": "Nema narudžbi",
+  "store_reviews_title": "Recenzije prodavnice",
+  "store_reviews_subtitle": "Pregledajte i odgovorite na povratne informacije kupaca",
+  "Select Delivery Type": "Odaberite vrstu dostave",
+  "Self Delivery": "Lična dostava",
+  "Admin Delivery": "Dostava od strane admina",
+  "Expected Preparation Time": "Očekivano vrijeme pripreme"
 }
