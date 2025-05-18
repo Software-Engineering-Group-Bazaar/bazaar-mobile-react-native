@@ -24,6 +24,10 @@ export default function OrdersLayout() {
           name="productDetails/[productId]"
           options={{ headerShown: false }} 
         />
+        <Stack.Screen
+          name="ticketCreate"
+          options={{ headerShown: false }} 
+        />
       </Stack>
     </>
   );

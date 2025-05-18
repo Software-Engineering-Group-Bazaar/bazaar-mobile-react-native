@@ -62,6 +62,15 @@ export default function Profil() {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => router.push('../screens/myTickets')}
+      >
+        <Ionicons name="map-outline" size={24} color="#4e8d7c" />
+        <Text style={styles.actionText}>
+          {t('my_tickets')}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
         style={[styles.actionButton, styles.logoutButton]}
         onPress={handleLogout}
       >
