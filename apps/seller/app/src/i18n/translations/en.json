@@ -164,6 +164,7 @@
   "order_details": "Order Details",
   "view_products": "View Products",
   "product_details": "Product Details",
+  "Created At": "Created At",
   "store_reviews": "Store Reviews",
   "store_reviews_description": "View and respond to customer reviews",
   "review_response_cannot_be_empty": "Response cannot be empty.",
@@ -181,5 +182,17 @@
   "failed_to_load_reviews": "Failed to load reviews. Please try again.",
   "buyer": "Buyer",
   "send_message": "Send Message",
-  "messages": "Messages"
+  "messages": "Messages",
+  "orders_submitted_successfully": "Orders submitted successfully.",
+  "failed_to_update_some_orders": "Failed to update orders.",
+  "send_orders": "Send orders",
+  "Selected": "Selected",
+  "delivery_address": "Deliery Address",
+  "Submit": "Submit",
+  "Select Delivery Type": "Select Delivery Type",
+  "Self Delivery": "Self Delivery",
+  "Admin Delivery": "Admin delivery",
+  "Expected Preparation Time": "Expected Preparation Time",
+  "Previous Route": "Previous Route",
+  "ruta_za_dostavu": "Route for delivery"
 }

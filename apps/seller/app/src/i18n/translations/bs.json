@@ -182,5 +182,17 @@
   "failed_to_load_reviews": "Učitavanje recenzija nije uspjelo. Molimo pokušajte ponovo.",
   "buyer": "Kupac",
   "send_message": "Pošalji poruku",
-  "messages": "Poruke"
+  "messages": "Poruke",
+  "orders_submitted_successfully": "Narudžbe uspješno poslane.",
+  "failed_to_update_some_orders": "Neuspješna izmjena narudžbi.",
+  "send_orders": "Pošalji narudžbe",
+  "Selected": "Odabrane",
+  "delivery_address": "Adresa dostave",
+  "Submit": "Pošalji",
+  "Select Delivery Type": "Odaberite način dostave",
+  "Self Delivery": "Samostalna isporuka",
+  "Admin Delivery": "Zakazivanje dostavljača",
+  "Expected Preparation Time": "Očekivano vrijeme pripreme",
+  "Previous Route": "Prethodna ruta",
+  "ruta_za_dostavu": "Ruta za dostavu"
 }

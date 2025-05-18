@@ -76,6 +76,7 @@ const ProductDetailsScreen = () => {
   const { cartItems, addToCart, handleQuantityChange } = useCart();
   const [quantity, setQuantity] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty || 1);
   const [quantityInput, setQuantityInput] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty?.toString() || '1');
+  const [quantitySuggestion, setQuantitySuggestion] = useState<string | null>(null);
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -95,14 +96,56 @@ const ProductDetailsScreen = () => {
 
   const handleQuantityInputChange = (text: React.SetStateAction<string>) => {
       setQuantityInput(text);
+      const newQuantity = parseInt(text.toString(), 10) || 0;
+      if (product) {
+        const difference = newQuantity - quantity;
+        const price = newQuantity <= (product.wholesaleThreshold || 0) ? product.retailPrice : product.wholesalePrice;
+        const totalPrice = Math.abs(difference) * price;
+        if (difference > 0) {
+          setQuantitySuggestion(t('add_suggestion', { count: difference, price: totalPrice.toFixed(2) }));
+        } else if (difference<0){
+          setQuantitySuggestion(t('remove_suggestion', { count: Math.abs(difference), price: totalPrice.toFixed(2) }));
+        }
+        else {
+          setQuantitySuggestion(null);
+       }
+      }
     };
 
     const incrementQuantity = () => {
       setQuantityInput(prev => (parseInt(prev, 10) + 1).toString());
+      const newQuantity = parseInt(quantityInput, 10) + 1;
+      if (product) {
+        const difference = newQuantity - quantity;
+        const price = newQuantity <= (product.wholesaleThreshold || 0) ? product.retailPrice : product.wholesalePrice;
+        const totalPrice = Math.abs(difference) * price;
+        if (difference > 0) {
+          setQuantitySuggestion(t('add_suggestion', { count: difference, price: totalPrice.toFixed(2) }));
+        } else if (difference<0){
+          setQuantitySuggestion(t('remove_suggestion', { count: Math.abs(difference), price: totalPrice.toFixed(2) }));
+        }
+        else {
+          setQuantitySuggestion(null);
+       }
+      }
   };
   
   const decrementQuantity = () => {
       setQuantityInput(prev => (Math.max(0, parseInt(prev, 10) - 1)).toString());
+      const newQuantity = Math.max(1, parseInt(quantityInput, 10) - 1);
+      if (product) {
+        const difference = newQuantity - quantity;
+        const price = newQuantity <= (product.wholesaleThreshold || 0) ? product.retailPrice : product.wholesalePrice;
+        const totalPrice = Math.abs(difference) * price;
+        if (difference > 0) {
+          setQuantitySuggestion(t('add_suggestion', { count: difference, price: totalPrice.toFixed(2) }));
+        } else if (difference<0){
+          setQuantitySuggestion(t('remove_suggestion', { count: Math.abs(difference), price: totalPrice.toFixed(2) }));
+        }
+        else {
+          setQuantitySuggestion(null);
+       }
+      }
   };
   
 
@@ -255,7 +298,7 @@ const ProductDetailsScreen = () => {
                    <FontAwesome name="plus" size={18} color="#000" />
                </TouchableOpacity>
            </View>
-           
+           {quantitySuggestion && <Text style={styles.quantitySuggestionText}>{quantitySuggestion}</Text>}
 
             {/*ovdje dodati dio mijenja količina u korpi*/}
             <TouchableOpacity style={styles.addToCartButton} onPress={async () => {
@@ -298,6 +341,7 @@ const ProductDetailsScreen = () => {
         handleQuantityChange(product, newQuantity);
         setQuantity(newQuantity); // Ažurirajte i quantity stanje
         alert(t('quantity-updated'));
+        setQuantitySuggestion(null);
       } else {
         Alert.alert(
           t('out of stock'),
@@ -328,6 +372,12 @@ const ProductDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  quantitySuggestionText: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: 'green',
+    textAlign: 'center',
+  },
   quantityInput: {
     width: 100, 
     height: 40,
