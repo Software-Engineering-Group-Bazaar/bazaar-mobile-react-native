@@ -1,31 +1,31 @@
 // File: types/ticket.ts
 
 export enum TicketStatus {
+  REQUESTED = "REQUESTED", // U obradi
   OPEN = "OPEN", // Otvoren
-  IN_PROGRESS = "IN_PROGRESS", // U obradi
   RESOLVED = "RESOLVED", // Rešen
-  CLOSED = "CLOSED", // Zatvoren
-  // Dodaj još statusa po potrebi (iz "Benjaminovog email-a")
 }
 
 export interface Ticket {
-  id: string; // Koristi string za ID-jeve generalno, lakše za API
-  orderId: string;
-  orderNumber?: string; // Za prikaz u listi tiketa ili detaljima
-  subject: string;
+  id: number;
+  title: string;
   description: string;
+  createdAt: string;
+  resolvedAt: string;
+  userId: string;
+  userUsername: string;
+  assignedAdminId: string;
+  adminUsername: string;
+  conversationId: number;
+  orderId: number;
   status: TicketStatus;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  sellerId: string; // ID prodavca koji je kreirao tiket
-  // buyerId?: string; // Ako i kupac može da vidi/kreira tiket vezan za istu narudžbu
+  isResolved: boolean;
 }
 
 export interface TicketCreationPayload {
   orderId: string;
   subject: string;
   description: string;
-  // sellerId će se verovatno dodavati na backendu na osnovu autentifikacije
 }
 
 // Za popunjavanje dropdown-a prilikom kreiranja tiketa

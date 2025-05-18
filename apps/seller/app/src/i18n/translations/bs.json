@@ -190,7 +190,7 @@
   "created_at_label": "Datum kreiranja",
   "customer_support": "Korisnička podrška",
   "customer_support_description": "Kontaktirajte podršku ili pregledajte tikete",
-  
+
   "failed_to_load_orders": "Nije uspelo učitavanje narudžbi.",
   "failed_to_load_ticket_details": "Nije uspelo učitavanje detalja tiketa.",
   "failed_to_load_tickets": "Nije uspelo učitavanje tiketa.",
@@ -222,13 +222,11 @@
   "ticket_id_missing": "ID tiketa nedostaje.",
   "ticket_not_found": "Tiket nije pronađen.",
   "ticket_not_found_details": "Detalji tiketa nisu pronađeni ili tiket ne postoji.",
-  "ticket_status_closed": "Zatvoren",
-  "ticket_status_in_progress": "U obradi",
   "ticket_status_label": "Status",
+  "ticket_status_requested": "Zatražen",
   "ticket_status_open": "Otvoren",
-  "ticket_status_resolved": "Rešen",
+  "ticket_status_resolved": "Riješen",
   "ticket_subject": "Naslov tiketa",
   "ticket_subject_label": "Naslov",
   "ticket_subject_placeholder": "Unesite naslov tiketa"
-
 }
