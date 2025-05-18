@@ -53,10 +53,11 @@ export default function Profil() {
         <Text style={styles.actionText}>{t('my_orders')}</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.button}
+        style={styles.actionButton}
         onPress={() => router.push('../screens/addresses')}
       >
-        <Text style={styles.buttonText}>
+        <Ionicons name="map-outline" size={24} color="#4e8d7c" />
+        <Text style={styles.actionText}>
           {t('my_addresses')}
         </Text>
       </TouchableOpacity>

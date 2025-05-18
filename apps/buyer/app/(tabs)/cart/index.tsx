@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   summary: {
-    flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 16,
   },
@@ -310,6 +309,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  totalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  }
 });
 
 export default CartScreen;
