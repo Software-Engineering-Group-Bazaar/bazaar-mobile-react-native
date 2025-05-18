@@ -218,11 +218,11 @@ export default function NarudzbaDetalji() {
        />
 
       {order.addressDetails?.address && (
-       <InfoCard
-      icon="map-marker"
-      title={t("delivery_address")}
-      text={order.addressDetails.address}
-       />
+        <InfoCard
+          icon="map-marker"
+          title={t("delivery_address")}
+          text={order.addressDetails.address}
+        />
       )}
 
        <View style={styles.section}>
