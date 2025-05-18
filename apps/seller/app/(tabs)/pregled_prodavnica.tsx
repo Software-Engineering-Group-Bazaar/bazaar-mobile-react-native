@@ -37,7 +37,11 @@ export default function StoresScreen() {
   };
   const handleViewReviews = () => {
     if (store) {
-      router.push(`../(CRUD)/pregled_reviews?storeId=${store.id}&storeName=${encodeURIComponent(store.name)}`);
+      router.push(
+        `../(CRUD)/pregled_reviews?storeId=${
+          store.id
+        }&storeName=${encodeURIComponent(store.name)}`
+      );
     } else {
       // Opciono: obavesti korisnika
       console.warn("Store is not defined, cannot view reviews.");
@@ -84,16 +88,19 @@ export default function StoresScreen() {
                 onPress={handleViewOrders}
               />
               <TouchableCard
-                 title={t("store_reviews")}
-                        textRows={[t("store_reviews_description")]}
-                        onPress={handleViewReviews} 
-                         />
+                title={t("store_reviews")}
+                textRows={[t("store_reviews_description")]}
+                onPress={handleViewReviews}
+              />
               {/* NOVA KARTICA ZA KORISNIČKU PODRŠKU */}
               <TouchableCard
                 title={t("customer_support") || "Korisnička podrška"}
-                textRows={[t("customer_support_description") || "Kontaktirajte podršku ili pregledajte tikete"]}
+                textRows={[
+                  t("customer_support_description") ||
+                    "Kontaktirajte podršku ili pregledajte tikete",
+                ]}
                 onPress={handleViewSupportTickets}
-              />          
+              />
             </View>
           )}
         </View>
