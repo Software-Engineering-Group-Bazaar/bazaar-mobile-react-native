@@ -202,8 +202,12 @@ export default function StoreScreen() {
     if (!response.ok) {
       // Ako HTTP status nije 2xx, nešto nije u redu
       const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
-      console.error('API Error Response Status:', response.status);
-      console.error('API Error Response Body:', errorText);
+//       console.error('API Error Response Status:', response.status);
+//       console.error('API Error Response Body:', errorText);
+         Alert.alert(
+           t('Error'),
+           t(errorText) // Pružite korisniku specifičnu poruku
+         );
       throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
     }
 
