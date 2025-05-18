@@ -30,7 +30,7 @@ export const OrderProductList: React.FC<Props> = ({ items, total, t }) => (
       </View>
     ))}
     <View style={styles.totalContainer}>
-      <Text style={styles.totalLabel}>{t("Total Amount")}:</Text>
+      <Text style={styles.totalLabel}>{t("Total_Amount")}:</Text>
       <Text style={styles.totalAmount}>{total} KM</Text>
     </View>
   </View>

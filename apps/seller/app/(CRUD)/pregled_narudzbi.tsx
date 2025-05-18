@@ -140,12 +140,12 @@ import {
       await Promise.all(
         selectedOrders.map((orderId) => updateOrderStatus(orderId.toString(), "Sent"))
       );
-      Alert.alert(t("Success"), t("Orders submitted successfully."));
+      Alert.alert(t("Success"), t("Orders_submitted_successfully"));
       fetchOrders();
       setSelectedOrders([]);
       setSelectionMode(false);
     } catch (error) {
-      Alert.alert(t("Error"), t("Failed to update some orders."));
+      Alert.alert(t("Error"), t("Failed_to_update_some_orders"));
     }
   };
  
@@ -180,7 +180,7 @@ import {
               >
                 <Send size={18} color="#FFFFFF" />
                 <Text style={styles.sendOrdersText}>
-                  {t("Send Orders")}
+                  {t("Send_Orders")}
                 </Text>
               </TouchableOpacity>
             </View>

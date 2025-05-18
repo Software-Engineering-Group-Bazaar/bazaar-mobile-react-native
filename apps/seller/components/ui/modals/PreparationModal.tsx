@@ -34,7 +34,7 @@ const PreparationModal: React.FC<PreparationModalProps> = ({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{t("Select Delivery Type")}</Text>
+          <Text style={styles.modalTitle}>{t("Select_Delivery_Type")}</Text>
 
           <View style={styles.deliveryOptionsContainer}>
             <TouchableOpacity
@@ -42,7 +42,7 @@ const PreparationModal: React.FC<PreparationModalProps> = ({
               onPress={() => setSelfDelivery(true)}
             >
               <Text style={[styles.deliveryOptionText, selfDelivery && styles.selectedDeliveryOptionText]}>
-                {t("Self Delivery")}
+                {t("Self_Delivery")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -50,12 +50,12 @@ const PreparationModal: React.FC<PreparationModalProps> = ({
               onPress={() => setSelfDelivery(false)}
             >
               <Text style={[styles.deliveryOptionText, !selfDelivery && styles.selectedDeliveryOptionText]}>
-                {t("Admin Delivery")}
+                {t("Admin_Delivery")}
               </Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.modalTitle}>{t("Expected Preparation Time")}</Text>
+          <Text style={styles.modalTitle}>{t("Expected_Preparation_Time")}</Text>
 
           <View style={styles.prepInputContainer}>
             <TextInput

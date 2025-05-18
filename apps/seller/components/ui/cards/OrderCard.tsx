@@ -31,12 +31,12 @@ function getTimeAgo(
 ) {
  const diff = Date.now() - new Date(timestamp).getTime();
  const minutes = Math.floor(diff / 60000);
- if (minutes < 1) return t("just now");
- if (minutes < 60) return t("min ago", { count: minutes });
+ if (minutes < 1) return t("just_now");
+ if (minutes < 60) return t("min_ago", { count: minutes });
  const hours = Math.floor(minutes / 60);
- if (hours < 24) return t("h ago", { count: hours });
+ if (hours < 24) return t("h_ago", { count: hours });
  const days = Math.floor(hours / 24);
- return t("d ago", { count: days });
+ return t("d_ago", { count: days });
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({

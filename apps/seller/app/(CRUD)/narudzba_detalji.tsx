@@ -23,12 +23,12 @@ const ORDER_STATUS_FLOW: Record<string, string[]> = {
 const getTimeAgo = (timestamp: string, t: any) => {
   const diff = Date.now() - new Date(timestamp).getTime();
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return t("just now");
-  if (minutes < 60) return t("min ago", { count: minutes });
+  if (minutes < 1) return t("just_now");
+  if (minutes < 60) return t("min_ago", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return t("h ago", { count: hours });
+  if (hours < 24) return t("h_ago", { count: hours });
   const days = Math.floor(hours / 24);
-  return t("d ago", { count: days });
+  return t("d_ago", { count: days });
 };
 
 export default function NarudzbaDetalji() {
@@ -70,7 +70,7 @@ export default function NarudzbaDetalji() {
       return;
     }
 
-    Alert.alert(t("Confirm Status Change"), t("Are you sure you want to change the order status?"), [
+    Alert.alert(t("Confirm_Status_Change"), t("Are_you_sure_you_want_to_change_the_order_status"), [
       { text: t("Cancel"), style: "cancel" },
       {
         text: t("Yes"),
@@ -80,7 +80,7 @@ export default function NarudzbaDetalji() {
             await updateOrderStatus(id, status);
             setOrder((prev: any) => ({ ...prev, status }));
           } catch {
-            alert(t("Failed to update status"));
+            alert(t("Failed_to_update_status"));
           } finally {
             setLoading(false);
           }
@@ -90,7 +90,7 @@ export default function NarudzbaDetalji() {
   };
 
   const handleDeleteOrder = () => {
-    Alert.alert(t("Confirm Delete"), t("Are you sure you want to delete this order?"), [
+    Alert.alert(t("Confirm Delete"), t("Are_you_sure_you_want_to_delete_this_order"), [
       { text: t("Cancel"), style: "cancel" },
       {
         text: t("Yes"),
@@ -134,7 +134,7 @@ export default function NarudzbaDetalji() {
       setOrder((prev: any) => ({ ...prev, status: "Confirmed" }));
       setPreparationModalVisible(false);
     } catch {
-      alert(t("Failed to update status"));
+      alert(t("Failed_to_update_status"));
     } finally {
       setLoading(false);
     }
@@ -151,7 +151,7 @@ export default function NarudzbaDetalji() {
   if (!order) {
     return (
       <View style={styles.container}>
-        <Text>{t("Order not found")}</Text>
+        <Text>{t("Order_not_found")}</Text>
       </View>
     );
   }
@@ -177,19 +177,19 @@ export default function NarudzbaDetalji() {
       >
         <InfoCard
           icon="clock"
-          title={t("Created At")}
+          title={t("Created_At")}
           text={`${new Date(order.time).toLocaleString()} (${getTimeAgo(order.time, t)})`}
         />
 
         {order.addressDetails?.address && (
-          <InfoCard icon="map-marker" title={t("Delivery Address")} text={order.addressDetails.address} />
+          <InfoCard icon="map-marker" title={t("Delivery_Address")} text={order.addressDetails.address} />
         )}
 
         <OrderProductList items={order.items} total={order.total} t={t} />
 
         {ORDER_STATUS_FLOW[order.status]?.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t("Change Status")}</Text>
+            <Text style={styles.sectionTitle}>{t("Change_Status")}</Text>
             <StatusButtons
               statuses={ORDER_STATUS_FLOW[order.status]}
               onChange={handleStatusUpdate}
