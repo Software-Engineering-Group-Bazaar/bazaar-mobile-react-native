@@ -1,14 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
-import ProductItem from 'proba-package/product-item/index';
-import { useTranslation } from 'react-i18next';
-import * as SecureStore from 'expo-secure-store';
-import { useRouter } from 'expo-router';
-import { TouchableOpacity, Modal, Button, Dimensions, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import Checkbox from 'expo-checkbox';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet,
+  TextInput,
+} from "react-native";
+import ProductItem from "proba-package/product-item/index";
+import { useTranslation } from "react-i18next";
+import * as SecureStore from "expo-secure-store";
+import { useRouter } from "expo-router";
+import {
+  TouchableOpacity,
+  Modal,
+  Button,
+  Dimensions,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native";
+import Checkbox from "expo-checkbox";
+import { baseURL, USE_DUMMY_DATA } from "proba-package";
+import { Ionicons } from "@expo/vector-icons";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 const buttonWidth = screenWidth * 0.3; // 30% širine ekrana
 
 interface ProductCategory {
@@ -40,11 +55,11 @@ interface Store {
   isActive: boolean;
   categoryid: number;
   logoUrl?: string;
-  place: number //opcina 
+  place: number; //opcina
 }
 
 interface StoreWithProducts {
-//   Store: Store;
+  //   Store: Store;
   id: number;
   name: string;
   products: Product[];
@@ -65,25 +80,214 @@ interface Place {
 // const USE_DUMMY_DATA = false; // Postavite na true za testiranje s dummy podacima
 
 const DUMMY_PRODUCTS: Product[] = [
-  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 1, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10 },
-  { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 1, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isActive: true },
-  { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 1, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isActive: true, wholesaleThreshold: 50 },
-  { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 1, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isActive: false },
-  { id: 105, name: 'Kruh pšenični', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.50, wholesalePrice: 1.30, storeId: 2, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Kruh'], isActive: true, wholesaleThreshold: 20 },
-  { id: 106, name: 'Jogurt 500g', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 1.10, wholesalePrice: 0.90, weight: 500, weightUnit: 'g', storeId: 2, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Jogurt'], isActive: true },
-  { id: 107, name: 'Apple iPhone 13', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 999, wholesalePrice: 950, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Iphone'], isActive: true, wholesaleThreshold: 5 },
-  { id: 108, name: 'Samsung Galaxy S21', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 950, wholesalePrice: 900, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Samsung'], isActive: true },
-  { id: 109, name: 'Slušalice Bose', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 200, wholesalePrice: 180, storeId: 4, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Slušalice'], isActive: true, wholesaleThreshold: 15 },
-  { id: 110, name: 'Dell Monitor 24" Full HD', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 300, wholesalePrice: 280, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Monitor'], isActive: true },
-  { id: 111, name: 'Čaj Zeleni', productCategory: { id: 5, name: 'Pića' }, retailPrice: 3.00, wholesalePrice: 2.50, storeId: 2, photos: ['https://via.placeholder.com/300/32CD32/000000?Text=Čaj'], isActive: true, wholesaleThreshold: 100 },
-  { id: 112, name: 'Kafa Moka', productCategory: { id: 5, name: 'Pića' }, retailPrice: 5.50, wholesalePrice: 5.00, storeId: 3, photos: ['https://via.placeholder.com/300/D2691E/000000?Text=Kafa'], isActive: true },
-  { id: 113, name: 'Vino Cabernet Sauvignon', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 15.00, wholesalePrice: 13.00, storeId: 5, photos: ['https://via.placeholder.com/300/8B0000/FFFFFF?Text=Vino'], isActive: true, wholesaleThreshold: 30 },
-  { id: 114, name: 'Pivo Heineken', productCategory: { id: 6, name: 'Alkoholna pića' }, retailPrice: 1.80, wholesalePrice: 1.50, storeId: 5, photos: ['https://via.placeholder.com/300/00FF00/FFFFFF?Text=Pivo'], isActive: true },
-  { id: 115, name: 'Računarski miš Logitech', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 25.00, wholesalePrice: 22.00, storeId: 5, photos: ['https://via.placeholder.com/300/D3D3D3/000000?Text=Miš'], isActive: true, wholesaleThreshold: 25 },
-  { id: 116, name: 'Gaming Monitor 27"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 400, wholesalePrice: 380, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Gaming+Monitor'], isActive: true },
-  { id: 117, name: 'LED TV 40"', productCategory: { id: 4, name: 'Elektronika' }, retailPrice: 350, wholesalePrice: 330, storeId: 4, photos: ['https://via.placeholder.com/300/87CEEB/FFFFFF?Text=TV'], isActive: true, wholesaleThreshold: 10 },
-  { id: 118, name: 'Knjiga "The Great Gatsby"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 15.00, wholesalePrice: 12.00, storeId: 1, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isActive: true },
-  { id: 119, name: 'Knjiga "1984"', productCategory: { id: 7, name: 'Knjige' }, retailPrice: 10.00, wholesalePrice: 8.00, storeId: 4, photos: ['https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga'], isActive: true, wholesaleThreshold: 50 },
+  {
+    id: 101,
+    name: "Mlijeko 1L",
+    productCategory: { id: 1, name: "Mliječni proizvodi" },
+    retailPrice: 2.5,
+    wholesalePrice: 2.2,
+    storeId: 1,
+    photos: ["https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko"],
+    isActive: true,
+    wholesaleThreshold: 10,
+  },
+  {
+    id: 102,
+    name: "Hljeb",
+    productCategory: { id: 2, name: "Pekarski proizvodi" },
+    retailPrice: 1.2,
+    wholesalePrice: 1.0,
+    storeId: 1,
+    photos: ["https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb"],
+    isActive: true,
+  },
+  {
+    id: 103,
+    name: "Jabuke 1kg",
+    productCategory: { id: 3, name: "Voće" },
+    retailPrice: 1.8,
+    wholesalePrice: 1.5,
+    weight: 1,
+    weightUnit: "kg",
+    storeId: 1,
+    photos: ["https://via.placeholder.com/300/90EE90/000000?Text=Jabuke"],
+    isActive: true,
+    wholesaleThreshold: 50,
+  },
+  {
+    id: 104,
+    name: "Banane 1kg",
+    productCategory: { id: 3, name: "Voće" },
+    retailPrice: 2.0,
+    wholesalePrice: 1.7,
+    weight: 1,
+    weightUnit: "kg",
+    storeId: 1,
+    photos: ["https://via.placeholder.com/300/FFFF00/000000?Text=Banane"],
+    isActive: false,
+  },
+  {
+    id: 105,
+    name: "Kruh pšenični",
+    productCategory: { id: 2, name: "Pekarski proizvodi" },
+    retailPrice: 1.5,
+    wholesalePrice: 1.3,
+    storeId: 2,
+    photos: ["https://via.placeholder.com/300/F0E68C/000000?Text=Kruh"],
+    isActive: true,
+    wholesaleThreshold: 20,
+  },
+  {
+    id: 106,
+    name: "Jogurt 500g",
+    productCategory: { id: 1, name: "Mliječni proizvodi" },
+    retailPrice: 1.1,
+    wholesalePrice: 0.9,
+    weight: 500,
+    weightUnit: "g",
+    storeId: 2,
+    photos: ["https://via.placeholder.com/300/ADD8E6/000000?Text=Jogurt"],
+    isActive: true,
+  },
+  {
+    id: 107,
+    name: "Apple iPhone 13",
+    productCategory: { id: 4, name: "Elektronika" },
+    retailPrice: 999,
+    wholesalePrice: 950,
+    storeId: 4,
+    photos: ["https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Iphone"],
+    isActive: true,
+    wholesaleThreshold: 5,
+  },
+  {
+    id: 108,
+    name: "Samsung Galaxy S21",
+    productCategory: { id: 4, name: "Elektronika" },
+    retailPrice: 950,
+    wholesalePrice: 900,
+    storeId: 4,
+    photos: ["https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Samsung"],
+    isActive: true,
+  },
+  {
+    id: 109,
+    name: "Slušalice Bose",
+    productCategory: { id: 4, name: "Elektronika" },
+    retailPrice: 200,
+    wholesalePrice: 180,
+    storeId: 4,
+    photos: ["https://via.placeholder.com/300/D3D3D3/000000?Text=Slušalice"],
+    isActive: true,
+    wholesaleThreshold: 15,
+  },
+  {
+    id: 110,
+    name: 'Dell Monitor 24" Full HD',
+    productCategory: { id: 4, name: "Elektronika" },
+    retailPrice: 300,
+    wholesalePrice: 280,
+    storeId: 4,
+    photos: ["https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Monitor"],
+    isActive: true,
+  },
+  {
+    id: 111,
+    name: "Čaj Zeleni",
+    productCategory: { id: 5, name: "Pića" },
+    retailPrice: 3.0,
+    wholesalePrice: 2.5,
+    storeId: 2,
+    photos: ["https://via.placeholder.com/300/32CD32/000000?Text=Čaj"],
+    isActive: true,
+    wholesaleThreshold: 100,
+  },
+  {
+    id: 112,
+    name: "Kafa Moka",
+    productCategory: { id: 5, name: "Pića" },
+    retailPrice: 5.5,
+    wholesalePrice: 5.0,
+    storeId: 3,
+    photos: ["https://via.placeholder.com/300/D2691E/000000?Text=Kafa"],
+    isActive: true,
+  },
+  {
+    id: 113,
+    name: "Vino Cabernet Sauvignon",
+    productCategory: { id: 6, name: "Alkoholna pića" },
+    retailPrice: 15.0,
+    wholesalePrice: 13.0,
+    storeId: 5,
+    photos: ["https://via.placeholder.com/300/8B0000/FFFFFF?Text=Vino"],
+    isActive: true,
+    wholesaleThreshold: 30,
+  },
+  {
+    id: 114,
+    name: "Pivo Heineken",
+    productCategory: { id: 6, name: "Alkoholna pića" },
+    retailPrice: 1.8,
+    wholesalePrice: 1.5,
+    storeId: 5,
+    photos: ["https://via.placeholder.com/300/00FF00/FFFFFF?Text=Pivo"],
+    isActive: true,
+  },
+  {
+    id: 115,
+    name: "Računarski miš Logitech",
+    productCategory: { id: 4, name: "Elektronika" },
+    retailPrice: 25.0,
+    wholesalePrice: 22.0,
+    storeId: 5,
+    photos: ["https://via.placeholder.com/300/D3D3D3/000000?Text=Miš"],
+    isActive: true,
+    wholesaleThreshold: 25,
+  },
+  {
+    id: 116,
+    name: 'Gaming Monitor 27"',
+    productCategory: { id: 4, name: "Elektronika" },
+    retailPrice: 400,
+    wholesalePrice: 380,
+    storeId: 4,
+    photos: [
+      "https://via.placeholder.com/300/87CEEB/FFFFFF?Text=Gaming+Monitor",
+    ],
+    isActive: true,
+  },
+  {
+    id: 117,
+    name: 'LED TV 40"',
+    productCategory: { id: 4, name: "Elektronika" },
+    retailPrice: 350,
+    wholesalePrice: 330,
+    storeId: 4,
+    photos: ["https://via.placeholder.com/300/87CEEB/FFFFFF?Text=TV"],
+    isActive: true,
+    wholesaleThreshold: 10,
+  },
+  {
+    id: 118,
+    name: 'Knjiga "The Great Gatsby"',
+    productCategory: { id: 7, name: "Knjige" },
+    retailPrice: 15.0,
+    wholesalePrice: 12.0,
+    storeId: 1,
+    photos: ["https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga"],
+    isActive: true,
+  },
+  {
+    id: 119,
+    name: 'Knjiga "1984"',
+    productCategory: { id: 7, name: "Knjige" },
+    retailPrice: 10.0,
+    wholesalePrice: 8.0,
+    storeId: 4,
+    photos: ["https://via.placeholder.com/300/FF6347/FFFFFF?Text=Knjiga"],
+    isActive: true,
+    wholesaleThreshold: 50,
+  },
 ];
 
 // const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
@@ -106,42 +310,47 @@ const DUMMY_PRODUCTS: Product[] = [
 // ];
 
 const DUMMY_REGIONS: Region[] = [
-  { id: 1, name: 'Sarajevski kanton', countryCode: 'BA' },
-  { id: 2, name: 'Tuzlanski kanton', countryCode: 'BA' }, 
-  { id: 3, name: 'Republika Srpska', countryCode: 'BA' }
+  { id: 1, name: "Sarajevski kanton", countryCode: "BA" },
+  { id: 2, name: "Tuzlanski kanton", countryCode: "BA" },
+  { id: 3, name: "Republika Srpska", countryCode: "BA" },
 ];
 
 const DUMMY_MUNICIPALITIES: Place[] = [
-  { id: 1, name: 'Sarajevo Centar', postalCode: '71000' },
-  { id: 2, name: 'Sarajevo Novi Grad', postalCode: '71000' },
-  { id: 3, name: 'Tuzla', postalCode: '75000' },
-  { id: 4, name: 'Lukavac', postalCode: '75300' },
-  { id: 5, name: 'Banja Luka', postalCode: '78000' },
-  { id: 6, name: 'Bijeljina', postalCode: '76300' }
+  { id: 1, name: "Sarajevo Centar", postalCode: "71000" },
+  { id: 2, name: "Sarajevo Novi Grad", postalCode: "71000" },
+  { id: 3, name: "Tuzla", postalCode: "75000" },
+  { id: 4, name: "Lukavac", postalCode: "75300" },
+  { id: 5, name: "Banja Luka", postalCode: "78000" },
+  { id: 6, name: "Bijeljina", postalCode: "76300" },
 ];
 
 const SearchProductsScreen = () => {
   const router = useRouter();
   const { t } = useTranslation();
-  const [storesWithProducts, setStoresWithProducts] = useState<StoreWithProducts[]>([]);
+  const [storesWithProducts, setStoresWithProducts] = useState<
+    StoreWithProducts[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  //za filtriranje 
+  const [searchQuery, setSearchQuery] = useState("");
+  //za filtriranje
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [regions, setRegions] = useState<Region[]>(DUMMY_REGIONS); // Koristimo dummy regije
   const [municipalities, setMunicipalities] = useState<Place[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
-  const [selectedMunicipalities, setSelectedMunicipalities] = useState<number[]>([]);
+  const [selectedMunicipalities, setSelectedMunicipalities] = useState<
+    number[]
+  >([]);
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [isRegionDropdownVisible, setIsRegionDropdownVisible] = useState(false);
-  const [isCategoryDropdownVisible, setIsCategoryDropdownVisible] = useState(false);
+  const [isCategoryDropdownVisible, setIsCategoryDropdownVisible] =
+    useState(false);
 
   const openFilterModal = () => {
     setIsFilterModalVisible(true);
   };
-  
+
   const closeFilterModal = () => {
     setIsFilterModalVisible(false);
   };
@@ -149,12 +358,15 @@ const SearchProductsScreen = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       if (USE_DUMMY_DATA) {
-        const dummyCategories = DUMMY_PRODUCTS.reduce((acc: ProductCategory[], product) => {
-          if (!acc.find(cat => cat.id === product.productCategory.id)) {
-            acc.push(product.productCategory);
-          }
-          return acc;
-        }, []);
+        const dummyCategories = DUMMY_PRODUCTS.reduce(
+          (acc: ProductCategory[], product) => {
+            if (!acc.find((cat) => cat.id === product.productCategory.id)) {
+              acc.push(product.productCategory);
+            }
+            return acc;
+          },
+          []
+        );
         setCategories(dummyCategories);
         setLoading(false);
         return;
@@ -164,33 +376,44 @@ const SearchProductsScreen = () => {
       setError(null);
 
       try {
-        const authToken = await SecureStore.getItemAsync('auth_token');
+        const authToken = await SecureStore.getItemAsync("auth_token");
         if (!authToken) {
-          throw new Error('Authentication token not found.');
+          throw new Error("Authentication token not found.");
         }
 
         //dohvacanje kategorija
-        const categoriesResponse = await fetch(baseURL + '/api/Catalog/categories', {
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-          },
-        });
+        const categoriesResponse = await fetch(
+          baseURL + "/api/Catalog/categories",
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
         if (!categoriesResponse.ok) {
           const errorBody = await categoriesResponse.text();
-          throw new Error(`HTTP error! status: ${categoriesResponse.status}, message: ${errorBody}`);
+          throw new Error(
+            `HTTP error! status: ${categoriesResponse.status}, message: ${errorBody}`
+          );
         }
-        const categoriesData: ProductCategory[] = await categoriesResponse.json();
+        const categoriesData: ProductCategory[] =
+          await categoriesResponse.json();
         setCategories(categoriesData);
 
         // dohvacanje regija
-        const regionsResponse = await fetch(baseURL + '/api/Geography/regions', {
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-          },
-        });
+        const regionsResponse = await fetch(
+          baseURL + "/api/Geography/regions",
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
         if (!regionsResponse.ok) {
           const errorBody = await regionsResponse.text();
-          throw new Error(`HTTP error! status: ${regionsResponse.status}, message: ${errorBody}`);
+          throw new Error(
+            `HTTP error! status: ${regionsResponse.status}, message: ${errorBody}`
+          );
         }
         const regionsData: Region[] = await regionsResponse.json();
         setRegions(regionsData);
@@ -198,7 +421,9 @@ const SearchProductsScreen = () => {
         setLoading(false);
       } catch (e: any) {
         console.error("Error fetching initial data:", e);
-        setError(e instanceof Error ? e : new Error('An unknown error occurred'));
+        setError(
+          e instanceof Error ? e : new Error("An unknown error occurred")
+        );
         setLoading(false);
       }
     };
@@ -219,27 +444,32 @@ const SearchProductsScreen = () => {
         // API poziv za dohvat opcina
         const fetchMunicipalitiesApi = async () => {
           try {
-            const authToken = await SecureStore.getItemAsync('auth_token');
+            const authToken = await SecureStore.getItemAsync("auth_token");
             if (!authToken) {
-              throw new Error('Authentication token not found.');
+              throw new Error("Authentication token not found.");
             }
 
             const url = baseURL + `/api/Geography/region/${regionId}`;
 
             const municipalitiesResponse = await fetch(url, {
               headers: {
-                'Authorization': `Bearer ${authToken}`,
+                Authorization: `Bearer ${authToken}`,
               },
             });
             if (!municipalitiesResponse.ok) {
               const errorBody = await municipalitiesResponse.text();
-              throw new Error(`HTTP error! status: ${municipalitiesResponse.status}, message: ${errorBody}`);
+              throw new Error(
+                `HTTP error! status: ${municipalitiesResponse.status}, message: ${errorBody}`
+              );
             }
-            const municipalitiesData: Place[] = await municipalitiesResponse.json();
+            const municipalitiesData: Place[] =
+              await municipalitiesResponse.json();
             setMunicipalities(municipalitiesData);
           } catch (e: any) {
             console.error("Error fetching municipalities:", e);
-            setError(e instanceof Error ? e : new Error('An unknown error occurred'));
+            setError(
+              e instanceof Error ? e : new Error("An unknown error occurred")
+            );
             setMunicipalities([]);
           }
         };
@@ -254,24 +484,36 @@ const SearchProductsScreen = () => {
   }, [selectedRegion]);
 
   const fetchStoreProducts = async () => {
-    console.log("Odabrana regija: ",selectedRegion, " odabrane opcine: ",selectedMunicipalities, " i odabrana kategorija: ",selectedCategory);
+    console.log(
+      "Odabrana regija: ",
+      selectedRegion,
+      " odabrane opcine: ",
+      selectedMunicipalities,
+      " i odabrana kategorija: ",
+      selectedCategory
+    );
 
     const regionName = selectedRegion
-      ? regions.find(r => r.id === selectedRegion)?.name // Pronađi regiju po ID-u
+      ? regions.find((r) => r.id === selectedRegion)?.name // Pronađi regiju po ID-u
       : null; // Ako nije odabrana regija
 
     const categoryName = selectedCategory
-      ? categories.find(c => c.id === selectedCategory)?.name // Pronađi kategoriju po ID-u
+      ? categories.find((c) => c.id === selectedCategory)?.name // Pronađi kategoriju po ID-u
       : null; // Ako nije odabrana kategorija
 
     let selectedMunicipalityNames: string[] = []; // Inicijalizujemo prazan niz za imena
 
     // Proveravamo da li imamo učitane opštine i da li je neka odabrana
-    if (municipalities && municipalities.length > 0 && selectedMunicipalities && selectedMunicipalities.length > 0) {
+    if (
+      municipalities &&
+      municipalities.length > 0 &&
+      selectedMunicipalities &&
+      selectedMunicipalities.length > 0
+    ) {
       selectedMunicipalityNames = selectedMunicipalities
-        .map(id => {
+        .map((id) => {
           // Za svaki odabrani ID, pronađi odgovarajući objekat opštine
-          const municipality = municipalities.find(m => m.id === id);
+          const municipality = municipalities.find((m) => m.id === id);
           // Vrati ime opštine ako je pronađena, inače undefined
           return municipality?.name;
         })
@@ -282,7 +524,9 @@ const SearchProductsScreen = () => {
 
     // Ispiši nazive umesto ID-jeva
     console.log(
-      `Pokretanje pretrage - Regija: ${regionName}, Općine: ${selectedMunicipalityNames}, Kategorija: ${categoryName}, Upit: ${searchQuery || 'Nema'}`
+      `Pokretanje pretrage - Regija: ${regionName}, Općine: ${selectedMunicipalityNames}, Kategorija: ${categoryName}, Upit: ${
+        searchQuery || "Nema"
+      }`
     );
 
     setLoading(false);
@@ -313,9 +557,9 @@ const SearchProductsScreen = () => {
     //   return;
     // }
 
-    const authToken = await SecureStore.getItemAsync('auth_token');
+    const authToken = await SecureStore.getItemAsync("auth_token");
     if (!authToken) {
-      throw new Error('Authentication token not found.');
+      throw new Error("Authentication token not found.");
     }
 
     // const body = {
@@ -334,44 +578,44 @@ const SearchProductsScreen = () => {
     //   body: JSON.stringify(body),
     // });
 
-    const baseUrl = baseURL + '/api/Catalog/filter';
+    const baseUrl = baseURL + "/api/Catalog/filter";
 
     // Koristimo URLSearchParams za lako kreiranje query stringa
     const params = new URLSearchParams();
 
     // Dodajemo parametre samo ako imaju vrednost
     if (regionName) {
-      params.append('region', regionName);
+      params.append("region", regionName);
     }
 
     // Za niz 'municipality', dodajemo svaki element kao poseban parametar sa istim imenom
     if (selectedMunicipalityNames && selectedMunicipalityNames.length > 0) {
-      selectedMunicipalityNames.forEach(municipality => {
+      selectedMunicipalityNames.forEach((municipality) => {
         // Server bi trebalo da bude konfigurisan da prihvati više parametara sa istim imenom kao niz
-        params.append('places', municipality);
+        params.append("places", municipality);
       });
     }
 
     if (categoryName) {
-      params.append('category', categoryName);
+      params.append("category", categoryName);
     }
 
     if (searchQuery) {
-      params.append('query', searchQuery);
+      params.append("query", searchQuery);
     }
 
     // Kreiramo kompletan URL sa query parametrima
     // params.toString() će automatski enkodirati vrednosti i spojiti ih sa '&'
     const queryString = params.toString();
-    const url = `${baseUrl}${queryString ? `?${queryString}` : ''}`; // Dodajemo '?' samo ako ima parametara
+    const url = `${baseUrl}${queryString ? `?${queryString}` : ""}`; // Dodajemo '?' samo ako ima parametara
 
-    console.log('Fetching URL:', url); // Za debugovanje
+    console.log("Fetching URL:", url); // Za debugovanje
 
     try {
       const response = await fetch(url, {
-        method: 'GET', // Metoda je GET
+        method: "GET", // Metoda je GET
         headers: {
-          'Authorization': `Bearer ${authToken}`,
+          Authorization: `Bearer ${authToken}`,
           // 'Content-Type' nije potreban za GET bez body-ja
           // Možda želite 'Accept' header ako očekujete JSON nazad:
           // 'Accept': 'application/json',
@@ -381,7 +625,9 @@ const SearchProductsScreen = () => {
 
       if (!response.ok) {
         const errorBody = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorBody}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${errorBody}`
+        );
       }
 
       console.log("Odgovor");
@@ -393,21 +639,20 @@ const SearchProductsScreen = () => {
       console.log(data);
 
       setStoresWithProducts(data);
-
     } catch (e: any) {
       console.error("Error fetching products:", e);
-      setError(e instanceof Error ? e : new Error('An unknown error occurred'));
+      setError(e instanceof Error ? e : new Error("An unknown error occurred"));
     } finally {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     const debounceFetch = setTimeout(() => {
       fetchStoreProducts();
     }, 500);
     return () => clearTimeout(debounceFetch);
-  }, [searchQuery, selectedCategory,selectedMunicipalities]);
+  }, [searchQuery, selectedCategory, selectedMunicipalities]);
 
   const handleProductPress = (product: Product) => {
     router.push(`/search/details/${product.id}`);
@@ -426,9 +671,9 @@ const SearchProductsScreen = () => {
   };
 
   const handleMunicipalityCheckboxChange = (municipalityId: number) => {
-    setSelectedMunicipalities(prev => {
+    setSelectedMunicipalities((prev) => {
       if (prev.includes(municipalityId)) {
-        return prev.filter(id => id !== municipalityId);
+        return prev.filter((id) => id !== municipalityId);
       } else {
         return [...prev, municipalityId];
       }
@@ -446,13 +691,18 @@ const SearchProductsScreen = () => {
   if (error) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorText}>{t('error_fetching_data')}: {error.message}</Text>
+        <Text style={styles.errorText}>
+          {t("error_fetching_data")}: {error.message}
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+       {/* Search Bar with Icon */}
+    <View style={styles.searchContainer}>
+      <Ionicons name="search-outline" size={20} color="#888" style={styles.searchIcon} />
       <TextInput
         style={styles.searchInput}
         placeholder={t('search_products_placeholder')}
@@ -460,186 +710,221 @@ const SearchProductsScreen = () => {
         onChangeText={setSearchQuery}
         clearButtonMode="while-editing"
       />
-
-<Modal
-    animationType="slide"
-    transparent={true}
-    visible={isFilterModalVisible}
-    onRequestClose={closeFilterModal}
->
-<TouchableWithoutFeedback onPress={() => { closeFilterModal(); }}>
-    <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}
-          onStartShouldSetResponder={() => true}>
-            <Text style={styles.modalTitle}>{t('filter_products')}</Text>
-
-            {/* Regije */}
-            {regions.length > 0 && (
-                <View style={styles.filterSection}>
-                    <Text style={styles.filterLabel}>{t('select_region')}:</Text>
-                    <TouchableOpacity
-                        style={styles.filterItem}
-                        onPress={() => setIsRegionDropdownVisible(!isRegionDropdownVisible)}
-                    >
-                        <Text style={styles.filterItemText}>
-                        {selectedRegion ? regions.find(r => r.id === selectedRegion)?.name : t('all')}
-                        </Text>
-                    </TouchableOpacity>
-
-                    {/* Dropdown za regije */}
-                    {isRegionDropdownVisible && (
-  <ScrollView
-    style={{ maxHeight: 200 }}
-    nestedScrollEnabled={true}
-    contentContainerStyle={styles.dropdownContainer}
-  >
-    {/* Opcija: Sve regije */}
-    <TouchableOpacity
-      style={[
-        styles.dropdownItem,
-        selectedRegion === null && styles.selectedFilterItem,
-      ]}
-      onPress={() => {
-        setSelectedRegion(null); // poništi selekciju
-        setIsRegionDropdownVisible(false); // Zatvori dropdown
-      }}
-    >
-      <Text
-        style={[
-          styles.filterItemText,
-          selectedRegion === null && styles.selectedFilterItemText,
-        ]}
-      >
-        {t('all')}
-      </Text>
-    </TouchableOpacity>
-
-    {/* Sve ostale regije */}
-    {regions.map((region) => (
-      <TouchableOpacity
-        key={region.id}
-        style={[
-          styles.dropdownItem,
-          selectedRegion === region.id && styles.selectedFilterItem,
-        ]}
-        onPress={() => {
-          setSelectedRegion(region.id);
-          setIsRegionDropdownVisible(false); // Zatvori dropdown
-        }}
-      >
-        <Text
-          style={[
-            styles.filterItemText,
-            selectedRegion === region.id && styles.selectedFilterItemText,
-          ]}
-        >
-          {region.name}
-        </Text>
-      </TouchableOpacity>
-    ))}
-  </ScrollView>
-)}
-
-                </View>
-            )}
-
-            {/* Opcine */}
-            {selectedRegion !== null && municipalities.length > 0 && (
-                <View style={styles.filterSection}>
-                    <Text style={styles.filterLabel}>{t('select_municipalities')}:</Text>
-                    <View style={styles.checkboxContainer}>
-                        {municipalities.map((municipality) => (
-                            <View key={municipality.id} style={styles.checkboxItem}>
-                                <Checkbox
-                                    value={selectedMunicipalities.includes(municipality.id)}
-                                    onValueChange={() => handleMunicipalityCheckboxChange(municipality.id)}
-                                />
-                                <Text style={styles.checkboxLabel}>{municipality.name}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            )}
-
-            {/* Kategorije */}
-            {categories.length > 0 && (
-                <View style={styles.filterSection}>
-                    <Text style={styles.filterLabel}>{t('select_category')}:</Text>
-                    <TouchableOpacity
-                        style={styles.filterItem}
-                        onPress={() => setIsCategoryDropdownVisible(!isCategoryDropdownVisible)}
-                    >
-                        <Text style={styles.filterItemText}>
-                        {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : t('all')}
-                        </Text>
-                    </TouchableOpacity>
-
-                    {/* Dropdown za kategorije */}
-                    {isCategoryDropdownVisible && (
-  <ScrollView
-    style={{ maxHeight: 200 }}
-    nestedScrollEnabled={true}
-    contentContainerStyle={styles.dropdownContainer}
-  >
-    {/* Opcija: Sve kategorije */}
-    <TouchableOpacity
-      style={[
-        styles.dropdownItem,
-        selectedCategory === null && styles.selectedFilterItem,
-      ]}
-      onPress={() => {
-        handleCategorySelect(null); // poništi selekciju
-        setIsCategoryDropdownVisible(false);
-      }}
-    >
-      <Text
-        style={[
-          styles.filterItemText,
-          selectedCategory === null && styles.selectedFilterItemText,
-        ]}
-      >
-        {t('all')}
-      </Text>
-    </TouchableOpacity>
-
-    {/* Sve ostale kategorije */}
-    {categories.map((category) => (
-      <TouchableOpacity
-        key={category.id}
-        style={[
-          styles.dropdownItem,
-          selectedCategory === category.id && styles.selectedFilterItem,
-        ]}
-        onPress={() => {
-          handleCategorySelect(category.id);
-          setIsCategoryDropdownVisible(false); // Zatvori dropdown
-        }}
-      >
-        <Text
-          style={[
-            styles.filterItemText,
-            selectedCategory === category.id && styles.selectedFilterItemText,
-          ]}
-        >
-          {category.name}
-        </Text>
-      </TouchableOpacity>
-    ))}
-  </ScrollView>
-)}
-
-                </View>
-            )}
-
-            <View style={styles.modalButtons}>
-            <Button title={t('reset_filters')} onPress={resetFilters} color='#4e8d7c'/>
-                <Button title={t('close')} onPress={closeFilterModal} color="gray" />
-            </View>
-        </View>
     </View>
-    </TouchableWithoutFeedback>
-</Modal>
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isFilterModalVisible}
+        onRequestClose={closeFilterModal}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => {
+            closeFilterModal();
+          }}
+        >
+          <View style={styles.modalOverlay}>
+            <View
+              style={styles.modalContainer}
+              onStartShouldSetResponder={() => true}
+            >
+              <Text style={styles.modalTitle}>{t("filter_products")}</Text>
+
+              {/* Regije */}
+              {regions.length > 0 && (
+                <View style={styles.filterSection}>
+                  <Text style={styles.filterLabel}>{t("select_region")}:</Text>
+                  <TouchableOpacity
+                    style={styles.filterItem}
+                    onPress={() =>
+                      setIsRegionDropdownVisible(!isRegionDropdownVisible)
+                    }
+                  >
+                    <Text style={styles.filterItemText}>
+                      {selectedRegion
+                        ? regions.find((r) => r.id === selectedRegion)?.name
+                        : t("all")}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Dropdown za regije */}
+                  {isRegionDropdownVisible && (
+                    <ScrollView
+                      style={{ maxHeight: 200 }}
+                      nestedScrollEnabled={true}
+                      contentContainerStyle={styles.dropdownContainer}
+                    >
+                      {/* Opcija: Sve regije */}
+                      <TouchableOpacity
+                        style={[
+                          styles.dropdownItem,
+                          selectedRegion === null && styles.selectedFilterItem,
+                        ]}
+                        onPress={() => {
+                          setSelectedRegion(null); // poništi selekciju
+                          setIsRegionDropdownVisible(false); // Zatvori dropdown
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.filterItemText,
+                            selectedRegion === null &&
+                              styles.selectedFilterItemText,
+                          ]}
+                        >
+                          {t("all")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {/* Sve ostale regije */}
+                      {regions.map((region) => (
+                        <TouchableOpacity
+                          key={region.id}
+                          style={[
+                            styles.dropdownItem,
+                            selectedRegion === region.id &&
+                              styles.selectedFilterItem,
+                          ]}
+                          onPress={() => {
+                            setSelectedRegion(region.id);
+                            setIsRegionDropdownVisible(false); // Zatvori dropdown
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.filterItemText,
+                              selectedRegion === region.id &&
+                                styles.selectedFilterItemText,
+                            ]}
+                          >
+                            {region.name}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  )}
+                </View>
+              )}
+
+              {/* Opcine */}
+              {selectedRegion !== null && municipalities.length > 0 && (
+                <View style={styles.filterSection}>
+                  <Text style={styles.filterLabel}>
+                    {t("select_municipalities")}:
+                  </Text>
+                  <View style={styles.checkboxContainer}>
+                    {municipalities.map((municipality) => (
+                      <View key={municipality.id} style={styles.checkboxItem}>
+                        <Checkbox
+                          value={selectedMunicipalities.includes(
+                            municipality.id
+                          )}
+                          onValueChange={() =>
+                            handleMunicipalityCheckboxChange(municipality.id)
+                          }
+                        />
+                        <Text style={styles.checkboxLabel}>
+                          {municipality.name}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {/* Kategorije */}
+              {categories.length > 0 && (
+                <View style={styles.filterSection}>
+                  <Text style={styles.filterLabel}>
+                    {t("select_category")}:
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.filterItem}
+                    onPress={() =>
+                      setIsCategoryDropdownVisible(!isCategoryDropdownVisible)
+                    }
+                  >
+                    <Text style={styles.filterItemText}>
+                      {selectedCategory
+                        ? categories.find((c) => c.id === selectedCategory)
+                            ?.name
+                        : t("all")}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Dropdown za kategorije */}
+                  {isCategoryDropdownVisible && (
+                    <ScrollView
+                      style={{ maxHeight: 200 }}
+                      nestedScrollEnabled={true}
+                      contentContainerStyle={styles.dropdownContainer}
+                    >
+                      {/* Opcija: Sve kategorije */}
+                      <TouchableOpacity
+                        style={[
+                          styles.dropdownItem,
+                          selectedCategory === null &&
+                            styles.selectedFilterItem,
+                        ]}
+                        onPress={() => {
+                          handleCategorySelect(null); // poništi selekciju
+                          setIsCategoryDropdownVisible(false);
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.filterItemText,
+                            selectedCategory === null &&
+                              styles.selectedFilterItemText,
+                          ]}
+                        >
+                          {t("all")}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {/* Sve ostale kategorije */}
+                      {categories.map((category) => (
+                        <TouchableOpacity
+                          key={category.id}
+                          style={[
+                            styles.dropdownItem,
+                            selectedCategory === category.id &&
+                              styles.selectedFilterItem,
+                          ]}
+                          onPress={() => {
+                            handleCategorySelect(category.id);
+                            setIsCategoryDropdownVisible(false); // Zatvori dropdown
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.filterItemText,
+                              selectedCategory === category.id &&
+                                styles.selectedFilterItemText,
+                            ]}
+                          >
+                            {category.name}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  )}
+                </View>
+              )}
+
+              <View style={styles.modalButtons}>
+                <TouchableOpacity style={[styles.modalBtn, styles.closeBtn]} onPress={closeFilterModal}>
+     <Text style={styles.modalBtnText}>{t('close')}</Text>
+   </TouchableOpacity>
+                 <TouchableOpacity style={[styles.modalBtn, styles.resetBtn]} onPress={resetFilters}>
+     <Text style={styles.modalBtnText}>{t('reset_filters')}</Text>
+   </TouchableOpacity>
+   
+              </View>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
 
       <FlatList
         data={storesWithProducts}
@@ -647,113 +932,131 @@ const SearchProductsScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.storeContainer}>
             <Text style={styles.storeName}>{item.name}</Text>
-            <TouchableOpacity style={styles.storeButton} onPress={() => router.push({
-              pathname: `/screens/store/[storeId]`,
-              params: { storeId: item.id },
-            })}>
-              <Text style = {{color:'white'}}>{t('details')}</Text>
-            </TouchableOpacity>          
+           <TouchableOpacity
+  style={styles.detailsButton}
+  onPress={() =>
+    router.push({
+      pathname: `/screens/store/[storeId]`,
+      params: { storeId: item.id },
+    })
+  }
+>
+  <Ionicons name="help-circle-outline" size={24} color="#fff" />
+</TouchableOpacity>
             {item.products.length > 0 ? (
               <FlatList
                 data={item.products}
                 keyExtractor={(product) => product.id.toString()}
                 renderItem={({ item: product }) => (
                   <View style={styles.productWrapper}>
-                    <ProductItem product={product} onPress={() => handleProductPress(product)} />
+                    <ProductItem
+                      product={product}
+                      onPress={() => handleProductPress(product)}
+                    />
                   </View>
                 )}
               />
             ) : (
-              <Text style={styles.noProductsInStore}>{t('no_products_in_store')}</Text>
+              <Text style={styles.noProductsInStore}>
+                {t("no_products_in_store")}
+              </Text>
             )}
           </View>
         )}
       />
 
-      <TouchableOpacity style={styles.floatingFilterButton} onPress={openFilterModal}>
-        <Text style={styles.floatingFilterButtonText}>{t('filter')}</Text>
-      </TouchableOpacity>
+      <TouchableOpacity
+  style={styles.floatingFilterButton}
+  onPress={openFilterModal}
+>
+  <Ionicons name="options-outline" size={24} color="#fff" />
+</TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   storeButton: {
-    backgroundColor: '#4e8d7c',
+    backgroundColor: "#4e8d7c",
     padding: 7,
     borderRadius: 9,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 10,
-    position: 'absolute',
+    position: "absolute",
     right: 27,
     top: 7,
     elevation: 3,
     height: 33,
     width: 90,
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 45,
+    fontSize: 16,
+    color: '#333',
+  },
   dropdownContainer: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 6,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginTop: 5,
-    overflow: 'scroll',
+    overflow: "scroll",
   },
   dropdownItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
   },
-  floatingFilterButton: {
-    position: 'absolute',
-  left: screenWidth / 2 - buttonWidth / 2,
-  bottom: 20,
-  backgroundColor: '#4e8d7c',
-  borderRadius: 30,
-  width: buttonWidth,
-  height: 60,
-  justifyContent: 'center',
-  alignItems: 'center',
-  elevation: 5,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  },
+  
   floatingFilterButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    minHeight: '50%',
+    minHeight: "50%",
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   filterSection: {
     marginBottom: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 12,
     borderRadius: 5,
-    borderColor: '#eee',
+    borderColor: "#eee",
     borderWidth: 1,
   },
   filterLabel: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   filterItem: {
@@ -761,113 +1064,104 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     marginBottom: 8,
   },
   selectedFilterItem: {
-    backgroundColor: '#4e8d7c',
-    borderColor: '#4e8d7c',
+    backgroundColor: "#4e8d7c",
+    borderColor: "#4e8d7c",
   },
   filterItemText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   selectedFilterItemText: {
-    color: 'white',
+    color: "white",
   },
   checkboxContainer: {
     marginLeft: 8,
   },
   checkboxItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 4,
   },
   checkboxLabel: {
     marginLeft: 8,
   },
-  modalButtons: {
+   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 20,
+     borderRadius: 24,
   },
   filterButton: {
-    backgroundColor: '#4e8d7c',
+    backgroundColor: "#4e8d7c",
     padding: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     margin: 10,
   },
   filterButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   storeContainer: {
-    backgroundColor: '#fff', 
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2, 
-    borderColor: '#4e8d7c',
-    borderWidth: 1
+    elevation: 2,
+    borderColor: "#4e8d7c",
+    borderWidth: 1,
   },
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#f8f8f8', 
+    backgroundColor: "#f8f8f8",
   },
-  centered: { 
+  centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8f8f8',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f8f8f8",
   },
   errorText: {
-      color: 'red',
-      textAlign: 'center',
-      marginHorizontal: 20,
-  },
-  searchInput: {
-    height: 45,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingLeft: 15,
-    marginBottom: 15,
-    backgroundColor: '#fff',
-    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+    marginHorizontal: 20,
   },
   loadingMoreIndicator: {
-      marginVertical: 10,
+    marginVertical: 10,
   },
   listContainer: {
     flex: 1,
-    backgroundColor: '#f8f8f8', 
+    backgroundColor: "#f8f8f8",
     borderRadius: 10,
     padding: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
   noResultsText: {
-      textAlign: 'center',
-      marginTop: 20,
-      fontSize: 16,
-      color: '#555',
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "#555",
   },
   storeGroup: {
     marginBottom: 20,
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
@@ -875,17 +1169,70 @@ const styles = StyleSheet.create({
   },
   storeName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   productWrapper: {
     marginRight: 10,
   },
   noProductsInStore: {
-    fontStyle: 'italic',
-    color: '#777',
+    fontStyle: "italic",
+    color: "#777",
     marginTop: 5,
-  }
+  },
+  
+  modalBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 8,
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    borderRadius: 24,        // <-- pill shape
+    alignItems: 'center',
+  },
+  resetBtn: {
+    backgroundColor: '#4e8d7c',
+  },
+  closeBtn: {
+    backgroundColor: '#c90202',
+  },
+  modalBtnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  detailsButton: {
+  position: 'absolute',
+  top: 6,
+  right: 6,
+  width: 36,
+  height: 36,
+  borderRadius: 18,
+  backgroundColor: '#4e8d7c',
+  justifyContent: 'center',
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.3,
+  shadowRadius: 2,
+  elevation: 4,
+},
+floatingFilterButton: {
+  position: 'absolute',
+  bottom: 24,
+  right: 24,
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+  backgroundColor: '#4e8d7c',
+  justifyContent: 'center',
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 6,
+},
 });
+
 
 export default SearchProductsScreen;

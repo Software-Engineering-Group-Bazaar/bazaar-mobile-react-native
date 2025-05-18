@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Button, ActivityIndicator, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams, Tabs } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
@@ -202,8 +202,12 @@ export default function StoreScreen() {
     if (!response.ok) {
       // Ako HTTP status nije 2xx, nešto nije u redu
       const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
-      console.error('API Error Response Status:', response.status);
-      console.error('API Error Response Body:', errorText);
+//       console.error('API Error Response Status:', response.status);
+//       console.error('API Error Response Body:', errorText);
+         Alert.alert(
+           t('Error'),
+           t(errorText) // Pružite korisniku specifičnu poruku
+         );
       throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
     }
 
@@ -328,123 +332,236 @@ export default function StoreScreen() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['top']} style={styles.safeArea}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 21, top: 21 }}>
-                    <FontAwesome name="arrow-left" size={21} color="white" />
-                </TouchableOpacity>
-              <Text style={styles.headerText}>{store?.name}</Text>
-            </View>
-          </SafeAreaView>
-
-      <ScrollView contentContainerStyle={styles.content}>      
-        {/* Store Details */}
-        <View style={[styles.section, styles.main]}>
-          <Text style={styles.sectionTitle}>{t('details')}</Text>
-          <Text style={styles.plain}>{t('address')}: {store?.address}</Text>
-          <Text style={styles.plain}>{t('description')}: {store?.description}</Text>
-          <Text style={styles.plain}>{t('category')}: {store?.categoryName}</Text>
-          <Text style={styles.plain}>{t('location')}: {store?.placeName}, {store?.regionName}</Text>
-          <Text style={styles.plain}>{t('status')}: {store?.isActive ? 'Active' : 'Inactive'}</Text>
-
-            <View style={[styles.section, styles.avgrating]}>
-                <Text style={styles.sectionTitle}>{t('average_rating')}</Text>
-                {rating !== null && renderStars(rating.rating)}
-            </View>
-          {/* Chat button */}
-          <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
-            <FontAwesome name="comments" size={24} color="white" />
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
+          <Text style={styles.headerTitle}>{store?.name}</Text>
         </View>
+      </SafeAreaView>
 
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* STORE INFO CARD */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>{t('details')}</Text>
+          <View style={styles.infoRow}>
+            <Ionicons name="map" size={18} color="#4e8d7c" style={styles.icon} />
+            <Text style={styles.infoText}>{store?.address}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <FontAwesome name="info-circle" size={18} color="#4e8d7c" style={styles.icon} />
+            <Text style={styles.infoText}>{store?.description}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Ionicons name="pricetags-outline" size={18} color="#4e8d7c" style={styles.icon} />
+            <Text style={styles.infoText}>{store?.categoryName}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Ionicons name="location-outline" size={18} color="#4e8d7c" style={styles.icon} />
+            <Text style={styles.infoText}>
+              {store?.placeName}, {store?.regionName}
+            </Text>
+          </View>
+          <View style={styles.infoRow}>
+            <FontAwesome name={store?.isActive ? 'check-circle' : 'times-circle'} size={18} color="#4e8d7c" style={styles.icon} />
+            <Text style={styles.infoText}>{store?.isActive ? 'Active' : 'Inactive'}</Text>
+          </View>
+          <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+            <FontAwesome name="comments" size={22} color="#fff" />
+          </TouchableOpacity>
+
+          {/* AVG RATING */}
+          <View style={[styles.cardSubSection, styles.avgRating]}>
+            <Text style={styles.subTitle}>{t('average_rating')}</Text>
+            {rating !== null && renderStars(rating.rating)}
+          </View>
+        </View>
         
 
-        {/* Reviews List */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('reviews')}</Text>
-          {reviews.map(review => (
-            <View key={review.review.id} style={styles.reviewCard}>
-              <Text style={styles.reviewBuyer}>{review.review.buyerId}</Text>
-              {renderStars(review.review.rating.toString())}
-              <Text style={[styles.plain, styles.bold]}>{t('comment')}: {review.review.comment}</Text> 
-              <Text style={styles.responseDate}>{formatted(new Date(review.review.dateTime))}</Text>
-              {review.response && (
-                <View style={styles.responseCard}>
-                  <Text style={styles.responseLabel}>{t('response')}:</Text>
-                  <Text>{review.response.response}</Text>
-                  <Text style={styles.responseDate}>{formatted(new Date(review.response.dateTime))}</Text>
-                </View>
-              )}
+        {/* REVIEWS */}
+        <Text style={styles.sectionHeader}>{t('reviews')}</Text>
+        {reviews.map(({ review, response }) => (
+          <View key={review.id} style={styles.reviewCard}>
+            <View style={styles.reviewHeader}>
+              <FontAwesome name="user-circle" size={20} color="#4e8d7c" />
+              <Text style={styles.reviewer}>{review.buyerId}</Text>
+              <Text style={styles.reviewDate}>{formatted(new Date(review.dateTime))}</Text>
             </View>
-          ))}
-        </View>
+            {renderStars(review.rating.toString())}
+            <Text style={styles.comment}>{review.comment}</Text>
+
+            {response && (
+              <View style={styles.responseCard}>
+                <Text style={styles.responseLabel}>{t('response')}</Text>
+                <Text style={styles.responseText}>{response.response}</Text>
+                <Text style={styles.responseDate}>{formatted(new Date(response.dateTime))}</Text>
+              </View>
+            )}
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
 }
 
+// keep your renderStars and formatted functions as-is
+
 const styles = StyleSheet.create({
-  chatButton: {
-  position: 'absolute',
-  marginTop:3,
-  right: 10,
-  backgroundColor: '#4E8D7C',
-  padding: 15,
-  borderRadius: 50,
-  shadowColor: '#000',
-  shadowOpacity: 0.25,
-  shadowRadius: 4,
-  elevation: 5,
-  zIndex: 999
+  safeArea: {
+    backgroundColor: '#4e8d7c',
   },
-    safeArea: {
-        backgroundColor: '#4e8d7c',
-    },
-    headerContainer: {
-        paddingVertical: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#4e8d7c',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 4,
-    },
-    headerText: {
-        color: '#fff',
-        fontSize: 22,
-        fontWeight: 'bold',
-        letterSpacing: 1,
-    },
-    container: { flex: 1, backgroundColor: '#fff' },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    content: { padding: 10 },
-    section: { marginBottom: 20, fontSize: 20},
-    sectionTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 5, color: '#4e8d7c' },
-    rating: { fontSize: 24, fontWeight: 'bold' },
-    reviewCard: { padding: 10, borderWidth: 1, borderColor: '#ddd', borderRadius: 15, marginBottom: 10 },
-    reviewBuyer: { fontWeight: 'bold', fontSize: 17 },
-    responseCard: { marginTop: 10, padding: 8, backgroundColor: '#eef', borderRadius: 11 },
-    responseLabel: { fontWeight: 'bold' },
-    responseDate: { marginTop: 4, fontSize: 12, color: '#555' },
-    starContainer: { flexDirection: 'row', marginVertical: 4 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  backBtn: {
+    marginRight: 12,
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#fff',
+    textAlign: 'center',
+    marginRight: 32,
+  },
+  container: { flex: 1, backgroundColor: '#f2f2f2' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  content: { padding: 16, paddingBottom: 32 },
+
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    // shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+    color: '#4e8d7c',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  icon: {
+    marginTop: 2,
+    marginRight: 8,
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 15,
+    color: '#444',
+    lineHeight: 20,
+  },
+  cardSubSection: {
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  avgRating: {
+justifyContent: 'center',
+    alignItems: 'center',
+    
+    
+  },
+  subTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
+  },
+
+  chatButton: {
+    position: 'absolute',
+    right: 16,
+    bottom: -24,
+    backgroundColor: '#4e8d7c',
+    padding: 14,
+    borderRadius: 30,
+    // shadow
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#4e8d7c',
+    marginBottom: 12,
+  },
+  reviewCard: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 16,
+    // shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  reviewer: {
+    marginLeft: 6,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    flex: 1,
+  },
+  reviewDate: {
+    fontSize: 12,
+    color: '#888',
+  },
+  comment: {
+    fontSize: 14,
+    color: '#444',
+    marginVertical: 8,
+    lineHeight: 20,
+  },
+  responseCard: {
+    backgroundColor: '#eef5f2',
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  responseLabel: {
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#4e8d7c',
+  },
+  responseText: {
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 18,
+  },
+  responseDate: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 4,
+    textAlign: 'right',
+  },
+  starContainer: { flexDirection: 'row', marginVertical: 4 },
     star: { marginRight: 4 },
-    main: { 
-        padding: 20, 
-        backgroundColor: '#fff', 
-        shadowColor: '#000', 
-        shadowOffset: { width: 0, height: 2 }, 
-        shadowOpacity: 0.2, 
-        shadowRadius: 2, 
-        elevation: 4,
-        marginBottom: 20,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 19,
-        fontSize: 22,
-    },
-    avgrating: {
+      avgrating: {
         padding: 10,
         backgroundColor: '#f9f9f9',
         borderWidth: 1,
@@ -454,6 +571,4 @@ const styles = StyleSheet.create({
         marginTop: 20,
         alignItems: 'center',
     },
-    plain: { fontSize: 16, marginBottom: 1 },
-    bold: { fontWeight: 'bold' },
 });

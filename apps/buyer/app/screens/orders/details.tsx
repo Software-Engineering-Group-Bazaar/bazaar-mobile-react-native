@@ -360,7 +360,7 @@ export default function DetailsScreen() {
     )}
       {/* Chat button */}
       <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
-        <FontAwesome name="comments" size={10} color="white" />
+        <FontAwesome name="comments" size={24} color="white" />
       </TouchableOpacity>
     </ScrollView>
   );

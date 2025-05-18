@@ -54,7 +54,7 @@ let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error(`HTTP error fetching user profile: ${response.status}, message: ${errorBody}. MOCK_CURRENT_USER_ID will remain its default.`);
+      console.log(`HTTP error fetching user profile: ${response.status}, message: ${errorBody}. MOCK_CURRENT_USER_ID will remain its default.`);
       // MOCK_CURRENT_USER_ID remains default if fetching profile fails
       return;
     }
@@ -80,7 +80,7 @@ let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one
 
   } catch (e) {
     // Catch any other errors during the async IIFE (e.g., network issues, SecureStore.getItemAsync failure)
-    console.error("Error during initial token/user-profile fetch:", e instanceof Error ? e.message : String(e));
+    console.log("Error during initial token/user-profile fetch:", e instanceof Error ? e.message : String(e));
     // MOCK_TOKEN might be its default or updated if SecureStore succeeded but profile fetch failed.
     // MOCK_CURRENT_USER_ID will be its default.
   }
@@ -138,13 +138,13 @@ const fetchApi = async (endpoint, options = {}) => {
     if (!response.ok) {
       let errorData = 'Unknown error';
       try { errorData = await response.text(); } catch (e) { /* ignore */ }
-      console.error(`API Error ${response.status} for ${endpoint}:`, errorData);
+      console.log(`API Error ${response.status} for ${endpoint}:`, errorData);
       throw new Error(`HTTP error ${response.status}: ${errorData.substring(0,100)}`);
     }
     if (response.status === 204) return null;
     return response.json();
   } catch (error) {
-    console.error("Network or API call failed:", error);
+    console.log("Network or API call failed:", error);
     throw error;
   }
 };
@@ -239,7 +239,9 @@ const ConversationsListScreen = () => {
       });
       setConversations(fetchedConversations);
     } catch (err) {
-      console.error("Failed to load conversations:", err);
+      console.log("Failed to load conversations:", err);
+      Alert.alert(t('Error'), t('Failed to load conversations'));
+
       setError(err.message || "Couldn't load conversations. Please try again.");
       if (USE_DUMMY_DATA) {
           Alert.alert("Dummy Data Error", "There was an issue loading dummy data.");
@@ -378,80 +380,89 @@ const ConversationsListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F4F8',
+    backgroundColor: '#F5F5F5', // Svijetlo siva pozadina za eleganciju
   },
   modeBanner: {
-    backgroundColor: '#FFA000',
-    paddingVertical: 8,
+    backgroundColor: '#607D8B', // Tamno siva / plavkasto siva za sofisticiranost
+    paddingVertical: 10,
     alignItems: 'center',
+    elevation: 3,
   },
   modeBannerText: {
-    color: 'white',
-    fontSize: 14,
+    color: '#FFFFFF', // Čisto bijela za kontrast
+    fontSize: 15,
     fontWeight: 'bold',
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#F4F4F8',
+    padding: 30,
+    backgroundColor: '#F5F5F5',
   },
   loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#555',
+    marginTop: 15,
+    fontSize: 17,
+    color: '#424242', // Tamno siva
   },
   modeText: {
-    marginTop: 5,
-    fontSize: 12,
-    color: '#888',
+    marginTop: 8,
+    fontSize: 13,
+    color: '#757575', // Srednje siva
   },
   errorText: {
-    color: '#D32F2F',
-    fontSize: 16,
+    color: '#D32F2F', // Jarko crvena za grešku (ostavljamo za isticanje)
+    fontSize: 17,
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   warningText: {
-    color: '#FFA000',
-    fontSize: 12,
+    color: '#FFA000', // Amber za upozorenje (ostavljamo za isticanje)
+    fontSize: 13,
     textAlign: 'center',
-    marginBottom: 10,
-    paddingHorizontal: 20,
+    marginBottom: 15,
+    paddingHorizontal: 30,
   },
   retryButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    elevation: 2,
+    backgroundColor: '#4E8D7C', // Bazna zelena kao akcenat
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   retryButtonText: {
-    color: 'white',
+    color: '#FFFFFF', // Bijela za kontrast na zelenoj
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
   list: {
     flex: 1,
+    paddingTop: 8,
   },
   itemContainer: {
     flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF', // Čisto bijela pozadina itema
+    borderRadius: 12,
+    marginBottom: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.18,
+    shadowRadius: 2,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 12,
-    backgroundColor: '#E0E0E0',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 15,
+    backgroundColor: '#80CBC4', // Svjetlija nijansa zelene kao placeholder
   },
   textContainer: {
     flex: 1,
@@ -461,57 +472,58 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 3,
+    marginBottom: 5,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#222',
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#212121', // Vrlo tamno siva
   },
   conversationTitle: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 3,
+    fontSize: 14,
+    color: '#616161', // Tamno siva
+    marginBottom: 5,
   },
   time: {
-    fontSize: 12,
-    color: '#777',
+    fontSize: 13,
+    color: '#757575',
   },
   lastMessage: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: 15,
+    color: '#424242',
     flex: 1,
-    marginRight: 8,
+    marginRight: 10,
   },
   unreadBadge: {
-    backgroundColor: '#007AFF',
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
+    backgroundColor: '#4E8D7C', // Bazna zelena za isticanje
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
   },
   unreadText: {
-    color: 'white',
-    fontSize: 11,
+    color: '#FFFFFF', // Bijela za kontrast na zelenoj
+    fontSize: 12,
     fontWeight: 'bold',
   },
   separator: {
     height: 1,
-    backgroundColor: '#EAEAEA',
-    marginLeft: 78,
+    backgroundColor: '#E0E0E0', // Svijetlo siva
+    marginLeft: 85,
   },
   emptyText: {
-    fontSize: 18,
-    color: '#777',
+    fontSize: 20,
+    color: '#616161',
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   emptySubText: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: 16,
+    color: '#757575',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: 10,
   }
 });
 

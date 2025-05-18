@@ -362,37 +362,33 @@ const ChatScreen = () => {
   const toggleIsPrivate = () => setIsPrivateChat(p => !p);
   const loadEarlier = () => { if (hasNextPage && !loadingEarlier && conversationId) fetchMessages(page + 1, false); };
 
-  const renderCustomBubble = (props) => {
-    const { currentMessage } = props;
-    if (currentMessage.isPrivateMessage) {
-      return (
-        <Bubble
-          {...props}
-          wrapperStyle={{
-            left: {
-              // Style for private messages received from others
-              backgroundColor: '#e6e6fa', // Example: Light Lavender
-            },
-            right: {
-              // Style for private messages sent by current user
-              backgroundColor: '#add8e6', // Example: Light Blue
-            },
-          }}
-          textStyle={{
-            left: {
-              color: '#333', // Optional: text color for received private messages
-            },
-            right: {
-              color: '#000', // Optional: text color for sent private messages
-            },
-          }}
-        />
-      );
-    }
-    // Default bubble rendering for non-private messages
-    return <Bubble {...props} />;
-  };
+const renderCustomBubble = (props) => {
+  const { currentMessage } = props;
+  const isCurrentUser = currentMessage.user?._id === props.user._id;
+  const isPrivate = currentMessage.isPrivateMessage;
 
+  const bubbleStyle = isPrivate ? styles.privateBubble : (isCurrentUser ? styles.regularBubble : styles.otherBubble);
+  const textStyle = isPrivate ? styles.privateText : (isCurrentUser ? styles.regularText : styles.otherText);
+
+return (
+  <View style={{ marginBottom: 2 }}>
+    {isPrivate && (
+      <Text style={styles.privateTagInline}>Private</Text>
+    )}
+    <Bubble
+      {...props}
+      wrapperStyle={{
+        left: bubbleStyle,
+        right: bubbleStyle,
+      }}
+      textStyle={{
+        left: textStyle,
+        right: textStyle,
+      }}
+    />
+  </View>
+);
+};
 
   if (!USE_DUMMY_DATA && !conversationId) {
       return (
@@ -446,15 +442,60 @@ const ChatScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flex: 1, backgroundColor: '#F0F8F7' }, // Vrlo svijetla nijansa zelene kao pozadina
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  loadingText: { marginTop: 10, fontSize: 16, color: '#555' },
-  modeText: { marginTop: 5, fontSize: 12, color: '#888' },
-  modeBanner: { backgroundColor: '#FFA000', paddingVertical: 8, alignItems: 'center' },
-  modeBannerText: { color: 'white', fontSize: 14, fontWeight: 'bold' },
-  controls: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 10, backgroundColor: '#f0f0f0', borderBottomWidth: 1, borderBottomColor: '#ccc' },
+  loadingText: { marginTop: 10, fontSize: 16, color: '#37474F' }, // Tamno siva
+  modeText: { marginTop: 5, fontSize: 12, color: '#78909C' }, // Sivo plava
+  modeBanner: { backgroundColor: '#80CBC4', paddingVertical: 10, alignItems: 'center' }, // Svjetlija nijansa bazne
+  modeBannerText: { color: 'white', fontSize: 15, fontWeight: 'bold' },
+  controls: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 15, backgroundColor: '#E0F2F1', borderBottomWidth: 1, borderBottomColor: '#B2DFDB' }, // Svjetlija nijansa
+  controlsText: { fontSize: 16, color: '#263238', marginRight: 15 }, // Tamno siva
   connectionStatus: { textAlign: 'center', paddingVertical: 8, paddingHorizontal: 5, color: 'white', fontWeight: 'bold', fontSize: 12 },
   errorText: { color: '#D32F2F', fontSize: 16, textAlign: 'center', marginBottom: 10 },
+ privateBubble: {
+    backgroundColor: '#B2DFDB',
+  },
+  privateText: {
+    color: '#263238',
+    fontWeight: 'bold',
+  },
+  regularBubble: {
+    backgroundColor: '#4E8D7C',
+  },
+  otherBubble: {
+    backgroundColor: '#E8F5E9',
+  },
+  regularText: {
+    color: '#FFFFFF',
+  },
+  otherText: {
+    color: '#263238',
+  },
+  privateTagTopContainer: {
+    position: 'absolute',
+  },
+  privateTagTop: {
+    backgroundColor: '#B39DDB',
+    borderRadius: 10,
+    paddingVertical: 3,
+    paddingHorizontal: 8
+  },
+  privateTagTopText: {
+    color: '#263238 ',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  privateTagInline: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#B2DFDB',
+    color: '#555555 ',
+    fontSize: 10,
+    fontWeight: 'bold',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 6,
+    marginLeft: 4,
+  },
 });
 
 export default ChatScreen;
