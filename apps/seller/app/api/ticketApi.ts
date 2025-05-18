@@ -19,32 +19,6 @@ const mockSellerOrders: OrderSummary[] = [
   { id: "order789", orderNumber: "Narudžba #ORD789" },
 ];
 
-// Mock podaci za tikete - sada ćemo im dodeliti sellerId dinamički
-let mockTicketsStore: { [sellerId: string]: Ticket[] } = {
-  defaultSeller: [
-    // Primer ako nemamo sellerId
-    {
-      id: "ticket001",
-      orderId: "order123",
-      orderNumber: "Narudžba #ORD123",
-      subject: "Problem sa isporukom (Default)",
-      description: "Kupac javlja da paket kasni.",
-      status: TicketStatus.OPEN,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      sellerId: "defaultSeller",
-    },
-  ],
-};
-
-// Inicijalizacija tiketa za određenog prodavca ako ne postoje
-const getTicketsForSeller = (sellerId: string): Ticket[] => {
-  if (!mockTicketsStore[sellerId]) {
-    mockTicketsStore[sellerId] = []; // Ili prekopiraj neke default tikete
-  }
-  return mockTicketsStore[sellerId];
-};
-
 export const apiFetchSellerOrders = async (): Promise<OrderSummary[]> => {
   const sellerId = await getCurrentSellerId();
   console.log(

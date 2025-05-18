@@ -1,6 +1,6 @@
 import api from "./defaultApi";
 
-// Dohvatanje narudžbe 
+// Dohvatanje narudžbe
 export const getOrderById = async (id: string) => {
   const res = await api.get(`/Order/${id}`);
   const enrichedItems = await Promise.all(
@@ -17,7 +17,11 @@ export const getOrderById = async (id: string) => {
 };
 
 // Kreiranje konverzacije
-export const apiCreateConversation = async (targetUserId: number, storeId: number, orderId: number) => {
+export const apiCreateConversation = async (
+  targetUserId: string,
+  storeId: number,
+  orderId: number
+) => {
   try {
     console.log(targetUserId, storeId, orderId);
     const response = await api.post("/Chat/conversations/find-or-create", {
