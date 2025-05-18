@@ -139,8 +139,8 @@
 
 ### index
 
-    | Modul | ID  | Opis                                      | Očekivani rezultat                          |
-    |-------|-----|-------------------------------------------|---------------------------------------------|
+| Modul | ID  | Opis                                      | Očekivani rezultat                          |
+|-------|-----|-------------------------------------------|---------------------------------------------|
 | chat  | 76  | Učitavanje razgovora u dummy modu         | Prikazuju se dummy razgovori (Ana, Pero, Iva) sortirani po lastMessageSentAt |
 | chat  | 77  | Učitavanje razgovora iz API-ja (live mod) | Prikazuju se stvarni razgovori sa servera, sortirani po datumu |
 | chat  | 78  | Token ne postoji u SecureStore            | Prikazuje se greška u konzoli, token ostaje "JWT_TOKEN", moguće greške u API pozivima |
@@ -304,10 +304,6 @@
 | ads | 191 | Navigacija kroz slike | Slike se izmjenjuju pravilno |
 | ads | 192 | Unos neispravne količine | Vraća se na default vrijednost (1) |
 
-## orders
-
-
-
 ## store
 
 | Modul | ID  | Opis | Očekivani rezultat |
@@ -323,3 +319,80 @@
 | store | 201 | Decimalni rating | Prikazuju se poluzvjezdice gdje je potrebno |
 | store | 202 | Formatiranje datuma | Datumi se prikazuju u formatu "dd.MM. HH:mm" |
 | store | 203 | Neuspješno učitavanje | Prikazuje grešku, gasi se loading indikator |
+
+## orders
+
+### details
+
+| Modul | ID  | Opis | Očekivani rezultat |
+|-------|-----|------|--------------------|
+| details | 204 | Prikaz detalja narudžbe sa validnim orderId | Treba prikazati sve detalje narudžbe (ID, datum, trgovinu, status, stavke, ukupnu cijenu) |
+| details | 205 | Prikaz detalja narudžbe sa nepostojećim orderId | Treba prikazati poruku "Narudžba nije pronađena" |
+| details | 206 | Prikaz narudžbe sa DUMMY podacima | Treba prikazati testne podatke iz DUMMY_ORDERS i DUMMY_PRODUCTS |
+| details | 207 | Prikaz narudžbe sa API podacima | Treba prikazati podatke dobivene sa API-ja (ako USE_DUMMY_DATA=false) |
+| details | 208 | Prikaz statusa narudžbe | Svaki status treba imati odgovarajuću boju (Requested, Confirmed, Ready, Sent, Delivered, Rejected, Canceled) |
+| details | 209 | Klik na proizvod u listi | Treba navigirati na ekran sa detaljima proizvoda sa proslijeđenim quantity parametrom |
+| details | 210 | Klik na chat dugme | Treba pokrenuti proces kreiranja/prikaza konverzacije za tu narudžbu |
+| details | 211 | Greška pri dohvatu podataka o narudžbi | Treba prikazati poruku o grešci |
+| details | 212 | Greška pri dohvatu imena trgovine | Treba prikazati poruku "Greška pri dohvaćanju informacija o trgovini" |
+| details | 213 | Prikaz loading indikatora | Treba prikazati ActivityIndicator dok se podaci učitavaju |
+| details | 214 | Prikaz ukupne cijene | Treba prikazati ispravno formatiranu ukupnu cijenu (npr. "6.20 KM") |
+| details | 215 | Prikaz prazne liste proizvoda | Ako narudžba nema stavki, ne treba prikazivati listu proizvoda |
+| details | 216 | Prikaz nepotpunih podataka o proizvodu | Ako neki proizvod nije pronađen, treba preskočiti prikaz te stavke |
+| details | 217 | Neuspješno kreiranje chata | Ako API vrati grešku pri kreiranju chata, treba prikazati odgovarajuću poruku |
+| details | 218 | Prikaz vremena narudžbe | Datum i vrijeme trebaju biti formatirani prema lokalnim postavkama |
+| details | 219 | Prikaz internacionaliziranog teksta | Svi tekstovi trebaju biti prikazani na odabranom jeziku (korištenje i18next) |
+| details | 220 | Responsive dizajn | Sadržaj treba biti čitljiv i na malim i na velikim ekranima (ScrollView) |
+| details | 221 | Prikaz ikone za chat | Dugme za chat treba imati FontAwesome ikonu "comments" |
+| details | 222 | Autentifikacija API poziva | Svi API pozivi trebaju imati validan auth token |
+| details | 223 | Prikaz neaktivnih proizvoda | Ako proizvod ima isActive=false, treba ga prikazati u listi ali možda sa posebnim stilom |
+
+### index
+
+| Modul | ID  | Opis | Očekivani rezultat |
+|-------|-----|------|--------------------|
+| orders | 224 | Prikaz liste narudžbi sa validnim podacima | Treba prikazati sve narudžbe u listi sa osnovnim informacijama (ID, cijena, status, prodavnica) |
+| orders | 225 | Prikaz prazne liste narudžbi | Treba prikazati poruku "Nema narudžbi za prikaz" |
+| orders | 226 | Prikaz narudžbi sa DUMMY podacima | Treba prikazati testne podatke iz DUMMY_ORDERS |
+| orders | 227 | Prikaz narudžbi sa API podacima | Treba prikazati podatke dobivene sa API-ja (ako USE_DUMMY_DATA=false) |
+| orders | 228 | Prikaz statusa narudžbe | Svaki status treba imati odgovarajuću boju (Requested, Confirmed, Ready, Sent, Delivered, Rejected, Canceled) |
+| orders | 229 | Klik na dugme "Detalji" | Treba navigirati na ekran sa detaljima odabrane narudžbe |
+| orders | 230 | Klik na dugme "Recenzija" | Treba navigirati na ekran za recenziju sa proslijeđenim orderId i storeId |
+| orders | 231 | Greška pri dohvatu podataka o narudžbama | Treba prikazati praznu listu ili poruku o grešci |
+| orders | 232 | Prikaz loading indikatora | Treba prikazati ActivityIndicator dok se podaci učitavaju |
+| orders | 233 | Formatiranje cijene | Cijena treba biti prikazana s 2 decimale (npr. "6.20 KM") |
+| orders | 234 | Sortiranje narudžbi | Narudžbe trebaju biti prikazane obrnutim redoslijedom (najnovije prvo) |
+| orders | 235 | Prikaz imena prodavnice | Ako je storeId poznat, treba prikazati ime prodavnice umjesto ID-a |
+| orders | 236 | Internacionalizacija teksta | Svi tekstovi trebaju biti prikazani na odabranom jeziku (korištenje i18next) |
+| orders | 237 | Responsive dizajn | Lista treba biti čitljiva i na malim i na velikim ekranima |
+| orders | 238 | Autentifikacija API poziva | Svi API pozivi trebaju imati validan auth token |
+| orders | 239 | Simulacija kašnjenja učitavanja | Kod DUMMY podataka treba prikazati loading indikator barem 1 sekundu |
+| orders | 240 | Prikaz nepoznatog statusa | Ako status nije u statusColors mapi, treba koristiti defaultnu crnu boju |
+| orders | 241 | Prikaz dugmadi za svaku narudžbu | Svaka narudžba treba imati "Detalji" i "Recenzija" dugmad |
+| orders | 242 | Greška pri dohvatu podataka o prodavnicama | Treba prikazati storeId umjesto imena prodavnice |
+| orders | 243 | Stilizacija kartica narudžbi | Svaka narudžba treba biti jasno odvojena u svojoj kartici |
+
+### review
+
+| Modul | ID  | Opis | Očekivani rezultat |
+|-------|-----|------|--------------------|
+| Review | 244 | Prikaz forme za recenziju | Treba prikazati 5 zvjezdica, polje za komentar i submit dugme |
+| Review | 245 | Odabir ocjene | Klik na zvjezdicu treba postaviti odabranu ocjenu (1-5) |
+| Review | 246 | Slanje recenzije bez ocjene | Treba prikazati grešku "Molimo odaberite ocjenu" |
+| Review | 247 | Slanje recenzije sa prekratkim komentarom | Treba prikazati grešku za minimalnu dužinu komentara |
+| Review | 248 | Slanje recenzije sa predugačkim komentarom | Treba prikazati grešku za maksimalnu dužinu komentara |
+| Review | 249 | Uspešno slanje recenzije (DUMMY) | Kod DUMMY podataka treba simulirati uspešno slanje i vratiti se nazad |
+| Review | 250 | Uspešno slanje recenzije (API) | Kod pravog API-ja treba poslati podatke i vratiti se na prethodni ekran |
+| Review | 251 | Pokušaj ponovnog slanja recenzije | Ako recenzija već postoji, treba prikazati Alert poruku |
+| Review | 252 | Greška pri slanju recenzije | Treba prikazati odgovarajuću grešku |
+| Review | 253 | Mrežna greška | Treba prikazati poruku "Problem s mrežom" |
+| Review | 254 | Internacionalizacija teksta | Svi tekstovi trebaju biti prikazani na odabranom jeziku |
+| Review | 255 | Prikaz odabranih zvjezdica | Odabrane zvjezdice trebaju biti popunjene (★), neodabrane prazne (☆) |
+| Review | 256 | Validacija komentara | Komentar mora biti između 4 i 1000 karaktera |
+| Review | 257 | Stilizacija input polja | Polje za komentar treba imati multiline podršku i vertikalno poravnanje |
+| Review | 258 | Prikaz grešaka | Greške trebaju biti vidljive ispod odgovarajućih polja |
+| Review | 259 | Navigacija nakon uspešnog slanja | Nakon uspešnog slanja treba se vratiti na prethodni ekran |
+| Review | 260 | Autentifikacija API poziva | API poziv treba imati validan auth token |
+| Review | 261 | Konzolni log podataka | Podaci za recenziju trebaju biti logovani u konzoli prije slanja |
+| Review | 262 | Responsive dizajn | Forma treba biti čitljiva na svim veličinama ekrana |
+| Review | 263 | Proslijeđeni parametri | orderId i storeId trebaju biti proslijeđeni iz prethodnog ekrana |

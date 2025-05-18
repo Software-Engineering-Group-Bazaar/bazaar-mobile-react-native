@@ -1,6 +1,6 @@
 // screens/ads/index.test.tsx
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, screen, within } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import ProductDetailsScreen from '../../../app/screens/orders/productDetails/[productId]';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -146,7 +146,7 @@ describe('Ads Screen', () => {
         });
         (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
 
-        const { debug, getByText } = render(<ProductDetailsScreen />);
+        const { getByText } = render(<ProductDetailsScreen />);
 
         await waitFor(() => expect(getByText('Test Product')).toBeTruthy());
         expect(Alert.alert).not.toHaveBeenCalled();
