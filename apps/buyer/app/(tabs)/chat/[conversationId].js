@@ -176,7 +176,7 @@ const ChatScreen = () => {
   const pathConversationId = params.conversationId;
   const paramMyId = params.buyerUserId;
   const paramMyUserName = params.buyerUsername;
-  const paramOtherUserName = params.sellerUsername;
+  const paramOtherUserName = params.otherUserUsername;
 
   console.log("Moj id: ", paramMyId);
   MOCK_CURRENT_USER._id = paramMyId;

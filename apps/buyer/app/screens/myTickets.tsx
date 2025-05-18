@@ -160,15 +160,23 @@ export default function MyTicketsScreen() {
     fetchTickets(1, true);
   }, [fetchTickets]);
 
-  const handleOpenChat = (conversationId: number, ticketId: number) => {
+  const handleOpenChat = (item : Ticket) => {
     // Pretpostavljena ruta za chat, prilagodite je vašoj strukturi
     // Može biti npr. `/chat/${conversationId}` ili `/tickets/chat/${conversationId}`
     // Ako koristite fajl-sistem rute, npr. app/chat/[conversationId].tsx
     // ili app/tickets/chat/[conversationId].tsx
+
     router.push({
-      pathname: `/chat/${conversationId}` as any, // PRILAGODITE OVU PUTANJU!
-      params: { ticketId: ticketId.toString() },
-    });
+        pathname: `(tabs)/chat/${item.conversationId}` as any, // Dynamic route using conversation ID
+        params: {
+          otherUserUsername: item.adminUsername,
+          otherUserId: item.assignedAdminId,
+          buyerUserId: item.userId,
+          buyerUsername: item.userUsername,
+          //otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
+          // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
+        },
+      });
   };
 
   const formatDate = (dateString: string) => {
@@ -205,7 +213,7 @@ export default function MyTicketsScreen() {
       </View>
       <TouchableOpacity
         style={styles.chatButton} // Koristi stil prilagođenog dugmeta
-        onPress={() => handleOpenChat(item.conversationId, item.id)}
+        onPress={() => handleOpenChat(item)}
       >
         <Text style={styles.chatButtonText}>{t('open_chat_button', 'Open Chat')}</Text>
       </TouchableOpacity>
