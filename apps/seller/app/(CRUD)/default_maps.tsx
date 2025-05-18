@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Dimensions } from 'react-native';
 import MapView, { Polyline, Marker, LatLng, Region } from 'react-native-maps';
 import polyline from '@mapbox/polyline';
-import { apiFetchActiveStore } from "../api/storeApi";
-import { useLocalSearchParams } from 'expo-router';
-import { getOrderById } from '../api/orderApi'
 import { apiGetRoute } from '../api/routesApi';
 import * as SecureStore from "expo-secure-store";
 
@@ -44,69 +41,72 @@ export default function OptimalRouteMap() {
   const [region, setRegion] = useState<Regija | undefined>();
   const [waypoints, setWaypoints] = useState<Point[]>([]);
   const [loading, setLoading] = useState(true);
-  const orderIds = useLocalSearchParams();
   const [optimalRoute, setOptimalRoute] = useState<any>(null);
   
-  async function getStore() {
-    setLoading(true);
-    const activeStore = await apiFetchActiveStore();
-    setLoading(false);
-    if(activeStore) return activeStore.address;
-  }
-
-  /*async function fetchAddresses() {
-    try {
-      let idsArray: number[] = [];
-      if (typeof orderIds.orders === "string") {
-        try {
-          const parsed = JSON.parse(orderIds.orders);
-          if (Array.isArray(parsed)) {
-            idsArray = parsed.map((id: any) => Number(id)); 
-          }
-        } catch (error) {
-          console.error("Error parsing order IDs:", error);
-        }
-      } else if (Array.isArray(orderIds.orders)) {
-        idsArray = orderIds.orders.map((id: any) => Number(id));
-      } else {
-        idsArray = [];
-      }
-
-      setIds(idsArray);
-
-      const results = await Promise.all(
-        idsArray.map(async (id) => {
-          const order = await getOrderById(id.toString());
-          return order.addressDetails.address;
-        })
-      );
-
-      setLocations(results);
-    } catch (error) {
-      console.error("Failed to parse order IDs or fetch addresses", error);
-    }
-  }*/
-
   useEffect(() => {
     const fetchPreviousRoute = async () => {
-        try {
-        
-        const routeId = await SecureStore.getItemAsync('routeId');
-        console.log(routeId);
-        if (!routeId) throw new Error('No previous route ID found');
+        try {       
+          const routeId = await SecureStore.getItemAsync('routeId');
+          console.log(routeId);
+          if (!routeId) throw new Error('No previous route ID found');
 
-        const response = await apiGetRoute(Number(routeId));
-        if (!response.ok) throw new Error(`Error fetching route: ${response.statusText}`);
-
-        const data = await response.json();
-        console.log('Previous route data:', data);
+          const route = await apiGetRoute(Number(routeId));
+          console.log("Fetched route:", route);
+          setOptimalRoute(route);
         } catch (error) {
-        console.error('Error fetching previous route:', error);
+          	console.error('Error fetching previous route:', error);
         }
     };
 
     fetchPreviousRoute();
-    }, []);
+  }, []);
+
+  useEffect(() => {
+    if (!optimalRoute || !optimalRoute.overview_polyline) {
+      console.log("Optimal route not yet loaded");
+      return;
+    }
+    else{
+      const overviewPolyline = optimalRoute?.overview_polyline?.points;
+      if (!overviewPolyline) {
+          console.error("Overview polyline missing");
+          return;
+      }
+
+      // Decode polyline to get the route coordinates
+      const points = polyline.decode(overviewPolyline).map(([lat, lng]) => ({
+          latitude: lat,
+          longitude: lng,
+      }));
+
+      const waypoints: any[] = [];
+      let accumulatedTime = 0;
+
+      waypoints.push({
+          latitude: optimalRoute.legs[0].start_location.lat,
+          longitude: optimalRoute.legs[0].start_location.lng,
+          address: optimalRoute.legs[0].start_address,
+          duration: "Start Location",
+      });
+
+      optimalRoute.legs.forEach((leg: any, index: number) => {
+          accumulatedTime += leg.duration.value; // Accumulate travel time
+
+          waypoints.push({
+              latitude: leg.end_location.lat,
+              longitude: leg.end_location.lng,
+              address: leg.end_address,
+              duration: accumulatedTime >= 3600
+                  ? `${Math.floor(accumulatedTime / 3600)}h ${Math.floor((accumulatedTime % 3600) / 60)}m`
+                  : `${Math.floor(accumulatedTime / 60)}min`
+          });
+      });
+
+      setRoute(points);
+      setWaypoints(waypoints);
+      setRegion(getBoundingRegion(points));
+    }
+  }, [optimalRoute]);
 
   return (
     <View style={{ flex: 1 }}>

@@ -1,13 +1,18 @@
 import api from "./defaultApi";
 import * as SecureStore from "expo-secure-store";
 
-export async function apiCreateRoute(orderIds: number[], routeData: any) {
+export async function apiCreateRoute(orderIds: number[], routeDataJSON: any) {
     try {
-        const response = await api.post("/Delivery/routes", {
+        const routePayload = {
             orderIds: orderIds,
             routeData: {
-                data: routeData,
-                hash: "AAaaAAA",
+                data: routeDataJSON,
+                hash: "nes",
+            }
+        }
+        const response = await api.post('/Delivery/routes', JSON.stringify(routePayload), {
+            headers: {
+                'Content-Type': 'application/json',  // Ensure JSON format
             }
         });
 
@@ -29,16 +34,15 @@ export async function apiCreateRoute(orderIds: number[], routeData: any) {
 export async function apiGetRoute(routeId: number) {
     try {
         const response = await api.get(`/Delivery/routes/${routeId}`);
-        console.log(response)
-
+  
         if (response.status !== 200 && response.status !== 201) {
-            console.error("Failed to start conversation. Status:", response.status);
-        } 
+            console.error("Failed to fetch route. Status:", response.status);
+            return;
+        }
 
-        let route = response.data;
-        console.log(response.data)
+        const { id, ownerId, orderIds, routeData } = response.data;
 
-        return route;
+        return routeData.data;
     } catch (error) {
         console.error('Fetch Error:', error);
         throw error;

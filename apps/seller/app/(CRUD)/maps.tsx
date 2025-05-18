@@ -7,6 +7,7 @@ import { apiFetchActiveStore } from "../api/storeApi";
 import { useLocalSearchParams } from 'expo-router';
 import { getOrderById } from '../api/orderApi'
 import { apiCreateRoute } from '../api/routesApi';
+import { useTranslation } from "react-i18next";
 
 type Point = {
   latitude: number;
@@ -71,6 +72,7 @@ export default function OptimalRouteMap() {
   const [locations, setLocations] = useState<string[]>([]);
   const [ids, setIds] = useState<number[]>([]);
   const [optimalRoute, setOptimalRoute] = useState<any>(null);
+  const { t } = useTranslation();
 
   async function getOptimalRoute(locations: string[], mode: string): Promise<any> {
     try {
@@ -79,30 +81,29 @@ export default function OptimalRouteMap() {
       const waypoints = locations.slice(1, -1).map(loc => encodeURIComponent(loc)).join('|');
       console.log(locations);
 
-      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&waypoints=optimize:true|${waypoints}&alternative=true&mode=${mode}&key=YOUR_KEY`;
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&waypoints=optimize:true|${waypoints}&alternative=true&mode=${mode}&key=YOUR_API`;
       console.log("pozvana");
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Error fetching route: ${response.statusText}`);
 
-      setOptimalRoute(response);
-      console.log(locations)
-
       const data = await response.json();
       if (data.status !== "OK") throw new Error(`API error: ${data.status} - ${data.error_message}`);
+      setOptimalRoute(data.routes[0]);
 
       await saveDataToFile(data);
       //const data = await readDataFromFile();
       return data.routes[0];
     } catch (error) {
-      console.error("Error fetching optimal route:", error);
-      return null;
+        console.error("Error fetching optimal route:", error);
+        return null;
     }
   }
 
   const confirmRouteMode = async () => {
     setConfirmedMode(mode);
     try {
-      apiCreateRoute(ids, optimalRoute)
+      apiCreateRoute(ids, optimalRoute);
+      Alert.alert(t('Success'), t('Route has been saved successfully!'));
     } catch (error) {
       console.error('Error sending route mode:', error);
       Alert.alert('Error', 'Failed to send the selected route mode.');
@@ -160,7 +161,6 @@ export default function OptimalRouteMap() {
 
   async function fetchRoute() {
     try {
-
       const optimalRoute = await getOptimalRoute(locations, mode);
       if (!optimalRoute) return;
 

@@ -190,29 +190,27 @@ import {
             setSelectedStatuses={setSelectedStatuses}
           />
  
-          {selectableOrders.length > 0 && !selectionMode && (
-            <View style={styles.actionContainer}>
+          <View style={styles.actionContainer}>
+            {selectableOrders.length > 0 && !selectionMode && (
               <TouchableOpacity
                 style={styles.sendOrdersButton}
                 onPress={toggleSelectionMode}
               >
                 <Send size={18} color="#FFFFFF" />
-                <Text style={styles.sendOrdersText}>
-                  {t("send_orders")}
-                </Text>
+                <Text style={styles.sendOrdersText}>{t("send_orders")}</Text>
               </TouchableOpacity>
+            )}
 
-              {hasRouteId && (
-                <TouchableOpacity
-                  style={[styles.sendOrdersButton, { flex: 1, backgroundColor: '#808080', marginLeft: 8 }]}
-                  onPress={handlePreviousRoute}
-                >
-                  <Text style={styles.sendOrdersText}>{t("Previous Route")}</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-          
+            {hasRouteId && (
+              <TouchableOpacity
+                style={[styles.sendOrdersButton, { flex: 1, backgroundColor: '#808080', marginLeft: 8 }]}
+                onPress={handlePreviousRoute}
+              >
+                <Text style={styles.sendOrdersText}>{t("Previous Route")}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
           {selectionMode && selectedOrders.length > 0 && (
             <View>
               <View style={styles.submitCancelContainer}>
@@ -221,7 +219,7 @@ import {
                   onPress={handleSubmitOrders}
                 >
                   <Send size={18} color="#FFFFFF" />
-                  <Text style={styles.sendOrdersText}>{t("Submit")}</Text>
+                  <Text style={styles.sendOrdersText}>{t("create_route")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.sendOrdersButton, { flex: 1, backgroundColor: '#A9A9A9' }]}

@@ -43,6 +43,10 @@ export default function CRUDLayout() {
         name="maps"
         options={{ title: t("ruta_za_dostavu") }}
       />
+      <Stack.Screen
+        name="default_maps"
+        options={{ title: t("default_maps") }}
+      />
     </Stack>
   );
 }
