@@ -1,9 +1,9 @@
 // File: types/ticket.ts
 
 export enum TicketStatus {
-  REQUESTED = "REQUESTED", // U obradi
-  OPEN = "OPEN", // Otvoren
-  RESOLVED = "RESOLVED", // Rešen
+  REQUESTED = "Requested", // U obradi
+  OPEN = "Open", // Otvoren
+  RESOLVED = "Resolved", // Rešen
 }
 
 export interface Ticket {

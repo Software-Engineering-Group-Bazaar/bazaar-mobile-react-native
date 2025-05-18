@@ -33,8 +33,8 @@ const fallbackTextMap: Record<TicketStatus, string> = {
 };
 
 const statusStyleMap: Record<TicketStatus, TextStyle> = {
-  [TicketStatus.REQUESTED]: { color: "blue", fontWeight: boldWeight },
-  [TicketStatus.OPEN]: { color: "red", fontWeight: boldWeight },
+  [TicketStatus.REQUESTED]: { color: "orange", fontWeight: boldWeight },
+  [TicketStatus.OPEN]: { color: "#3b6bb8", fontWeight: boldWeight },
   [TicketStatus.RESOLVED]: { color: "green", fontWeight: boldWeight },
 };
 

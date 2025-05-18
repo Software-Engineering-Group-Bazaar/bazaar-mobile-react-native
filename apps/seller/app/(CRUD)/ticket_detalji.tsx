@@ -193,6 +193,7 @@ export default function TicketDetaljiScreen() {
         <SubmitButton
           buttonText={t("send_message") || "Pošalji poruku"}
           onPress={handleOpenChat}
+          disabled={ticket.status != TicketStatus.OPEN}
         />
       </View>
     </ScrollView>
