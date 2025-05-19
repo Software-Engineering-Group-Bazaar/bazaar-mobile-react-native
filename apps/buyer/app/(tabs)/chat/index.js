@@ -279,6 +279,7 @@ const ConversationsListScreen = () => {
         buyerUserId: item.buyerUserId,
         buyerUsername: item.buyerUserName,
         otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
+        ticketId: item.ticketId,
         // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
       },
     });

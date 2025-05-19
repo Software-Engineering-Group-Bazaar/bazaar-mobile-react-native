@@ -173,6 +173,7 @@ export default function MyTicketsScreen() {
           otherUserId: item.assignedAdminId,
           buyerUserId: item.userId,
           buyerUsername: item.userUsername,
+          ticketId: item.id,
           //otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
           // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
         },

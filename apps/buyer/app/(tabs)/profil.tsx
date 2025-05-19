@@ -65,7 +65,7 @@ export default function Profil() {
         style={styles.actionButton}
         onPress={() => router.push('../screens/myTickets')}
       >
-        <Ionicons name="map-outline" size={24} color="#4e8d7c" />
+        <Ionicons name="warning-outline" size={24} color="#4e8d7c" />
         <Text style={styles.actionText}>
           {t('my_tickets')}
         </Text>
