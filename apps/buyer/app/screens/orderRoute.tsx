@@ -14,6 +14,7 @@ export default function RouteScreen() {
   const router = useRouter();
   const orderId = params.orderId as string;
   const ownerId = params.ownerId as string; // if needed
+  const addressId = parseInt(params.addressId as string);
 
   const [loading, setLoading] = useState(true);
   const [coords, setCoords] = useState<{ seller: LatLng; buyer: LatLng; route: LatLng[] } | null>(null);
@@ -62,6 +63,18 @@ export default function RouteScreen() {
           const jsonRes = await res.json();
           console.log(jsonRes);
           console.log(jsonRes.routeData);
+
+          const resAdr = await fetch(`${baseURL}/api/user-profile/address/${addressId}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json', // Iako je GET, dobra praksa
+              },
+            }
+          );
+          if (!resAdr.ok) throw new Error(`Failed to fetch route: ${resAdr.status}`);
+          const jsonResAdr = await resAdr.json();
+
           const json = jsonRes.routeData;
           // json.data is the Google Directions API response
           const directions = typeof json.data === 'string' ? JSON.parse(json.data) : json.data;
@@ -70,7 +83,8 @@ export default function RouteScreen() {
           // Extract start/end
           const leg = route.legs[0];
           const sellerCoord: LatLng = { latitude: leg.start_location.lat, longitude: leg.start_location.lng };
-          const buyerCoord: LatLng = { latitude: leg.end_location.lat, longitude: leg.end_location.lng };
+          // const buyerCoord: LatLng = { latitude: leg.end_location.lat, longitude: leg.end_location.lng };
+          const buyerCoord: LatLng = { latitude: jsonResAdr.latitude, longitude: jsonResAdr.longitude };
           // Decode overview polyline
           const poly = route.overview_polyline.points;
           const decode = (t: string): LatLng[] => {

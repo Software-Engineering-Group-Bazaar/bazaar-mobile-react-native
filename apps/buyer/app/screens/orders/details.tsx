@@ -36,6 +36,7 @@ interface Order {
   time: string;
   total: number;
   orderItems: OrderItem[];
+  addressId: number;
 }
 
 interface ProductCategory {
@@ -57,7 +58,7 @@ interface Product {
   photos: string[];
   isActive: boolean;
   wholesaleThreshold?: number;
-  quantity: number
+  quantity: number;
 }
 
 // Dummy podaci
@@ -75,6 +76,7 @@ const DUMMY_ORDERS: Order[] = [
       { id: '1', productId: '1', price: 2.50, quantity: 2 },
       { id: '2', productId: '2', price: 1.20, quantity: 1 },
     ],
+    addressId: 0,
   },
   {
     id: '456',
@@ -86,6 +88,7 @@ const DUMMY_ORDERS: Order[] = [
     orderItems: [
       { id: '1', productId: '1', price: 2.50, quantity: 2 },
     ],
+    addressId: 0,
   },
   {
     id: '789',
@@ -97,6 +100,7 @@ const DUMMY_ORDERS: Order[] = [
     orderItems: [
       { id: '2', productId: '2', price: 1.20, quantity: 3 },
     ],
+    addressId: 0,
   },
 ];
 
@@ -345,7 +349,7 @@ export default function DetailsScreen() {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.routeButton} onPress={() => router.push({ pathname: `/screens/orderRoute`, params: { orderId: order.id } })}>
+      <TouchableOpacity style={styles.routeButton} onPress={() => router.push({ pathname: `/screens/orderRoute`, params: { orderId: order.id, addressId: order.addressId } })}>
         <Text style={styles.routeButton}>{t('order_route')}</Text>
       </TouchableOpacity>
 
