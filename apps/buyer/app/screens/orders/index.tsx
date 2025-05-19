@@ -42,9 +42,9 @@ interface Order {
 }
 
 const DUMMY_ORDERS: Order[] = [
-  { id: 'A123', time: '2025-04-18T14:23:00Z', buyerId: 'B001', storeId: 1, status: 'Requested', total: 6.2, orderItems: [{ id: '1', productId: '1', price: 2.5, quantity: 2 }, { id: '2', productId: '2', price: 1.2, quantity: 1 }] },
-  { id: 'B456', time: '2025-04-17T09:15:00Z', buyerId: 'B001', storeId: 2, status: 'Ready', total: 5.0, orderItems: [{ id: '1', productId: '1', price: 2.5, quantity: 2 }] },
-  { id: 'C789', time: '2025-04-15T18:40:00Z', buyerId: 'B001', storeId: 3, status: 'Delivered', total: 3.6, orderItems: [{ id: '2', productId: '2', price: 1.2, quantity: 3 }] },
+  { id: '123', time: '2025-04-18T14:23:00Z', buyerId: 'B001', storeId: 1, status: 'Requested', total: 6.2, orderItems: [{ id: '1', productId: '1', price: 2.5, quantity: 2 }, { id: '2', productId: '2', price: 1.2, quantity: 1 }] },
+  { id: '456', time: '2025-04-17T09:15:00Z', buyerId: 'B001', storeId: 2, status: 'Ready', total: 5.0, orderItems: [{ id: '1', productId: '1', price: 2.5, quantity: 2 }] },
+  { id: '789', time: '2025-04-15T18:40:00Z', buyerId: 'B001', storeId: 3, status: 'Delivered', total: 3.6, orderItems: [{ id: '2', productId: '2', price: 1.2, quantity: 3 }] },
 ];
 
 const statusColors: Record<string, string> = {

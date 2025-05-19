@@ -274,10 +274,12 @@ const ConversationsListScreen = () => {
         // conversationId is already part of the path, but you can pass it explicitly if needed
         // or if your ChatScreen expects it as a query param rather than a path segment.
         // For this example, assuming [conversationId].js handles the path segment.
-        sellerUsername: item.sellerUsername,
+        otherUserUsername: item.sellerUsername ? item.sellerUsername : item.adminUsername,
+        otherUserId: item.sellerUserId ? item.sellerUserId : item.adminUserId,
         buyerUserId: item.buyerUserId,
         buyerUsername: item.buyerUserName,
         otherUserAvatar: item.otherUserAvatar || DEFAULT_AVATAR,
+        ticketId: item.ticketId,
         // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
       },
     });
@@ -291,11 +293,14 @@ const ConversationsListScreen = () => {
       />
       <View style={styles.textContainer}>
         <View style={styles.row}>
-          <Text style={styles.name}>{item.sellerUsername || "Unknown User"}</Text>
+          <Text style={styles.name}>{item.sellerUsername || item.adminUsername || "Unknown User"}</Text>
           {item.lastMessageSentAt && (
             <Text style={styles.time}>{formatConversationTimestamp(item.lastMessageSentAt)}</Text>
           )}
         </View>
+        {item.ticketId && <Text style={styles.conversationTitle} numberOfLines={1}>Ticket: {item.ticketId}</Text>}
+        {item.productId && <Text style={styles.conversationTitle} numberOfLines={1}>Proizvod: {item.productName}</Text>}
+        {item.orderId && <Text style={styles.conversationTitle} numberOfLines={1}>Narudžba: {item.orderId}</Text>}
         {item.conversationTitle && <Text style={styles.conversationTitle} numberOfLines={1}>{item.conversationTitle}</Text>}
         <View style={styles.row}>
           <Text style={styles.lastMessage} numberOfLines={1}>

@@ -941,7 +941,7 @@ const SearchProductsScreen = () => {
     })
   }
 >
-  <Ionicons name="help-circle-outline" size={24} color="#fff" />
+  <Ionicons name="storefront-outline" size={24} color="#fff" />
 </TouchableOpacity>
             {item.products.length > 0 ? (
               <FlatList

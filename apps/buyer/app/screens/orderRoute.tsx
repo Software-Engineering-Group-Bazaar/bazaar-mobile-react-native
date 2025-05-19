@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE, LatLng } from 'react-native-maps';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import * as SecureStore from 'expo-secure-store';
 
 const GOOGLE_API_KEY = 'AIzaSyCr2UAxBSN0eZxa5ahJKokuzJZy9Em203Q';
 
@@ -13,6 +14,7 @@ export default function RouteScreen() {
   const router = useRouter();
   const orderId = params.orderId as string;
   const ownerId = params.ownerId as string; // if needed
+  const addressId = parseInt(params.addressId as string);
 
   const [loading, setLoading] = useState(true);
   const [coords, setCoords] = useState<{ seller: LatLng; buyer: LatLng; route: LatLng[] } | null>(null);
@@ -41,18 +43,48 @@ export default function RouteScreen() {
           ];
           setCoords({ seller: sellerCoord, buyer: buyerCoord, route: routeCoords });
         } else {
+          const authToken = await SecureStore.getItemAsync('auth_token');
+          if (!authToken) {
+            console.error('Authentication token not found.');
+            throw new Error('Auth token missing');
+          }
           // Fetch stored route data from backend
-          const res = await fetch(`${baseURL}/route/find?orderid=${orderId}`);
+          const res = await fetch(`${baseURL}/api/Delivery/routes/by-orders`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json', // Iako je GET, dobra praksa
+              },
+              body: JSON.stringify([orderId]),
+            }
+          );
           if (!res.ok) throw new Error(`Failed to fetch route: ${res.status}`);
-          const json = await res.json();
+          const jsonRes = await res.json();
+          console.log(jsonRes);
+          console.log(jsonRes.routeData);
+
+          const resAdr = await fetch(`${baseURL}/api/user-profile/address/${addressId}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json', // Iako je GET, dobra praksa
+              },
+            }
+          );
+          if (!resAdr.ok) throw new Error(`Failed to fetch route: ${resAdr.status}`);
+          const jsonResAdr = await resAdr.json();
+
+          const json = jsonRes.routeData;
           // json.data is the Google Directions API response
           const directions = typeof json.data === 'string' ? JSON.parse(json.data) : json.data;
-          if (!directions.routes?.length) throw new Error('No routes in data');
-          const route = directions.routes[0];
+          // if (!directions.routes?.length) throw new Error('No routes in data');
+          const route = directions;
           // Extract start/end
           const leg = route.legs[0];
           const sellerCoord: LatLng = { latitude: leg.start_location.lat, longitude: leg.start_location.lng };
-          const buyerCoord: LatLng = { latitude: leg.end_location.lat, longitude: leg.end_location.lng };
+          // const buyerCoord: LatLng = { latitude: leg.end_location.lat, longitude: leg.end_location.lng };
+          const buyerCoord: LatLng = { latitude: jsonResAdr.latitude, longitude: jsonResAdr.longitude };
           // Decode overview polyline
           const poly = route.overview_polyline.points;
           const decode = (t: string): LatLng[] => {
