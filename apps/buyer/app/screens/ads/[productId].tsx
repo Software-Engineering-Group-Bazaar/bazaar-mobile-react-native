@@ -135,31 +135,32 @@ const ProductDetailsScreen = () => {
 
         console.log('Request body for conversation:', JSON.stringify(requestBody));
 
-        try {
-            const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`,
-              },
-              body: JSON.stringify(requestBody),
-            });
+try {
+    const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
 
-            if (!response.ok) {
-              const errorText = await response.text();
-              console.error('API Error Response Status:', response.status);
-              console.error('API Error Response Body:', errorText);
-              // Check for specific statuses like 401 (Unauthorized) or 403 (Forbidden)
-              if (response.status === 401 || response.status === 403) {
-                  Alert.alert(t('Authorization Error'), t('You are not authorized to start this conversation.'));
-              } else {
-                  Alert.alert(t('Error'), `${t('Failed to create conversation')}: ${response.status}`);
-              }
-              return; // Stop processing on error
-            }
+      if (!response.ok) {
+        // Ako HTTP status nije 2xx, nešto nije u redu
+        const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
+        if (errorText.includes('No seller for store')) {
+            Alert.alert(
+              t('Error'),
+              t('Ne nije moguće uspostaviti komunikaciju s prodavačem jer nema prodavača povezanog sa ovim proizvodom.') // Pružite korisniku specifičnu poruku
+            );
+        }
+//         console.error('API Error Response Status:', response.status);
+//         console.error('API Error Response Body:', errorText);
+        throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
+      }
 
-            const data = await response.json();
-            console.log("Conversation response:", data);
+    const data = await response.json();
+    console.log("Conversation response:", data);
 
             // Assuming data.id is the conversation ID
             if (data && data.id) {
@@ -338,7 +339,7 @@ const checkAndAddToCart = async () => {
       );
     }
   } catch (error: any) {
-    console.error('Error during Add to Cart process:', error);
+    //console.error('Error during Add to Cart process:', error);
     Alert.alert(t('Error'), `${t('Failed to add product to cart')}: ${error.message}`);
   } finally {
     // setLoading(false); // Only set false if setLoading was set to true at the start of this function
@@ -496,7 +497,7 @@ const checkAndAddToCart = async () => {
             <Image
               source={{ uri: product.photos[currentImageIndex] || 'https://via.placeholder.com/300?text=No+Image' }}
               style={styles.productImage}
-               onError={(e) => console.error("Failed to load product image:", product.photos[currentImageIndex], e.nativeEvent.error)}
+               onError={(e) => console.log("Failed to load product image:", product.photos[currentImageIndex], e.nativeEvent.error)}
             />
 
             <TouchableOpacity

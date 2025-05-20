@@ -9,6 +9,7 @@ import CartItem from 'proba-package/cart-item/index';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { setParams } from 'expo-router/build/global-state/routing';
 
 interface Store {
   id: number;
@@ -35,6 +36,7 @@ interface Order {
   time: string;
   total: number;
   orderItems: OrderItem[];
+  addressId: number;
 }
 
 interface ProductCategory {
@@ -56,7 +58,7 @@ interface Product {
   photos: string[];
   isActive: boolean;
   wholesaleThreshold?: number;
-  quantity: number
+  quantity: number;
 }
 
 // Dummy podaci
@@ -64,7 +66,7 @@ interface Product {
 
 const DUMMY_ORDERS: Order[] = [
   {
-    id: 'A123',
+    id: '123',
     time: '2025-04-18T14:23:00Z',
     buyerId: 'B001',
     storeId: 1,
@@ -74,9 +76,10 @@ const DUMMY_ORDERS: Order[] = [
       { id: '1', productId: '1', price: 2.50, quantity: 2 },
       { id: '2', productId: '2', price: 1.20, quantity: 1 },
     ],
+    addressId: 0,
   },
   {
-    id: 'B456',
+    id: '456',
     time: '2025-04-17T09:15:00Z',
     buyerId: 'B001',
     storeId: 2,
@@ -85,9 +88,10 @@ const DUMMY_ORDERS: Order[] = [
     orderItems: [
       { id: '1', productId: '1', price: 2.50, quantity: 2 },
     ],
+    addressId: 0,
   },
   {
-    id: 'C789',
+    id: '789',
     time: '2025-04-15T18:40:00Z',
     buyerId: 'B001',
     storeId: 3,
@@ -96,6 +100,7 @@ const DUMMY_ORDERS: Order[] = [
     orderItems: [
       { id: '2', productId: '2', price: 1.20, quantity: 3 },
     ],
+    addressId: 0,
   },
 ];
 
@@ -129,63 +134,71 @@ export default function DetailsScreen() {
   const [storeName, setStoreName] = useState<string | null>(null);
   const navigation = useNavigation();
 
-      const handleConversationPress = async () => {
-        if (!order) {
-          return;
-        }
-        const requestBody = {
-          storeId: Number(order.storeId),
-          orderId: orderId,
-          productId: null,
-        };
-        
-        const authToken = await SecureStore.getItemAsync('auth_token');
+  const handleConversationPress = async () => {
+    if (!order) {
+      return;
+    }
+    const requestBody = {
+      storeId: Number(order.storeId),
+      orderId: orderId,
+      productId: null,
+    };
     
-        console.log(JSON.stringify(requestBody));
-        
-        const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            // Dodajte Autorizacioni header ako vaš API to zahteva
-            'Authorization': `Bearer ${authToken}`,
-          },
-          body: JSON.stringify(requestBody),
-        });
+    const authToken = await SecureStore.getItemAsync('auth_token');
+
+    console.log(JSON.stringify(requestBody));
     
-        console.log(response);
-    
-        // 3. Obradi odgovor od API-ja
-        if (!response.ok) {
-          // Ako HTTP status nije 2xx, nešto nije u redu
-          const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
-          console.error('API Error Response Status:', response.status);
-          console.error('API Error Response Body:', errorText);
-          throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
-        }
-    
-        const data = await response.json(); // Parsiraj JSON odgovor
-    
-        console.log("Chat? ", data);
-    
-        // Navigate using expo-router
-        // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
-        // Params passed here will be available in ChatScreen via `useLocalSearchParams`
-    
-          router.push({
-          pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
-          params: {
-            // conversationId is already part of the path, but you can pass it explicitly if needed
-            // or if your ChatScreen expects it as a query param rather than a path segment.
-            // For this example, assuming [conversationId].js handles the path segment.
-            sellerUsername: data.sellerUsername,
-            buyerUserId: data.buyerUserId,
-            buyerUsername: data.buyerUserName,
-            otherUserAvatar: data.otherUserAvatar, // || DEFAULT_AVATAR,
-            // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
-          },
-        });
-      };
+    const response = await fetch(`${baseURL}/api/Chat/conversations/find-or-create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Dodajte Autorizacioni header ako vaš API to zahteva
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    console.log(response);
+
+    // 3. Obradi odgovor od API-ja
+    if (!response.ok) {
+      // Ako HTTP status nije 2xx, nešto nije u redu
+      const errorText = await response.text(); // Pokušajmo pročitati odgovor kao tekst
+      console.error('API Error Response Status:', response.status);
+      console.error('API Error Response Body:', errorText);
+      throw new Error(`Greška pri pronalaženju/kreiranju konverzacije: ${response.status}`);
+    }
+
+    const data = await response.json(); // Parsiraj JSON odgovor
+
+    console.log("Chat? ", data);
+
+    // Navigate using expo-router
+    // The path `/chat/${item.id}` should correspond to a file like `app/chat/[conversationId].js` or `app/chat/[id].js`
+    // Params passed here will be available in ChatScreen via `useLocalSearchParams`
+
+      router.push({
+      pathname: `(tabs)/chat/${data.id}` as any, // Dynamic route using conversation ID
+      params: {
+        // conversationId is already part of the path, but you can pass it explicitly if needed
+        // or if your ChatScreen expects it as a query param rather than a path segment.
+        // For this example, assuming [conversationId].js handles the path segment.
+        sellerUsername: data.sellerUsername,
+        buyerUserId: data.buyerUserId,
+        buyerUsername: data.buyerUserName,
+        otherUserAvatar: data.otherUserAvatar, // || DEFAULT_AVATAR,
+        // MOCK_CURRENT_USER_ID is handled within ChatScreen's self-contained logic
+      },
+    });
+  };
+
+  const handleTicketPress = async () => {
+    console.log("pritisnuto! OrderId: ", orderId);
+    router.push({
+      pathname: './ticketCreate', // Putanja do vašeg ekrana
+      params: { orderId: orderId.toString() }, // Prosleđivanje orderId kao string
+    });
+  }
 
   const handleProductPress = (product: Product, quantity: number) => {
     router.push(`./productDetails/${product.id}?quantity=${quantity}`);
@@ -336,6 +349,10 @@ export default function DetailsScreen() {
         </Text>
       </View>
 
+      <TouchableOpacity style={styles.routeButton} onPress={() => router.push({ pathname: `/screens/orderRoute`, params: { orderId: order.id, addressId: order.addressId } })}>
+        <Text style={styles.routeButton}>{t('order_route')}</Text>
+      </TouchableOpacity>
+
       <Text style={[styles.title, styles.itemsTitle]}>{t('ordered_items')}</Text>
       {detailedOrderItems.filter(item=>item.product).map((item) => (
         <CartItem
@@ -354,9 +371,14 @@ export default function DetailsScreen() {
       </View>
     )}
       {/* Chat button */}
-      <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
-        <FontAwesome name="comments" size={10} color="white" />
+      <View style={styles.bubbleButtons}>
+      <TouchableOpacity style={styles.chatButton} onPress={handleTicketPress}>
+        <FontAwesome name="warning" size={24} color="white" />
       </TouchableOpacity>
+      <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+        <FontAwesome name="comments" size={24} color="white" />
+      </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -423,9 +445,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  bubbleButtons:{
+    position: 'absolute',
+    flexDirection: 'row',
+    right: 1,
+    zIndex: 999
+  },
   chatButton: {
-  position: 'absolute',
-  right: 10,
+  marginRight: 5,
   backgroundColor: '#4E8D7C',
   padding: 15,
   borderRadius: 30,
@@ -433,6 +460,19 @@ const styles = StyleSheet.create({
   shadowOpacity: 0.25,
   shadowRadius: 4,
   elevation: 5,
-  zIndex: 999
+  },
+  ticketButton: {
+    right: 25
+  },
+  routeButton: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    paddingBottom: 10,
+    marginHorizontal: 40,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
   },
 });
