@@ -86,6 +86,8 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="screens/orders" options={{ headerShown: false }} />
             <Stack.Screen name="screens/store/[storeId]" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/addresses" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/orderRoute" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
         </CartProvider>

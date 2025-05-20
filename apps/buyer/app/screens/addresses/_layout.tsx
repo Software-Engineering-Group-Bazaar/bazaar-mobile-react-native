@@ -2,6 +2,7 @@
 import { Stack } from 'expo-router';
 import React from 'react';
 import CustomHeader from 'proba-package/custom-header/index'; 
+import { NavigatorContext } from 'expo-router/build/views/Navigator';
 
 export default function OrdersLayout() {
   return (
@@ -13,20 +14,12 @@ export default function OrdersLayout() {
           options={{ headerShown: false }} 
         />
         <Stack.Screen
-          name="review"
-          options={{ headerShown: false }} 
+          name="ConfirmAddressScreen"
+          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="details"
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen
-          name="productDetails/[productId]"
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen
-          name="ticketCreate"
-          options={{ headerShown: false }} 
+          name="RemoveAddressScreen"
+          options={{ headerShown: false }}
         />
       </Stack>
     </>

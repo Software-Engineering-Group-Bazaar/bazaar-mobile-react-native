@@ -5,4 +5,5 @@ export interface Store {
     description: string;
     isActive: boolean;
     categoryName: string;
+    address?: string;
 }

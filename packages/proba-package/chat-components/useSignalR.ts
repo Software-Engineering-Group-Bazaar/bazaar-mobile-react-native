@@ -5,6 +5,7 @@ import { ChatMessage, MessageDto } from "./models";
 import * as signalR from "@microsoft/signalr";
 import * as SecureStore from "expo-secure-store";
 import api from "../../../apps/seller/app/api/defaultApi";
+import { baseURL } from "../../../apps/seller/app/env";
 
 export const useSignalR = (conversationId?: number) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -39,7 +40,7 @@ export const useSignalR = (conversationId?: number) => {
       }
 
       const connection = new signalR.HubConnectionBuilder()
-        .withUrl(`https://bazaar-system.duckdns.org/chathub`, {
+        .withUrl('https://bazaar-system.duckdns.org/chathub', {
           accessTokenFactory: async () => storedToken,
         })
         .withAutomaticReconnect()
@@ -67,7 +68,7 @@ export const useSignalR = (conversationId?: number) => {
           {
             senderUsername,
             content,
-            sentAt: receivedMessage.sentAt,   
+            sentAt: timestamp,
             isPrivate: receivedMessage.isPrivate,
             senderUserId,
           },

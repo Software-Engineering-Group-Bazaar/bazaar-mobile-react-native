@@ -68,7 +68,7 @@ const AdItem: React.FC<AdItemProps> = ({ adData, onPress, ad }) => {
                     source={{ uri: adData.imageUrl }}
                     style={styles.adImage}
                     resizeMode="cover"
-                    onError={(e) => console.error("Failed to load ad image:", adData.imageUrl, e.nativeEvent.error)}
+                    onError={(e) => console.log("Failed to load ad image:", adData.imageUrl, e.nativeEvent.error)}
                 />
             ) : null}
             {adData.description ? (
