@@ -27,8 +27,6 @@ export async function apiFetchAllCategoriesAsync(): Promise<
 export async function apiFetchActiveStore(): Promise<Store | null> {
   try {
     const response = await api.get("Stores/MyStore");
-    console.log(response);
-
     const store = response.data;
 
     if (store && store.isActive === true) {

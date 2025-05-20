@@ -17,6 +17,7 @@ interface SubmitButtonProps extends TouchableOpacityProps {
   icon?: FontAwesome5IconName;
   small?: boolean;
   label?: string;
+  disabled?: boolean;
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -26,6 +27,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   icon,
   small = false,
   label,
+  disabled = false,
   ...rest
 }) => {
   const iconColors: Record<string, string> = {
@@ -44,8 +46,9 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
             styles.button,
             social && styles.socialButton,
             small && styles.smallButton,
+            (loading || disabled) && { opacity: 0.6 },
           ]}
-          disabled={loading}
+          disabled={loading || disabled}
           {...rest}
         >
           {loading ? (

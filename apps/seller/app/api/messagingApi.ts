@@ -9,6 +9,8 @@ interface ExtendedConversationDto extends ConversationDto {
   buyerUserId: string;
   lastMessageSender: string;
   buyerUsername?: string;
+  orderId?: number;
+  productId?: number;
 }
 
 export async function apiFetchFormattedConversations(): Promise<
@@ -29,6 +31,8 @@ export async function apiFetchFormattedConversations(): Promise<
       const buyerUserId = conv.buyerUserId;
       const buyerUsername = conv.buyerUsername;
       const lastMessage = conv.lastMessage;
+      const orderId = conv.orderId;
+      const productId = conv.productId;
 
       return {
         id: conv.id,
@@ -43,6 +47,8 @@ export async function apiFetchFormattedConversations(): Promise<
             })
           : "",
         unreadMessagesCount: conv.unreadMessagesCount,
+        orderId,
+        productId
       };
     });
 
