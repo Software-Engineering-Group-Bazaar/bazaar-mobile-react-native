@@ -86,6 +86,7 @@
     "submit_order":"Submit order",
     "total":"Total",
     "my_orders": "My Orders",
+    "my_points": "My Points",
     "order_id": "ID",
     "order_price": "Price",
     "order_status": "Status",
@@ -381,5 +382,7 @@
   "ticket_status_requested": "Requested",
   "ticket_status_open": "Open",
   "ticket_status_resolved": "Resolved",
-  "ticket_status_unknown": "Unknown"
+  "ticket_status_unknown": "Unknown",
+  "points_value": "Value of your collected points",
+  "points_count": "Points: "
 }

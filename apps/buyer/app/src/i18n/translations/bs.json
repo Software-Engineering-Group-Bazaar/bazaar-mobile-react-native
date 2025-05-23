@@ -87,6 +87,7 @@
     "submit_order":"Podnesi narudžbu",
     "total":"Ukupno",
     "my_orders": "Moje narudžbe",
+    "my_points": "Moji poeni",
     "order_id": "ID",
     "order_price": "Cijena",
     "order_status": "Status",
@@ -381,6 +382,8 @@
   "ticket_status_requested": "Zatražen",
   "ticket_status_open": "Otvoren",
   "ticket_status_resolved": "Riješen",
-  "ticket_status_unknown": "Nepoznat"
+  "ticket_status_unknown": "Nepoznat",
+  "points_value": "Vrijednost u novcu",
+  "points_count": "Poeni:"
 }
   
