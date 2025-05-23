@@ -22,6 +22,7 @@ import {
   apiUpdateProductPointRate,
   apiFetchLoyaltyReport
 } from "../api/loyaltyApi"; 
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 
 
 const POINT_RATE_OPTIONS: PointRateOption[] = [
@@ -193,6 +194,7 @@ export default function LoyaltyScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <LanguageButton/>
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }} >
         {reportData && (
             <View style={styles.summaryContainer}>
