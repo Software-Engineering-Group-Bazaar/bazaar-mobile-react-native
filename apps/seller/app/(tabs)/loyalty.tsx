@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next";
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as SecureStore from 'expo-secure-store';
 
-// Importuj tipove i API funkcije sa ispravnih lokacija
 import { ProductLoyaltySetting, LoyaltyReportData, PointRateOption } from "../types/LoyaltyTypes"; 
 import {
   apiFetchSellerProductsWithLoyalty,
@@ -46,9 +45,8 @@ export default function LoyaltyScreen() {
 
   const [openDropdowns, setOpenDropdowns] = useState<Record<number, boolean>>({});
 
-  // useCallback sada sadrži internu async funkciju
   const loadScreenData = useCallback(() => {
-    const fetchData = async () => { // Definiši async funkciju unutra
+    const fetchData = async () => { 
       setLoadingReport(true);
       setLoadingProducts(true);
       const storedStoreIdString = await SecureStore.getItemAsync("storeId");
@@ -62,8 +60,6 @@ export default function LoyaltyScreen() {
             apiFetchSellerProductsWithLoyalty(id)
           ]);
 
-          // Provjera tipa prije postavljanja reportData
-          // Ako apiFetchLoyaltyReport ima ispravan Promise<LoyaltyReportData> tip, ovo je dovoljno:
           setReportData(fetchedReport);
 
           setProductsLoyalty(fetchedProducts);
@@ -146,6 +142,7 @@ export default function LoyaltyScreen() {
   const renderProductLoyaltyItem = ({ item, index }: { item: ProductLoyaltySetting, index: number }) => {
     const isDropdownOpen = openDropdowns[item.id] || false;
     const zIndexValue = (productsLoyalty.length - index) * 100;
+    const isLastFewItems = index >= productsLoyalty.length - 3;
 
     return (
       <View style={[styles.productItemContainer, { zIndex: isDropdownOpen ? 5001 : zIndexValue }]}>
@@ -157,7 +154,9 @@ export default function LoyaltyScreen() {
           <DropDownPicker
             open={isDropdownOpen}
             value={item.currentPointRateFactor}
+            modalTitle={t('select_rate_for', { productName: item.name })}
             items={POINT_RATE_OPTIONS}
+            dropDownDirection={isLastFewItems ? "TOP" : "AUTO"}
             setOpen={() => {
                 setOpenDropdowns(prev => {
                     const newState = !prev[item.id];
@@ -214,10 +213,8 @@ export default function LoyaltyScreen() {
               renderItem={renderProductLoyaltyItem}
               keyExtractor={item => item.id.toString()}
               style={styles.productList}
-              // scrollEnabled={false} // Možeš probati i bez ovoga ako FlatList nije predugačak
-                                      // ili ako report sekcija nije prevelika.
-                                      // Ako je FlatList glavni skrolabilni element, onda ScrollView nije potreban oko svega.
-              ListFooterComponentStyle={{paddingBottom: 70}} // Prostor za dugme ako je dugme fiksirano
+              scrollEnabled={false} 
+              ListFooterComponentStyle={{paddingBottom: 70}} 
             />
           ) : (
             !loadingProducts && <Text style={styles.noProductsText}>{t('No products found to configure loyalty points.')}</Text>
@@ -233,7 +230,7 @@ export default function LoyaltyScreen() {
                     disabled={isSubmitting}
                 >
                     <Text style={styles.saveButtonText}>
-                        {isSubmitting ? t('saving_changes') : t('save_all_changes')}
+                        {isSubmitting ? t('saving_changes') : t('Save Changes')}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -257,19 +254,19 @@ const styles = StyleSheet.create({
   productListSection: { flex: 1, backgroundColor: "#ffffff", },
   productList: { flexGrow: 1 },
   productItemContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
-    minHeight: 70,
-    paddingHorizontal: 16,
-    zIndex: 1,
-  },
+  flexDirection: "row",
+  alignItems: "center",
+  paddingVertical: 10,
+  borderBottomWidth: 1,
+  borderColor: "#eee",
+  minHeight: 70,
+  paddingHorizontal: 16,
+  zIndex: 1,
+},
   productImage: { width: 50, height: 50, borderRadius: 8, marginRight: 12 },
-  productInfo: { flex: 1, justifyContent: 'center', marginRight: 10 },
-  productName: { fontSize: 15, fontWeight: "500", color: "#333" },
-  dropdownContainer: { width: 160, },
+  productInfo: { flex: 1, justifyContent: 'center', marginRight: 10, minHeight: 40, },
+  productName: { fontSize: 15, fontWeight: "500", color: "#333", lineHeight: 20, height: 40,},
+  dropdownContainer: {width: 160, justifyContent: 'center'},
   dropdownStyle: { backgroundColor: '#fafafa', borderColor: '#ddd', minHeight: 40 },
   dropdownContainerStyle: { /* ... */ },
   dropDownPickerContainerStyle: { borderColor: '#ddd' },
@@ -285,7 +282,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4E8D7C',
     paddingVertical: 12,
     paddingHorizontal: 50,
     borderRadius: 8,
