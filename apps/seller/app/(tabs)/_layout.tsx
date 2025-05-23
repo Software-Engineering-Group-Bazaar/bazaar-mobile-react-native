@@ -205,15 +205,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="home"
-        options={{
-          title: t("tab_home"),
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="pregled_prodavnica"
         options={{
           title: t("tab_stores"),
@@ -237,6 +228,15 @@ export default function TabLayout() {
           title: t("messages"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="message.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="loyalty"
+        options={{
+          title: t("loyalty"),
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="wallet.fill" color={color} />
           ),
         }}
       />

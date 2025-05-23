@@ -308,8 +308,6 @@
   "Route has been saved successfully!": "Ruta je uspješno spašena!",
   "delivery_address": "Adresa dostave",
   "chat_will_be_here": "Chat vezan za ovaj tiket će biti prikazan ovde.",
-  "create_new_ticket": "Kreiraj novi tiket",
-  "created_at": "Kreirano",
   "created_at_label": "Datum kreiranja",
   "customer_support": "Korisnička podrška",
   "customer_support_description": "Kontaktirajte podršku ili pregledajte tikete",
@@ -320,10 +318,8 @@
   "info": "Info",
   "last_updated_label": "Poslednja izmena",
   "loading_ticket_details": "Učitavanje detalja tiketa...",
-  "loading_tickets": "Učitavanje tiketa...",
   "my_support_tickets": "Moji tiketi podrške",
   "no_orders_to_select_ticket": "Nema dostupnih narudžbi za odabir.",
-  "no_tickets_found": "Nema aktivnih tiketa.",
   "order_ref": "Narudžba",
   "pull_to_refresh_or_create": "Povucite nadole da osvežite ili kreirajte novi tiket koristeći '+' dugme u gornjem desnom uglu.",
   "related_order": "Povezana narudžba",
@@ -332,7 +328,6 @@
   "select_order_for_ticket_validation": "Molimo izaberite narudžbu.",
   "something_went_wrong_ticket": "Došlo je do greške prilikom kreiranja tiketa.",
   "submit_ticket": "Pošalji tiket",
-  "ticket_created_successfully": "Tiket je uspešno kreiran.",
   "ticket_description": "Opis problema",
   "ticket_description_label": "Opis problema",
   "ticket_description_placeholder": "Unesite detaljan opis problema",
@@ -342,12 +337,9 @@
   "ticket_not_found": "Tiket nije pronađen.",
   "ticket_not_found_details": "Detalji tiketa nisu pronađeni ili tiket ne postoji.",
   "ticket_status_label": "Status",
-  "ticket_status_requested": "Zatražen",
-  "ticket_status_open": "Otvoren",
-  "ticket_status_resolved": "Riješen",
   "ticket_subject": "Naslov tiketa",
   "ticket_subject_label": "Naslov",
-  "ticket_subject_placeholder": "Unesite naslov tiketa"
+  "ticket_subject_placeholder": "Unesite naslov tiketa",
   "my_addresses": "Moje adrese",
   "confirm_address": "Potvrdite adresu",
   "submit_address": "Pošaljite adresu",
@@ -381,6 +373,8 @@
   "ticket_status_requested": "Zatražen",
   "ticket_status_open": "Otvoren",
   "ticket_status_resolved": "Riješen",
-  "ticket_status_unknown": "Nepoznat"
+  "ticket_status_unknown": "Nepoznat",
+  "loyalty": "Program lojalnosti",
+  "Loyalty Program Report": "Izvještaj programa lojalnosti"
 }
   

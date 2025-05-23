@@ -247,5 +247,7 @@
   "ticket_status_resolved": "Resolved",
   "ticket_subject": "Ticket Title",
   "ticket_subject_label": "Title",
-  "ticket_subject_placeholder": "Enter ticket title"
+  "ticket_subject_placeholder": "Enter ticket title",
+  "loyalty": "Loyalty Program",
+  "Loyalty Program Report": "Loyalty Program Report"
 }
