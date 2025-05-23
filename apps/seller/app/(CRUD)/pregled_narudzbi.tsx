@@ -33,6 +33,7 @@ import {
   createdAt: string;
   totalAmount: number;
   status: OrderStatus;
+  adminDelivery?: boolean;
  };
  
  export default function OrdersScreen() {
@@ -81,6 +82,7 @@ import {
               totalAmount: o.total,
               status: o.status as OrderStatus,
               address,
+              adminDelivery: o.adminDelivery,
             };
           })
       );
@@ -118,7 +120,7 @@ import {
   });
  
   const selectableOrders = sortedOrders.filter(
-    order => order.status === "Ready"
+    order => (order.status === "Ready" && !order.adminDelivery)
   );
  
   const toggleOrderSelection = (orderId: number) => {
@@ -247,7 +249,7 @@ import {
                 selectionMode={selectionMode}
                 selected={selectedOrders.includes(item.id)}
                 onSelect={() => selectionMode && toggleOrderSelection(item.id)}
-                selectable={item.status === "Ready"}
+                selectable={item.status === "Ready" && !item.adminDelivery}
                 needsPrepTime={false}
               />
             )}

@@ -1,1 +1,1 @@
-export const baseURL = "https://bazaar-system.duckdns.org/index.html";
+export const baseURL = "http://192.168.15.109:5054/index.html";
