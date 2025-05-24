@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as SecureStore from 'expo-secure-store';
 
-import { ProductLoyaltySetting, LoyaltyReportData, PointRateOption } from "../types/LoyaltyTypes"; 
+import { ProductLoyaltySetting, LoyaltyReportData, PointRateOption } from "../types/loyaltyTypes"; 
 import {
   apiFetchSellerProductsWithLoyalty,
   apiUpdateProductPointRate,
@@ -125,9 +125,9 @@ export default function LoyaltyScreen() {
     );
   };
 
-  const handleSaveChanges = async () => {
-    if (storeId === null) {
-      Alert.alert(t("error"), t("store_id_not_found_seller"));
+   const handleSaveChanges = async () => {
+    if (storeId === null) { 
+      Alert.alert(t("error"), t("store_id_not_found_seller_for_save"));
       return;
     }
     setIsSubmitting(true);
@@ -139,20 +139,24 @@ export default function LoyaltyScreen() {
       if (initialProductRates[productSetting.id] !== productSetting.currentPointRateFactor) {
         changesMade++;
         try {
-          const updatedProduct = await apiUpdateProductPointRate(
+          const successUpdating = await apiUpdateProductPointRate(
             productSetting.id,
-            storeId,
-            productSetting.currentPointRateFactor
+            productSetting.currentPointRateFactor 
           );
-          if (updatedProduct) {
+
+          if (successUpdating) { 
             successes++;
-            setInitialProductRates(prev => ({...prev, [updatedProduct.id]: updatedProduct.currentPointRateFactor}));
+
+            setInitialProductRates(prev => ({
+                ...prev,
+                [productSetting.id]: productSetting.currentPointRateFactor 
+            }));
           } else {
-            failures.push({ name: productSetting.name });
+            failures.push({ name: productSetting.name, error: t('update_failed_no_details') });
           }
         } catch (error: any) {
           console.error(`Failed to update product ${productSetting.name}:`, error);
-          failures.push({ name: productSetting.name, error: error.message });
+          failures.push({ name: productSetting.name, error: error.message || t('unknown_error') });
         }
       }
     }
@@ -172,7 +176,7 @@ export default function LoyaltyScreen() {
   const renderProductLoyaltyItem = ({ item, index }: { item: ProductLoyaltySetting, index: number }) => {
     const isDropdownOpen = openDropdowns[item.id] || false;
     const zIndexValue = (productsLoyalty.length - index) * 100;
-    const isLastFewItems = index >= productsLoyalty.length - 3;
+    const isLastFewItems = index >= productsLoyalty.length - 2;
 
     return (
       <View style={[styles.productItemContainer, { zIndex: isDropdownOpen ? 5001 : zIndexValue }]}>
