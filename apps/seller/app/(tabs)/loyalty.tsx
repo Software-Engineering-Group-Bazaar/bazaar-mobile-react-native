@@ -26,15 +26,17 @@ import {
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import DateTimePicker from '@react-native-community/datetimepicker'; 
 
-const POINT_RATE_OPTIONS: PointRateOption[] = [
-  { label: "Bez Poena (0x)", value: 0 },
-  { label: "Standardni (1x)", value: 1 },
-  { label: "Dupli Poeni (2x)", value: 2 },
-  { label: "Trostruki Poeni (3x)", value: 3 },
+const getPointRateOptions = (t: (key: string, options?: any) => string): PointRateOption[] => [
+  { label: t("no_points_label"), value: 0 },
+  { label: t("standard_label"), value: 1 },
+  { label: t("double_points_label"), value: 2 },
+  { label: t("triple_points_label"), value: 3 },
 ];
+
 
 export default function LoyaltyScreen() {
   const { t } = useTranslation();
+  const POINT_RATE_OPTIONS = getPointRateOptions(t);
 
   const [storeId, setStoreId] = useState<number | null>(null);
   const [reportData, setReportData] = useState<LoyaltyReportData | null>(null);
@@ -177,6 +179,10 @@ export default function LoyaltyScreen() {
     const isDropdownOpen = openDropdowns[item.id] || false;
     const zIndexValue = (productsLoyalty.length - index) * 100;
     const isLastFewItems = index >= productsLoyalty.length - 2;
+    if (productsLoyalty.length == 3)
+    {
+      const isLastFewItems = index >= productsLoyalty.length - 1;
+    }
 
     return (
       <View style={[styles.productItemContainer, { zIndex: isDropdownOpen ? 5001 : zIndexValue }]}>
