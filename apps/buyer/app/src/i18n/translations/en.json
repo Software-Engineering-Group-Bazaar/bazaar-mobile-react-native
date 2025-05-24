@@ -381,5 +381,11 @@
   "ticket_status_requested": "Requested",
   "ticket_status_open": "Open",
   "ticket_status_resolved": "Resolved",
-  "ticket_status_unknown": "Unknown"
+  "ticket_status_unknown": "Unknown",
+  "use_points": "Use Loyalty Points",
+  "your_points": "Your Current Points",
+  "points_value": "Points Value",
+  "remaining_to_pay": "Remaining to Pay",
+  "points_after_transaction": "Points After Transaction",
+  "points_earned": "Points to Earn"
 }

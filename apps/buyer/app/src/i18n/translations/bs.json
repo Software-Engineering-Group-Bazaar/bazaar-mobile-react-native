@@ -381,6 +381,12 @@
   "ticket_status_requested": "Zatražen",
   "ticket_status_open": "Otvoren",
   "ticket_status_resolved": "Riješen",
-  "ticket_status_unknown": "Nepoznat"
+  "ticket_status_unknown": "Nepoznat",
+  "use_points": "Koristi poene",
+  "your_points": "Vaši trenutni poeni",
+  "points_value": "Vrijednost poena",
+  "remaining_to_pay": "Preostalo za platiti",
+  "points_after_transaction": "Poeni nakon transakcije",
+  "points_earned": "Poeni za osvojiti"
 }
   
