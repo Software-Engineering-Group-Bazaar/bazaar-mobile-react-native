@@ -381,5 +381,6 @@
   "ticket_status_requested": "Requested",
   "ticket_status_open": "Open",
   "ticket_status_resolved": "Resolved",
-  "ticket_status_unknown": "Unknown"
+  "ticket_status_unknown": "Unknown",
+  "You earn: {{points}} points": "You earn: {{points}} points with this purchase"
 }

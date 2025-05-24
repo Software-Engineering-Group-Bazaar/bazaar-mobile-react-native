@@ -381,6 +381,7 @@
   "ticket_status_requested": "Zatražen",
   "ticket_status_open": "Otvoren",
   "ticket_status_resolved": "Riješen",
-  "ticket_status_unknown": "Nepoznat"
+  "ticket_status_unknown": "Nepoznat",
+  "You earn: {{points}} points": "Kupovinom dobijate: {{points}} poena"
 }
   
