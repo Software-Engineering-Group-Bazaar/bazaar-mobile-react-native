@@ -23,6 +23,7 @@ interface Product {
   photos: string[];
   isActive: boolean;
   wholesaleThreshold?: number;
+  pointRate?: number;
 }
 
 interface CartItemProps {
