@@ -4,6 +4,8 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  SafeAreaView,
+  ScrollView, // Dodano za bolji scroll
 } from 'react-native';
 import CustomHeader from 'proba-package/custom-header/index';
 import { useTranslation } from 'react-i18next';
@@ -18,13 +20,14 @@ export default function PointsScreen() {
   const [points, setPoints] = useState<number>(0);
   const [rate, setRate] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null); 
 
   const DUMMY_POINTS = 120;
   const DUMMY_RATE = 0.25;
 
   useEffect(() => {
     const loadData = async () => {
-      setLoading(true);
+      setError(null); 
       try {
         if (USE_DUMMY_DATA) {
           await new Promise(res => setTimeout(res, 800));
@@ -32,13 +35,17 @@ export default function PointsScreen() {
           setRate(DUMMY_RATE);
         } else {
           const token = await SecureStore.getItemAsync('auth_token');
+          if (!token) {
+            throw new Error('Authentication token not found.');
+          }
+
           const ptsRes = await fetch(`${baseURL}/api/Loyalty/users/points/my`, {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           });
-          if (!ptsRes.ok) throw new Error(`Points ${ptsRes.status}`);
+          if (!ptsRes.ok) throw new Error(`Failed to fetch points: ${ptsRes.status}`);
           const ptsData = await ptsRes.text();
 
           const rateRes = await fetch(`${baseURL}/api/Loyalty/consts/spending`, {
@@ -47,7 +54,7 @@ export default function PointsScreen() {
               Authorization: `Bearer ${token}`,
             },
           });
-          if (!rateRes.ok) throw new Error(`Rate ${rateRes.status}`);
+          if (!rateRes.ok) throw new Error(`Failed to fetch rate: ${rateRes.status}`);
           const rateData = await rateRes.text();
 
           setPoints(Number(ptsData));
@@ -55,66 +62,103 @@ export default function PointsScreen() {
         }
       } catch (err) {
         console.error('Error loading points:', err);
+        setError(t('error_loading_data')); 
       } finally {
         setLoading(false);
       }
     };
 
     loadData();
-  }, []);
+  }, [t]); 
 
   const valueInMoney = (points * rate).toFixed(2);
 
-return (
-    <>
+  return (
+    <SafeAreaView style={styles.safeArea}>
       <CustomHeader />
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Ionicons name="wallet-outline" size={28} color="#4e8d7c" />
-        </View>
+      <ScrollView contentContainerStyle={styles.container}>
 
         {loading ? (
-          <ActivityIndicator size="large" color="#4e8d7c" />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#2A9D8F" />
+            <Text style={styles.loadingText}>{t('loading_data')}</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.errorContainer}>
+            <Ionicons name="alert-circle-outline" size={32} color="#EF4444" />
+            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorTextSmall}>{t('try_again_later')}</Text>
+          </View>
         ) : (
           <>
             <View style={styles.card}>
               <View style={styles.cardRow}>
-                <View style={styles.iconContainer}>
-                  <Ionicons name="star" size={28} color="#D97706" />
+                <View style={[styles.iconContainer, styles.pointsIconBg]}>
+                  <Ionicons name="star" size={28} color="#F59E0B" />
                 </View>
                 <View>
-                  <Text style={styles.pointsText}>
-                    {t('points_count')} {points}
-                  </Text>
+                  <Text style={styles.cardLabel}>{t('points_count')}</Text>
+                  <Text style={styles.pointsValue}>{points}</Text>
                 </View>
               </View>
+              <Text style={styles.cardDescription}>
+                {t('points_info_text')}
+              </Text>
             </View>
 
-            <View style={styles.moneyCard}>
-              <Text style={styles.moneyLabel}>{t('points_value')}</Text>
-              <Text style={styles.moneyValue}>{valueInMoney} KM</Text>
+            <View style={[styles.card, styles.moneyCard]}>
+              <View style={styles.cardRow}>
+                <View style={[styles.iconContainer, styles.moneyIconBg]}>
+                  <Ionicons name="cash-outline" size={28} color="#059669" />
+                </View>
+                <View>
+                  <Text style={styles.cardLabel}>{t('points_value_in_money')}</Text>
+                  <Text style={styles.moneyValue}>{valueInMoney} KM</Text>
+                </View>
+              </View>
+              <Text style={styles.cardDescription}>
+                {t('money_value_info_text')}
+              </Text>
+            </View>
+
+            {/* sekcija za objašnjenje bodova */}
+            <View style={styles.infoSection}>
+              <Text style={styles.infoSectionTitle}>{t('how_points_work')}</Text>
+              <View style={styles.infoItem}>
+                <Ionicons name="information-circle-outline" size={20} color="#6B7280" />
+                <Text style={styles.infoText}>{t('points_explanation_1')}</Text>
+              </View>
+              <View style={styles.infoItem}>
+                <Ionicons name="information-circle-outline" size={20} color="#6B7280" />
+                <Text style={styles.infoText}>{t('points_explanation_2', { rate: (rate * 100).toFixed(0) })}</Text>
+              </View>
             </View>
           </>
         )}
-      </View>
-    </>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F3F4F6', 
+  },
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#F3F4F6',
     padding: 24,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 32,
+    marginTop: 16,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
     color: '#1F2937',
     marginLeft: 12,
@@ -122,50 +166,117 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    padding: 24,
-    marginBottom: 16,
+    padding: 20,
+    marginBottom: 20, 
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 6 }, 
+    shadowOpacity: 0.15, 
+    shadowRadius: 10, 
+    elevation: 8,
   },
   cardRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12, 
   },
   iconContainer: {
-    backgroundColor: '#FDE68A',
     borderRadius: 12,
-    padding: 12,
+    padding: 10,
     marginRight: 16,
-  },
-  pointsText: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginTop: 4,
-  },
-  moneyCard: {
-    backgroundColor: '#ECFDF5',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  moneyLabel: {
+  pointsIconBg: {
+    backgroundColor: '#FFEFD5',
+  },
+  moneyIconBg: {
+    backgroundColor: '#D1FAE5', 
+  },
+  cardLabel: {
     fontSize: 16,
-    color: '#10B981',
     fontWeight: '500',
+    color: '#6B7280',
+  },
+  pointsValue: {
+    fontSize: 32, 
+    fontWeight: '800', 
+    color: '#D97706',
+    marginTop: 4,
   },
   moneyValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#047857',
+    fontSize: 32, 
+    fontWeight: '800', 
+    color: '#059669',
     marginTop: 4,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: '#4B5563',
+    lineHeight: 20, 
+  },
+  moneyCard: {
+    backgroundColor: '#F0FDF4',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 200,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#4B5563',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 200,
+    backgroundColor: '#FEF2F2',
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+  },
+  errorText: {
+    marginTop: 12,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#DC2626',
+    textAlign: 'center',
+  },
+  errorTextSmall: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#EF4444',
+    textAlign: 'center',
+  },
+  infoSection: {
+    marginTop: 32,
+    padding: 20,
+    backgroundColor: '#E0F2F7', 
+    borderRadius: 16,
+    borderLeftWidth: 5,
+    borderLeftColor: '#38BDF8', 
+  },
+  infoSectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 16,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start', 
+    marginBottom: 10,
+  },
+  infoText: {
+    marginLeft: 10,
+    fontSize: 14,
+    color: '#4B5563',
+    flexShrink: 1, 
+    lineHeight: 20,
   },
 });

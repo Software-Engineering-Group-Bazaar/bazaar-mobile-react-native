@@ -384,5 +384,11 @@
   "ticket_status_resolved": "Resolved",
   "ticket_status_unknown": "Unknown",
   "points_value": "Value of your collected points",
-  "points_count": "Points: "
+  "points_count": "Current points",
+  "points_info_text": "This is the total number of points you've collected through your purchases. Keep collecting and spending!",
+  "points_explanation_1": "You earn points through purchase of products.",
+  "points_explanation_2": "Each point you collect is worth some sum of money. You can use your points for discounts on your next purchase.",
+  "money_value_info_text": "This is the monetary value of your collected points, which you can use for purchases.",
+  "points_value_in_money": "Points Value in Money",
+  "how_points_work": "How Do Points Work?"
 }
