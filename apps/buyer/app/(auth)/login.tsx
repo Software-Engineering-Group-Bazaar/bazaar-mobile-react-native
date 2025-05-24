@@ -75,7 +75,26 @@ export default function SignIn() {
          });
   
          if (!apiResponse.ok) {
-           throw new Error("Failed to login with Google");
+           let errorData = { message: "Došlo je do greške." };
+
+          const contentType = apiResponse.headers.get("Content-Type") || "";
+          if (contentType.includes("application/json")) {
+            errorData = await apiResponse.json();
+          } else {
+            const text = await apiResponse.text();
+            errorData.message = text;
+          }
+
+          console.log("Error response:", errorData);
+
+          if (errorData.message.includes("unapproved")) {
+            Alert.alert(t("access_denied"), t("account_not_approved"));
+          } else if (errorData.message.includes("inactive")) {
+            Alert.alert(t("access_denied"), t("account_not_active"));
+          } else {
+            Alert.alert(t("login_failed"), t("unexpected_error"));
+          }
+          return;
          }
   
          const result = await apiResponse.text();
@@ -170,23 +189,38 @@ export default function SignIn() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, app:"buyer" }) 
       });
+
+      if(!loginRes.ok){
+        let errorData = { message: "Došlo je do greške." };
+
+          const contentType = loginRes.headers.get("Content-Type") || "";
+          if (contentType.includes("application/json")) {
+            errorData = await loginRes.json();
+          } else {
+            const text = await loginRes.text();
+            errorData.message = text;
+          }
+
+          console.log("Error response:", errorData);
+
+          if (errorData.message.includes("unapproved")) {
+            Alert.alert(t("access_denied"), t("account_not_approved"));
+          } else if (errorData.message.includes("inactive")) {
+            Alert.alert(t("access_denied"), t("account_not_active"));
+          } else {
+            Alert.alert(t("login_failed"), t("unexpected_error"));
+          }
+          return;
+      }
   
       const loginData: any = await loginRes.json();
   
-      if (loginRes.status != 200) {
-        Alert.alert(t('login_failed'), t('invalid_credentials'));
-        return;
-      }
+      //if (loginRes.status != 200) {
+        //Alert.alert(t('login_failed'), t('invalid_credentials'));
+        //return;
+      //}
 
-  
-      // Step 3: Destructure the token and approval status from loginData
       const { token, mail } = loginData;
-
-      // Step 4: Check if the account is approved
-      if (mail === false) {
-        Alert.alert(t('access_denied'), t('account_not_approved'));
-        return;
-      }
 
       // Step 5: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
