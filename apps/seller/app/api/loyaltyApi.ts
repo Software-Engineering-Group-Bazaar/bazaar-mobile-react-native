@@ -1,3 +1,4 @@
+import { store } from "expo-router/build/global-state/router-store";
 import { LoyaltyReportData, ProductLoyaltySetting } from "../types/LoyaltyTypes"; 
 import api from "./defaultApi"; 
 
@@ -49,11 +50,56 @@ export async function apiFetchLoyaltyReport(
   storeId: number,
   dateFrom?: string,
   dateTo?: string
-): Promise<LoyaltyReportData> { 
-    console.log(`API MOCK: Fetching loyalty report for store ${storeId}`, {dateFrom, dateTo});
-    return new Promise(resolve => setTimeout(() => resolve({
-        totalIncome: 12500 + Math.floor(Math.random() * 1000),
-        paidToAdmin: 320 + Math.floor(Math.random() * 50),
-        redeemedWithPoints: 480 + Math.floor(Math.random() * 100),
-    }), 800));
+){ 
+  try {
+    console.log("from: ", dateFrom)
+    console.log("to: ", dateTo)
+    const totalIncome = await api.get('/Stores/income', {
+      params: {
+        from: dateFrom,
+        to: dateTo
+      }
+    });
+
+    const pointsGiven = await api.get('/Stores/points', {
+      params: {
+        from: dateFrom,
+        to: dateTo
+      }
+    });
+
+    const paidToAdmin = await api.get('/Loyalty/admin/income', {
+      params: {
+        from: dateFrom,
+        to: dateTo,
+        storeIds: [storeId]
+      }
+    });
+
+    const compensation = await api.get(`/Loyalty/store/${storeId}/income`, {
+      params: {
+        from: dateFrom,
+        to: dateTo
+      }
+    });
+
+    const adminToSellerRate = await api.get('/Loyalty/consts/admin/seller');
+
+    if (totalIncome.data && pointsGiven && paidToAdmin && compensation && adminToSellerRate) {
+      const returnedPoints = Math.round(compensation.data / adminToSellerRate.data);
+      return new Promise(resolve => setTimeout(() => resolve({
+        totalIncome: totalIncome.data.totalIncome,
+        pointsGiven: pointsGiven.data,
+        paidToAdmin: paidToAdmin.data,
+        pointsUsed: returnedPoints,
+        compensatedAmount: compensation.data
+      }), 800));
+    }
+
+    return null; 
+  } catch (error) {
+    console.error('Failed to fetch total income:', error);
+    return null; 
+  }
+
 }

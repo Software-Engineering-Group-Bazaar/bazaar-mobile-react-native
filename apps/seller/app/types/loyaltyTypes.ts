@@ -9,7 +9,9 @@ export interface ProductLoyaltySetting {
 export interface LoyaltyReportData {
   totalIncome: number;
   paidToAdmin: number;
-  redeemedWithPoints: number;
+  pointsGiven: number;
+  pointsUsed: number;
+  compensatedAmount: number;
 }
 
 export interface PointRateOption {
