@@ -387,10 +387,10 @@ const checkAndAddToCart = async () => {
 
         {/* Prikaz broja poena */}
         {pointsEarned > 0 && (
-          <Text style={styles.pointsDisplay}>
-            Kupovinom dobijate: {pointsEarned.toFixed(2)} poena
-          </Text>
-        )}
+                <Text style={styles.pointsDisplay}>
+                {t('You earn: {{points}} points', { points: pointsEarned.toFixed(2) })}
+                </Text>
+                )}
 
         {product.isActive ? (
           <>

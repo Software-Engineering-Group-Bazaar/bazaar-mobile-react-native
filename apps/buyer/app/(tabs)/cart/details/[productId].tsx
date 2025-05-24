@@ -28,6 +28,7 @@ interface Product {
   isActive: boolean;
   wholesaleThreshold?: number;
   quantity: number
+  pointRate?: number;
 }
 
 interface Inventory {
@@ -43,7 +44,7 @@ interface Inventory {
 // const USE_DUMMY_DATA = true;
 
 const DUMMY_PRODUCTS: Product[] = [
-  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15 },
+  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15, pointRate:0.5 },
   { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 123, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isActive: true, quantity: 10 },
   { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isActive: true, wholesaleThreshold: 50, quantity: 20 },
   { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isActive: false, quantity: 40 },
@@ -77,6 +78,7 @@ const ProductDetailsScreen = () => {
   const [quantity, setQuantity] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty || 1);
   const [quantityInput, setQuantityInput] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty?.toString() || '1');
   const [quantitySuggestion, setQuantitySuggestion] = useState<string | null>(null);
+  const [ pointsEarned, setPointsEarned ] = useState(0);
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -154,6 +156,31 @@ const ProductDetailsScreen = () => {
       title: product?.name || '',
     });
   }, [product, navigation]);
+
+  useEffect(() => {
+        if (product) {
+          calculatePoints(quantity);
+        }
+      }, [product, quantity]);
+    
+      //fja za racunanje poena na osnovu odabrane kolicine i cijene
+      const calculatePoints = (currentQuantity: number) => {
+        if (!product || product.pointRate === undefined) {
+          setPointsEarned(0);
+          return;
+        }
+    
+        let priceToUse = product.retailPrice;
+        if (product.wholesaleThreshold !== undefined && product.wholesalePrice !== undefined) {
+          if (currentQuantity > product.wholesaleThreshold) {
+            priceToUse = product.wholesalePrice;
+          } else {
+            priceToUse = product.retailPrice;
+          }
+        }
+        const calculatedPoints = priceToUse * product.pointRate * currentQuantity;
+        setPointsEarned(calculatedPoints);
+    };
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -270,6 +297,13 @@ const ProductDetailsScreen = () => {
           <Text style={styles.price}>{product.retailPrice.toFixed(2)} KM</Text>
         )}
 
+        {/* Prikaz broja poena */}
+        {pointsEarned > 0 && (
+        <Text style={styles.pointsDisplay}>
+        {t('You earn: {{points}} points', { points: pointsEarned.toFixed(2) })}
+        </Text>
+        )}
+
         {product.isActive ? (
           <>
             {/*odabir količine */}
@@ -372,6 +406,13 @@ const ProductDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  pointsDisplay: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    marginTop: 5,
+    marginBottom: 10,
+  },
   quantitySuggestionText: {
     fontSize: 16,
     marginBottom: 10,
