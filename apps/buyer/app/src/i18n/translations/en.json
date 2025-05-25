@@ -375,6 +375,7 @@
   "ticket_status_open": "Open",
   "ticket_status_resolved": "Resolved",
   "ticket_status_unknown": "Unknown",
+  "You earn: {{points}} points": "You earn: {{points}} points with this purchase",
   "use_points": "Use Loyalty Points",
   "your_points": "Your Current Points",
   "points_value": "Points Value",

@@ -375,6 +375,7 @@
   "ticket_status_open": "Otvoren",
   "ticket_status_resolved": "Riješen",
   "ticket_status_unknown": "Nepoznat",
+  "You earn: {{points}} points": "Kupovinom dobijate: {{points}} poena",
   "use_points": "Koristi poene",
   "your_points": "Vaši trenutni poeni",
   "points_value": "Vrijednost poena",
