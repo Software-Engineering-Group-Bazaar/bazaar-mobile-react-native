@@ -86,7 +86,7 @@ export default function SignIn() {
 
          await SecureStore.setItemAsync("auth_token", accessToken);
   
-        router.replace("/home");
+        router.replace("/pregled_prodavnica");
       } else {
         console.log("Google Sign-in cancelled");
       }
@@ -138,7 +138,7 @@ export default function SignIn() {
         console.log("API response:", apiData);
   
         await SecureStore.setItemAsync("auth_token", apiData.token);
-        router.replace("/home");
+        router.replace("/pregled_prodavnica");
         getUserFBData();
       }
     } catch (error) {
@@ -191,7 +191,7 @@ export default function SignIn() {
       // Step 5: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
       // Step 6: Redirect to the logout screen or dashboard
-      router.replace('/(tabs)/home');
+      router.replace('/(tabs)/pregled_prodavnica');
   
     } catch (error) {
       console.error("Login error:", error);
