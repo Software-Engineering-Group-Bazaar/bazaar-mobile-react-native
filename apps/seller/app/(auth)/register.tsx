@@ -41,7 +41,7 @@ export default function SignUp() {
       const apiData = await fbLoginApi();
 
       await SecureStore.setItemAsync("accessToken", apiData.token);
-      router.replace("../(tabs)/home");
+      router.replace("../(tabs)/loyalty");
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }

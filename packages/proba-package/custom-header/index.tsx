@@ -11,7 +11,7 @@ const CustomHeader = () => {
     if (pathname.startsWith('/stores/products')) return t('store-products');
     if (pathname.startsWith('/stores')) return t('stores');
     if (pathname.startsWith('/search')) return t('search');
-    if (pathname.startsWith('/home')) return t('home');
+    if (pathname.startsWith('/pregled_prodavnica')) return t('pregled_prodavnica');
     if (pathname.startsWith('/profil')) return t('profile');
     if (pathname.startsWith('/cart')) return t('cart');
     if (pathname.startsWith('/screens/orders/details')) return t('details')
