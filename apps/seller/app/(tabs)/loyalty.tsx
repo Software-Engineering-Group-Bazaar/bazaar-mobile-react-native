@@ -299,7 +299,7 @@ export default function LoyaltyScreen() {
               <Text style={styles.sectionTitle}>{t('Store Performance')}</Text>
               <View style={styles.reportCard}>
                 <Text style={styles.reportLabel}>💰 {t('Total Store Income')}</Text>
-                <Text style={styles.reportValue}>${reportData.totalIncome.toLocaleString()}</Text>
+                <Text style={styles.reportValue}>{reportData.totalIncome.toLocaleString()} KM</Text>
               </View>
             </View>
 
@@ -314,7 +314,7 @@ export default function LoyaltyScreen() {
 
                 <View style={styles.reportCard}>
                   <Text style={styles.reportLabel}>💸 {t('Paid for Points')}</Text>
-                  <Text style={styles.reportValue}>${reportData.paidToAdmin.toFixed(2)}</Text>
+                  <Text style={styles.reportValue}>{reportData.paidToAdmin.toFixed(2)} KM</Text>
                 </View>
               </View>
 
@@ -329,7 +329,7 @@ export default function LoyaltyScreen() {
 
                 <View style={styles.reportCard}>
                   <Text style={styles.reportLabel}>💵 {t('Compensation for Used Points')}</Text>
-                  <Text style={styles.reportValue}>${reportData.compensatedAmount.toFixed(2)}</Text>
+                  <Text style={styles.reportValue}>{reportData.compensatedAmount.toFixed(2)} KM</Text>
                 </View>
               </View>
 
@@ -408,6 +408,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     backgroundColor: '#f9f9f9',
+    elevation: 2
   },
   redBorder: {
     borderLeftWidth: 5,
@@ -466,8 +467,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 5,
-    elevation: 3,
-    paddingTop: 20
+    paddingTop: 15
   },
   topBar: {
     flexDirection: "row",
