@@ -271,7 +271,7 @@
   "Paid for Points": "Plaćeno za bodove",
   "Point Income": "Prihod od bodova",
   "Points Used in Orders": "Iskorišteni bodovi u narudžbama",
-  "Compensation for Used Points": "Novčana nadoknada",
+  "Compensation for Used Points": "Novčana naknada",
   "Apply Filter": "Primijeni",
   "select_rate": "Odaberi stopu poena",
   "select_rate_for": "Odaberi stopu poena za",
@@ -279,5 +279,6 @@
   "no_points_label": "Bez Poena (0x)",
   "standard_label": "Standardni (1x)",
   "double_points_label": "Dupli Poeni (2x)",
-  "triple_points_label": "Trostruki Poeni (3x)"
+  "triple_points_label": "Trostruki Poeni (3x)",
+  "saving_changes": "Spašavanje izmjena"
 }
