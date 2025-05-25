@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as SecureStore from 'expo-secure-store';
 
-import { ProductLoyaltySetting, LoyaltyReportData, PointRateOption } from "../types/LoyaltyTypes"; 
+import { ProductLoyaltySetting, LoyaltyReportData, PointRateOption } from "../types/loyaltyTypes"; 
 import {
   apiFetchSellerProductsWithLoyalty,
   apiUpdateProductPointRate,
@@ -26,15 +26,17 @@ import {
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import DateTimePicker from '@react-native-community/datetimepicker'; 
 
-const POINT_RATE_OPTIONS: PointRateOption[] = [
-  { label: "Bez Poena (0x)", value: 0 },
-  { label: "Standardni (1x)", value: 1 },
-  { label: "Dupli Poeni (2x)", value: 2 },
-  { label: "Trostruki Poeni (3x)", value: 3 },
+const getPointRateOptions = (t: (key: string, options?: any) => string): PointRateOption[] => [
+  { label: t("no_points_label"), value: 0 },
+  { label: t("standard_label"), value: 1 },
+  { label: t("double_points_label"), value: 2 },
+  { label: t("triple_points_label"), value: 3 },
 ];
+
 
 export default function LoyaltyScreen() {
   const { t } = useTranslation();
+  const POINT_RATE_OPTIONS = getPointRateOptions(t);
 
   const [storeId, setStoreId] = useState<number | null>(null);
   const [reportData, setReportData] = useState<LoyaltyReportData | null>(null);
@@ -125,9 +127,9 @@ export default function LoyaltyScreen() {
     );
   };
 
-  const handleSaveChanges = async () => {
-    if (storeId === null) {
-      Alert.alert(t("error"), t("store_id_not_found_seller"));
+   const handleSaveChanges = async () => {
+    if (storeId === null) { 
+      Alert.alert(t("error"), t("store_id_not_found_seller_for_save"));
       return;
     }
     setIsSubmitting(true);
@@ -139,20 +141,24 @@ export default function LoyaltyScreen() {
       if (initialProductRates[productSetting.id] !== productSetting.currentPointRateFactor) {
         changesMade++;
         try {
-          const updatedProduct = await apiUpdateProductPointRate(
+          const successUpdating = await apiUpdateProductPointRate(
             productSetting.id,
-            storeId,
-            productSetting.currentPointRateFactor
+            productSetting.currentPointRateFactor 
           );
-          if (updatedProduct) {
+
+          if (successUpdating) { 
             successes++;
-            setInitialProductRates(prev => ({...prev, [updatedProduct.id]: updatedProduct.currentPointRateFactor}));
+
+            setInitialProductRates(prev => ({
+                ...prev,
+                [productSetting.id]: productSetting.currentPointRateFactor 
+            }));
           } else {
-            failures.push({ name: productSetting.name });
+            failures.push({ name: productSetting.name, error: t('update_failed_no_details') });
           }
         } catch (error: any) {
           console.error(`Failed to update product ${productSetting.name}:`, error);
-          failures.push({ name: productSetting.name, error: error.message });
+          failures.push({ name: productSetting.name, error: error.message || t('unknown_error') });
         }
       }
     }
@@ -172,7 +178,11 @@ export default function LoyaltyScreen() {
   const renderProductLoyaltyItem = ({ item, index }: { item: ProductLoyaltySetting, index: number }) => {
     const isDropdownOpen = openDropdowns[item.id] || false;
     const zIndexValue = (productsLoyalty.length - index) * 100;
-    const isLastFewItems = index >= productsLoyalty.length - 3;
+    const isLastFewItems = index >= productsLoyalty.length - 2;
+    if (productsLoyalty.length == 3)
+    {
+      const isLastFewItems = index >= productsLoyalty.length - 1;
+    }
 
     return (
       <View style={[styles.productItemContainer, { zIndex: isDropdownOpen ? 5001 : zIndexValue }]}>
@@ -289,7 +299,7 @@ export default function LoyaltyScreen() {
               <Text style={styles.sectionTitle}>{t('Store Performance')}</Text>
               <View style={styles.reportCard}>
                 <Text style={styles.reportLabel}>💰 {t('Total Store Income')}</Text>
-                <Text style={styles.reportValue}>${reportData.totalIncome.toLocaleString()}</Text>
+                <Text style={styles.reportValue}>{reportData.totalIncome.toLocaleString()} KM</Text>
               </View>
             </View>
 
@@ -304,7 +314,7 @@ export default function LoyaltyScreen() {
 
                 <View style={styles.reportCard}>
                   <Text style={styles.reportLabel}>💸 {t('Paid for Points')}</Text>
-                  <Text style={styles.reportValue}>${reportData.paidToAdmin.toFixed(2)}</Text>
+                  <Text style={styles.reportValue}>{reportData.paidToAdmin.toFixed(2)} KM</Text>
                 </View>
               </View>
 
@@ -319,7 +329,7 @@ export default function LoyaltyScreen() {
 
                 <View style={styles.reportCard}>
                   <Text style={styles.reportLabel}>💵 {t('Compensation for Used Points')}</Text>
-                  <Text style={styles.reportValue}>${reportData.compensatedAmount.toFixed(2)}</Text>
+                  <Text style={styles.reportValue}>{reportData.compensatedAmount.toFixed(2)} KM</Text>
                 </View>
               </View>
 
@@ -398,6 +408,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     backgroundColor: '#f9f9f9',
+    elevation: 2
   },
   redBorder: {
     borderLeftWidth: 5,
@@ -456,8 +467,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 5,
-    elevation: 3,
-    paddingTop: 20
+    paddingTop: 15
   },
   topBar: {
     flexDirection: "row",

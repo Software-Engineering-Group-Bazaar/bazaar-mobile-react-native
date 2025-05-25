@@ -275,5 +275,10 @@
   "Apply Filter": "Apply Filter",
   "select_rate": "Select Rate",
   "select_rate_for": "Select Rate For",
-  "Error: The start date cannot be after the end date.": "The start date cannot be after the end date."
+  "Error: The start date cannot be after the end date.": "The start date cannot be after the end date.",
+  "no_points_label": "No Points (0x)",
+  "standard_label": "Standard (1x)",
+  "double_points_label": "Double Points (2x)",
+  "triple_points_label": "Triple Points (3x)",
+  "saving_changes": "Saving Changes"
 }
