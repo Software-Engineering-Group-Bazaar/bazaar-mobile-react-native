@@ -159,9 +159,9 @@ const ProductDetailsScreen = () => {
 
   useEffect(() => {
         if (product) {
-          calculatePoints(quantity);
+          calculatePoints(parseInt(quantityInput));
         }
-      }, [product, quantity]);
+      }, [product, quantityInput]);
     
       //fja za racunanje poena na osnovu odabrane kolicine i cijene
       const calculatePoints = (currentQuantity: number) => {
@@ -179,7 +179,7 @@ const ProductDetailsScreen = () => {
           }
         }
         const calculatedPoints = priceToUse * product.pointRate * currentQuantity;
-        setPointsEarned(calculatedPoints);
+        setPointsEarned(Math.floor(calculatedPoints));
     };
 
   useEffect(() => {

@@ -23,7 +23,7 @@ const API_BASE_URL = baseURL + '/api/Chat'; // YOUR ACTUAL API BASE URL
 let MOCK_TOKEN = "JWT_TOKEN"; // REPLACE with a real token if USE_DUMMY_DATA is false
 let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one backend extracts from MOCK_TOKEN
 
-(async () => {
+const updateMockUser = async () => {
   if (USE_DUMMY_DATA) {
     console.log("USE_DUMMY_DATA is true. Skipping live token/user-profile fetch. Using predefined MOCK_TOKEN and MOCK_CURRENT_USER_ID.");
     return;
@@ -84,7 +84,7 @@ let MOCK_CURRENT_USER_ID = "user123_from_token"; // This ID should match the one
     // MOCK_TOKEN might be its default or updated if SecureStore succeeded but profile fetch failed.
     // MOCK_CURRENT_USER_ID will be its default.
   }
-})();
+};
 
 const DEFAULT_AVATAR = '';
 
@@ -199,6 +199,7 @@ const ConversationsListScreen = () => {
   const loadConversations = useCallback(async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
     setError(null);
+    await updateMockUser();
     try {
       let fetchedConversations;
       if(USE_DUMMY_DATA){
