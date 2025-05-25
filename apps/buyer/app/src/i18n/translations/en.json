@@ -401,5 +401,6 @@
   "Apply Filter": "Apply Filter",
   "select_rate": "Select Rate",
   "select_rate_for": "Select Rate For",
-  "Error: The start date cannot be after the end date.": "The start date cannot be after the end date."
+  "Error: The start date cannot be after the end date.": "The start date cannot be after the end date.",
+  "saving_changes": "Saving Changes"
 }
