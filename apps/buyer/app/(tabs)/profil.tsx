@@ -54,6 +54,13 @@ export default function Profil() {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.actionButton}
+        onPress={() => router.push('../screens/points')}
+      >
+        <Ionicons name="wallet-outline" size={24} color="#4e8d7c" />
+        <Text style={styles.actionText}>{t('my_points')}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.actionButton}
         onPress={() => router.push('../screens/addresses')}
       >
         <Ionicons name="map-outline" size={24} color="#4e8d7c" />
