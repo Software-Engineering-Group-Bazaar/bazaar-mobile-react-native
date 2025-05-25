@@ -158,7 +158,7 @@ const CartScreen = () => {
           console.error("No login token for fetching points.");
           return;
         }
-        const responsePoints=await fetch(`${baseURL}/api/Loyalty/user/points/my`, {
+        const responsePoints=await fetch(`${baseURL}/api/Loyalty/users/points/my`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -174,16 +174,16 @@ const CartScreen = () => {
         });
 
         if(responsePoints.ok){
-          const pointsData = await responsePoints.json();
-          setUserPoints(pointsData.currentPoints || 0); //valjda se vako zove atribut za poene
+          const pointsData = await responsePoints.text();
+          setUserPoints(parseInt(pointsData) || 0); //valjda se vako zove atribut za poene
         }else{
           console.error(`Failed to fetch user points: ${responsePoints.status}`);
           setUserPoints(0)
         }
 
         if(responseRate.ok){
-          const rateData = await responseRate.json();
-          setSpendingPointRate(rateData.spendingPointRate || 0); //valjda se vako zove atribut za spending rate
+          const rateData = await responseRate.text();
+          setSpendingPointRate(parseFloat(rateData) || 0); //valjda se vako zove atribut za spending rate
         }else{
           console.error(`Failed to fetch spending point rate: ${responseRate.status}`);
           setSpendingPointRate(0);
@@ -237,11 +237,11 @@ const CartScreen = () => {
   const checkoutOrder = async () => {
     console.log(cartItems);
     if(cartItems.length && cartItems.length > 0){
-      const orderPayload : {storeId: number; orderItems: ProductPayload[], addressId: number, useLoyaltyPoints: boolean;} = {
+      const orderPayload : {storeId: number; orderItems: ProductPayload[], addressId: number, usingPoints: boolean;} = {
         storeId: cartItems[0].product.storeId,
         orderItems: [],
         addressId: parseInt(selectedLocationId),
-        useLoyaltyPoints: usePoints //da li ce se koristiti poeni, valjda je taj naziv
+        usingPoints: usePoints //da li ce se koristiti poeni, valjda je taj naziv
       };
       console.log("storeId: " + cartItems[0].product.storeId);
       for (let i in cartItems) {
@@ -333,7 +333,7 @@ const CartScreen = () => {
 
             {!usePoints && ( // ako necemo trosit poene
               <View style={styles.pointsDetailsContainer}>
-                <Text style={styles.summaryLabel}>{t('points_earned')}: {earnedPoints.toFixed(2)}</Text>
+                <Text style={styles.summaryLabel}>{t('points_earned')}: {Math.floor(earnedPoints).toFixed(2)}</Text>
               </View>
             )}
               <Picker
