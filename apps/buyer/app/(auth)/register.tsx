@@ -78,7 +78,7 @@ export default function SignUp() {
         console.log("API response:", apiData);
   
         await SecureStore.setItemAsync("accessToken", apiData.token);
-        router.replace("/pregled_prodavnica");
+        router.replace("/home");
         getUserFBData();
       }
     } catch (error) {
@@ -155,7 +155,7 @@ export default function SignUp() {
          await SecureStore.setItemAsync('accessToken', token);
 
         // Navigate to home screen or any other page as needed
-        router.replace('/pregled_prodavnica');
+        router.replace('/home');
       } else {
         console.log('Google Sign-Up cancelled');
       }
