@@ -86,7 +86,7 @@ export default function SignIn() {
 
          await SecureStore.setItemAsync("auth_token", accessToken);
   
-        router.replace("(tabs)/home");
+        router.replace("/(tabs)/home");
       } else {
         console.log("Google Sign-in cancelled");
       }
@@ -138,7 +138,7 @@ export default function SignIn() {
         console.log("API response:", apiData);
   
         await SecureStore.setItemAsync("auth_token", apiData.token);
-        router.replace("(tabs)/home");
+        router.replace("/(tabs)/home");
         getUserFBData();
       }
     } catch (error) {
