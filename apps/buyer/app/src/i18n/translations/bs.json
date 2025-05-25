@@ -399,7 +399,7 @@
   "Paid for Points": "Plaćeno za bodove",
   "Point Income": "Prihod od bodova",
   "Points Used in Orders": "Iskorišteni bodovi u narudžbama",
-  "Compensation for Used Points": "Novčana nadoknada",
+  "Compensation for Used Points": "Novčana naknada",
   "Product Point Rates Management": "Upravljanje bodovima proizvoda",
   "Save Changes": "Sačuvaj izmjene",
   "Select Rate": "Odaberi stopu",
@@ -417,6 +417,7 @@
   "Apply Filter": "Primijeni",
   "select_rate": "Odaberi stopu poena",
   "select_rate_for": "Odaberi stopu poena za",
-  "Error: The start date cannot be after the end date.": "Početni datum ne može biti poslije završnog datuma."
+  "Error: The start date cannot be after the end date.": "Početni datum ne može biti poslije završnog datuma.",
+   "saving_changes": "Spašavanje izmjena"
 }
   

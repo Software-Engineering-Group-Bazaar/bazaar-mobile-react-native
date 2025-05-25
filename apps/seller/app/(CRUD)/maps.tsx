@@ -85,8 +85,8 @@ export default function OptimalRouteMap() {
       console.log("pozvana");
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Error fetching route: ${response.statusText}`);
-
       const data = await response.json();
+
       if (data.status !== "OK") throw new Error(`API error: ${data.status} - ${data.error_message}`);
       setOptimalRoute(data.routes[0]);
 

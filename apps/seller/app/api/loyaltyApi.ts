@@ -66,8 +66,6 @@ export async function apiFetchLoyaltyReport(
   dateTo?: string
 ){ 
   try {
-    console.log("from: ", dateFrom)
-    console.log("to: ", dateTo)
     const totalIncome = await api.get('/Stores/income', {
       params: {
         from: dateFrom,
@@ -86,7 +84,7 @@ export async function apiFetchLoyaltyReport(
       params: {
         from: dateFrom,
         to: dateTo,
-        storeIds: [storeId]
+        storeIds: storeId
       }
     });
 
@@ -96,6 +94,7 @@ export async function apiFetchLoyaltyReport(
         to: dateTo
       }
     });
+    console.log(compensation.data)
 
     const adminToSellerRate = await api.get('/Loyalty/consts/admin/seller');
 
