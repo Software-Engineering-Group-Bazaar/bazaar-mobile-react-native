@@ -90,7 +90,7 @@ const CartScreen = () => {
     const pricePerUnit = useWholesale
       ? product.wholesalePrice
       : product.retailPrice;
-    return sum + (pricePerUnit * qty * (product.pointRate || 0)); 
+    return sum + Math.floor(pricePerUnit * qty * (product.pointRate || 0)); 
   }, 0);
 
   const checkAndUpdateQuantitiesOnLoad = async () => {
@@ -333,7 +333,7 @@ const CartScreen = () => {
 
             {!usePoints && ( // ako necemo trosit poene
               <View style={styles.pointsDetailsContainer}>
-                <Text style={styles.summaryLabel}>{t('points_earned')}: {Math.floor(earnedPoints).toFixed(2)}</Text>
+                <Text style={styles.summaryLabel}>{t('points_earned')}: {earnedPoints.toFixed(2)}</Text>
               </View>
             )}
               <Picker
