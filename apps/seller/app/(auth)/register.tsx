@@ -15,6 +15,7 @@ import { fbLoginApi } from "../api/auth/loginApi";
 import LanguageButton from '../../components/ui/buttons/LanguageButton';
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
+import { baseURL } from "../env";
 
 export default function SignUp() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function SignUp() {
       const apiData = await fbLoginApi();
 
       await SecureStore.setItemAsync("accessToken", apiData.token);
-      router.replace("../(tabs)/home");
+      router.replace("../(tabs)/loyalty");
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
@@ -84,7 +85,7 @@ export default function SignUp() {
         console.log("Google Sign-Up User Info:", { idToken });
 
         const apiResponse = await fetch(
-          "https://bazaar-system.duckdns.org/api/Auth/login/google",
+          `${baseURL}/api/Auth/login/google`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

@@ -28,12 +28,13 @@ interface Product {
   isActive: boolean;
   wholesaleThreshold?: number;
   quantity: number
+  pointRate?:number;
 }
 
 // const USE_DUMMY_DATA = false;
 
 const DUMMY_PRODUCTS: Product[] = [
-  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15 },
+  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15, pointRate:0.5 },
   { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 123, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isActive: true, quantity: 10 },
   { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isActive: true, wholesaleThreshold: 50, quantity: 20 },
   { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isActive: false, quantity: 40 },
@@ -65,6 +66,7 @@ const ProductDetailsScreen = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantityInput, setQuantityInput] = useState('1');
   const { cartItems, addToCart } = useCart();
+  const [ pointsEarned, setPointsEarned ] = useState(0);
   const quantity = parseInt(quantityInput, 10) || 1;
 
       const handleConversationPress = async () => {
@@ -117,7 +119,7 @@ const ProductDetailsScreen = () => {
         // Params passed here will be available in ChatScreen via `useLocalSearchParams`
     
           router.push({
-          pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+          pathname: `(tabs)/chat/${data.id}` as any, // Dynamic route using conversation ID
           params: {
             // conversationId is already part of the path, but you can pass it explicitly if needed
             // or if your ChatScreen expects it as a query param rather than a path segment.
@@ -221,6 +223,31 @@ const checkAndAddToCart = async () => {
       title: product?.name || '',
     });
   }, [product, navigation]);
+
+  useEffect(() => {
+      if (product) {
+        calculatePoints(quantity);
+      }
+    }, [product, quantity]);
+  
+    //fja za racunanje poena na osnovu odabrane kolicine i cijene
+    const calculatePoints = (currentQuantity: number) => {
+      if (!product || product.pointRate === undefined) {
+        setPointsEarned(0);
+        return;
+      }
+  
+      let priceToUse = product.retailPrice;
+      if (product.wholesaleThreshold !== undefined && product.wholesalePrice !== undefined) {
+        if (currentQuantity > product.wholesaleThreshold) {
+          priceToUse = product.wholesalePrice;
+        } else {
+          priceToUse = product.retailPrice;
+        }
+      }
+      const calculatedPoints = priceToUse * product.pointRate * currentQuantity;
+      setPointsEarned(Math.floor(calculatedPoints));
+  };
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -347,6 +374,13 @@ const checkAndAddToCart = async () => {
           <Text style={styles.price}>{product.retailPrice.toFixed(2)} KM</Text>
         )}
 
+        {/* Prikaz broja poena */}
+        {pointsEarned > 0 && (
+                <Text style={styles.pointsDisplay}>
+                {t('You earn: {{points}} points', { points: pointsEarned.toFixed(2) })}
+                </Text>
+                )}
+
         {product.isActive ? (
           <>
             {/*odabir količine */}
@@ -396,6 +430,13 @@ const checkAndAddToCart = async () => {
 };
 
 const styles = StyleSheet.create({
+  pointsDisplay: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    marginTop: 5,
+    marginBottom: 10,
+  },
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',

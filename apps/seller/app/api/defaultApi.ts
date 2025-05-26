@@ -3,7 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import { baseURL } from "../env";
 
 const api = axios.create({
-  baseURL: `https://bazaar-system.duckdns.org/api`,
+  baseURL: `${baseURL}/api`,
 });
 
 api.interceptors.request.use(async (config) => {

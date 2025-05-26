@@ -8,6 +8,7 @@ import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { apiFetchFormattedConversations } from "../api/messagingApi";
 import { useFocusEffect } from "@react-navigation/native";
+import { baseURL } from "../env";
 
 interface ExtendedConversationDto extends ConversationDto {
   buyerUserId: string;
@@ -72,7 +73,7 @@ const ChatListScreen: React.FC = () => {
 
         // Setup SignalR connection
         const connection = new signalR.HubConnectionBuilder()
-          .withUrl("https://bazaar-system.duckdns.org/chathub", {
+          .withUrl(`${baseURL}/chathub`, {
             accessTokenFactory: async () => storedToken, // Use token for auth
           })
           .withAutomaticReconnect()

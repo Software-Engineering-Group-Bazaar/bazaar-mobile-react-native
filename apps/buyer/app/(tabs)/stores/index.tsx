@@ -522,6 +522,7 @@ const styles = StyleSheet.create({
     flexBasis: '100%',
     maxWidth: '100%', // Ensure it doesn't exceed parent width
     padding: 5, // Add padding around the ad item
+    overflow: 'hidden',
   },
    row: {
      // Add spacing between store items horizontally if needed

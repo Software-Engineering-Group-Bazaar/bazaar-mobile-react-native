@@ -9,6 +9,7 @@ import {
   Touchable,
   Alert,
   TouchableOpacity,
+  Switch
 } from "react-native";
 import CartItem from "proba-package/cart-item/index";
 // Pretpostavka da ova putanja vodi do AŽURIRANE ProductItem komponente
@@ -42,6 +43,7 @@ interface Product {
   photos: string[]; // Promijenjeno iz imageUrl u niz stringova
   isActive: boolean;
   wholesaleThreshold?: number;
+  pointRate?: number;
 }
 
 interface ProductPayload {
@@ -63,6 +65,10 @@ const CartScreen = () => {
 
   const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
+  //nova stanja za poene
+  const [usePoints, setUsePoints] = useState<boolean>(false);
+  const [userPoints, setUserPoints] = useState<number>(0);
+  const [spendingPointRate, setSpendingPointRate] = useState<number>(0);
 
   const totalPrice = cartItems.reduce((sum, { product, qty }) => {
     const useWholesale =
@@ -72,6 +78,19 @@ const CartScreen = () => {
       ? product.wholesalePrice
       : product.retailPrice;
     return sum + pricePerUnit * qty;
+  }, 0);
+  //racunanje vezano za poene 
+  const pointsInMoney = userPoints * spendingPointRate;
+  const remainingAmount = usePoints ? Math.max(totalPrice - pointsInMoney, 0) : totalPrice;
+  //koliko ce se poena osvojiti 
+  const earnedPoints = cartItems.reduce((sum, { product, qty }) => {
+    const useWholesale =
+      product.wholesaleThreshold !== undefined &&
+      qty > product.wholesaleThreshold;
+    const pricePerUnit = useWholesale
+      ? product.wholesalePrice
+      : product.retailPrice;
+    return sum + Math.floor(pricePerUnit * qty * (product.pointRate || 0)); 
   }, 0);
 
   const checkAndUpdateQuantitiesOnLoad = async () => {
@@ -126,7 +145,59 @@ const CartScreen = () => {
     }
   };
 
+  //fje za dohvacanje poena i stope poena
+  const fetchUserPoints= async()=>{
+    if(USE_DUMMY_DATA){
+      setUserPoints(750)
+      setSpendingPointRate(0.05)
+      return;
+    }else{ 
+      try{
+        const authToken=await SecureStore.getItemAsync("auth_token");
+        if(!authToken){
+          console.error("No login token for fetching points.");
+          return;
+        }
+        const responsePoints=await fetch(`${baseURL}/api/Loyalty/users/points/my`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        });
+        const responseRate = await fetch(`${baseURL}/api/Loyalty/consts/spending`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        });
+
+        if(responsePoints.ok){
+          const pointsData = await responsePoints.text();
+          setUserPoints(parseInt(pointsData) || 0); //valjda se vako zove atribut za poene
+        }else{
+          console.error(`Failed to fetch user points: ${responsePoints.status}`);
+          setUserPoints(0)
+        }
+
+        if(responseRate.ok){
+          const rateData = await responseRate.text();
+          setSpendingPointRate(parseFloat(rateData) || 0); //valjda se vako zove atribut za spending rate
+        }else{
+          console.error(`Failed to fetch spending point rate: ${responseRate.status}`);
+          setSpendingPointRate(0);
+        }
+      }catch(error){
+        console.error("Error fetching loyalty data:", error);
+        setUserPoints(0);
+        setSpendingPointRate(0);
+      }
+    }
+  }
+
   useEffect(() => {
+      fetchUserPoints();
       if (USE_DUMMY_DATA) {
         setSavedLocations([
           { id: '1', address: '123 Main St, Springfield', latitude: 43.852, longitude: 18.361 },
@@ -166,10 +237,11 @@ const CartScreen = () => {
   const checkoutOrder = async () => {
     console.log(cartItems);
     if(cartItems.length && cartItems.length > 0){
-      const orderPayload : {storeId: number; orderItems: ProductPayload[], addressId: number} = {
+      const orderPayload : {storeId: number; orderItems: ProductPayload[], addressId: number, usingPoints: boolean;} = {
         storeId: cartItems[0].product.storeId,
         orderItems: [],
-        addressId: parseInt(selectedLocationId)
+        addressId: parseInt(selectedLocationId),
+        usingPoints: usePoints //da li ce se koristiti poeni, valjda je taj naziv
       };
       console.log("storeId: " + cartItems[0].product.storeId);
       for (let i in cartItems) {
@@ -208,6 +280,9 @@ const CartScreen = () => {
       }
       Alert.alert("Narudžba uspješna", "Narudžba je uspješno napravljena.");
       clearCart();
+      if(usePoints){
+        fetchUserPoints();
+      }
     }
   };
 
@@ -235,6 +310,32 @@ const CartScreen = () => {
             <Text style={styles.totalText}>
               {t('total')}: {totalPrice.toFixed(2)} KM
             </Text>
+              {/* prikaz opcije za trošenje poena i detalja o tome */}
+            <View style={styles.pointsOptionContainer}>
+              <Text style={styles.summaryLabel}>{t('use_points')}</Text>
+              <Switch
+                onValueChange={(value) => setUsePoints(value)}
+                value={usePoints}
+                trackColor={{ false: "#767577", true: "green" }}
+              />
+            </View>
+
+            {usePoints && ( // ako cemo trositi poene
+              <View style={styles.pointsDetailsContainer}>
+                <Text style={styles.summaryLabel}>{t('your_points')}: {userPoints.toFixed(2)}</Text>
+                <Text style={styles.summaryLabel}>{t('points_value')}: {pointsInMoney.toFixed(2)} KM</Text>
+                <Text style={styles.summaryLabel}>{t('remaining_to_pay')}: {remainingAmount.toFixed(2)} KM</Text>
+                <Text style={styles.summaryLabel}>
+                  {t('points_after_transaction')}: {Math.max(userPoints - (totalPrice > pointsInMoney ? userPoints : totalPrice / spendingPointRate), 0).toFixed(2)}
+                </Text>
+              </View>
+            )}
+
+            {!usePoints && ( // ako necemo trosit poene
+              <View style={styles.pointsDetailsContainer}>
+                <Text style={styles.summaryLabel}>{t('points_earned')}: {earnedPoints.toFixed(2)}</Text>
+              </View>
+            )}
               <Picker
                 selectedValue={selectedLocationId}
                 onValueChange={setSelectedLocationId}
@@ -313,6 +414,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
+  },
+  pointsOptionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  pointsDetailsContainer: {
+    marginBottom: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  picker: { 
+    height: 50,
+    width: '100%',
+    marginBottom: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
   }
 });
 

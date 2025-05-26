@@ -12,6 +12,7 @@ import * as Device from "expo-device";
 import * as SecureStore from "expo-secure-store";
 import { Platform, Alert } from "react-native";
 import NotificationIcon from "@/components/ui/NotificationIcon";
+import { baseURL } from "../env";
 
 const AUTH_TOKEN_KEY = "accessToken";
 const SENT_PUSH_TOKEN_KEY = "sentPushToken";
@@ -33,7 +34,7 @@ async function getAuthTokenFromStorage(): Promise<string | null> {
 
 // ➤➤➤ ZAMIJENI SA SVOJIM BACKEND URL-om ➤➤➤
 const DEVICES_API_ENDPOINT =
-  "https://bazaar-system.duckdns.org/api/Devices/pushNotification";
+  `${baseURL}/api/Devices/pushNotification`;
 
 async function sendTokenToBackend(nativeToken: string) {
   const authToken = await getAuthTokenFromStorage();
@@ -205,15 +206,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="home"
-        options={{
-          title: t("tab_home"),
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="pregled_prodavnica"
         options={{
           title: t("tab_stores"),
@@ -237,6 +229,15 @@ export default function TabLayout() {
           title: t("messages"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="message.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="loyalty"
+        options={{
+          title: t("loyalty"),
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="wallet.fill" color={color} />
           ),
         }}
       />

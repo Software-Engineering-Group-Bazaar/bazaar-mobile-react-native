@@ -2,6 +2,7 @@ import { Alert } from "react-native";
 import api from "../defaultApi";
 import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 import { t } from "i18next";
+import { baseURL } from "../../env";
 
 export const apiLogin = async (email: string, password: string) => {
   try {
@@ -89,7 +90,7 @@ export const fbLoginApi = async () => {
       };
       // call your backend
       const response = await fetch(
-        "https://bazaar-system.duckdns.org/api/Auth/login/facebook",
+        `${baseURL}/api/Auth/login/facebook`,
         {
           method: "POST",
           headers: {

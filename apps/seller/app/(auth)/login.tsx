@@ -47,7 +47,7 @@ export default function SignIn() {
       }
 
       await SecureStore.setItemAsync("accessToken", apiData.token);
-      router.replace("../(tabs)/home");
+      router.replace("../(tabs)/pregled_prodavnica");
     } catch (error) {
       console.error("Facebook login flow failed:", error);
     }
@@ -64,7 +64,7 @@ export default function SignIn() {
         console.log("User Info:", { idToken });
 
         const apiResponse = await fetch(
-          "https://bazaar-system.duckdns.org/api/Auth/login/google",
+          "${baseURL}/api/Auth/login/google",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -105,7 +105,7 @@ export default function SignIn() {
 
         await SecureStore.setItemAsync("accessToken", accessToken);
 
-        router.replace("../(tabs)/home");
+        router.replace("../(tabs)/pregled_prodavnica");
       } else {
         console.log("Google Sign-in cancelled");
       }
@@ -151,7 +151,7 @@ export default function SignIn() {
       setLoading(true);
       const token = await apiLogin(email, password);
       await SecureStore.setItemAsync("accessToken", token);
-      router.replace("../(tabs)/home");
+      router.replace("../(tabs)/pregled_prodavnica");
     } catch (error: any) {
       if (error.message !== "login_failed_handled") {
         console.log("dodje");
