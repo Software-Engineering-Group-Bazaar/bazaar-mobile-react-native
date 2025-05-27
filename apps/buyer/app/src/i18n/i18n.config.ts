@@ -1,16 +1,21 @@
 import i18next from "i18next"
 import { initReactI18next } from "react-i18next";
-import {en} from "./translations";
-import {bs} from "./translations";
+import {en,bs,de,es} from "./translations";
 
 
 const resources= {
     en: {
-        translation: bs
+        translation: en
     }, 
     bs: {
-        translation: en
-    }
+        translation: bs
+    },
+    de: {
+        translation: de
+    },
+    es: {
+        translation: es
+    },
 }
 
 i18next.use(initReactI18next).init({
@@ -22,7 +27,7 @@ i18next.use(initReactI18next).init({
         interpolation: {
           escapeValue: false, // not needed for react as it escapes by default
        },
-       resources: resources ,
+       resources: resources,
 })
 
 export default i18next;

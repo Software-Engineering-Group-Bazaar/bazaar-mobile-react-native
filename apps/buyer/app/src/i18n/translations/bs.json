@@ -378,7 +378,6 @@
   "You earn: {{points}} points": "Kupovinom dobijate: {{points}} poena",
   "use_points": "Koristi poene",
   "your_points": "Vaši trenutni poeni",
-  "points_value": "Vrijednost poena",
   "remaining_to_pay": "Preostalo za platiti",
   "points_after_transaction": "Poeni nakon transakcije",
   "points_earned": "Poeni za osvojiti",
@@ -418,6 +417,6 @@
   "select_rate": "Odaberi stopu poena",
   "select_rate_for": "Odaberi stopu poena za",
   "Error: The start date cannot be after the end date.": "Početni datum ne može biti poslije završnog datuma.",
-   "saving_changes": "Spašavanje izmjena"
+  "saving_changes": "Spašavanje izmjena"
 }
   

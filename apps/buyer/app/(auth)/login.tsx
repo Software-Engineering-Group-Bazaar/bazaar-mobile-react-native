@@ -19,6 +19,7 @@ import {
   Profile,
   LoginManager,
 } from "react-native-fbsdk-next";
+import i18next from "../src/i18n/i18n.config"; // Adjust the path as necessary
 
 // Add Google Sign-In import
 import {
@@ -51,7 +52,25 @@ export default function SignIn() {
   }, []);
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
+    let lang;
+    switch (i18next.language) {
+      case "en":
+        lang = "bs";
+        break;
+      case "bs":
+        lang = "de";
+        break;
+      case "de":
+        lang = "es";
+        break;
+      case "es":
+        lang = "en";
+        break;
+      default:
+        lang = "en";
+    }
+    i18next.changeLanguage(lang);
+    i18next.language = lang;
   };
 
   const loginWithGoogle = async () => {
@@ -239,7 +258,7 @@ export default function SignIn() {
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
+        <Text style={styles.languageText}>{i18next.language.toUpperCase()}</Text>
       </TouchableOpacity>
 
       <View style={styles.titleContainer}>
