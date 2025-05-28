@@ -19,7 +19,7 @@ import {
   Profile,
   LoginManager,
 } from "react-native-fbsdk-next";
-import i18next from "../src/i18n/i18n.config"; // Adjust the path as necessary
+import i18next from "../src/i18n/i18n.config";
 
 // Add Google Sign-In import
 import {
