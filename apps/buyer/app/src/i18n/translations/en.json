@@ -418,5 +418,9 @@
   "select_rate": "Select Rate",
   "select_rate_for": "Select Rate For",
   "Error: The start date cannot be after the end date.": "The start date cannot be after the end date.",
-  "saving_changes": "Saving Changes"
+  "saving_changes": "Saving Changes",
+  "tutorial_start_shopping_button":"This button provides access to the stores screen where you can browse available products and then proceed to start your purchase",
+  "finish":"Finish",
+   "next":"Next",
+   "previous":"Previous"
 }
