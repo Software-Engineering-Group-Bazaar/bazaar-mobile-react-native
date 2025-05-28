@@ -280,5 +280,6 @@
   "standard_label": "Standard (1x)",
   "double_points_label": "Double Points (2x)",
   "triple_points_label": "Triple Points (3x)",
-  "saving_changes": "Saving Changes"
+  "saving_changes": "Saving Changes",
+  "help_select_order": "Enter here the ID of the order for which you need customer support assistance."
 }

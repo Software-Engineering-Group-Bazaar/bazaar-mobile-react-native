@@ -12,7 +12,7 @@ import {
   ScrollView,
   RefreshControl
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as SecureStore from 'expo-secure-store';
@@ -25,6 +25,13 @@ import {
 } from "../api/loyaltyApi"; 
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import DateTimePicker from '@react-native-community/datetimepicker'; 
+import { Ionicons } from "@expo/vector-icons";
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot
+} from "react-native-copilot";
+
 
 const getPointRateOptions = (t: (key: string, options?: any) => string): PointRateOption[] => [
   { label: t("no_points_label"), value: 0 },
@@ -32,7 +39,6 @@ const getPointRateOptions = (t: (key: string, options?: any) => string): PointRa
   { label: t("double_points_label"), value: 2 },
   { label: t("triple_points_label"), value: 3 },
 ];
-
 
 export default function LoyaltyScreen() {
   const { t } = useTranslation();
@@ -54,6 +60,19 @@ export default function LoyaltyScreen() {
   const [showToPicker, setShowToPicker] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
+  const { start, stop, copilotEvents } = useCopilot();
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (!isFocused) {
+      // Only stop when the screen actually loses focus
+      stop();
+    }
+    // No action on mount/focus
+  }, [isFocused, stop]);
+
+  const WalkthroughableView = walkthroughable(View);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -233,8 +252,16 @@ export default function LoyaltyScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.topBar}>
-        <LanguageButton />
+      <View style={styles.topButtonsContainer}>
+        <View style={styles.languageWrapper}>
+          <LanguageButton />
+        </View>
+        <TouchableOpacity
+          onPress={() => start()}
+          style={styles.helpButton}
+        >
+          <Ionicons name="help-circle-outline" size={36} color="#4E8D7C" />
+        </TouchableOpacity>
       </View>
       <ScrollView 
         style={styles.container} 
@@ -263,30 +290,29 @@ export default function LoyaltyScreen() {
             </TouchableOpacity>
           </View>
         </View>
+          {showFromPicker && (
+            <DateTimePicker
+              value={fromDate}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowFromPicker(false);
+                if (selectedDate) setFromDate(selectedDate);
+              }}
+            />
+          )}
 
-        {showFromPicker && (
-          <DateTimePicker
-            value={fromDate}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowFromPicker(false);
-              if (selectedDate) setFromDate(selectedDate);
-            }}
-          />
-        )}
-
-        {showToPicker && (
-          <DateTimePicker
-            value={toDate}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowToPicker(false);
-              if (selectedDate) setToDate(selectedDate);
-            }}
-          />
-        )}
+          {showToPicker && (
+            <DateTimePicker
+              value={toDate}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowToPicker(false);
+                if (selectedDate) setToDate(selectedDate);
+              }}
+            />
+          )}
 
         {reportData && (
           <View style={styles.summaryContainer}>
@@ -295,15 +321,28 @@ export default function LoyaltyScreen() {
             <View style={styles.sectionContainer}>
 
             {/* ⬜ Store Performance Section */}
-            <View style={styles.reportSection}>
-              <Text style={styles.sectionTitle}>{t('Store Performance')}</Text>
-              <View style={styles.reportCard}>
-                <Text style={styles.reportLabel}>💰 {t('Total Store Income')}</Text>
-                <Text style={styles.reportValue}>{reportData.totalIncome.toLocaleString()} KM</Text>
-              </View>
-            </View>
-
+              <CopilotStep
+                text={"Store performance"}
+                order={1}
+                name="store_performance"
+              >
+                <WalkthroughableView style={{ width: "100%" }}>
+                  <View style={styles.reportSection}>
+                      <Text style={styles.sectionTitle}>{t('Store Performance')}</Text>
+                      <View style={styles.reportCard}>
+                        <Text style={styles.reportLabel}>💰 {t('Total Store Income')}</Text>
+                        <Text style={styles.reportValue}>{reportData.totalIncome.toLocaleString()} KM</Text>
+                      </View>
+                  </View>
+                </WalkthroughableView>
+              </CopilotStep>
               {/* 🔻 Point Expenditure Section */}
+              <CopilotStep
+                text={"Generated points"}
+                order={2}
+                name="generated_points"
+              >
+              <WalkthroughableView style={{ width: "100%" }}>
               <View style={[styles.reportSection, styles.redBorder]}>
                 <Text style={styles.sectionTitle}>{t('Point Expenditure')}</Text>
 
@@ -317,6 +356,8 @@ export default function LoyaltyScreen() {
                   <Text style={styles.reportValue}>{reportData.paidToAdmin.toFixed(2)} KM</Text>
                 </View>
               </View>
+              </WalkthroughableView>
+              </CopilotStep>
 
               {/* 🟢 Point Income Section */}
               <View style={[styles.reportSection, styles.greenBorder]}>
@@ -510,4 +551,21 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  topButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+
+  languageWrapper: {
+    flexShrink: 1,
+  },
+
+  helpButton: {
+    marginLeft: 10,
+    padding: 6,
+  },
 });
+

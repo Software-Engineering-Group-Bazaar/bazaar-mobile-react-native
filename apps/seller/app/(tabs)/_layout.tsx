@@ -14,6 +14,15 @@ import { Platform, Alert } from "react-native";
 import NotificationIcon from "@/components/ui/NotificationIcon";
 import { baseURL } from "../env";
 
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { CopilotProvider } from "react-native-copilot";
+import LoyaltyScreen from "./loyalty";
+import ChatListScreen from "./messaging";
+import StoresScreen from "./pregled_prodavnica";
+import ZaliheScreen from "./zalihe";
+
+const Tab = createBottomTabNavigator();
+
 const AUTH_TOKEN_KEY = "accessToken";
 const SENT_PUSH_TOKEN_KEY = "sentPushToken";
 
@@ -191,7 +200,7 @@ export default function TabLayout() {
     };
   }, []); // Prazan dependency array `[]` znači da će se ovo izvršiti samo JEDNOM kada se TabLayout montira.
   return (
-    <Tabs
+    <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: "#4E8D7C",
         headerShown: true,
@@ -205,42 +214,63 @@ export default function TabLayout() {
         // headerRightContainerStyle: { paddingRight: 16 },
       }}
     >
-      <Tabs.Screen
-        name="pregled_prodavnica"
+      <Tab.Screen name="pregled_prodavnica"
         options={{
           title: t("tab_stores"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="storefront" color={color} />
           ),
         }}
-      />
-      <Tabs.Screen
-        name="zalihe"
+      >
+        {() => (
+          <CopilotProvider>
+            <StoresScreen />
+          </CopilotProvider>
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="zalihe"
         options={{
           title: t("tab_inventory"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="shippingbox" color={color} />
           ),
         }}
-      />
-      <Tabs.Screen
+      >
+        {() => (
+          <CopilotProvider>
+            <ZaliheScreen />
+          </CopilotProvider>
+        )}
+      </Tab.Screen>
+      <Tab.Screen
         name="messaging"
         options={{
           title: t("messages"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="message.fill" color={color} />
-          ),
+          ), 
         }}
-      />
-      <Tabs.Screen
-        name="loyalty"
+      >
+        {() => (
+          <CopilotProvider>
+            <ChatListScreen />
+          </CopilotProvider>
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="loyalty"
         options={{
           title: t("loyalty"),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="wallet.fill" color={color} />
           ),
         }}
-      />
-    </Tabs>
+      >
+        {() => (
+          <CopilotProvider>
+            <LoyaltyScreen />
+          </CopilotProvider>
+        )}
+      </Tab.Screen>
+    </Tab.Navigator>
   );
 }

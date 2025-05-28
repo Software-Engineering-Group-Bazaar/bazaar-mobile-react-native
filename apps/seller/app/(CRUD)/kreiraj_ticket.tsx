@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  TouchableOpacity
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -17,9 +18,19 @@ import { apiCreateSellerTicket } from "../api/ticketApi";
 import { apiFetchSellerOrders } from "../api/orderApi";
 import { Order } from "../types/order";
 
-export default function KreirajTicketScreen() {
+import { Ionicons } from "@expo/vector-icons";
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot
+} from "react-native-copilot";
+
+function KreirajTicketContent() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { start } = useCopilot(); 
+
+  const WalkthroughableView = walkthroughable(View);
 
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
@@ -37,10 +48,12 @@ export default function KreirajTicketScreen() {
       try {
         const fetchedOrders: Order[] = await apiFetchSellerOrders();
         setOrdersForDropdown(
-          fetchedOrders.map((order) => ({
-            label: order.id,
-            value: order.id,
-          })).reverse()
+          fetchedOrders
+            .map((order) => ({
+              label: order.id,
+              value: order.id,
+            }))
+            .reverse()
         );
       } catch (error: any) {
         console.error("Error fetching orders:", error);
@@ -105,11 +118,19 @@ export default function KreirajTicketScreen() {
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
     >
-      <LanguageButton />
-      <View style={{ height: 85 }} /> 
+      <View style={styles.topButtonsContainer}>
+        <View style={styles.languageWrapper}>
+          <LanguageButton />
+        </View>
+        <TouchableOpacity
+          onPress={() => start()}
+          style={styles.helpButton}
+        >
+          <Ionicons name="help-circle-outline" size={36} color="#4E8D7C" />
+        </TouchableOpacity>
+      </View>
+      <View style={{ height: 85 }} />
       <View style={styles.container}>
-        {/* Naslov je uklonjen jer je u _layout.tsx */}
-
         {loadingOrders && (
           <ActivityIndicator
             size="small"
@@ -118,17 +139,23 @@ export default function KreirajTicketScreen() {
           />
         )}
         {ordersForDropdown.length > 0 && !loadingOrders && (
-          // View omotač za DropdownPicker nije neophodan jer tvoja komponenta već ima View sa zIndex
-          <DropdownPicker
-            open={openOrderDropdown}
-            value={selectedOrderId}
-            items={ordersForDropdown} // Koristi state koji je namenjen za items
-            setOpen={setOpenOrderDropdown}
-            setValue={setSelectedOrderId}
-            setItems={setOrdersForDropdown} // Prosledi setItems
-            placeholder={t("select_order_for_ticket") || "Izaberite narudžbu"}
-            
-          />
+          <CopilotStep
+            text={t("help_select_order") || "Ovde birate narudžbu za tiket"}
+            order={1}
+            name="orderDropdown"
+          >
+            <WalkthroughableView style={{ width: "100%" }}>
+              <DropdownPicker
+                open={openOrderDropdown}
+                value={selectedOrderId}
+                items={ordersForDropdown}
+                setOpen={setOpenOrderDropdown}
+                setValue={setSelectedOrderId}
+                setItems={setOrdersForDropdown}
+                placeholder={t("select_order_for_ticket") || "Izaberite narudžbu"}
+              />
+            </WalkthroughableView>
+          </CopilotStep>
         )}
         {ordersForDropdown.length === 0 && !loadingOrders && (
           <Text style={styles.noOrdersText}>
@@ -137,33 +164,49 @@ export default function KreirajTicketScreen() {
           </Text>
         )}
 
-        <InputField
-          label={t("ticket_subject") || "Naslov tiketa"}
-          placeholder={
-            t("ticket_subject_placeholder") || "Unesite naslov tiketa"
-          } 
-          value={subject}
-          onChangeText={setSubject}
-          multiline
-          numberOfLines={2}
-          autoCapitalize="sentences"
-          editable={!(loadingOrders || ordersForDropdown.length === 0)} // Koristi editable
-          // isValid i errorText nisu potrebni ovde za sada
-        />
-        <InputField
-          // icon="file-alt"
-          label={t("ticket_description") || "Opis problema"}
-          placeholder={
-            t("ticket_description_placeholder") ||
-            "Unesite detaljan opis problema"
-          }
-          value={description}
-          onChangeText={setDescription}
-          multiline // Ovo je standardni TextInput prop, tvoj InputField bi trebalo da ga prosledi
-          numberOfLines={5}
-          autoCapitalize="sentences"
-          editable={!(loadingOrders || ordersForDropdown.length === 0)}
-        />
+        <CopilotStep
+          text={t("help_subject") || "Unesite naslov tiketa ovde"}
+          order={2}
+          name="subjectInput"
+        >
+          <WalkthroughableView style={{ width: "100%" }}>
+            <InputField
+              label={t("ticket_subject") || "Naslov tiketa"}
+              placeholder={
+                t("ticket_subject_placeholder") || "Unesite naslov tiketa"
+              }
+              value={subject}
+              onChangeText={setSubject}
+              multiline
+              numberOfLines={2}
+              autoCapitalize="sentences"
+              editable={!(loadingOrders || ordersForDropdown.length === 0)}
+            />
+          </WalkthroughableView>
+        </CopilotStep>
+
+        <CopilotStep
+          text={t("help_description") || "Ovde detaljno objasnite problem"}
+          order={3}
+          name="descriptionInput"
+        >
+          <WalkthroughableView style={{ width: "100%" }}>
+            <InputField
+              label={t("ticket_description") || "Opis problema"}
+              placeholder={
+                t("ticket_description_placeholder") ||
+                "Unesite detaljan opis problema"
+              }
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              numberOfLines={5}
+              autoCapitalize="sentences"
+              editable={!(loadingOrders || ordersForDropdown.length === 0)}
+            />
+          </WalkthroughableView>
+        </CopilotStep>
+
         <SubmitButton
           onPress={handleCreateTicket}
           disabled={
@@ -179,6 +222,13 @@ export default function KreirajTicketScreen() {
   );
 }
 
+// 👇 actual exported screen, now just wraps the content in CopilotProvider
+export default function KreirajTicketScreen() {
+  return (
+    <KreirajTicketContent />
+  );
+}
+
 const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, backgroundColor: "#fff", paddingBottom: 40 },
   container: { paddingHorizontal: 20, paddingTop: 20, alignItems: "center" },
@@ -188,5 +238,21 @@ const styles = StyleSheet.create({
     color: "gray",
     fontStyle: "italic",
     textAlign: "center",
+  },
+  topButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+
+  languageWrapper: {
+    flexShrink: 1,
+  },
+
+  helpButton: {
+    marginLeft: 10,
+    padding: 6,
   },
 });

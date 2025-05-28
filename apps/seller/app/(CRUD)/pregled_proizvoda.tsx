@@ -4,6 +4,7 @@ import {
   FlatList,
   Dimensions,
   ScrollView,
+  TouchableOpacity
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -15,6 +16,15 @@ import { Product } from "../types/proizvod";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import ProductCard from "@/components/ui/cards/ProductCard";
 import CreateButton from "@/components/ui/buttons/CreateButton";
+import { CopilotProvider } from "react-native-copilot";
+
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot,
+} from "react-native-copilot";
+
+import { Ionicons } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
@@ -29,7 +39,10 @@ export default function ProductsScreen() {
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-
+  const { start } = useCopilot(); 
+  
+  const WalkthroughableView = walkthroughable(View);
+  
   useFocusEffect(
     useCallback(() => {
       async function loadProducts() {
@@ -51,33 +64,72 @@ export default function ProductsScreen() {
   return (
     <View style={{ flex: 1 }}>
       {/* Fiksirano dugme za promjenu jezika */}
-      <LanguageButton />
+      <View style={styles.topButtonsContainer}>
+        <View style={styles.languageWrapper}>
+          <LanguageButton />
+        </View>
+        <TouchableOpacity
+          onPress={() => start()}
+          style={styles.helpButton}
+        >
+          <Ionicons name="help-circle-outline" size={36} color="#4E8D7C" />
+        </TouchableOpacity>
+      </View>
 
       <ScrollView
         style={styles.scrollWrapper}
         contentContainerStyle={styles.scrollContent}
       >
-        <CreateButton
-          text={t("add_a_product")}
-          loading={loading}
-          onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
-        />
+        <CopilotStep text={t("click_here_to_add_a_product")} order={1} name="add_product_button">
+          <WalkthroughableView>
+            <CreateButton
+              text={t("add_a_product")}
+              loading={loading}
+              onPress={() => router.push(`./dodaj_proizvod/?storeId=${storeId}`)}
+            />
+          </WalkthroughableView>
+        </CopilotStep>
 
-        <FlatList
-          data={products}
-          renderItem={({ item }) => <ProductCard item={item} />}
-          keyExtractor={(item: Product) => item.id.toString()}
-          numColumns={2}
-          contentContainerStyle={styles.listContainer}
-          columnWrapperStyle={styles.columnWrapper}
-          scrollEnabled={false}
-        />
+        <CopilotStep
+          text="All products registered for your store will appear here."
+          order={2}
+          name="product_list"
+        >
+          <WalkthroughableView>
+            <FlatList
+              data={products}
+              renderItem={({ item }) => <ProductCard item={item} />}
+              keyExtractor={(item: Product) => item.id.toString()}
+              numColumns={2}
+              contentContainerStyle={styles.listContainer}
+              columnWrapperStyle={styles.columnWrapper}
+              scrollEnabled={false}
+            />
+          </WalkthroughableView>
+        </CopilotStep>
+
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  topButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+
+  languageWrapper: {
+    flexShrink: 1,
+  },
+
+  helpButton: {
+    marginLeft: 10,
+    padding: 6,
+  },
   scrollWrapper: {
     flex: 1,
     backgroundColor: "#F2F2F7",
