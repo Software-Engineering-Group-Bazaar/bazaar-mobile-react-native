@@ -71,6 +71,7 @@
     "profile_title": "Profil",
     "profile_subtitle": "Upravljajte svojim profilom",
     "cart": "Korpa",
+    "product": "Proizvod",
     "loading":"Učitavanje...",
     "available":"Na stanju",
     "not-available":"Nema na stanju",
@@ -417,6 +418,9 @@
   "select_rate": "Odaberi stopu poena",
   "select_rate_for": "Odaberi stopu poena za",
   "Error: The start date cannot be after the end date.": "Početni datum ne može biti poslije završnog datuma.",
-  "saving_changes": "Spašavanje izmjena"
+  "saving_changes": "Spašavanje izmjena",
+  "go_back": "Nazad",
+  "Mark new as Private:": "Označi novo kao privatno",
+  "product_not_found": "Proizvod nije pronađen"
 }
   

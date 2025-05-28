@@ -479,7 +479,7 @@ const renderCustomBubble = (props) => {
          <View style={styles.modeBanner}><Text style={styles.modeBannerText}>DEMO MODE: Using Dummy Data</Text></View>
       )}
       <View style={styles.controls}>
-        <Text>Mark new as "Private":</Text>
+        <Text>{t("Mark new as Private:")}</Text>
         <Switch value={isPrivateChat} onValueChange={toggleIsPrivate} trackColor={{ false: "#767577", true: "#4e8d7c" }} thumbColor={isPrivateChat ? "#ffffff" : "#ffffff"} ios_backgroundColor="#3e3e3e" />
       </View>
       <GiftedChat
