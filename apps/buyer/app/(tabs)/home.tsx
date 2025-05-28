@@ -55,7 +55,7 @@ export default function Home() {
           activeOpacity={0.8}
           onPress={() => router.push('/stores')}
         >
-          <Text style={styles.buttonText}>Pocni sa kupovinom</Text>
+          <Text style={styles.buttonText}>{t("start_shopping")}</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>

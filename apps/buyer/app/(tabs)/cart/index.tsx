@@ -340,7 +340,7 @@ const CartScreen = () => {
                 selectedValue={selectedLocationId}
                 onValueChange={setSelectedLocationId}
               >
-                <Picker.Item label="Select address" value="" />
+                <Picker.Item label={t("select_address")} value="" />
                 {savedLocations.map(loc => (
                   <Picker.Item key={loc.id} label={loc.address} value={loc.id} />
                 ))}
