@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ProductCategory {
   id: number;
@@ -78,6 +80,49 @@ const ProductDetailsScreen = () => {
   const { cartItems, addToCart } = useCart();
   const [ pointsEarned, setPointsEarned ] = useState(0);
   const quantity = parseInt(quantityInput, 10) || 1;
+
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0);
+  const chatButtonRef = useRef(null);
+  const addToCartButtonRef = useRef(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const startWalkthrough = () => {
+    setShowWalkthrough(true);
+    setWalkthroughStep(1); // Start with the chat button
+  };
+
+  const goToNextStep = () => {
+  if (walkthroughStep === 1) {
+    // Ovo je sada korak za "Dodaj u korpu" dugme
+    if (addToCartButtonRef.current) {
+      // Skrolaj do kraja ScrollView-a da bi se osiguralo da je dugme vidljivo.
+      // `scrollToEnd` je dobar pristup ako je dugme obično na dnu sadržaja.
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }
+    // Postavi sljedeći korak na 2 (što je sada "Dodaj u korpu" tooltip)
+    setTimeout(() => setWalkthroughStep(2), 300); // Kratko kašnjenje za animaciju skrolovanja
+  } else {
+    // Ako je walkthroughStep 2 ili nešto drugo što nije obrađeno, završi uputstvo.
+    finishWalkthrough();
+  }
+};
+
+  const goToPreviousStep = () => {
+  setWalkthroughStep(prevStep => {
+    if (prevStep === 2) { // Ako je trenutni korak 2 (Dodaj u korpu)
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true }); // Skrolaj nazad na vrh za chat dugme
+      return 1; // Idi na korak 1 (Chat dugme)
+    }
+    // Ako je korak 1, nema prethodnog koraka, pa samo završi.
+    return 0; // Ili prevStep - 1 ako imaš više koraka prije chata
+  });
+};
+
+  const finishWalkthrough = () => {
+    setShowWalkthrough(false);
+    setWalkthroughStep(0); // Reset step
+  };
 
 
     const handleConversationPress = async () => {
@@ -321,7 +366,8 @@ const checkAndAddToCart = async () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.outerContainer}>
+    <ScrollView style={styles.container} ref={scrollViewRef}>
 
       {/* sekcija sa slikama i strelicama */}
       <View style={styles.imageSection}>
@@ -420,11 +466,36 @@ const checkAndAddToCart = async () => {
         <FontAwesome name="plus" size={18} color="#000" />
     </TouchableOpacity>
 </View>
-
+            
+            <Tooltip
+  isVisible={showWalkthrough && walkthroughStep === 2} 
+  content={
+    <View style={styles.tooltipContent}>
+      <Text style={{ fontSize: 16, marginBottom: 10 }}>
+        {t('tutorial_add_to_cart_explanation')}
+      </Text>
+      <View style={styles.tooltipButtonContainer}>
+        <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipPrevButton]} onPress={goToPreviousStep}>
+          <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipFinishButton]} onPress={finishWalkthrough}>
+          <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  }
+  placement="top" // Adjust placement as needed
+  onClose={finishWalkthrough}
+  tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+  useReactNativeModal={true}
+  arrowSize={{ width: 16, height: 8 }}
+  showChildInTooltip={true}
+>
             {/*ovdje dodati dio gdje se dodaje proizvod, kolicina i ostale bitne info u korpu*/}
-            <TouchableOpacity style={styles.addToCartButton} onPress={async () => { await checkAndAddToCart(); }}>
+            <TouchableOpacity style={styles.addToCartButton} onPress={async () => { await checkAndAddToCart(); }} ref={addToCartButtonRef}>
               <Text style={styles.addToCartButtonText}>{t('Add to Cart')}</Text>
             </TouchableOpacity>
+            </Tooltip>
           </>
         ) : (
           <View style={styles.notAvailableContainer}>
@@ -433,14 +504,115 @@ const checkAndAddToCart = async () => {
         )}
       </View>
             {/* Chat button */}
-            <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+            
+          
+    </ScrollView>
+    <TouchableOpacity
+      style={styles.fab}
+      activeOpacity={0.8}
+      onPress={startWalkthrough}
+    >
+      <Ionicons name="help-circle-outline" size={30} color="#fff" />
+    </TouchableOpacity>
+
+    <Tooltip
+  isVisible={showWalkthrough && walkthroughStep === 1} // Show for step 1
+  content={
+    <View style={styles.tooltipContent}>
+      <Text style={{ fontSize: 16, marginBottom: 10 }}>
+        {t('tutorial_chat_button_explanation')}
+      </Text>
+      <View style={styles.tooltipButtonContainer}>
+        {/* No previous button for the first step */}
+        <TouchableOpacity
+          style={styles.tooltipNextButton}
+          onPress={goToNextStep}
+        >
+          <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  }
+  placement="left" // Adjust placement as needed
+  onClose={finishWalkthrough}
+  tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+  useReactNativeModal={true}
+  arrowSize={{ width: 16, height: 8 }}
+  showChildInTooltip={true} // Essential to keep the button interactive while tooltip is shown
+>
+            <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress} ref={chatButtonRef}>
               <FontAwesome name="comments" size={24} color="white" />
             </TouchableOpacity>
-    </ScrollView>
+            </Tooltip>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outerContainer: { // Stil za novi kontejner
+   flex: 1,
+   position: 'relative',} ,// Važno za apsolutno pozicion
+  fab: {
+    position: 'absolute',
+    top: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipNextButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipPrevButton: {
+    backgroundColor: '#4E8D7C', 
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   pointsDisplay: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -525,6 +697,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
+    alignSelf: 'stretch'
   },
   addToCartButtonText: {
     color: '#fff',
@@ -643,9 +816,9 @@ const styles = StyleSheet.create({
       fontWeight: '600',
     },
     chatButton: {
-    position: 'absolute',
-    marginTop:450,
-    right: 30,
+    position: 'absolute', // KLJUČNO: Dugme je fiksno u odnosu na outerContainer
+    bottom: 150,          // Podesi vertikalnu poziciju po potrebi
+    right: 30,           // Podesi horizontalnu poziciju po potrebi
     backgroundColor: '#4E8D7C',
     padding: 15,
     borderRadius: 50,
@@ -653,8 +826,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    zIndex: 999
-    },
+    zIndex: 999 // Osiguraj da je iznad ostalog sadržaja
+  },
    });
 
    export default ProductDetailsScreen;
