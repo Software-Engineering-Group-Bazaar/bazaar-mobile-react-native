@@ -442,5 +442,7 @@
   "creating_ticket": "Creating ticket",
   "tutorial_order_route": "Tap here to see the delivery route of your order on the map.",
   "tutorial_create_ticket": "Having an issue with your order? Tap here to create a support ticket.",
-  "tutorial_chat_with_store": "Start a chat with the seller for quick communication about your order."
+  "tutorial_chat_with_store": "Start a chat with the seller for quick communication about your order.",
+  "tutorial_review_comment_input": "Here, you can write your comment or review details about the store and your experience.",
+  "tutorial_review_submit_button": "Once you're satisfied with your rating and comment, tap this button to submit your review."
 }
