@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Button, ActivityIndicator, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, Button, ActivityIndicator, StyleSheet, Touchable, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { useRouter, useLocalSearchParams, Tabs } from 'expo-router';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 interface ReviewResponse {
   id: number;
@@ -174,6 +175,25 @@ export default function StoreScreen() {
   const [rating, setRating] = useState<Rating | null>(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0);
+  const chatButtonRef=useRef(null);
+
+  //fje za walkthrough 
+  const startWalkthrough = () => {
+    setShowWalkthrough(true);
+    setWalkthroughStep(1); // Start with the chat button explanation
+  };
+
+  const finishWalkthrough = () => {
+    setShowWalkthrough(false);
+    setWalkthroughStep(0); // Reset step
+  };
+
+  // This will only be called for the chat button, so it just finishes the walkthrough
+  const goToNextStep = () => {
+    finishWalkthrough();
+  };
 
   const handleConversationPress = async () => {
     const requestBody = {
@@ -367,14 +387,41 @@ export default function StoreScreen() {
             <FontAwesome name={store?.isActive ? 'check-circle' : 'times-circle'} size={18} color="#4e8d7c" style={styles.icon} />
             <Text style={styles.infoText}>{store?.isActive ? 'Active' : 'Inactive'}</Text>
           </View>
-          <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
-            <FontAwesome name="comments" size={22} color="#fff" />
-          </TouchableOpacity>
 
           {/* AVG RATING */}
           <View style={[styles.cardSubSection, styles.avgRating]}>
             <Text style={styles.subTitle}>{t('average_rating')}</Text>
             {rating !== null && renderStars(rating.rating)}
+
+            {/*tooltip za chat button */}
+            <Tooltip
+            isVisible={showWalkthrough && walkthroughStep === 1} 
+            content={
+              <View style={styles.tooltipContent}>
+                <Text style={{ fontSize: 16, marginBottom: 10, textAlign: 'center' }}>
+                  {t('tutorial_chat_button_description')} 
+                </Text>
+                <View style={styles.tooltipButtonContainer}>
+                  <TouchableOpacity
+                    style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                    onPress={goToNextStep}
+                  >
+                    <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            }
+            placement="bottom" // Adjust placement as needed
+            onClose={finishWalkthrough}
+            tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+            useReactNativeModal={true}
+            arrowSize={{ width: 16, height: 8 }}
+            showChildInTooltip={true} 
+          >
+          <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+            <FontAwesome name="comments" size={22} color="#fff" />
+          </TouchableOpacity>
+          </Tooltip>
           </View>
         </View>
         
@@ -401,6 +448,13 @@ export default function StoreScreen() {
           </View>
         ))}
       </ScrollView>
+      <TouchableOpacity
+        style={styles.fab}
+        activeOpacity={0.8}
+        onPress={startWalkthrough}
+      >
+        <Ionicons name="help-circle-outline" size={30} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -408,6 +462,53 @@ export default function StoreScreen() {
 // keep your renderStars and formatted functions as-is
 
 const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   safeArea: {
     backgroundColor: '#4e8d7c',
   },
@@ -472,9 +573,7 @@ const styles = StyleSheet.create({
   },
   avgRating: {
 justifyContent: 'center',
-    alignItems: 'center',
-    
-    
+    alignItems: 'stretch', 
   },
   subTitle: {
     fontSize: 16,

@@ -428,6 +428,7 @@
    "tutorial_store_details_button": "Ovo dugme vas vodi na stranicu s detaljnim informacijama o prodavnici.",
   "tutorial_first_product_description": "Klikom na ovaj proizvod možete vidjeti njegove pune detalje.",
   "tutorial_chat_button_explanation": "Ovo dugme vam omogućava direktan razgovor s prodavačem o proizvodu.",
-    "tutorial_add_to_cart_explanation": "Koristite ovo dugme da dodate željenu količinu ovog proizvoda u vašu korpu."
+    "tutorial_add_to_cart_explanation": "Koristite ovo dugme da dodate željenu količinu ovog proizvoda u vašu korpu.",
+    "tutorial_chat_button_description": "Ovo dugme vam omogućava da razgovarate s prodavačem o prodavnici i svim pitanjima vezanim za nju."
 }
   

@@ -503,8 +503,6 @@ const checkAndAddToCart = async () => {
           </View>
         )}
       </View>
-            {/* Chat button */}
-            
           
     </ScrollView>
     <TouchableOpacity
@@ -540,6 +538,7 @@ const checkAndAddToCart = async () => {
   arrowSize={{ width: 16, height: 8 }}
   showChildInTooltip={true} // Essential to keep the button interactive while tooltip is shown
 >
+           {/* Chat button */}
             <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress} ref={chatButtonRef}>
               <FontAwesome name="comments" size={24} color="white" />
             </TouchableOpacity>

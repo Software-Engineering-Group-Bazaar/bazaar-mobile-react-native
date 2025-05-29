@@ -428,5 +428,6 @@
    "tutorial_store_details_button": "This button takes you to the detailed information page about the store.",
    "tutorial_first_product_description": "By clicking on this product you can view its full details.",
    "tutorial_chat_button_explanation": "This button lets you chat directly with the seller about the product.",
-    "tutorial_add_to_cart_explanation": "Use this button to add the desired quantity of this product to your shopping cart."
+    "tutorial_add_to_cart_explanation": "Use this button to add the desired quantity of this product to your shopping cart.",
+    "tutorial_chat_button_description": "This button lets you chat with the seller about the store and any related questions."
 }
