@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import * as SecureStore from "expo-secure-store";
 import { useCart } from "@/context/CartContext";
 import { baseURL, USE_DUMMY_DATA } from "proba-package";
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 interface ProductCategory {
   id: number;
@@ -264,6 +265,39 @@ export default function StoreProductsScreen() {
   const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
 
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0); // 0: inactive, 1: store details button, 2: first product
+  const storeDetailsButtonRef = useRef(null);
+  const firstProductRef = useRef(null);
+  const flatListRef = useRef<FlatList>(null);
+
+  const startWalkthrough = () => {
+    setShowWalkthrough(true);
+    setWalkthroughStep(1); // Start with the store details button
+  };
+
+  const goToNextStep = () => {
+    if (walkthroughStep === 1) {
+      // After store details button, move to the first product
+      if (filtered.length > 0) {
+        setWalkthroughStep(2);
+      } else {
+        finishWalkthrough(); // If no products, finish
+      }
+    } else {
+      finishWalkthrough(); // Finish if on the last step or unhandled
+    }
+  };
+
+  const goToPreviousStep = () => {
+    setWalkthroughStep(prevStep => prevStep - 1);
+  };
+
+  const finishWalkthrough = () => {
+    setShowWalkthrough(false);
+    setWalkthroughStep(0); // Reset step
+  };
+
   useEffect(() => {
     if (!storeId || isNaN(storeId)) {
       setError(new Error(t("invalid_store_id") || "Invalid Store ID"));
@@ -352,6 +386,31 @@ export default function StoreProductsScreen() {
       />
 
       <SafeAreaView style={styles.container}>
+        <Tooltip
+    isVisible={showWalkthrough && walkthroughStep === 1} // Show for step 1
+    content={
+      <View style={styles.tooltipContent}>
+        <Text style={{ fontSize: 16, marginBottom: 10 }}>
+          {t('tutorial_store_details_button')}
+        </Text>
+        <View style={styles.tooltipButtonContainer}>
+          {/* No previous button for the first step */}
+          <TouchableOpacity
+            style={styles.tooltipNextButton}
+            onPress={goToNextStep}
+          >
+            <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    }
+    placement="left" // Adjust placement as needed
+    onClose={finishWalkthrough}
+    tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+    useReactNativeModal={true}
+    arrowSize={{ width: 16, height: 8 }}
+    showChildInTooltip={true} // Essential to keep the button interactive while tooltip is shown
+  >
         {/* Floating Store Details */}
         <TouchableOpacity
           style={styles.fab}
@@ -365,6 +424,7 @@ export default function StoreProductsScreen() {
         >
           <Ionicons name="storefront-outline" size={24} color="#fff" />
         </TouchableOpacity>
+        </Tooltip>
 
         {/* Title */}
         <Text style={styles.title}>{t("store_products") || "Proizvodi"}</Text>
@@ -401,11 +461,39 @@ export default function StoreProductsScreen() {
           numColumns={2}
           contentContainerStyle={styles.list}
           columnWrapperStyle={styles.row}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => {
+            const isFirstProduct = index === 0 && filtered.length > 0;
+            const showProductTooltip = isFirstProduct && showWalkthrough && walkthroughStep === 2;
+            return(
+            <Tooltip
+      isVisible={showProductTooltip}
+      content={
+        <View style={styles.tooltipContent}>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+            {t('tutorial_first_product_description')}
+          </Text>
+          <View style={styles.tooltipButtonContainer}>
+            <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipPrevButton]} onPress={goToPreviousStep}>
+              <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipFinishButton]} onPress={finishWalkthrough}>
+              <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
+       placement="bottom" // Adjust placement as needed
+       onClose={finishWalkthrough}
+       tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+       useReactNativeModal={true}
+       arrowSize={{ width: 16, height: 8 }}
+       showChildInTooltip={true}
+          >
             <TouchableOpacity
               style={styles.card}
               activeOpacity={0.85}
               onPress={() => router.push(`/stores/${storeId}/${item.id}`)}
+              ref={isFirstProduct ? firstProductRef : null}
             >
               <Image source={{ uri: item.photos[0] }} style={styles.image} />
               <Text numberOfLines={1} style={styles.name}>
@@ -420,14 +508,84 @@ export default function StoreProductsScreen() {
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>
-          )}
+            </Tooltip>
+          );
+          }}
         />
+        <TouchableOpacity
+      style={styles.fab2} 
+      activeOpacity={0.8}
+      onPress={startWalkthrough}
+    >
+      <Ionicons name="help-circle-outline" size={30} color="#fff" />
+    </TouchableOpacity>
       </SafeAreaView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+    fab2: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipNextButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipPrevButton: {
+    backgroundColor: '#4E8D7C', 
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
   container: {
     flex: 1,
     backgroundColor: "#f8f8f8",
