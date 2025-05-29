@@ -422,6 +422,8 @@
    "tutorial_start_shopping_button": "Ovo dugme vam omogućava pristup ekranu sa prodavnicama gdje možete pregledati dostupne proizvode i zatim započeti proces kupovine.",
    "finish":"Završi",
    "next":"Dalje",
-   "previous":"Nazad"
+   "previous":"Nazad",
+   "tutorial_search_input_stores": "Ovdje možete da vršite pretragu prodavnica po nazivu",
+   "tutorial_first_store_description": "Klikom na ovu prodavnicu možete da vidite njene proizvode i započnete kupovinu."
 }
   

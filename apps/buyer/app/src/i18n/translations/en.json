@@ -422,5 +422,7 @@
   "tutorial_start_shopping_button":"This button provides access to the stores screen where you can browse available products and then proceed to start your purchase",
   "finish":"Finish",
    "next":"Next",
-   "previous":"Previous"
+   "previous":"Previous",
+   "tutorial_search_input_stores": "Here you can search for stores by name",
+   "tutorial_first_store_description": "By clicking on this store, you can view its products and start shopping."
 }

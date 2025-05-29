@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator, Text, StyleSheet, TextInput } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import StoreItem from 'proba-package/store-item/index';
 // Import AdItem component and types from the new file
@@ -8,6 +8,8 @@ import AdItem, { AdData, Advertisement } from 'proba-package/ad-item/index';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package'; // Assuming baseURL is correctly imported
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
 
 
 // --- API Response Types ---
@@ -133,6 +135,37 @@ const StoresScreen = () => {
   const [adsLoading, setAdsLoading] = useState(true); // Loading state for ads
   const [error, setError] = useState<Error | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  //za walkthrough
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0);
+  const searchInputRef = useRef(null);
+  const flatListRef = useRef<FlatList<CombinedDataItem>>(null)
+
+  const startWalkthrough = () => {
+  setShowWalkthrough(true);
+  setWalkthroughStep(1); // Počni od prvog koraka (Search input)
+  };
+
+  const goToNextStep = () => {
+    if (walkthroughStep === 1) { // Trenutno objašnjavamo pretragu
+        if (combinedData.length > 0) { // Provjeri da li lista ima elemenata
+            setWalkthroughStep(2); // Ako ima, pređi na korak 2 (prvi element liste)
+        } else {
+            finishWalkthrough(); // Ako nema, završi walkthrough
+        }
+    } else {
+        finishWalkthrough(); // Završi ako smo na nekom drugom, nepredviđenom koraku
+    }
+  };
+
+  const goToPreviousStep = () => {
+   setWalkthroughStep(prevStep => prevStep - 1);
+  };
+
+  const finishWalkthrough = () => {
+   setShowWalkthrough(false);
+   setWalkthroughStep(0); // Resetuj korak
+  };
 
   // Effect for fetching Stores (existing logic)
   useEffect(() => {
@@ -308,6 +341,11 @@ const StoresScreen = () => {
       return data;
   }, [stores, ads]); // Recompute when stores or ads state changes
 
+  // Pronalazi indeks prvog 'store' elementa u combinedData
+    const firstStoreIndex = React.useMemo(() =>
+        combinedData.findIndex(item => item.type === 'store'),
+        [combinedData]
+    );
 
   const handleStorePress = (store: Store) => {
     router.push(`/stores/${store.id}`);
@@ -419,13 +457,40 @@ const StoresScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Tooltip za Search Input */}
+    <Tooltip
+      isVisible={showWalkthrough && walkthroughStep === 1} // Prikazuje se samo na koraku 1
+      content={
+        <View style={styles.tooltipContent}>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+            {t('tutorial_search_input_stores')}
+          </Text>
+          <View style={styles.tooltipButtonContainer}>
+            {/* Nema prethodnog dugmeta na prvom koraku */}
+            <TouchableOpacity
+              style={styles.tooltipNextButton}
+              onPress={goToNextStep}
+            >
+              <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
+      placement="bottom"
+      onClose={finishWalkthrough} // zatvaranje ako korisnik klikne van toga
+      tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+      useReactNativeModal={true}
+      arrowSize={{ width: 16, height: 8 }}
+    >
       <TextInput
         style={styles.searchInput}
         placeholder={t('search-stores')}
         value={searchQuery}
         onChangeText={setSearchQuery}
         clearButtonMode="while-editing"
+        ref={searchInputRef}
       />
+      </Tooltip>
 
       {combinedData.length === 0 && !loading && !adsLoading && (
         <Text style={styles.emptyListText}>
@@ -434,7 +499,7 @@ const StoresScreen = () => {
       )}
 
       {/* We need to ensure that if numColumns is 2, ad items take full width */}
-      <FlatList
+      <FlatList ref={flatListRef}
         data={combinedData}
         keyExtractor={(item, index) =>
              item.type === 'store'
@@ -443,14 +508,42 @@ const StoresScreen = () => {
                  // item.data is ProcessedAd, item.data.advertisement.id is the ad ID
                 : `ad-${item.data.advertisement.id}-${index}`
         }
-        renderItem={({ item }) => {
+        renderItem={({ item, index}) => {
             if (item.type === 'store') {
-                // Render StoreItem - these go into columns
-                return (
-                    <View style={styles.gridItem}>
-                        <StoreItem store={item.data} onPress={handleStorePress} />
-                    </View>
-                );
+                        const isFirstStore = index === firstStoreIndex;
+                        const showStoreTooltip = isFirstStore && showWalkthrough && walkthroughStep === 2;
+
+                        return (
+                            <View style={styles.gridItem}>
+                                <Tooltip
+                                    isVisible={showStoreTooltip}
+                                    content={
+                                        <View style={styles.tooltipContent}>
+                                            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                                                {t('tutorial_first_store_description')}
+                                            </Text>
+                                            <View style={styles.tooltipButtonContainer}>
+                                                <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipPrevButton]} onPress={goToPreviousStep}>
+                                                    <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipFinishButton]} onPress={finishWalkthrough}>
+                                                    <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    }
+                                    placement="top"
+                                    onClose={finishWalkthrough}
+                                    tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                                    useReactNativeModal={true}
+                                    arrowSize={{ width: 16, height: 8 }}
+                                    showChildInTooltip={true} // Važno: Osigurava da je dijete uvijek renderovano
+                                >
+                                    {/* StoreItem je sada direktno dijete Tooltipa */}
+                                    <StoreItem store={item.data} onPress={handleStorePress} />
+                                </Tooltip>
+                            </View>
+                        );
             } else if (item.type === 'ad') {
                  // Render AdItem - these must take full width
                  const processedAd = item.data; // item.data is ProcessedAd
@@ -481,11 +574,83 @@ const StoresScreen = () => {
         numColumns={2} // Still render stores in 2 columns
         columnWrapperStyle={styles.row} // Used to style the rows (space between columns etc.)
       />
+          
+      <TouchableOpacity
+      style={styles.fab}
+      activeOpacity={0.8}
+      onPress={startWalkthrough}
+    >
+      <Ionicons name="help-circle-outline" size={30} color="#fff" />
+    </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipNextButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipPrevButton: {
+    backgroundColor: '#4E8D7C', 
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  flatListContainer: {
+  flex: 1, 
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',
@@ -512,6 +677,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#fff',
     fontSize: 16,
+    alignSelf: 'stretch'
   },
   gridItem: {
     flex: 0.5, // Takes up half the row width (for numColumns=2)
