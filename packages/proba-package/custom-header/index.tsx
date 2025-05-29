@@ -19,6 +19,7 @@ const CustomHeader = () => {
     if (pathname.startsWith('/screens/orders')) return t('my_orders')
     if (pathname.startsWith('/screens/addresses')) return t('my_addresses')
     if (pathname.startsWith('/screens/points')) return t('my_points')
+    if (pathname.startsWith('/screens/myTickets')) return t('my_tickets')
     return 'Bazaar';
   };
 

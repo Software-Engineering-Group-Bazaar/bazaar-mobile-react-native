@@ -88,6 +88,10 @@ export default function RootLayout() {
             <Stack.Screen name="screens/store/[storeId]" options={{ headerShown: false }} />
             <Stack.Screen name="screens/addresses" options={{ headerShown: false }} />
             <Stack.Screen name="screens/orderRoute" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/myTickets" options={{
+                header: () => <CustomHeader />,
+                headerShown: true, 
+              }}/>
             <Stack.Screen name="+not-found" />
           </Stack>
         </CartProvider>
