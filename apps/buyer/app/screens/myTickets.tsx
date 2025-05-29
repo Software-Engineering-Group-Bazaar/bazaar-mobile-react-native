@@ -1,5 +1,5 @@
 // app/myTickets.tsx (ili gde god je smešten)
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,11 +10,14 @@ import {
   Alert,
   RefreshControl,
   Platform, // Dodato za stilove dugmeta
+  Dimensions
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package'; // Uvezeno
 import * as SecureStore from 'expo-secure-store'; // Uvezeno
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
 
 export interface Ticket {
   id: number;
@@ -62,6 +65,22 @@ export default function MyTicketsScreen() {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const chatButtonRef = useRef(null);
+
+  const closeWalkthrough = () => {
+        setShowWalkthrough(false);
+    };
+
+    // Funkcija za pokretanje walkthrough-a
+    const startWalkthrough = () => {
+        if (tickets.length > 0) {
+            setShowWalkthrough(true);
+        } else {
+            Alert.alert(t('no_tickets_for_tutorial_title'));
+        }
+    };
 
   const fetchTickets = useCallback(async (page: number, refreshing = false) => {
     if (refreshing) {
@@ -189,7 +208,7 @@ export default function MyTicketsScreen() {
     } catch (e) { return dateString; }
   };
 
-  const renderTicketItem = ({ item }: { item: Ticket }) => (
+  const renderTicketItem = ({ item, index }: { item: Ticket, index: number }) => (
     <View style={styles.ticketItem}>
       <View style={styles.ticketHeader}>
         <Text style={styles.ticketTitle} numberOfLines={1}>{item.title || t('untitled_ticket', 'Untitled Ticket')}</Text>
@@ -212,12 +231,39 @@ export default function MyTicketsScreen() {
         </Text>
         {item.orderId !== null && item.orderId !== undefined && <Text style={styles.ticketOrderId}>{t('order_id', 'Order ID')}: {item.orderId}</Text>}
       </View>
+
+      <Tooltip
+        isVisible={showWalkthrough && index===0}
+        content={
+          <View style={styles.tooltipContent}>
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              {t('tutorial_chat_ticket_button_explanation')}
+            </Text>
+            {/*dugme "Završi" unutar tooltipa */}
+            <TouchableOpacity
+              style={styles.tooltipCloseButton}
+              onPress={closeWalkthrough}
+            >
+              <Text style={styles.tooltipCloseButtonText}>
+                {t('finish')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
+        placement="bottom"
+        onClose={closeWalkthrough} 
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+      >
       <TouchableOpacity
         style={styles.chatButton} // Koristi stil prilagođenog dugmeta
         onPress={() => handleOpenChat(item)}
+        ref={index === 0 ? chatButtonRef : null}
       >
         <Text style={styles.chatButtonText}>{t('open_chat_button', 'Open Chat')}</Text>
       </TouchableOpacity>
+      </Tooltip>
     </View>
   );
 
@@ -277,12 +323,51 @@ export default function MyTicketsScreen() {
         }
         contentContainerStyle={tickets.length === 0 ? styles.emptyListContainer : {paddingBottom: 20}}
       />
+      <TouchableOpacity
+        style={styles.fab}
+        activeOpacity={0.8}
+        onPress={startWalkthrough} 
+      >
+        <Ionicons name="help-circle-outline" size={30} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 }
 
 
 const styles = StyleSheet.create({
+  tooltipContent: {
+    alignItems: 'center', 
+    padding: 5,
+  },
+  tooltipCloseButton: {
+    marginTop: 10,
+    backgroundColor: '#4E8D7C', // Boja dugmeta
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  tooltipCloseButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f7f7f7', // Malo svetlija pozadina
@@ -393,6 +478,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 5, // Mali razmak od footera ako su blizu
+    alignSelf:'stretch'
   },
   chatButtonText: {
     color: 'white',
