@@ -429,5 +429,12 @@
    "tutorial_first_product_description": "By clicking on this product you can view its full details.",
    "tutorial_chat_button_explanation": "This button lets you chat directly with the seller about the product.",
     "tutorial_add_to_cart_explanation": "Use this button to add the desired quantity of this product to your shopping cart.",
-    "tutorial_chat_button_description": "This button lets you chat with the seller about the store and any related questions."
+    "tutorial_chat_button_description": "This button lets you chat with the seller about the store and any related questions.",
+  "tutorial_my_orders": "Clicking this button opens a view of all your past and current orders.",
+  "tutorial_my_points": "Clicking this button opens information about your loyalty points.",
+  "tutorial_my_addresses": "Clicking this button lets you manage and add your delivery and billing addresses.",
+  "tutorial_my_tickets": "Clicking this button allows you to view your support tickets.",
+  "tutorial_logout_button": "Clicking this button logs you out of the application.",
+  "loading_data":"Loading data",
+  "loading_stores":"Loading stores"
 }

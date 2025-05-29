@@ -429,6 +429,14 @@
   "tutorial_first_product_description": "Klikom na ovaj proizvod možete vidjeti njegove pune detalje.",
   "tutorial_chat_button_explanation": "Ovo dugme vam omogućava direktan razgovor s prodavačem o proizvodu.",
     "tutorial_add_to_cart_explanation": "Koristite ovo dugme da dodate željenu količinu ovog proizvoda u vašu korpu.",
-    "tutorial_chat_button_description": "Ovo dugme vam omogućava da razgovarate s prodavačem o prodavnici i svim pitanjima vezanim za nju."
+    "tutorial_chat_button_description": "Ovo dugme vam omogućava da razgovarate s prodavačem o prodavnici i svim pitanjima vezanim za nju.",
+    "tutorial_my_orders": "Klikom na ovo dugme otvarate pregled svih vaših prošlih i trenutnih narudžbi.",
+  "tutorial_my_points": "Klikom na ovo dugme otvarate informacije o vašim poenima lojalnosti.",
+  "tutorial_my_addresses": "Klikom na ovo dugme upravljate i dodajete adrese za dostavu i naplatu.",
+  "tutorial_my_tickets": "Klikom na ovo dugme pregledavate vaše tikete za podršku.",
+  "tutorial_logout_button": "Klikom na ovo dugme se odjavljujete iz aplikacije.",
+  "ticket_status_pending":"Na čekanju",
+  "loading_data":"Učitavanje podataka",
+  "loading_stores":"Učitavanje prodavnica"
 }
   
