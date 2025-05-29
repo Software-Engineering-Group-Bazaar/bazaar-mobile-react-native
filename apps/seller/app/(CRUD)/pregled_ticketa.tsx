@@ -9,15 +9,15 @@ import {
   RefreshControl,
   Alert,
   TextStyle,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native"; // Dodaj Alert
 import { useRouter, useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { apiFetchSellerTickets } from "../api/ticketApi"; // Prilagodi putanju
 import { Ticket, TicketStatus } from "../types/ticket"; // Prilagodi putanju
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import TouchableCard from "@/components/ui/cards/TouchableCard";
 import { FontAwesome5 } from "@expo/vector-icons";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 const boldWeight: TextStyle["fontWeight"] = "bold";
 
@@ -101,13 +101,15 @@ export default function PregledTicketaScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ 
-        flexDirection: "row", 
-        justifyContent: "space-between", 
-        padding: 10, 
-        marginTop: 20 // Increase space above the buttons
-      }}>
-        <LanguageButton />
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 10,
+          marginTop: 20, // Increase space above the buttons
+        }}
+      >
+        <HelpAndLanguageButton showHelpButton={false} />
         <TouchableOpacity
           onPress={() => router.push("/(CRUD)/kreiraj_ticket")}
           style={{ marginLeft: 15 }}

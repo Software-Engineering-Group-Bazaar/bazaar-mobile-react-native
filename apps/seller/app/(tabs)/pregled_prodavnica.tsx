@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 import React, { useState, useEffect } from "react";
 import { apiFetchActiveStore } from "../api/storeApi";
 import { Store } from "../types/prodavnica";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import CreateButton from "@/components/ui/buttons/CreateButton";
 import TouchableCard from "@/components/ui/cards/TouchableCard";
 import * as SecureStore from "expo-secure-store";
 import LogoutButton from "@/components/ui/buttons/LogoutButton";
 import { logoutApi } from "../api/auth/logoutApi";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 export default function StoresScreen() {
   const router = useRouter();
@@ -18,25 +18,25 @@ export default function StoresScreen() {
   const [store, setStore] = useState<Store>();
 
   const handleLogout = async () => {
-      try {
-        const token = await SecureStore.getItemAsync("accessToken");
-  
-        const response = await logoutApi(token);
-  
-        if (response === 200) {
-          await SecureStore.deleteItemAsync("accessToken");
-          Alert.alert(t("logout_title"), t("logout_message"));
-          router.replace("/(auth)/login");
-        } else {
-          Alert.alert(t("error"), t("logout_failed"));
-          return;
-        }
+    try {
+      const token = await SecureStore.getItemAsync("accessToken");
+
+      const response = await logoutApi(token);
+
+      if (response === 200) {
+        await SecureStore.deleteItemAsync("accessToken");
+        Alert.alert(t("logout_title"), t("logout_message"));
         router.replace("/(auth)/login");
-      } catch (error) {
-        console.error("Logout error:", error);
-        Alert.alert(t("error"), t("something_went_wrong"));
+      } else {
+        Alert.alert(t("error"), t("logout_failed"));
+        return;
       }
-    };
+      router.replace("/(auth)/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      Alert.alert(t("error"), t("something_went_wrong"));
+    }
+  };
 
   useEffect(() => {
     async function getStore() {
@@ -77,9 +77,9 @@ export default function StoresScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <HelpAndLanguageButton showHelpButton={false} />
       <View style={styles.topBar}>
         <LogoutButton onPress={handleLogout} />
-        <LanguageButton />
       </View>
 
       <ScrollView
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 12,
     paddingHorizontal: 16,
-    height: 55,      // fixed height to match typical navbar size
+    height: 55, // fixed height to match typical navbar size
     backgroundColor: "#fff",
   },
 });

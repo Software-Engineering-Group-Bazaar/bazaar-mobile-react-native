@@ -13,11 +13,11 @@ import { useLocalSearchParams, useRouter } from "expo-router"; // useFocusEffect
 import { useTranslation } from "react-i18next";
 import { apiFetchTicketDetails } from "../api/ticketApi";
 import { Ticket, TicketStatus } from "../types/ticket";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import { InfoCard } from "@/components/ui/cards/InfoCard";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import { apiCreateConversation } from "../api/orderApi";
 import * as SecureStore from "expo-secure-store";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 const statusTextMap: Record<TicketStatus, string> = {
   [TicketStatus.REQUESTED]: "ticket_status_requested",
@@ -128,7 +128,7 @@ export default function TicketDetaljiScreen() {
     // Ako je tiket null (nije pronađen ili greška)
     return (
       <View style={styles.centered}>
-        <LanguageButton />
+        <HelpAndLanguageButton showHelpButton={false} />
         <Text style={{ fontSize: 16, marginTop: 20, textAlign: "center" }}>
           {t("ticket_not_found_details") ||
             "Detalji tiketa nisu pronađeni ili tiket ne postoji."}
@@ -149,7 +149,7 @@ export default function TicketDetaljiScreen() {
       }
     >
       <View style={styles.container}>
-        <LanguageButton />
+        <HelpAndLanguageButton showHelpButton={false} />
         {/* <Text style={styles.title}>{t("ticket_details_title") || "Detalji tiketa"}</Text> Uklonjen naslov */}
 
         <InfoCard

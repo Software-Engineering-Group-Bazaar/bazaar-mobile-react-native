@@ -14,12 +14,12 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import {
   apiUpdateProductPrices,
   apiUpdateProductAvailability,
 } from "../api/productApi";
 import SubmitButton from "@/components/ui/input/SubmitButton";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 export default function ProductScreen() {
   const params = useLocalSearchParams();
@@ -105,7 +105,7 @@ export default function ProductScreen() {
   return (
     <ScrollView style={styles.container}>
       {/* Dugme za promjenu jezika */}
-      <LanguageButton />
+      <HelpAndLanguageButton showHelpButton={false} />
 
       {/* Sekcija sa slikama i strelicama */}
       <View style={styles.imageSection}>

@@ -9,34 +9,33 @@ import {
   TouchableOpacity,
   Text,
   Alert,
- } from "react-native";
- import { useTranslation } from "react-i18next";
- import React, { useState, useEffect, useCallback } from "react";
- import LanguageButton from "@/components/ui/buttons/LanguageButton";
- import StatusFilter from "../../components/ui/StatusFilter";
- import OrderCard from "../../components/ui//cards/OrderCard";
- import { updateOrderStatus } from "../api/orderApi";
- import api from "../api/defaultApi";
- import { Send } from "lucide-react-native";
- import { OrderStatusEnum } from "../../constants/statusTypes";
- import { useRouter } from "expo-router"; 
- import * as SecureStore from "expo-secure-store";
- import { apiGetRoute } from '../api/routesApi'
- 
- const { height } = Dimensions.get("window");
- const COLUMN_GAP = 16;
- 
- type OrderStatus = (typeof OrderStatusEnum)[number];
- 
- type Order = {
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import React, { useState, useEffect, useCallback } from "react";
+import StatusFilter from "../../components/ui/StatusFilter";
+import OrderCard from "../../components/ui//cards/OrderCard";
+import { updateOrderStatus } from "../api/orderApi";
+import api from "../api/defaultApi";
+import { Send } from "lucide-react-native";
+import { OrderStatusEnum } from "../../constants/statusTypes";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
+
+const { height } = Dimensions.get("window");
+const COLUMN_GAP = 16;
+
+type OrderStatus = (typeof OrderStatusEnum)[number];
+
+type Order = {
   id: number;
   createdAt: string;
   totalAmount: number;
   status: OrderStatus;
   adminDelivery?: boolean;
- };
- 
- export default function OrdersScreen() {
+};
+
+export default function OrdersScreen() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -45,23 +44,23 @@ import {
   const [sortNewestFirst, setSortNewestFirst] = useState(true);
   const router = useRouter();
   const [hasRouteId, setHasRouteId] = useState(false);
- 
+
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
- 
+
   useEffect(() => {
     async function checkRouteId() {
-      const routeId = await SecureStore.getItemAsync('routeId');
+      const routeId = await SecureStore.getItemAsync("routeId");
       setHasRouteId(!!routeId);
     }
     checkRouteId();
   }, []);
- 
+
   const fetchOrders = useCallback(async () => {
     setRefreshing(true);
     try {
       const res = await api.get("/Order/MyStore");
-  
+
       const mapped = await Promise.all(
         res.data
           .filter((o: any) => OrderStatusEnum.includes(o.status))
@@ -69,13 +68,15 @@ import {
             let address = "";
             try {
               if (o.addressId) {
-                const addrRes = await api.get(`/user-profile/address/${o.addressId}`);
+                const addrRes = await api.get(
+                  `/user-profile/address/${o.addressId}`
+                );
                 address = addrRes.data.address;
               }
             } catch (e) {
               console.warn(`Failed to load address for order ${o.id}`, e);
             }
-  
+
             return {
               id: o.id ?? index,
               createdAt: o.time,
@@ -86,20 +87,19 @@ import {
             };
           })
       );
-  
+
       setOrders(mapped);
     } catch (err) {
       console.error("Error fetching orders:", err);
     } finally {
       setRefreshing(false);
     }
-  }, []);  
- 
- 
+  }, []);
+
   useEffect(() => {
     fetchOrders();
   }, []);
- 
+
   const toggleStatus = (status: OrderStatus) => {
     if (selectedStatuses.includes(status)) {
       setSelectedStatuses(selectedStatuses.filter((s) => s !== status));
@@ -107,47 +107,51 @@ import {
       setSelectedStatuses([...selectedStatuses, status]);
     }
   };
- 
+
   const filteredOrders =
     selectedStatuses.length === 0
       ? orders
       : orders.filter((order) => selectedStatuses.includes(order.status));
- 
+
   const sortedOrders = [...filteredOrders].sort((a, b) => {
     const dateA = new Date(a.createdAt).getTime();
     const dateB = new Date(b.createdAt).getTime();
     return sortNewestFirst ? dateB - dateA : dateA - dateB;
   });
- 
+
   const selectableOrders = sortedOrders.filter(
-    order => (order.status === "Ready" && !order.adminDelivery)
+    (order) => order.status === "Ready" && !order.adminDelivery
   );
- 
+
   const toggleOrderSelection = (orderId: number) => {
     setSelectedOrders((prev) =>
-      prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId]
     );
   };
- 
+
   const toggleSelectionMode = () => {
     if (selectionMode) {
       setSelectedOrders([]);
       setSelectedStatuses([]);
     } else {
-      setSelectedStatuses(['Ready']);
+      setSelectedStatuses(["Ready"]);
     }
     setSelectionMode(!selectionMode);
   };
- 
+
   const handleSubmitOrders = async () => {
     try {
       await Promise.all(
-        selectedOrders.map((orderId) => updateOrderStatus(orderId.toString(), "Sent"))
+        selectedOrders.map((orderId) =>
+          updateOrderStatus(orderId.toString(), "Sent")
+        )
       );
 
       //Alert.alert(t("Success"), t("orders_submitted_successfully"));
       router.push({
-        pathname: '/maps',
+        pathname: "/maps",
         params: { orders: JSON.stringify(selectedOrders) },
       });
 
@@ -158,21 +162,21 @@ import {
       Alert.alert(t("Error"), t("failed_to_update_some_orders"));
     }
   };
- 
+
   const handlePreviousRoute = async () => {
     try {
       router.push({
-        pathname: '/default_maps',
+        pathname: "/default_maps",
       });
     } catch (error) {
-      Alert.alert('Error');
+      Alert.alert("Error");
     }
   };
- 
+
   return (
     <View style={{ flex: 1 }}>
-      <LanguageButton />
- 
+      <HelpAndLanguageButton showHelpButton={false} />
+
       <ScrollView
         style={styles.scrollWrapper}
         contentContainerStyle={styles.scrollContent}
@@ -181,13 +185,13 @@ import {
         }
       >
         <StatusFilter
-            selectedStatuses={selectedStatuses}
-            toggleStatus={toggleStatus}
-            sortNewestFirst={sortNewestFirst}
-            setSortNewestFirst={setSortNewestFirst}
-            setSelectedStatuses={setSelectedStatuses}
+          selectedStatuses={selectedStatuses}
+          toggleStatus={toggleStatus}
+          sortNewestFirst={sortNewestFirst}
+          setSortNewestFirst={setSortNewestFirst}
+          setSelectedStatuses={setSelectedStatuses}
         />
-        <View style={styles.headerContainer}> 
+        <View style={styles.headerContainer}>
           <View style={styles.actionContainer}>
             {selectableOrders.length > 0 && !selectionMode && (
               <TouchableOpacity
@@ -201,7 +205,10 @@ import {
 
             {hasRouteId && (
               <TouchableOpacity
-                style={[styles.sendOrdersButton, { flex: 1, backgroundColor: '#808080', marginLeft: 8 }]}
+                style={[
+                  styles.sendOrdersButton,
+                  { flex: 1, backgroundColor: "#808080", marginLeft: 8 },
+                ]}
                 onPress={handlePreviousRoute}
               >
                 <Text style={styles.sendOrdersText}>{t("Previous Route")}</Text>
@@ -220,7 +227,10 @@ import {
                   <Text style={styles.sendOrdersText}>{t("create_route")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.sendOrdersButton, { flex: 1, backgroundColor: '#A9A9A9' }]}
+                  style={[
+                    styles.sendOrdersButton,
+                    { flex: 1, backgroundColor: "#A9A9A9" },
+                  ]}
                   onPress={toggleSelectionMode}
                 >
                   <Text style={styles.sendOrdersText}>{t("Cancel")}</Text>
@@ -229,7 +239,7 @@ import {
             </View>
           )}
         </View>
- 
+
         {selectionMode && selectedOrders.length > 0 && (
           <View style={styles.selectedCountContainer}>
             <Text style={styles.selectedCountText}>
@@ -237,9 +247,13 @@ import {
             </Text>
           </View>
         )}
- 
+
         {loading ? (
-          <ActivityIndicator size="large" color="#4E8D7C" style={styles.loader} />
+          <ActivityIndicator
+            size="large"
+            color="#4E8D7C"
+            style={styles.loader}
+          />
         ) : (
           <FlatList
             data={sortedOrders}
@@ -261,9 +275,9 @@ import {
       </ScrollView>
     </View>
   );
- }
- 
- const styles = StyleSheet.create({
+}
+
+const styles = StyleSheet.create({
   scrollWrapper: {
     flex: 1,
     backgroundColor: "#F2F2F7",
@@ -274,11 +288,11 @@ import {
   },
   headerContainer: {
     paddingHorizontal: 16,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   actionContainer: {
     gap: 12,
-    flexDirection: 'row'
+    flexDirection: "row",
   },
   listContainer: {
     padding: COLUMN_GAP,
@@ -287,24 +301,24 @@ import {
     marginTop: 32,
   },
   sendOrdersButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#4E8D7C',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#4E8D7C",
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 20,
     marginTop: 10,
     marginBottom: 10,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   sendOrdersText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
     marginLeft: 8,
   },
   selectedCountContainer: {
-    backgroundColor: '#E8F5F1',
+    backgroundColor: "#E8F5F1",
     paddingVertical: 8,
     paddingHorizontal: 16,
     marginHorizontal: 16,
@@ -312,12 +326,12 @@ import {
     marginBottom: 10,
   },
   selectedCountText: {
-    color: '#4E8D7C',
-    fontWeight: '600',
+    color: "#4E8D7C",
+    fontWeight: "600",
   },
   submitCancelContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
   },
- });
+});

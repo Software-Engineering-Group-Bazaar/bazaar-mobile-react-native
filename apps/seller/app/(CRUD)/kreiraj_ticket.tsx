@@ -6,11 +6,9 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  TouchableOpacity
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
-import LanguageButton from "../../components/ui/buttons/LanguageButton";
 import InputField from "../../components/ui/input/InputField";
 import SubmitButton from "../../components/ui/input/SubmitButton";
 import DropdownPicker from "../../components/ui/input/DropdownPicker";
@@ -18,17 +16,12 @@ import { apiCreateSellerTicket } from "../api/ticketApi";
 import { apiFetchSellerOrders } from "../api/orderApi";
 import { Order } from "../types/order";
 
-import { Ionicons } from "@expo/vector-icons";
-import {
-  CopilotStep,
-  walkthroughable,
-  useCopilot
-} from "react-native-copilot";
+import { CopilotStep, walkthroughable } from "react-native-copilot";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 function KreirajTicketContent() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { start } = useCopilot(); 
 
   const WalkthroughableView = walkthroughable(View);
 
@@ -118,17 +111,7 @@ function KreirajTicketContent() {
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={styles.topButtonsContainer}>
-        <View style={styles.languageWrapper}>
-          <LanguageButton />
-        </View>
-        <TouchableOpacity
-          onPress={() => start()}
-          style={styles.helpButton}
-        >
-          <Ionicons name="help-circle-outline" size={36} color="#4E8D7C" />
-        </TouchableOpacity>
-      </View>
+      <HelpAndLanguageButton />
       <View style={{ height: 85 }} />
       <View style={styles.container}>
         {loadingOrders && (
@@ -152,7 +135,9 @@ function KreirajTicketContent() {
                 setOpen={setOpenOrderDropdown}
                 setValue={setSelectedOrderId}
                 setItems={setOrdersForDropdown}
-                placeholder={t("select_order_for_ticket") || "Izaberite narudžbu"}
+                placeholder={
+                  t("select_order_for_ticket") || "Izaberite narudžbu"
+                }
               />
             </WalkthroughableView>
           </CopilotStep>
@@ -224,9 +209,7 @@ function KreirajTicketContent() {
 
 // 👇 actual exported screen, now just wraps the content in CopilotProvider
 export default function KreirajTicketScreen() {
-  return (
-    <KreirajTicketContent />
-  );
+  return <KreirajTicketContent />;
 }
 
 const styles = StyleSheet.create({
@@ -238,21 +221,5 @@ const styles = StyleSheet.create({
     color: "gray",
     fontStyle: "italic",
     textAlign: "center",
-  },
-  topButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-
-  languageWrapper: {
-    flexShrink: 1,
-  },
-
-  helpButton: {
-    marginLeft: 10,
-    padding: 6,
   },
 });

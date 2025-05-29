@@ -14,12 +14,12 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useLocalSearchParams, useRouter } from "expo-router";
 import api from "../api/defaultApi";
 //-------------------Route Explorer---------------------------------
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
 import { apiFetchCategories } from "../api/productApi";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -170,7 +170,7 @@ export default function AddProductScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <LanguageButton />
+      <HelpAndLanguageButton showHelpButton={false} />
 
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}

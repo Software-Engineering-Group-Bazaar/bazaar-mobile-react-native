@@ -8,10 +8,9 @@ import {
   Alert,
   FlatList,
   Text,
-  TouchableOpacity
 } from "react-native";
 import React, { useCallback, useState, useEffect } from "react";
-import { useFocusEffect, useIsFocused  } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import ProductQuantityCard from "@/components/ui/cards/ProductQuantityCard";
 import { apiFetchAllProductsForStore } from "../api/productApi";
 import { Product } from "../types/proizvod";
@@ -23,15 +22,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { InventoryItem } from "../types/InventoryItem";
 import SubmitButton from "@/components/ui/input/SubmitButton";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
-
-import { Ionicons } from "@expo/vector-icons";
-
-import {
-  CopilotStep,
-  walkthroughable,
-  useCopilot
-} from "react-native-copilot";
+import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 const ZaliheScreen = () => {
   const { t } = useTranslation();
@@ -39,9 +31,9 @@ const ZaliheScreen = () => {
   const [productInventories, setProductInventories] = useState<
     { product: Product; inventory: InventoryItem }[]
   >([]);
-  const { start, stop, copilotEvents } = useCopilot();
+  const { stop } = useCopilot();
 
-    const isFocused = useIsFocused();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (!isFocused) {
@@ -135,18 +127,7 @@ const ZaliheScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-
-      <View style={styles.topButtonsContainer}>
-        <View style={styles.languageWrapper}>
-          <LanguageButton />
-        </View>
-        <TouchableOpacity
-          onPress={() => start()}
-          style={styles.helpButton}
-        >
-          <Ionicons name="help-circle-outline" size={36} color="#4E8D7C" />
-        </TouchableOpacity>
-      </View>
+      <HelpAndLanguageButton />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -156,44 +137,47 @@ const ZaliheScreen = () => {
           onPress={Keyboard.dismiss}
           style={{ paddingBottom: "20%" }}
         >
-            <View style={styles.container}>
-              <Text style={styles.titleText}></Text>
-              {productInventories.length != 0 && (
-                <FlatList
-                  style={{ width: "100%" }}
-                  data={productInventories}
-                  keyExtractor={(item) => item.product.id.toString()}
-                  renderItem={({ item }) => {
-                    const isOutOfStock = item.inventory.quantity === 0;
+          <View style={styles.container}>
+            <Text style={styles.titleText}></Text>
+            {productInventories.length != 0 && (
+              <FlatList
+                style={{ width: "100%" }}
+                data={productInventories}
+                keyExtractor={(item) => item.product.id.toString()}
+                renderItem={({ item }) => {
+                  const isOutOfStock = item.inventory.quantity === 0;
 
-                    return (
-                      <ProductQuantityCard
-                        item={item.product}
-                        value={item.inventory.quantity}
-                        outOfStock={isOutOfStock} 
-                        onChange={(newQuantity) =>
-                          handleQuantityChange(item.product.id, newQuantity)
-                        }
-                      />
-                    );
-                  }}
-                />
-              )}
-            </View>
+                  return (
+                    <ProductQuantityCard
+                      item={item.product}
+                      value={item.inventory.quantity}
+                      outOfStock={isOutOfStock}
+                      onChange={(newQuantity) =>
+                        handleQuantityChange(item.product.id, newQuantity)
+                      }
+                    />
+                  );
+                }}
+              />
+            )}
+          </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
 
-          <View style={styles.buttonWrapper}>
-            <CopilotStep
-              text="Klikom na ovo dugme će se sačuvati napravljene promjene."
-              order={1}
-              name="save_button_product_list"
-            >
-              <WalkthroughableView>
-                <SubmitButton buttonText={t("save_changes")} onPress={handleSubmit} />
-              </WalkthroughableView>
-            </CopilotStep>
-          </View>
+      <View style={styles.buttonWrapper}>
+        <CopilotStep
+          text="Klikom na ovo dugme će se sačuvati napravljene promjene."
+          order={1}
+          name="save_button_product_list"
+        >
+          <WalkthroughableView>
+            <SubmitButton
+              buttonText={t("save_changes")}
+              onPress={handleSubmit}
+            />
+          </WalkthroughableView>
+        </CopilotStep>
+      </View>
     </View>
   );
 };
@@ -219,21 +203,5 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     bottom: 80,
     padding: 20,
-  },
-  topButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-
-  languageWrapper: {
-    flexShrink: 1,
-  },
-
-  helpButton: {
-    marginLeft: 10,
-    padding: 6,
   },
 });
