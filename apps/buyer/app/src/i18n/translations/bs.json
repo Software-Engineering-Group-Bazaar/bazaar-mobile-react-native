@@ -439,6 +439,10 @@
   "loading_data":"Učitavanje podataka",
   "loading_stores":"Učitavanje prodavnica",
   "tutorial_order_review_button": "Klikom na ovo dugme možete ocijeniti prodavnicu iz koje je narudžba.",
-  "tutorial_order_details_button": "Klikom na ovo dugme otvarate detaljan pregled vaše narudžbe."
+  "tutorial_order_details_button": "Klikom na ovo dugme otvarate detaljan pregled vaše narudžbe.",
+  "creating_ticket": "Kreiranje tiketa",
+  "tutorial_order_route": "Klikom ovdje možete vidjeti rutu dostave vaše narudžbe na mapi.",
+  "tutorial_create_ticket": "Imate problem s narudžbom? Kliknite ovdje da kreirate tiket za podršku.",
+  "tutorial_chat_with_store": "Pokrenite razgovor s prodavačem za brzu komunikaciju u vezi s vašom narudžbom."
 }
   

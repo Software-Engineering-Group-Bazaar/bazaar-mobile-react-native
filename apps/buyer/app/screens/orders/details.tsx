@@ -1,6 +1,6 @@
 // screens/orders/details.tsx (ili screens/orders/details/index.tsx)
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -10,6 +10,8 @@ import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import { setParams } from 'expo-router/build/global-state/routing';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Store {
   id: number;
@@ -133,6 +135,31 @@ export default function DetailsScreen() {
   const [detailedOrderItems, setDetailedOrderItems] = useState<({ product: Product | undefined } & OrderItem)[]>([]);
   const [storeName, setStoreName] = useState<string | null>(null);
   const navigation = useNavigation();
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0);
+
+  const routeButtonRef = useRef(null);
+  const ticketButtonRef = useRef(null);
+  const chatButtonRef = useRef(null);
+  const firstProductItemRef = useRef(null);
+
+  const startWalkthrough = () => {
+    setShowWalkthrough(true);
+    setWalkthroughStep(1); // Počinjemo od prvog koraka
+  };
+
+  const goToNextStep = () => {
+    setWalkthroughStep(prevStep => prevStep + 1);
+  };
+
+  const goToPreviousStep = () => {
+    setWalkthroughStep(prevStep => prevStep - 1);
+  };
+
+  const finishWalkthrough = () => {
+    setShowWalkthrough(false);
+    setWalkthroughStep(0); 
+  };
 
   const handleConversationPress = async () => {
     if (!order) {
@@ -349,9 +376,35 @@ export default function DetailsScreen() {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.routeButton} onPress={() => router.push({ pathname: `/screens/orderRoute`, params: { orderId: order.id, addressId: order.addressId } })}>
+      {/* Tooltip za dugme "Ruta narudžbe" */}
+  <Tooltip
+    isVisible={showWalkthrough && walkthroughStep === 1}
+    content={
+      <View style={styles.tooltipContent}>
+        <Text style={{ fontSize: 16, marginBottom: 10 }}>
+          {t('tutorial_order_route')} 
+        </Text>
+        <View style={styles.tooltipButtonContainer}>
+          <TouchableOpacity
+            style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+            onPress={goToNextStep}
+          >
+            <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    }
+    placement="top" // Ili "bottom" ovisno gdje želite da se tooltip pojavi
+    onClose={finishWalkthrough}
+    tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+    useReactNativeModal={true}
+    arrowSize={{ width: 16, height: 8 }}
+    showChildInTooltip={true}
+  >
+      <TouchableOpacity ref={routeButtonRef} style={styles.routeButton} onPress={() => router.push({ pathname: `/screens/orderRoute`, params: { orderId: order.id, addressId: order.addressId } })}>
         <Text style={styles.routeButton}>{t('order_route')}</Text>
       </TouchableOpacity>
+      </Tooltip>
 
       <Text style={[styles.title, styles.itemsTitle]}>{t('ordered_items')}</Text>
       {detailedOrderItems.filter(item=>item.product).map((item) => (
@@ -372,18 +425,146 @@ export default function DetailsScreen() {
     )}
       {/* Chat button */}
       <View style={styles.bubbleButtons}>
-      <TouchableOpacity style={styles.chatButton} onPress={handleTicketPress}>
+        {/* Tooltip za dugme "Kreiraj tiket" */}
+    <Tooltip
+      isVisible={showWalkthrough && walkthroughStep === 2}
+      content={
+        <View style={styles.tooltipContent}>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+            {t('tutorial_create_ticket')}
+          </Text>
+          <View style={styles.tooltipButtonContainer}>
+            <TouchableOpacity
+              style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+              onPress={goToPreviousStep}
+            >
+              <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+              onPress={goToNextStep}
+            >
+              <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
+      placement="bottom"
+      onClose={finishWalkthrough}
+      tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+      useReactNativeModal={true}
+      arrowSize={{ width: 16, height: 8 }}
+      showChildInTooltip={true}
+    >
+      <TouchableOpacity ref={ticketButtonRef} style={styles.actionBubbleButton} onPress={handleTicketPress}>
         <FontAwesome name="warning" size={24} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+      </Tooltip>
+
+      {/* Tooltip za dugme "Chat s trgovinom" */}
+    <Tooltip
+      isVisible={showWalkthrough && walkthroughStep === 3}
+      content={
+        <View style={styles.tooltipContent}>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+            {t('tutorial_chat_with_store')}
+          </Text>
+          <View style={styles.tooltipButtonContainer}>
+            <TouchableOpacity
+              style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+              onPress={goToPreviousStep}
+            >
+              <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tooltipButtonBase, styles.tooltipFinishButton]} 
+              onPress={finishWalkthrough}
+            >
+              <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      }
+      placement="bottom"
+      onClose={finishWalkthrough}
+      tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+      useReactNativeModal={true}
+      arrowSize={{ width: 16, height: 8 }}
+      showChildInTooltip={true}
+    >
+      <TouchableOpacity ref={chatButtonRef} style={styles.actionBubbleButton} onPress={handleConversationPress}>
         <FontAwesome name="comments" size={24} color="white" />
       </TouchableOpacity>
+      </Tooltip>
+
+      <TouchableOpacity
+      style={styles.actionBubbleButton} 
+      activeOpacity={0.8}
+      onPress={startWalkthrough}
+    >
+      <Ionicons name="help-circle-outline" size={24} color="#fff" />
+    </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  actionBubbleButton: { // style for chat, ticket, and help buttons in the bubble
+ backgroundColor: '#4E8D7C',
+ padding: 15,
+ borderRadius: 30,
+ shadowColor: '#000',
+ shadowOpacity: 0.25,
+ shadowRadius: 4,
+ elevation: 5,
+ marginBottom:8
+ },
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipNextButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipPrevButton: {
+    backgroundColor: '#4E8D7C', 
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -447,8 +628,8 @@ const styles = StyleSheet.create({
   },
   bubbleButtons:{
     position: 'absolute',
-    flexDirection: 'row',
-    right: 1,
+    flexDirection: 'column',
+    right: -5,
     zIndex: 999
   },
   chatButton: {

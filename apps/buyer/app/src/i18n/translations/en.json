@@ -438,5 +438,9 @@
   "loading_data":"Loading data",
   "loading_stores":"Loading stores",
   "tutorial_order_review_button": "Clicking this button allows you to review the store from which the order was placed.",
-  "tutorial_order_details_button": "Clicking this button opens a detailed overview your order."
+  "tutorial_order_details_button": "Clicking this button opens a detailed overview your order.",
+  "creating_ticket": "Creating ticket",
+  "tutorial_order_route": "Tap here to see the delivery route of your order on the map.",
+  "tutorial_create_ticket": "Having an issue with your order? Tap here to create a support ticket.",
+  "tutorial_chat_with_store": "Start a chat with the seller for quick communication about your order."
 }
