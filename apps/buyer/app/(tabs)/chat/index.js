@@ -11,10 +11,14 @@ import {
   Image,
   RefreshControl,
   Alert,
+  Dimensions
 } from 'react-native';
 import { useRouter, useFocusEffect, Stack } from 'expo-router'; // Import useRouter and useFocusEffect from expo-router
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { Ionicons } from '@expo/vector-icons';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import {t} from 'i18next'
 
 
 // --- CONFIGURATION & MOCKS ---
@@ -196,6 +200,18 @@ const ConversationsListScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+
+    // Funkcija za pokretanje walkthrough-a
+    const startWalkthrough = () => {
+        setShowWalkthrough(true);
+    };
+
+    // Funkcija za završetak walkthrough-a
+    const finishWalkthrough = () => {
+        setShowWalkthrough(false);
+    };
+
   const loadConversations = useCallback(async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
     setError(null);
@@ -346,6 +362,30 @@ const ConversationsListScreen = () => {
 
   return (
     <View style={styles.container}>
+              <Tooltip
+                isVisible={showWalkthrough}
+                content={
+                  <View style={styles.tooltipContent}>
+                    <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                      {t('tutorial_conversations_intro')}
+                    </Text>
+                    <View style={styles.tooltipButtonContainer}>
+                      <TouchableOpacity
+                        style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                        onPress={finishWalkthrough}
+                      >
+                        <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                }
+                placement="center" // Ili "bottom"
+                onClose={finishWalkthrough}
+                tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                useReactNativeModal={true}
+                arrowSize={{ width: 16, height: 8 }}
+                showChildInTooltip={true}
+              ></Tooltip>
       {/* Expo Router: Screen options are typically set in _layout.tsx or via <Stack.Screen /> */}
       {/* If this is the 'index' screen of a stack, its options are set in _layout.tsx's <Stack.Screen name="index" /> */}
       {/* Or you can use <Stack.Screen options={{...}} /> here if it's not an index route of a layout */}
@@ -379,11 +419,66 @@ const ConversationsListScreen = () => {
           />
         }
       />
+      <TouchableOpacity
+            style={styles.fab}
+            activeOpacity={0.8}
+            onPress={startWalkthrough}>
+            <Ionicons name="help-circle-outline" size={30} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  tooltipContent: {
+        alignItems: 'center',
+        padding: 10, 
+        backgroundColor: 'white',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    tooltipButtonBase: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        marginHorizontal: 5,
+        elevation: 2,
+        minWidth: 80,
+        alignItems: 'center',
+    },
+    tooltipButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    tooltipFinishButton: {
+        backgroundColor: '#4E8D7C', // Zelena boja
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        marginHorizontal: 5,
+    },
+   fab: {
+        position: 'absolute',
+        bottom: 30,
+        right: 30,
+        backgroundColor: '#4E8D7C', // Prilagodi boju ako želiš
+        borderRadius: 30,
+        width: 60,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 6,
+        zIndex: 1000, // Osiguraj da je iznad ostalog sadržaja
+    },
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5', // Svijetlo siva pozadina za eleganciju

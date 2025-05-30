@@ -456,6 +456,7 @@
     "tutorial_cartitem_tutorial": "Ovdje možete pregledati detalje proizvoda i prilagoditi količinu proizvoda u vašoj korpi.",
     "tutorial_use_points": "Prebacite ovaj prekidač da biste koristili svoje loyality poene za plaćanje dijela vaše narudžbe.",
     "tutorial_select_address": "Odaberite adresu za dostavu na koju želite da vaša narudžba bude poslana.",
-    "tutorial_submit_order": "Kada sve pregledate, kliknite ovdje da biste podnijeli narudžbu."
+    "tutorial_submit_order": "Kada sve pregledate, kliknite ovdje da biste podnijeli narudžbu.",
+    "tutorial_conversations_intro": "Ovdje možete vidjeti sve vaše aktivne razgovore sa prodavačima ili podrškom. Kliknite na razgovor da ga otvorite."
 }
   

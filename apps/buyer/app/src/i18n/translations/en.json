@@ -455,5 +455,6 @@
     "tutorial_cartitem_tutorial": "Here you can review product details and adjust the quantity of items in your cart.",
     "tutorial_use_points": "Toggle this switch to use your loyalty points to pay for a portion of your order.",
     "tutorial_select_address": "Select the delivery address where you want your order to be sent.",
-    "tutorial_submit_order": "Once you've reviewed everything, tap here to submit your order."
+    "tutorial_submit_order": "Once you've reviewed everything, tap here to submit your order.",
+    "tutorial_conversations_intro": "Here you can see all your active conversations with sellers or support. Tap on a conversation to open it."
 }
