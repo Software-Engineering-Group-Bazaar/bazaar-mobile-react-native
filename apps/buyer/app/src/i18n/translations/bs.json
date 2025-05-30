@@ -426,7 +426,7 @@
    "tutorial_search_input_stores": "Ovdje možete da vršite pretragu prodavnica po nazivu",
    "tutorial_first_store_description": "Klikom na ovu prodavnicu možete da vidite njene proizvode i započnete kupovinu.",
    "tutorial_store_details_button": "Ovo dugme vas vodi na stranicu s detaljnim informacijama o prodavnici.",
-  "tutorial_first_product_description": "Klikom na ovaj proizvod možete vidjeti njegove pune detalje.",
+  "tutorial_first_product_description": "Klikom na ovaj proizvod možete vidjeti njegove pune detalje i dodati ga u korpu.",
   "tutorial_chat_button_explanation": "Ovo dugme vam omogućava direktan razgovor s prodavačem o proizvodu.",
     "tutorial_add_to_cart_explanation": "Koristite ovo dugme da dodate željenu količinu ovog proizvoda u vašu korpu.",
     "tutorial_chat_button_description": "Ovo dugme vam omogućava da razgovarate s prodavačem o prodavnici i svim pitanjima vezanim za nju.",
@@ -457,6 +457,9 @@
     "tutorial_use_points": "Prebacite ovaj prekidač da biste koristili svoje loyality poene za plaćanje dijela vaše narudžbe.",
     "tutorial_select_address": "Odaberite adresu za dostavu na koju želite da vaša narudžba bude poslana.",
     "tutorial_submit_order": "Kada sve pregledate, kliknite ovdje da biste podnijeli narudžbu.",
-    "tutorial_conversations_intro": "Ovdje možete vidjeti sve vaše aktivne razgovore sa prodavačima ili podrškom. Kliknite na razgovor da ga otvorite."
+    "tutorial_conversations_intro": "Ovdje možete vidjeti sve vaše aktivne razgovore sa prodavačima ili podrškom. Kliknite na razgovor da ga otvorite.",
+    "tutorial_no_products_in_store": "Trenutno nema proizvoda u ovoj prodavnici ali kada ih bude možete otvoriti njihove detalje i dodati ih u korpu.",
+    "tutorial_filter_products_stores": "Klikom na ovo dugme možete filtrirati prodavnice po regijama i općinama, te proizvode po kategorijama za lakšu pretragu.",
+    "tutorial_search_products": "Ovim poljem se vrši pretraga proizvoda po nazivu."
 }
   

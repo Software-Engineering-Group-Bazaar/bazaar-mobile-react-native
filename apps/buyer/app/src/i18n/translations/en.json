@@ -426,7 +426,7 @@
    "tutorial_search_input_stores": "Here you can search for stores by name",
    "tutorial_first_store_description": "By clicking on this store, you can view its products and start shopping.",
    "tutorial_store_details_button": "This button takes you to the detailed information page about the store.",
-   "tutorial_first_product_description": "By clicking on this product you can view its full details.",
+   "tutorial_first_product_description": "By clicking on this product you can view its full details and add it to your cart.",
    "tutorial_chat_button_explanation": "This button lets you chat directly with the seller about the product.",
     "tutorial_add_to_cart_explanation": "Use this button to add the desired quantity of this product to your shopping cart.",
     "tutorial_chat_button_description": "This button lets you chat with the seller about the store and any related questions.",
@@ -456,5 +456,8 @@
     "tutorial_use_points": "Toggle this switch to use your loyalty points to pay for a portion of your order.",
     "tutorial_select_address": "Select the delivery address where you want your order to be sent.",
     "tutorial_submit_order": "Once you've reviewed everything, tap here to submit your order.",
-    "tutorial_conversations_intro": "Here you can see all your active conversations with sellers or support. Tap on a conversation to open it."
+    "tutorial_conversations_intro": "Here you can see all your active conversations with sellers or support. Tap on a conversation to open it.",
+    "tutorial_no_products_in_store": "There are currently no products in this store, but when there are, you can view their details and add them to your cart.",
+    "tutorial_filter_products_stores": "By clicking this button, you can filter stores by regions and municipalities, and products by categories for easier searching.",
+    "tutorial_search_products": "This field allows you to search for products by name."
 }
