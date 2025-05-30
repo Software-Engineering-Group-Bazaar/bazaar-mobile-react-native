@@ -449,5 +449,11 @@
   "tutorial_ticket_description_input": "Describe your issue or request in detail. The more information you provide, the easier it will be for us to help you.",
   "tutorial_ticket_submit_button": "Once you have entered the title and description, tap this button to submit your support ticket.",
   "no_tickets_for_tutorial_title": "There arent any tickets for a tutorial",
-  "tutorial_chat_ticket_button_explanation": "Click here to start a conversation with support. The chat is available as long as the ticket is active and not closed."
+  "tutorial_chat_ticket_button_explanation": "Click here to start a conversation with support. The chat is available as long as the ticket is active and not closed.",
+  "no_items_for_tutorial_title": "No Items in Cart",
+    "no_items_for_tutorial_message": "Please add some items to your cart to start the tutorial.",
+    "tutorial_cartitem_tutorial": "Here you can review product details and adjust the quantity of items in your cart.",
+    "tutorial_use_points": "Toggle this switch to use your loyalty points to pay for a portion of your order.",
+    "tutorial_select_address": "Select the delivery address where you want your order to be sent.",
+    "tutorial_submit_order": "Once you've reviewed everything, tap here to submit your order."
 }

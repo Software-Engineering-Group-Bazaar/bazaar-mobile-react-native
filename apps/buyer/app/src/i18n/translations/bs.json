@@ -450,6 +450,12 @@
   "tutorial_ticket_description_input": "Detaljno opišite vaš problem ili zahtjev. Što više informacija pružite, lakše ćemo vam pomoći.",
   "tutorial_ticket_submit_button": "Kada ste unijeli naslov i opis, kliknite ovo dugme da pošaljete vaš tiket za podršku.",
   "no_tickets_for_tutorial_title": "Nema tiketa za tutorijal",
-  "tutorial_chat_ticket_button_explanation": "Kliknite ovdje da biste započeli razgovor s podrškom. Chat je dostupan dokle god je tiket aktivan i nije zatvoren."
+  "tutorial_chat_ticket_button_explanation": "Kliknite ovdje da biste započeli razgovor s podrškom. Chat je dostupan dokle god je tiket aktivan i nije zatvoren.",
+  "no_items_for_tutorial_title": "Nema stavki u korpi",
+    "no_items_for_tutorial_message": "Molimo dodajte stavke u korpu da biste započeli tutorijal.",
+    "tutorial_cartitem_tutorial": "Ovdje možete pregledati detalje proizvoda i prilagoditi količinu proizvoda u vašoj korpi.",
+    "tutorial_use_points": "Prebacite ovaj prekidač da biste koristili svoje loyality poene za plaćanje dijela vaše narudžbe.",
+    "tutorial_select_address": "Odaberite adresu za dostavu na koju želite da vaša narudžba bude poslana.",
+    "tutorial_submit_order": "Kada sve pregledate, kliknite ovdje da biste podnijeli narudžbu."
 }
   
