@@ -281,5 +281,10 @@
   "double_points_label": "Dupli Poeni (2x)",
   "triple_points_label": "Trostruki Poeni (3x)",
   "saving_changes": "Spašavanje izmjena",
-  "help_select_order": "U ovo polje unijeti ID narudžbe za koju Vam treba korisička podrška."
+  "help_select_order": "U ovo polje unijeti ID narudžbe za koju Vam treba korisička podrška.",
+  "help_status_filter": "Filtrirajte narudžbe po statusima.",
+  "help_send_orders": "Klikom ovdje ulazite u režim selektovanja i slanja narudžbi.",
+  "help_sorting": "Ovdje možete sortirati narudžbe po datumu - najnovije ili najstarije prvo.",
+  "help_previous_route": "Pogledajte prethodno kreiranu rutu.",
+  "help_sorting_toggle": "Klikom na dugme mijenjate redoslijed sortiranja narudžbi – od najnovijih ka najstarijim i obrnuto."
 }

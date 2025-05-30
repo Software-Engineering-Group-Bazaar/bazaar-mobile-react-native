@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -11,21 +12,25 @@ import {
   Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "expo-router";
 import StatusFilter from "../../components/ui/StatusFilter";
 import OrderCard from "../../components/ui//cards/OrderCard";
 import { updateOrderStatus } from "../api/orderApi";
 import api from "../api/defaultApi";
 import { Send } from "lucide-react-native";
-import { OrderStatusEnum } from "../../constants/statusTypes";
-import { useRouter } from "expo-router";
+import { OrderStatusEnum, OrderStatus } from "../../constants/statusTypes";
 import * as SecureStore from "expo-secure-store";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot,
+  CopilotProvider,
+} from "react-native-copilot";
 
 const { height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
-
-type OrderStatus = (typeof OrderStatusEnum)[number];
+const WalkthroughableView = walkthroughable(View);
 
 type Order = {
   id: number;
@@ -33,18 +38,33 @@ type Order = {
   totalAmount: number;
   status: OrderStatus;
   adminDelivery?: boolean;
+  address?: string;
 };
 
-export default function OrdersScreen() {
+function HiddenHelpStarter() {
+  const { start } = useCopilot();
+
+  useEffect(() => {
+    // @ts-ignore
+    global.triggerHelpTutorial = () => start();
+    return () => {
+      // @ts-ignore
+      delete global.triggerHelpTutorial;
+    };
+  }, [start]);
+
+  return null;
+}
+
+function OrdersScreenContent() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<OrderStatus[]>([]);
   const [sortNewestFirst, setSortNewestFirst] = useState(true);
-  const router = useRouter();
   const [hasRouteId, setHasRouteId] = useState(false);
-
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
 
@@ -60,34 +80,29 @@ export default function OrdersScreen() {
     setRefreshing(true);
     try {
       const res = await api.get("/Order/MyStore");
-
-      const mapped = await Promise.all(
+      const mapped: Order[] = await Promise.all(
         res.data
           .filter((o: any) => OrderStatusEnum.includes(o.status))
-          .map(async (o: any, index: number) => {
+          .map(async (o: any, index: number): Promise<Order> => {
             let address = "";
             try {
               if (o.addressId) {
-                const addrRes = await api.get(
-                  `/user-profile/address/${o.addressId}`
-                );
+                const addrRes = await api.get(`/user-profile/address/${o.addressId}`);
                 address = addrRes.data.address;
               }
             } catch (e) {
               console.warn(`Failed to load address for order ${o.id}`, e);
             }
-
             return {
               id: o.id ?? index,
               createdAt: o.time,
               totalAmount: o.total,
-              status: o.status as OrderStatus,
+              status: o.status,
               address,
               adminDelivery: o.adminDelivery,
             };
           })
       );
-
       setOrders(mapped);
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -125,9 +140,7 @@ export default function OrdersScreen() {
 
   const toggleOrderSelection = (orderId: number) => {
     setSelectedOrders((prev) =>
-      prev.includes(orderId)
-        ? prev.filter((id) => id !== orderId)
-        : [...prev, orderId]
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
     );
   };
 
@@ -144,17 +157,9 @@ export default function OrdersScreen() {
   const handleSubmitOrders = async () => {
     try {
       await Promise.all(
-        selectedOrders.map((orderId) =>
-          updateOrderStatus(orderId.toString(), "Sent")
-        )
+        selectedOrders.map((orderId) => updateOrderStatus(orderId.toString(), "Sent"))
       );
-
-      //Alert.alert(t("Success"), t("orders_submitted_successfully"));
-      router.push({
-        pathname: "/maps",
-        params: { orders: JSON.stringify(selectedOrders) },
-      });
-
+      router.push({ pathname: "/maps", params: { orders: JSON.stringify(selectedOrders) } });
       fetchOrders();
       setSelectedOrders([]);
       setSelectionMode(false);
@@ -165,9 +170,7 @@ export default function OrdersScreen() {
 
   const handlePreviousRoute = async () => {
     try {
-      router.push({
-        pathname: "/default_maps",
-      });
+      router.push({ pathname: "/default_maps" });
     } catch (error) {
       Alert.alert("Error");
     }
@@ -175,67 +178,85 @@ export default function OrdersScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <HelpAndLanguageButton showHelpButton={false} />
+      <HelpAndLanguageButton showHelpButton={true} />
+      <HiddenHelpStarter />
 
       <ScrollView
         style={styles.scrollWrapper}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchOrders} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchOrders} />}
       >
-        <StatusFilter
-          selectedStatuses={selectedStatuses}
-          toggleStatus={toggleStatus}
-          sortNewestFirst={sortNewestFirst}
-          setSortNewestFirst={setSortNewestFirst}
-          setSelectedStatuses={setSelectedStatuses}
-        />
+        <CopilotStep text={t("help_status_filter")} order={1} name="statusFilter">
+          <WalkthroughableView>
+            <StatusFilter
+              selectedStatuses={selectedStatuses}
+              toggleStatus={toggleStatus}
+              sortNewestFirst={sortNewestFirst}
+              setSortNewestFirst={setSortNewestFirst}
+              setSelectedStatuses={setSelectedStatuses}
+              showOnlyStatusFilter
+            />
+          </WalkthroughableView>
+        </CopilotStep>
+
+        <CopilotStep text={t("help_sorting_toggle")} order={2} name="sortToggle">
+          <WalkthroughableView>
+            <StatusFilter
+              selectedStatuses={selectedStatuses}
+              toggleStatus={toggleStatus}
+              sortNewestFirst={sortNewestFirst}
+              setSortNewestFirst={setSortNewestFirst}
+              setSelectedStatuses={setSelectedStatuses}
+              showOnlySortToggle
+            />
+          </WalkthroughableView>
+        </CopilotStep>
+
         <View style={styles.headerContainer}>
           <View style={styles.actionContainer}>
             {selectableOrders.length > 0 && !selectionMode && (
-              <TouchableOpacity
-                style={styles.sendOrdersButton}
-                onPress={toggleSelectionMode}
-              >
-                <Send size={18} color="#FFFFFF" />
-                <Text style={styles.sendOrdersText}>{t("send_orders")}</Text>
-              </TouchableOpacity>
+              <CopilotStep text={t("help_send_orders")} order={3} name="sendOrdersButton">
+                <WalkthroughableView>
+                  <TouchableOpacity
+                    style={styles.sendOrdersButton}
+                    onPress={toggleSelectionMode}
+                  >
+                    <Send size={18} color="#FFFFFF" />
+                    <Text style={styles.sendOrdersText}>{t("send_orders")}</Text>
+                  </TouchableOpacity>
+                </WalkthroughableView>
+              </CopilotStep>
             )}
 
             {hasRouteId && (
-              <TouchableOpacity
-                style={[
-                  styles.sendOrdersButton,
-                  { flex: 1, backgroundColor: "#808080", marginLeft: 8 },
-                ]}
-                onPress={handlePreviousRoute}
-              >
-                <Text style={styles.sendOrdersText}>{t("Previous Route")}</Text>
-              </TouchableOpacity>
+              <CopilotStep text={t("help_previous_route")} order={4} name="previousRouteButton">
+                <WalkthroughableView style={{ flex: 1 }}>
+                  <TouchableOpacity
+                    style={[styles.sendOrdersButton, { flex: 1, backgroundColor: "#808080", marginLeft: 8 }]}
+                    onPress={handlePreviousRoute}
+                  >
+                    <Text style={styles.sendOrdersText}>{t("Previous Route")}</Text>
+                  </TouchableOpacity>
+                </WalkthroughableView>
+              </CopilotStep>
             )}
           </View>
 
           {selectionMode && selectedOrders.length > 0 && (
-            <View>
-              <View style={styles.submitCancelContainer}>
-                <TouchableOpacity
-                  style={[styles.sendOrdersButton, { flex: 1, marginRight: 8 }]}
-                  onPress={handleSubmitOrders}
-                >
-                  <Send size={18} color="#FFFFFF" />
-                  <Text style={styles.sendOrdersText}>{t("create_route")}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.sendOrdersButton,
-                    { flex: 1, backgroundColor: "#A9A9A9" },
-                  ]}
-                  onPress={toggleSelectionMode}
-                >
-                  <Text style={styles.sendOrdersText}>{t("Cancel")}</Text>
-                </TouchableOpacity>
-              </View>
+            <View style={styles.submitCancelContainer}>
+              <TouchableOpacity
+                style={[styles.sendOrdersButton, { flex: 1, marginRight: 8 }]}
+                onPress={handleSubmitOrders}
+              >
+                <Send size={18} color="#FFFFFF" />
+                <Text style={styles.sendOrdersText}>{t("create_route")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.sendOrdersButton, { flex: 1, backgroundColor: "#A9A9A9" }]}
+                onPress={toggleSelectionMode}
+              >
+                <Text style={styles.sendOrdersText}>{t("Cancel")}</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -249,11 +270,7 @@ export default function OrdersScreen() {
         )}
 
         {loading ? (
-          <ActivityIndicator
-            size="large"
-            color="#4E8D7C"
-            style={styles.loader}
-          />
+          <ActivityIndicator size="large" color="#4E8D7C" style={styles.loader} />
         ) : (
           <FlatList
             data={sortedOrders}
@@ -277,29 +294,21 @@ export default function OrdersScreen() {
   );
 }
 
+export default function OrdersScreen() {
+  return (
+    <CopilotProvider>
+      <OrdersScreenContent />
+    </CopilotProvider>
+  );
+}
+
 const styles = StyleSheet.create({
-  scrollWrapper: {
-    flex: 1,
-    backgroundColor: "#F2F2F7",
-  },
-  scrollContent: {
-    paddingTop: height * 0.09,
-    paddingBottom: height * 0.1,
-  },
-  headerContainer: {
-    paddingHorizontal: 16,
-    flexDirection: "column",
-  },
-  actionContainer: {
-    gap: 12,
-    flexDirection: "row",
-  },
-  listContainer: {
-    padding: COLUMN_GAP,
-  },
-  loader: {
-    marginTop: 32,
-  },
+  scrollWrapper: { flex: 1, backgroundColor: "#F2F2F7" },
+  scrollContent: { paddingTop: height * 0.09, paddingBottom: height * 0.1 },
+  headerContainer: { paddingHorizontal: 16, flexDirection: "column" },
+  actionContainer: { gap: 12, flexDirection: "row" },
+  listContainer: { padding: COLUMN_GAP },
+  loader: { marginTop: 32 },
   sendOrdersButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -312,11 +321,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignSelf: "flex-start",
   },
-  sendOrdersText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-    marginLeft: 8,
-  },
+  sendOrdersText: { color: "#FFFFFF", fontWeight: "600", marginLeft: 8 },
   selectedCountContainer: {
     backgroundColor: "#E8F5F1",
     paddingVertical: 8,
@@ -325,13 +330,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
-  selectedCountText: {
-    color: "#4E8D7C",
-    fontWeight: "600",
-  },
-  submitCancelContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
+  selectedCountText: { color: "#4E8D7C", fontWeight: "600" },
+  submitCancelContainer: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
 });

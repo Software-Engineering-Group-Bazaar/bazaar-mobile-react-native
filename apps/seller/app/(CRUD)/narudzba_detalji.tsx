@@ -24,6 +24,14 @@ import {
   deleteOrder as deleteOrderApi,
 } from "../api/orderApi";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot,
+  CopilotProvider,
+} from "react-native-copilot";
+
+const WalkthroughableView = walkthroughable(View);
 
 const ORDER_STATUS_FLOW: Record<string, string[]> = {
   Requested: ["Confirmed", "Rejected"],
@@ -43,7 +51,22 @@ const getTimeAgo = (timestamp: string, t: any) => {
   return t("d ago", { count: days });
 };
 
-export default function NarudzbaDetalji() {
+function HiddenHelpStarter() {
+  const { start } = useCopilot();
+
+  useEffect(() => {
+    // @ts-ignore
+    global.triggerHelpTutorial = () => start();
+    return () => {
+      // @ts-ignore
+      delete global.triggerHelpTutorial;
+    };
+  }, [start]);
+
+  return null;
+}
+
+function NarudzbaDetaljiContent() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const router = useRouter();
@@ -55,20 +78,10 @@ export default function NarudzbaDetalji() {
   const [prepTime, setPrepTime] = useState<number | null>(null);
   const [selfDelivery, setSelfDelivery] = useState(true);
 
-  const handleStartConversation = async (
-    buyerId: number,
-    storeId: number,
-    orderId: number
-  ) => {
+  const handleStartConversation = async (buyerId: string, storeId: number, orderId: number) => {
     try {
-      const conversationId = await apiCreateConversation(
-        buyerId,
-        storeId,
-        orderId
-      );
-      router.push(
-        `./pregled_chata?conversationId=${conversationId}&buyerUsername=${order.buyerUserName}`
-      );
+      const conversationId = await apiCreateConversation(buyerId, storeId, orderId);
+      router.push(`./pregled_chata?conversationId=${conversationId}&buyerUsername=${order.buyerUserName}`);
     } catch (error) {
       console.error("Error starting conversation:", error);
     }
@@ -80,8 +93,6 @@ export default function NarudzbaDetalji() {
     try {
       const orderData = await getOrderById(id);
       setOrder(orderData);
-
-      // Otvori modal SAMO ako je status Confirmed I expectedReadyAt je null
       if (orderData.status === "Confirmed" && !orderData.expectedReadyAt) {
         setPreparationModalVisible(true);
       }
@@ -153,102 +164,71 @@ export default function NarudzbaDetalji() {
 
   const handleSubmitPreparation = async () => {
     if (!prepTime || prepTime <= 0) {
-      Alert.alert(
-        t("Missing data"),
-        t("Please enter a valid preparation time in minutes.")
-      );
+      Alert.alert(t("Missing data"), t("Please enter a valid preparation time in minutes."));
       return;
     }
-
     try {
       setLoading(true);
       await updateOrderStatus(id, "Confirmed", !selfDelivery, prepTime);
       setOrder((prev: any) => ({ ...prev, status: "Confirmed" }));
       setPreparationModalVisible(false);
-    } catch (error) {
-      Alert.alert(t("Failed to update status"));
+    } catch {
+      alert(t("Failed to update status"));
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#4E8D7C" />
-      </View>
-    );
+    return <View style={styles.container}><ActivityIndicator size="large" color="#4E8D7C" /></View>;
   }
 
   if (!order) {
-    return (
-      <View style={styles.container}>
-        <Text>{t("Order not found")}</Text>
-      </View>
-    );
+    return <View style={styles.container}><Text>{t("Order not found")}</Text></View>;
   }
 
   return (
     <View style={styles.wrapper}>
+      <HiddenHelpStarter />
       <View style={styles.header}>
         <TouchableOpacity onPress={handleDeleteOrder}>
           <FontAwesome name="trash" size={28} color="#e57373" />
         </TouchableOpacity>
         <Text style={styles.orderId}>{`${t("Order")} #${order.id}`}</Text>
         <View style={{ flex: 1 }} />
-        <StatusBadge status={order.status} />
+        <CopilotStep text={t("Status of this order") + ': ' + t(order.status)} order={1} name="statusBadge">
+          <WalkthroughableView>
+            <StatusBadge status={order.status} />
+          </WalkthroughableView>
+        </CopilotStep>
       </View>
 
-      <HelpAndLanguageButton showHelpButton={false} />
+      <HelpAndLanguageButton showHelpButton={true} />
 
-      <View style={styles.buyerContainer}>
-        <Text style={styles.buyerText}>
-          {t("buyer")}:{" "}
-          <Text style={{ fontWeight: "400" }}>
-            {String(order.buyerUserName)}
-          </Text>
-        </Text>
-        <TouchableOpacity
-          style={styles.messageButton}
-          onPress={() =>
-            handleStartConversation(order.buyerId, order.storeId, order.id)
-          }
-        >
-          <Text style={styles.messageButtonText}>{t("send_message")}</Text>
-        </TouchableOpacity>
-      </View>
+      <CopilotStep text={t("Buyer information and messaging option") } order={2} name="buyerInfo">
+        <WalkthroughableView style={styles.buyerContainer}>
+          <Text style={styles.buyerText}>{t("buyer")}: <Text style={{ fontWeight: "400" }}>{String(order.buyerUserName)}</Text></Text>
+          <TouchableOpacity style={styles.messageButton} onPress={() => handleStartConversation(order.buyerId, order.storeId, order.id)}>
+            <Text style={styles.messageButtonText}>{t("send_message")}</Text>
+          </TouchableOpacity>
+        </WalkthroughableView>
+      </CopilotStep>
 
       <ScrollView
         style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchOrder} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchOrder} />}
       >
-        <InfoCard
-          icon="clock"
-          title={t("Created At")}
-          text={`${new Date(order.time).toLocaleString()} (${getTimeAgo(
-            order.time,
-            t
-          )})`}
-        />
+        <InfoCard icon="clock" title={t("Created At")} text={`${new Date(order.time).toLocaleString()} (${getTimeAgo(order.time, t)})`} />
 
         {order.addressDetails?.address && (
-          <InfoCard
-            icon="map-marker"
-            title={t("delivery_address")}
-            text={order.addressDetails.address}
-          />
+          <InfoCard icon="map-marker" title={t("delivery_address")} text={order.addressDetails.address} />
         )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t("Products")}</Text>
           {order.items.map((item: any) => (
             <View key={item.id} style={styles.product}>
-              <Image
-                source={{ uri: item.productImageUrl }}
-                style={styles.img}
-              />
+              <Image source={{ uri: item.productImageUrl }} style={styles.img} />
               <View style={{ flex: 1 }}>
                 <Text>{item.productName}</Text>
                 <Text>x{item.quantity}</Text>
@@ -263,14 +243,12 @@ export default function NarudzbaDetalji() {
         </View>
 
         {ORDER_STATUS_FLOW[order.status]?.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t("Change Status")}</Text>
-            <StatusButtons
-              statuses={ORDER_STATUS_FLOW[order.status]}
-              onChange={handleStatusUpdate}
-              disabled={loading}
-            />
-          </View>
+          <CopilotStep text={t("You can change the status of the order here") } order={3} name="changeStatus">
+            <WalkthroughableView style={styles.section}>
+              <Text style={styles.sectionTitle}>{t("Change Status")}</Text>
+              <StatusButtons statuses={ORDER_STATUS_FLOW[order.status]} onChange={handleStatusUpdate} disabled={loading} />
+            </WalkthroughableView>
+          </CopilotStep>
         )}
       </ScrollView>
 
@@ -279,58 +257,20 @@ export default function NarudzbaDetalji() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{t("Select Delivery Type")}</Text>
             <View style={styles.deliveryOptionsContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.deliveryOption,
-                  selfDelivery && styles.selectedDeliveryOption,
-                ]}
-                onPress={() => setSelfDelivery(true)}
-              >
-                <Text
-                  style={[
-                    styles.deliveryOptionText,
-                    selfDelivery && styles.selectedDeliveryOptionText,
-                  ]}
-                >
-                  {t("Self Delivery")}
-                </Text>
+              <TouchableOpacity style={[styles.deliveryOption, selfDelivery && styles.selectedDeliveryOption]} onPress={() => setSelfDelivery(true)}>
+                <Text style={[styles.deliveryOptionText, selfDelivery && styles.selectedDeliveryOptionText]}>{t("Self Delivery")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.deliveryOption,
-                  !selfDelivery && styles.selectedDeliveryOption,
-                ]}
-                onPress={() => setSelfDelivery(false)}
-              >
-                <Text
-                  style={[
-                    styles.deliveryOptionText,
-                    !selfDelivery && styles.selectedDeliveryOptionText,
-                  ]}
-                >
-                  {t("Admin Delivery")}
-                </Text>
+              <TouchableOpacity style={[styles.deliveryOption, !selfDelivery && styles.selectedDeliveryOption]} onPress={() => setSelfDelivery(false)}>
+                <Text style={[styles.deliveryOptionText, !selfDelivery && styles.selectedDeliveryOptionText]}>{t("Admin Delivery")}</Text>
               </TouchableOpacity>
             </View>
-
-            <Text style={styles.modalTitle}>
-              {t("Expected Preparation Time")}
-            </Text>
+            <Text style={styles.modalTitle}>{t("Expected Preparation Time")}</Text>
             <View style={styles.prepInputContainer}>
-              <TextInput
-                value={prepTime?.toString() || ""}
-                onChangeText={(text) => setPrepTime(Number(text))}
-                keyboardType="numeric"
-                style={styles.input}
-              />
+              <TextInput value={prepTime?.toString() || ""} onChangeText={(text) => setPrepTime(Number(text))} keyboardType="numeric" style={styles.input} />
               <Text style={styles.minLabel}>min</Text>
             </View>
-
             <View style={styles.modalButtonsRow}>
-              <TouchableOpacity
-                style={[styles.sendOrdersButton, { flex: 1 }]}
-                onPress={handleSubmitPreparation}
-              >
+              <TouchableOpacity style={[styles.sendOrdersButton, { flex: 1 }]} onPress={handleSubmitPreparation}>
                 <Text style={styles.sendOrdersText}>{t("Submit")}</Text>
               </TouchableOpacity>
             </View>
@@ -338,6 +278,14 @@ export default function NarudzbaDetalji() {
         </View>
       )}
     </View>
+  );
+}
+
+export default function NarudzbaDetalji() {
+  return (
+    <CopilotProvider>
+      <NarudzbaDetaljiContent />
+    </CopilotProvider>
   );
 }
 

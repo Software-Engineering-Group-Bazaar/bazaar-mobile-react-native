@@ -281,5 +281,10 @@
   "double_points_label": "Double Points (2x)",
   "triple_points_label": "Triple Points (3x)",
   "saving_changes": "Saving Changes",
-  "help_select_order": "Enter here the ID of the order for which you need customer support assistance."
+  "help_select_order": "Enter here the ID of the order for which you need customer support assistance.",
+  "help_status_filter": "Filter orders by status.",
+  "help_send_orders": "Tap here to enter selection and submission mode for orders.",
+  "help_sorting": "Sort orders by date – newest or oldest first.",
+  "help_previous_route": "View the previously created route.",
+  "help_sorting_toggle": "Tap the button to switch the order sorting direction – from newest to oldest and vice versa."
 }
