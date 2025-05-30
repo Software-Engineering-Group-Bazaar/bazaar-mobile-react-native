@@ -290,6 +290,35 @@ const DUMMY_PRODUCTS: Product[] = [
   },
 ];
 
+//dummy podaci prodavnica 
+const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
+  {
+    id: 1, // Store ID for Supermarket A
+    name: "Supermarket A",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 1),
+  },
+  {
+    id: 2, // Store ID for Elektronika Centar (although dummy products are filtered for storeId 2)
+    name: "Elektronika Centar",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 2),
+  },
+  {
+    id: 3, // Assuming there's a store 3 in dummy data for Kafa Moka
+    name: "Kafeterija",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 3),
+  },
+  {
+    id: 4, // Store ID for Knjižara Z and Elektronika
+    name: "Elektronika Shop",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 4),
+  },
+  {
+    id: 5, // Store ID for Pekara Mlin and Alkoholna pića
+    name: "Pekara i Pića",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 5),
+  },
+];
+
 // const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
 //   {
 //     Store: { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA',place:1 },
@@ -531,6 +560,87 @@ const SearchProductsScreen = () => {
 
     setLoading(false);
     setError(null);
+
+    //namjestanje da radi i sa dummy podacima 
+    if (USE_DUMMY_DATA) {
+    let filteredProducts = DUMMY_PRODUCTS.filter((product) => {
+      const matchesSearch = product.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedCategory === null ||
+        product.productCategory.id === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    let filteredStoresWithProducts: StoreWithProducts[] = [];
+
+    if (selectedRegion || selectedMunicipalities.length > 0) {
+      filteredProducts = filteredProducts.filter((product) => {
+        const storeForProduct = DUMMY_STORES_WITH_PRODUCTS.find(
+          (store) => store.id === product.storeId
+        );
+
+        if (!storeForProduct) return false;
+
+        const dummyStore = {
+          id: storeForProduct.id,
+          name: storeForProduct.name,
+          address: "Dummy Adresa",
+          description: "Dummy Opis",
+          isActive: true,
+          categoryid: 1,
+          place: DUMMY_MUNICIPALITIES.find(
+            (m) => m.name === "Sarajevo Centar"
+          )?.id,
+        };
+
+        const storeMunicipality = DUMMY_MUNICIPALITIES.find(
+          (m) => m.id === dummyStore.place
+        );
+        const storeRegion = DUMMY_REGIONS.find((r) =>
+          DUMMY_MUNICIPALITIES.some(
+            (m) => m.id === dummyStore.place && r.name.includes("Sarajevski")
+          )
+        ); 
+
+        const matchesRegion =
+          selectedRegion === null ||
+          (storeRegion && storeRegion.id === selectedRegion);
+
+        const matchesMunicipalities =
+          selectedMunicipalities.length === 0 ||
+          selectedMunicipalities.includes(dummyStore.place as number); 
+
+        return matchesRegion && matchesMunicipalities;
+      });
+    }
+
+    const groupedProducts: { [storeId: number]: Product[] } = {};
+    filteredProducts.forEach((product) => {
+      if (!groupedProducts[product.storeId]) {
+        groupedProducts[product.storeId] = [];
+      }
+      groupedProducts[product.storeId].push(product);
+    });
+
+    for (const storeId in groupedProducts) {
+      const storeInfo = DUMMY_STORES_WITH_PRODUCTS.find(
+        (store) => store.id === parseInt(storeId)
+      );
+      if (storeInfo) {
+        filteredStoresWithProducts.push({
+          id: storeInfo.id,
+          name: storeInfo.name,
+          products: groupedProducts[storeId],
+        });
+      }
+    }
+
+    setStoresWithProducts(filteredStoresWithProducts);
+    setLoading(false);
+    return;
+  }
 
     // if (USE_DUMMY_DATA) {
     //   let filteredStores = DUMMY_STORES_WITH_PRODUCTS.map(storeWithProducts => ({
