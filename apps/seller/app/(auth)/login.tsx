@@ -11,7 +11,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 import InputField from "@/components/ui/input/InputField";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 
 const isValidEmail = (email: string): boolean => {
@@ -164,7 +164,9 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-      <LanguageButton />
+       <View style={styles.languageButtonWrapper}>
+        <HelpAndLanguageButton showHelpButton={false} />
+      </View>
 
       <View style={styles.titleContainer}>
         <Image
@@ -232,6 +234,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     paddingHorizontal: 20,
+  },
+  languageButtonWrapper: {
+    position: "absolute",
+    top: 80,        // Push it lower
+    right: 30,      // Shift it more left
+    zIndex: 9999,
   },
   titleContainer: {
     alignItems: "center",

@@ -26,7 +26,7 @@ const LanguageButton: React.FC = () => {
  return (
    <>
      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.languageButton}>
-       <FontAwesome name="language" size={18} color="#4E8D7C" />
+       <FontAwesome name="language" size={13} color="#4E8D7C" />
        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
      </TouchableOpacity>
 
@@ -67,8 +67,8 @@ const LanguageButton: React.FC = () => {
 
 const styles = StyleSheet.create({
   languageButton: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     backgroundColor: "#f1f5f9",
     zIndex: 10,
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },  
  languageText: {
-   fontSize: 10,
+   fontSize: 8,
    fontWeight: "600",
    color: "#4E8D7C",
    marginTop: 2,

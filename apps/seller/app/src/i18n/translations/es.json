@@ -286,5 +286,6 @@
     "help_send_orders": "Toque aquí para activar el modo de selección y envío de pedidos.",
     "help_sorting": "Ordenar pedidos por fecha – más recientes o más antiguos primero.",
     "help_previous_route": "Ver la ruta creada anteriormente.",
-    "help_sorting_toggle": "Pulse el botón para cambiar el orden de clasificación de los pedidos – de más nuevos a más antiguos y viceversa."
+    "help_sorting_toggle": "Pulse el botón para cambiar el orden de clasificación de los pedidos – de más nuevos a más antiguos y viceversa.",
+    "Store Details": "Al hacer clic en este campo, puede ver los detalles de su tienda, incluidos sus productos, y también puede agregar nuevos."
   }

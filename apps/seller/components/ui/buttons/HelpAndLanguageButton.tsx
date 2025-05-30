@@ -53,8 +53,8 @@ const HelpAndLanguageButton: React.FC<HelpAndLanguageButtonProps> = ({
 }) => {
   return (
     <View style={styles.absoluteContainer}>
-      {showLanguageButton && <LanguageButton />}
-      {showHelpButton && <HelpButton />}
+      {showLanguageButton && <View style={styles.buttonWrapper}><LanguageButton /></View>}
+      {showHelpButton && <View style={styles.buttonWrapper}><HelpButton /></View>}
     </View>
   );
 };
@@ -64,10 +64,13 @@ export default HelpAndLanguageButton;
 const styles = StyleSheet.create({
   absoluteContainer: {
     position: "absolute",
-    top: 30,
-    right: 20,
+    top: 13,
+    right: 1,
     flexDirection: "row",
-    gap: 12,
+    alignItems: "center",
     zIndex: 9999,
+  },
+  buttonWrapper: {
+    marginLeft: 1, 
   },
 });

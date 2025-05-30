@@ -286,6 +286,6 @@
     "help_send_orders": "Tippen Sie hier, um den Auswahl- und Sendemodus für Bestellungen zu aktivieren.",
     "help_sorting": "Sortieren Sie Bestellungen nach Datum – neueste oder älteste zuerst.",
     "help_previous_route": "Vorherige erstellte Route anzeigen.",
-    "help_sorting_toggle": "Mit einem Klick auf die Schaltfläche ändern Sie die Sortierreihenfolge der Bestellungen – von neu nach alt und umgekehrt."
-      
+    "help_sorting_toggle": "Mit einem Klick auf die Schaltfläche ändern Sie die Sortierreihenfolge der Bestellungen – von neu nach alt und umgekehrt.",
+    "Store Details": "Durch Klicken auf dieses Feld können Sie Details zu Ihrem Geschäft anzeigen, einschließlich der Produkte, und neue hinzufügen."
 }

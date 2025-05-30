@@ -286,5 +286,6 @@
   "help_send_orders": "Tap here to enter selection and submission mode for orders.",
   "help_sorting": "Sort orders by date – newest or oldest first.",
   "help_previous_route": "View the previously created route.",
-  "help_sorting_toggle": "Tap the button to switch the order sorting direction – from newest to oldest and vice versa."
+  "help_sorting_toggle": "Tap the button to switch the order sorting direction – from newest to oldest and vice versa.",
+  "Store Details": "By clicking this field, you can view details about your store, including its products, and you can also add new ones."
 }

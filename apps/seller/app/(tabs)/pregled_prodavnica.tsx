@@ -10,8 +10,31 @@ import * as SecureStore from "expo-secure-store";
 import LogoutButton from "@/components/ui/buttons/LogoutButton";
 import { logoutApi } from "../api/auth/logoutApi";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot,
+  CopilotProvider,
+} from "react-native-copilot";
 
-export default function StoresScreen() {
+const WalkthroughableView = walkthroughable(View);
+
+function HiddenHelpStarter() {
+  const { start } = useCopilot();
+
+  useEffect(() => {
+    // @ts-ignore
+    global.triggerHelpTutorial = () => start();
+    return () => {
+      // @ts-ignore
+      delete global.triggerHelpTutorial;
+    };
+  }, [start]);
+
+  return null;
+}
+
+function StoresScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -77,7 +100,8 @@ export default function StoresScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <HelpAndLanguageButton showHelpButton={false} />
+      <HiddenHelpStarter />
+      <HelpAndLanguageButton showHelpButton={true} />
       <View style={styles.topBar}>
         <LogoutButton onPress={handleLogout} />
       </View>
@@ -96,15 +120,19 @@ export default function StoresScreen() {
             />
           ) : (
             <View style={styles.cardsContainer}>
-              <TouchableCard
-                title={store.name}
-                textRows={[store.categoryName, store.description]}
-                onPress={() =>
-                  router.push(
-                    `/(CRUD)/prodavnica_detalji?store=${JSON.stringify(store)}`
-                  )
-                }
-              />
+              <CopilotStep text={t("Store Details") } order={1} name="storeInfo">
+                <WalkthroughableView>
+                  <TouchableCard
+                    title={store.name}
+                    textRows={[store.categoryName, store.description]}
+                    onPress={() =>
+                      router.push(
+                        `/(CRUD)/prodavnica_detalji?store=${JSON.stringify(store)}`
+                      )
+                    }
+                  />
+                </WalkthroughableView>
+              </CopilotStep>
               <TouchableCard
                 title={t("view_orders")}
                 textRows={[
@@ -132,6 +160,14 @@ export default function StoresScreen() {
         </View>
       </ScrollView>
     </View>
+  );
+}
+
+export default function StoresScreenContent() {
+  return (
+    <CopilotProvider>
+      <StoresScreen />
+    </CopilotProvider>
   );
 }
 
