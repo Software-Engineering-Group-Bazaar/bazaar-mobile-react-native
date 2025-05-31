@@ -27,7 +27,11 @@ const HelpAndLanguageButton: React.FC<HelpAndLanguageButtonProps> = ({
       )}
       {showHelpButton && (
         <View style={styles.buttonWrapper}>
-          <HelpButton />
+          <HelpButton
+            delay={delay}
+            onStepChange={onStepChange}
+            beforeStart={beforeStart}
+          />
         </View>
       )}
     </View>

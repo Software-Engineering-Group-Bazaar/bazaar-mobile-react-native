@@ -213,7 +213,13 @@ export default function AddProductScreen() {
   };
 
   return (
-    <CopilotProvider>
+    <CopilotProvider
+      labels={{
+        finish: t("Finish"),
+        next: t("Next"),
+        skip: t("Skip"),
+        previous: t("Previous")
+      }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}

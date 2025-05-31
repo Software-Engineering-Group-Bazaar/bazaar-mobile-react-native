@@ -116,7 +116,13 @@ export default function ProductScreen() {
   }
 
   return (
-    <CopilotProvider>
+    <CopilotProvider
+      labels={{
+        finish: t("Finish"),
+        next: t("Next"),
+        skip: t("Skip"),
+        previous: t("Previous")
+      }}>
       <ScrollView style={styles.container} ref={scrollViewRef}>
         {/* Dugme za promjenu jezika */}
         <HelpAndLanguageButton delay={300} beforeStart={scrollToEnd} />
