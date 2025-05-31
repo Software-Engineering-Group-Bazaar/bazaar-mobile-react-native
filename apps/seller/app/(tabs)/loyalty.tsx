@@ -331,7 +331,7 @@ function LoyaltyScreen() {
           order={1}
           name="date_range_selector"
         >
-          <WalkthroughableView style={styles.dateRow}>
+          <WalkthroughableView>
             <View style={styles.dateFilterContainer}>
               <View style={styles.dateRow}>
                 <TouchableOpacity
