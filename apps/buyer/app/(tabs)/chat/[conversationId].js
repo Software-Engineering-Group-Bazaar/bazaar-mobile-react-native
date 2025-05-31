@@ -17,6 +17,7 @@ import { useLocalSearchParams, Stack, useRouter } // Import from expo-router
 from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { useTranslation } from "react-i18next";
 
 // --- CONFIGURATION & MOCKS ---
 // const USE_DUMMY_DATA = true; // SET TO false TO USE LIVE API/SIGNALR
@@ -150,6 +151,7 @@ const fetchTicketDetailsAPI = (ticketId) => {
 
 
 const ChatScreen = () => {
+  const { t } = useTranslation();
   const params = useLocalSearchParams();
   const pathConversationId = params.conversationId;
   const paramMyId = params.buyerUserId;

@@ -15,6 +15,7 @@ import {
 import { useRouter, useFocusEffect, Stack } from 'expo-router'; // Import useRouter and useFocusEffect from expo-router
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { useTranslation } from "react-i18next";
 
 
 // --- CONFIGURATION & MOCKS ---
@@ -190,6 +191,7 @@ const formatConversationTimestamp = (dateString) => {
 
 
 const ConversationsListScreen = () => {
+  const { t } = useTranslation();
   const router = useRouter(); // Use useRouter from expo-router
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
