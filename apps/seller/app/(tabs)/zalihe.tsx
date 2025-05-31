@@ -35,7 +35,10 @@ function HiddenHelpStarter() {
 
   useEffect(() => {
     // @ts-ignore
-    global.triggerHelpTutorial = () => start();
+    global.triggerHelpTutorial = () => {
+      console.log("Tutorial triggered from global method"); // ✅ ADD THIS
+      start();
+    };
     return () => {
       // @ts-ignore
       delete global.triggerHelpTutorial;
@@ -51,17 +54,7 @@ const ZaliheScreen = () => {
   const [productInventories, setProductInventories] = useState<
     { product: Product; inventory: InventoryItem }[]
   >([]);
-  const { stop } = useCopilot();
 
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (!isFocused) {
-      // Only stop when the screen actually loses focus
-      stop();
-    }
-    // No action on mount/focus
-  }, [isFocused, stop]);
   const WalkthroughableView = walkthroughable(View);
 
   useFocusEffect(
@@ -157,46 +150,37 @@ const ZaliheScreen = () => {
           onPress={Keyboard.dismiss}
           style={{ paddingBottom: "20%" }}
         >
-              <View style={styles.container}>
-                {productInventories.length != 0 && (
-                  <FlatList
-                    style={{ width: "100%" }}
-                    data={productInventories}
-                    keyExtractor={(item) => item.product.id.toString()}
-                    renderItem={({ item, index }) => {
-                      const isOutOfStock = item.inventory.quantity === 0;
+          <View style={styles.container}>
+            {productInventories.length > 0 && (
+            <CopilotStep
+              text={t("adjust_quantity_tutorial")}
+              order={1}
+              name="inventoryList"
+            >
+              <WalkthroughableView>
+                <FlatList
+                  style={{ width: "100%" }}
+                  data={productInventories}
+                  keyExtractor={(item: any) => item.product.id.toString()}
+                  renderItem={({ item, index }) => {
+                    const isOutOfStock = item.inventory.quantity === 0;
 
-                      const card = (
-                        <ProductQuantityCard
-                          item={item.product}
-                          value={item.inventory.quantity}
-                          outOfStock={isOutOfStock}
-                          onChange={(newQuantity) =>
-                            handleQuantityChange(item.product.id, newQuantity)
-                          }
-                        />
-                      );
-                      if (index === 0) {
-                        return (
-                          <CopilotStep
-                            text={t("adjust_quantity_tutorial")}
-                            order={1}
-                            name="inventoryItem"
-                          >
-                            <WalkthroughableView>
-                              <View>
-                                {card}
-                              </View>
-                            </WalkthroughableView>
-                          </CopilotStep>
-                        );
-                      }
-
-                      return card;
-                    }}
-                  />
-                )}
-              </View>
+                    return (
+                      <ProductQuantityCard
+                        item={item.product}
+                        value={item.inventory.quantity}
+                        outOfStock={isOutOfStock}
+                        onChange={(newQuantity) =>
+                          handleQuantityChange(item.product.id, newQuantity)
+                        }
+                      />
+                    );
+                  }}
+                />
+              </WalkthroughableView>
+            </CopilotStep>
+          )}
+          </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
 
@@ -228,6 +212,7 @@ export default function ZaliheScreenContent() {
         skip: t("Skip"),
         previous: t("Previous")
       }}>
+      <HiddenHelpStarter />
       <ZaliheScreen />
     </CopilotProvider>
   );

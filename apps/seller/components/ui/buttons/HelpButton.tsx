@@ -41,7 +41,7 @@ const HelpButton: React.FC<HelpButtonProps> = ({
       }}
       style={styles.helpButton}
     >
-      <Ionicons name="help-circle-outline" size={36} color="#4E8D7C" />
+      <Ionicons name="help-circle-outline" size={52} color="#4E8D7C" />
     </TouchableOpacity>
   );
 };
