@@ -6,6 +6,7 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE, LatLng } from 'react-native
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import * as SecureStore from 'expo-secure-store';
+import { t } from 'i18next';
 
 const GOOGLE_API_KEY = 'AIzaSyCr2UAxBSN0eZxa5ahJKokuzJZy9Em203Q';
 
@@ -144,8 +145,8 @@ export default function RouteScreen() {
           longitudeDelta: Math.abs(seller.longitude - buyer.longitude) * 2,
         }}
       >
-        <Marker coordinate={seller} title="Seller" pinColor="blue" />
-        <Marker coordinate={buyer} title="Buyer" pinColor="green" />
+        <Marker coordinate={seller} title={t("seller")} pinColor="blue" />
+        <Marker coordinate={buyer} title={t("buyer")} pinColor="green" />
         <Polyline coordinates={route} strokeWidth={3} />
       </MapView>
       <View style={styles.button}>

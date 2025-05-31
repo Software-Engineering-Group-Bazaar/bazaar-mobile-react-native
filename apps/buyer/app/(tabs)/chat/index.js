@@ -15,6 +15,7 @@ import {
 import { useRouter, useFocusEffect, Stack } from 'expo-router'; // Import useRouter and useFocusEffect from expo-router
 import * as SecureStore from 'expo-secure-store';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { useTranslation } from "react-i18next";
 
 
 // --- CONFIGURATION & MOCKS ---
@@ -190,6 +191,7 @@ const formatConversationTimestamp = (dateString) => {
 
 
 const ConversationsListScreen = () => {
+  const { t } = useTranslation();
   const router = useRouter(); // Use useRouter from expo-router
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -300,8 +302,8 @@ const ConversationsListScreen = () => {
           )}
         </View>
         {item.ticketId && <Text style={styles.conversationTitle} numberOfLines={1}>Ticket: {item.ticketId}</Text>}
-        {item.productId && <Text style={styles.conversationTitle} numberOfLines={1}>Proizvod: {item.productName}</Text>}
-        {item.orderId && <Text style={styles.conversationTitle} numberOfLines={1}>Narudžba: {item.orderId}</Text>}
+        {item.productId && <Text style={styles.conversationTitle} numberOfLines={1}>{t('product')}: {item.productName}</Text>}
+        {item.orderId && <Text style={styles.conversationTitle} numberOfLines={1}>{t('Order')}: {item.orderId}</Text>}
         {item.conversationTitle && <Text style={styles.conversationTitle} numberOfLines={1}>{item.conversationTitle}</Text>}
         <View style={styles.row}>
           <Text style={styles.lastMessage} numberOfLines={1}>
