@@ -1,6 +1,8 @@
 // screens/orders/details.tsx (ili screens/orders/details/index.tsx)
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions,
+  SafeAreaView, Platform
+ } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -337,21 +339,83 @@ export default function DetailsScreen() {
 
   if (error) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('order_details')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.container}>
         <Text style={styles.errorText}>{error}</Text>
       </View>
+      </SafeAreaView>
     );
   }
 
   if (!order) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('order_details')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.container}>
         <Text>{t('order_not_found', 'Narudžba nije pronađena.')}</Text>
       </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('order_details')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text style={styles.title}>{t('order_details')}</Text>
 
@@ -496,20 +560,54 @@ export default function DetailsScreen() {
         <FontAwesome name="comments" size={24} color="white" />
       </TouchableOpacity>
       </Tooltip>
-
-      <TouchableOpacity
-      style={styles.actionBubbleButton} 
-      activeOpacity={0.8}
-      onPress={startWalkthrough}
-    >
-      <Ionicons name="help-circle-outline" size={24} color="#fff" />
-    </TouchableOpacity>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
   actionBubbleButton: { // style for chat, ticket, and help buttons in the bubble
  backgroundColor: '#4E8D7C',
  padding: 15,

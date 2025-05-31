@@ -1,6 +1,6 @@
 // screens/orders/review.tsx
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView , Alert, Dimensions} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView , Alert, Dimensions, Platform} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { t } from 'i18next';
@@ -125,6 +125,26 @@ export default function ReviewScreen() {
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('review')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
 
       <View style={styles.content}>
@@ -208,18 +228,53 @@ export default function ReviewScreen() {
         </TouchableOpacity>
         </Tooltip>
       </View>
-      <TouchableOpacity
-        style={styles.fab} 
-        activeOpacity={0.8}
-        onPress={startWalkthrough}
-      >
-        <Ionicons name="help-circle-outline" size={30} color="#fff" />
-      </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
   tooltipButtonBase: { 
         paddingVertical: 10,
         paddingHorizontal: 20,
@@ -281,31 +336,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 6,
   },
-  safeArea: {
-    backgroundColor: '#4e8d7c',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 21,
-    backgroundColor: '#4e8d7c',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 4,
-  },
   backButton: {
     marginRight: 15,
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-    flex: 1,
-    textAlign: 'center',
   },
   container: {
     flex: 1,

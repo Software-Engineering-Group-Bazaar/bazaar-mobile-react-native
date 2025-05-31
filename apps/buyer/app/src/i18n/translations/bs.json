@@ -470,6 +470,13 @@
     "tutorial_search_products": "Ovim poljem se vrši pretraga proizvoda po nazivu.",
   "go_back": "Nazad",
   "Mark new as Private:": "Označi novo kao privatno",
-  "product_not_found": "Proizvod nije pronađen"
+  "product_not_found": "Proizvod nije pronađen",
+  "tutorial_remove_address_screen": "Ovdje možete potvrditi uklanjanje odabrane adrese iz vašeg profila. Pažljivo pregledajte adresu i zatim pritisnite 'Ukloni' za brisanje, ili 'Odustani' ako ste se predomislili.",
+  "tutorial_confirm_address_screen": "Ovdje možete pregledati i po potrebi urediti adresu koju ste odabrali. Kada ste sigurni da je adresa ispravna, pritisnite dugme 'Potvrdi' kako biste je sačuvali u svojim adresama.",
+  "tutorial_product_details_cart": "Ovdje možete pregledati detalje proizvoda iz vaše korpe i lako promijeniti željenu količinu prije nego što nastavite sa kupovinom.",
+  "tutorial_points_screen": "Ovaj ekran prikazuje stanje vaših lojaliti bodova i njihovu novčanu vrijednost. Ovdje možete pratiti koliko ste bodova skupili i kako ih možete iskoristiti. Svaki bod ima svoju vrijednost, a detalji su objašnjeni niže na stranici.",
+  "tutorial_order_route_screen": "Ova mapa prikazuje rutu isporuke za vašu narudžbu, od lokacije prodavca do vaše odabrane adrese. Ovdje možete pratiti napredak vaše narudžbe.",
+  "tutorial_ads_product": "Ovo je ekran sa detaljima proizvoda. Ovdje možete pregledati sve informacije o proizvodu, poput slika, cijena, dostupnosti i opcija za dodavanje u košaricu. Također možete direktno razgovarati s prodavačem za sva pitanja.",
+  "tutorial_my_addresses_screen": "Ovdje možete dodavati, pregledavati i upravljati svojim sačuvanim adresama za dostavu. Koristite pretragu da pronađete novu adresu ili pomjerite marker na mapi, a zatim je potvrdite. Također možete ukloniti postojeće adrese."
 }
   

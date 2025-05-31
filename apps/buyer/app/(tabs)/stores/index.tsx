@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, FlatList, ActivityIndicator, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions,
+  SafeAreaView, Platform
+ } from 'react-native';
 import { useRouter } from 'expo-router';
 import StoreItem from 'proba-package/store-item/index';
 // Import AdItem component and types from the new file
@@ -456,6 +458,26 @@ const StoresScreen = () => {
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('stores')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
       {/* Tooltip za Search Input */}
     <Tooltip
@@ -574,19 +596,53 @@ const StoresScreen = () => {
         numColumns={2} // Still render stores in 2 columns
         columnWrapperStyle={styles.row} // Used to style the rows (space between columns etc.)
       />
-          
-      <TouchableOpacity
-      style={styles.fab}
-      activeOpacity={0.8}
-      onPress={startWalkthrough}
-    >
-      <Ionicons name="help-circle-outline" size={30} color="#fff" />
-    </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
   tooltipButtonBase: { 
         paddingVertical: 10,
         paddingHorizontal: 20,

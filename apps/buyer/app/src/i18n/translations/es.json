@@ -426,5 +426,12 @@
   "select_rate": "Seleccionar tasa",
   "select_rate_for": "Seleccionar tasa para",
   "Error: The start date cannot be after the end date.": "Error: La fecha de inicio no puede ser posterior a la fecha de fin.",
-  "saving_changes": "Guardando cambios"
+  "saving_changes": "Guardando cambios",
+  "tutorial_confirm_address_screen": "Aquí puedes revisar y, si es necesario, editar la dirección que has seleccionado. Una vez que estés seguro de que la dirección es correcta, presiona el botón 'Confirmar' para guardarla en tus direcciones.",
+  "tutorial_my_addresses_screen": "Aquí puedes añadir, ver y gestionar tus direcciones de entrega guardadas. Utiliza la barra de búsqueda para encontrar una nueva dirección o arrastra el marcador en el mapa, y luego confírmala. También puedes eliminar direcciones existentes.",
+  "tutorial_order_route_screen": "Este mapa muestra la ruta de entrega de su pedido, desde la ubicación del vendedor hasta su dirección seleccionada. Aquí puede seguir el progreso de su pedido.",
+  "tutorial_product_details_cart": "Aquí puede revisar los detalles del producto en su carrito y ajustar fácilmente la cantidad deseada antes de continuar con su compra.",
+  "tutorial_remove_address_screen": "Aquí puedes confirmar la eliminación de la dirección seleccionada de tu perfil. Revisa cuidadosamente la dirección y luego presiona 'Eliminar' para borrarla, o 'Cancelar' si has cambiado de opinión.",
+  "tutorial_points_screen": "Esta pantalla muestra el saldo de sus puntos de fidelidad y su valor monetario. Aquí puede hacer un seguimiento de cuántos puntos ha acumulado y cómo puede canjearlos. Cada punto tiene su propio valor, y los detalles se explican más abajo en la página.",
+  "tutorial_ads_product": "Esta es la pantalla de Detalles del Producto. Aquí puedes ver toda la información del producto, como imágenes, precios, disponibilidad y opciones para añadirlo a tu carrito. También puedes chatear directamente con el vendedor para cualquier pregunta."
 }

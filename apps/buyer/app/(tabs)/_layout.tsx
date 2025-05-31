@@ -170,7 +170,7 @@ export default function TabLayout() {
       },
       tabBarActiveTintColor: '#4e8d7c',
       tabBarInactiveTintColor: '#6B7280',
-      header: () => <CustomHeader />
+      headerShown:false
     }}>
       <Tabs.Screen
         name="home"

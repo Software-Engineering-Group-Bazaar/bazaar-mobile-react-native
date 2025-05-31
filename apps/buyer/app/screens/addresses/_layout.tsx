@@ -7,7 +7,6 @@ import { NavigatorContext } from 'expo-router/build/views/Navigator';
 export default function OrdersLayout() {
   return (
     <>
-      <CustomHeader />
       <Stack>
         <Stack.Screen
           name="index"

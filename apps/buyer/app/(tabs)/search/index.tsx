@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   TextInput,
+  SafeAreaView, Platform
 } from "react-native";
 import ProductItem from "proba-package/product-item/index";
 import { useTranslation } from "react-i18next";
@@ -828,15 +829,56 @@ const SearchProductsScreen = () => {
 
   if (error) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('search')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.centered}>
         <Text style={styles.errorText}>
           {t("error_fetching_data")}: {error.message}
         </Text>
       </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('search')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
        {/* Search Bar with Icon */}
 
@@ -1240,7 +1282,7 @@ const SearchProductsScreen = () => {
                 </View>
           </View>
         }
-        placement="top"
+        placement="left"
         onClose={finishWalkthrough}
         tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
         useReactNativeModal={true}
@@ -1255,18 +1297,53 @@ const SearchProductsScreen = () => {
   <Ionicons name="options-outline" size={30} color="#fff" />
 </TouchableOpacity>
 </Tooltip>
-
-      <TouchableOpacity
-        style={styles.fab} 
-        activeOpacity={0.8}
-        onPress={startWalkthrough}>
-        <Ionicons name="help-circle-outline" size={30} color="#fff" />
-      </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
   tooltipButtonBase: { 
         paddingVertical: 10,
         paddingHorizontal: 20,
@@ -1573,7 +1650,7 @@ const styles = StyleSheet.create({
 floatingFilterButton: {
   position: 'absolute',
   bottom: 30,
-  left: 30,
+  right: 30,
   width: 60,
   height: 60,
   borderRadius: 28,

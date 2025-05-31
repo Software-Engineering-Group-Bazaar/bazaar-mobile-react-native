@@ -427,5 +427,12 @@
   "select_rate": "Rate auswählen",
   "select_rate_for": "Rate auswählen für",
   "Error: The start date cannot be after the end date.": "Fehler: Das Startdatum darf nicht nach dem Enddatum liegen.",
-  "saving_changes": "Änderungen speichern"
+  "saving_changes": "Änderungen speichern",
+  "tutorial_order_route_screen": "Diese Karte zeigt die Lieferroute für Ihre Bestellung, vom Standort des Verkäufers bis zu Ihrer ausgewählten Adresse. Hier können Sie den Fortschritt Ihrer Bestellung verfolgen.",
+  "tutorial_product_details_cart": "Hier können Sie die Produktdetails aus Ihrem Warenkorb überprüfen und die gewünschte Menge einfach anpassen, bevor Sie mit Ihrem Einkauf fortfahren.",
+  "tutorial_remove_address_screen": "Hier können Sie die Entfernung der ausgewählten Adresse aus Ihrem Profil bestätigen. Überprüfen Sie die Adresse sorgfältig und drücken Sie dann 'Entfernen' zum Löschen, oder 'Abbrechen', wenn Sie Ihre Meinung geändert haben.",
+  "tutorial_confirm_address_screen": "Hier können Sie die ausgewählte Adresse überprüfen und bei Bedarf bearbeiten. Sobald Sie sicher sind, dass die Adresse korrekt ist, drücken Sie die Schaltfläche 'Bestätigen', um sie in Ihren Adressen zu speichern.",
+  "tutorial_points_screen": "Dieser Bildschirm zeigt den Stand Ihrer Treuepunkte und deren Geldwert an. Hier können Sie verfolgen, wie viele Punkte Sie gesammelt haben und wie Sie diese einlösen können. Jeder Punkt hat seinen Wert, die Details werden weiter unten auf der Seite erläutert.",
+  "tutorial_my_addresses_screen": "Hier können Sie Ihre gespeicherten Lieferadressen hinzufügen, anzeigen und verwalten. Nutzen Sie die Suchleiste, um eine neue Adresse zu finden oder ziehen Sie den Marker auf der Karte, und bestätigen Sie sie dann. Sie können auch bestehende Adressen entfernen.",
+  "tutorial_ads_product": "Dies ist der Produktdetailbildschirm. Hier können Sie alle Produktinformationen einsehen, wie Bilder, Preise, Verfügbarkeit und Optionen zum Hinzufügen zum Warenkorb. Sie können auch direkt mit dem Verkäufer chatten, wenn Sie Fragen haben."
 }

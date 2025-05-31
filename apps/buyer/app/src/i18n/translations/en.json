@@ -468,5 +468,12 @@
     "tutorial_conversations_intro": "Here you can see all your active conversations with sellers or support. Tap on a conversation to open it.",
     "tutorial_no_products_in_store": "There are currently no products in this store, but when there are, you can view their details and add them to your cart.",
     "tutorial_filter_products_stores": "By clicking this button, you can filter stores by regions and municipalities, and products by categories for easier searching.",
-    "tutorial_search_products": "This field allows you to search for products by name."
+    "tutorial_search_products": "This field allows you to search for products by name.",
+    "tutorial_confirm_address_screen": "Here you can review and, if necessary, edit the address you've selected. Once you are sure the address is correct, press the 'Confirm' button to save it to your addresses.",
+  "tutorial_points_screen": "This screen displays your loyalty points balance and their monetary value. Here, you can track how many points you've accumulated and how you can redeem them. Each point has a specific value, with full details explained further down the page.",
+    "tutorial_product_details_cart": "Here you can review the product details from your cart and easily adjust the desired quantity before proceeding with your purchase.",
+    "tutorial_remove_address_screen": "Here you can confirm the removal of the selected address from your profile. Carefully review the address and then press 'Remove' to delete it, or 'Cancel' if you've changed your mind.",
+    "tutorial_order_route_screen": "This map shows the delivery route for your order, from the seller's location to your selected address. You can track your order's progress here.",
+    "tutorial_my_addresses_screen": "Here you can add, view, and manage your saved delivery addresses. Use the search bar to find a new address or drag the marker on the map, then confirm it. You can also remove existing addresses.",
+    "tutorial_ads_product": "This is the Product Details screen. Here you can view all product information, such as images, prices, availability, and options for adding to your cart. You can also directly chat with the seller for any questions."
 }
