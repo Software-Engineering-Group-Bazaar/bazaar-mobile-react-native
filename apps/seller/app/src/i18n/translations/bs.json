@@ -298,5 +298,13 @@
   "Store Performance Report": "Ova sekcija prikazuje ukupan prihod vaše prodavnice za odabrani period.",
   "Generated Points Report": "Ovdje možete vidjeti koliko je bodova dodijeljeno kupcima i koliko su vas koštali.",
   "Point Income Report": "Ova sekcija prikazuje koliko su bodova iskoristili kupci i koliku ste naknadu dobili zauzvrat.",
-  "edit_points": "Ovdje možete ažurirati stope poena lojalnosti za svaki proizvod. Pritisnite na padajuću listu proizvoda da prilagodite ove postavke."
+  "edit_points": "Ovdje možete ažurirati stope poena lojalnosti za svaki proizvod. Pritisnite na padajuću listu proizvoda da prilagodite ove postavke.",
+  "help_product_name_and_price": "Ovdje možete unijeti naziv i cijenu proizvoda.",
+  "help_product_weight": "Ovdje možete unijeti težinu i/ili zapreminu vašeg proizvoda.",
+  "help_add_product_button": "Pritiskom na ovo dugme možete dodati novi proizvod.",
+  "help_products_list": "Svi proizvodi registrovani za vašu prodavnicu će se pojaviti ovdje.",
+  "help_retail_price": "Ovdje možete izmijeniti maloprodajnu cijenu.",
+  "help_wholesale_price": "Ovdje možete izmijeniti veleprodajnu cijenu.",
+  "help_availability_togle": "Ovjde možete izmijeniti dostupnost proizvoda.",
+  "help_save_product_details": "Klikom na ovo dugme spašavate izmjene."
 }

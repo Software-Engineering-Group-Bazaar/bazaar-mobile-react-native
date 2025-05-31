@@ -63,14 +63,11 @@ export default function SignIn() {
         const { idToken } = response.data;
         console.log("User Info:", { idToken });
 
-        const apiResponse = await fetch(
-          "${baseURL}/api/Auth/login/google",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idToken: idToken, app: "seller" }),
-          }
-        );
+        const apiResponse = await fetch("${baseURL}/api/Auth/login/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken: idToken, app: "seller" }),
+        });
 
         console.log(apiResponse);
 
