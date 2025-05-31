@@ -13,6 +13,7 @@ import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 import InputField from "@/components/ui/input/InputField";
 import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -63,14 +64,11 @@ export default function SignIn() {
         const { idToken } = response.data;
         console.log("User Info:", { idToken });
 
-        const apiResponse = await fetch(
-          "${baseURL}/api/Auth/login/google",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idToken: idToken, app: "seller" }),
-          }
-        );
+        const apiResponse = await fetch("${baseURL}/api/Auth/login/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken: idToken, app: "seller" }),
+        });
 
         console.log(apiResponse);
 
@@ -164,7 +162,7 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-      <LanguageButton />
+      <HelpAndLanguageButton showHelpButton={false} />
 
       <View style={styles.titleContainer}>
         <Image

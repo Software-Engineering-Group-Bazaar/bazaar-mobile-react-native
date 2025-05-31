@@ -12,10 +12,11 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { registerApi } from "../api/auth/registerApi";
 import { fbLoginApi } from "../api/auth/loginApi";
-import LanguageButton from '../../components/ui/buttons/LanguageButton';
+import LanguageButton from "../../components/ui/buttons/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import { baseURL } from "../env";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 export default function SignUp() {
   const router = useRouter();
@@ -84,14 +85,11 @@ export default function SignUp() {
         const { idToken } = response.data;
         console.log("Google Sign-Up User Info:", { idToken });
 
-        const apiResponse = await fetch(
-          `${baseURL}/api/Auth/login/google`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idToken: idToken, app: "seller" }),
-          }
-        );
+        const apiResponse = await fetch(`${baseURL}/api/Auth/login/google`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken: idToken, app: "seller" }),
+        });
 
         if (!apiResponse.ok) {
           Alert.alert(t("signup_failed"), t("signup_failed_fallback"));
@@ -130,7 +128,7 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
-      <LanguageButton />
+      <HelpAndLanguageButton showHelpButton={false} />
 
       <View style={styles.titleContainer}>
         <Image
