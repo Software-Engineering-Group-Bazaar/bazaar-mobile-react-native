@@ -21,13 +21,22 @@ const HelpAndLanguageButton: React.FC<HelpAndLanguageButtonProps> = ({
   return (
     <View style={styles.absoluteContainer}>
       {showLanguageButton && (
-        <View style={[styles.buttonWrapper, !showHelpButton && { marginRight: 18, marginTop: 15 }]}>
+        <View
+          style={[
+            styles.buttonWrapper,
+            !showHelpButton && { marginRight: 18, marginTop: 15 },
+          ]}
+        >
           <LanguageButton />
         </View>
       )}
       {showHelpButton && (
         <View style={styles.buttonWrapper}>
-          <HelpButton />
+          <HelpButton
+            delay={delay}
+            onStepChange={onStepChange}
+            beforeStart={beforeStart}
+          />
         </View>
       )}
     </View>
@@ -46,6 +55,6 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   buttonWrapper: {
-    marginLeft: 1, 
+    marginLeft: 1,
   },
 });
