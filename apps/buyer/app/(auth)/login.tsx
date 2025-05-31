@@ -31,7 +31,7 @@ import {
 
 import * as SecureStore from "expo-secure-store";
 
-import { baseURL } from 'proba-package';
+import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 
 export default function SignIn() {
   const router = useRouter();
@@ -192,6 +192,11 @@ export default function SignIn() {
   };
 
   const onSignInPress = async () => {
+    if(USE_DUMMY_DATA){
+      router.replace('/(tabs)/home');
+      return;
+    }
+
     if (!email.trim() || !password.trim()) {
       Alert.alert(t('error'), t('fill_all_fields'));
       return;
