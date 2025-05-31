@@ -287,5 +287,16 @@
     "help_sorting": "Sortieren Sie Bestellungen nach Datum – neueste oder älteste zuerst.",
     "help_previous_route": "Vorherige erstellte Route anzeigen.",
     "help_sorting_toggle": "Mit einem Klick auf die Schaltfläche ändern Sie die Sortierreihenfolge der Bestellungen – von neu nach alt und umgekehrt.",
-    "Store Details": "Durch Klicken auf dieses Feld können Sie Details zu Ihrem Geschäft anzeigen, einschließlich der Produkte, und neue hinzufügen."
+    "Store Details": "Durch Klicken auf dieses Feld können Sie Details zu Ihrem Geschäft anzeigen, einschließlich der Produkte, und neue hinzufügen.",
+    "Finish": "Fertig",
+    "Next": "Weiter",
+    "Skip": "Überspringen",
+    "Previous": "Zurück",
+    "adjust_quantity_tutorial": "Hier können Sie den aktuellen Lagerbestand Ihrer Produkte einsehen und bei Bedarf manuell anpassen. Verwenden Sie die Schaltflächen auf der rechten Seite, um die Menge zu erhöhen oder zu verringern, oder tippen Sie direkt auf den Wert, um ihn über die Tastatur zu ändern.",
+    "SaveInventoryUpdate": "Durch Klicken auf diese Schaltfläche werden die geänderten Lagerbestände Ihrer Produkte gespeichert.",
+    "date_picker_loyalty": "Verwenden Sie diesen Abschnitt, um den Berichtszeitraum auszuwählen. Tippen Sie auf jedes Datum, um den Zeitraum zu ändern, und drücken Sie dann auf 'Filter anwenden', um die aktualisierten Daten anzuzeigen.",
+    "Store Performance Report": "In diesem Abschnitt wird Ihr gesamter Filialumsatz für den ausgewählten Zeitraum angezeigt.",
+    "Generated Points Report": "Hier sehen Sie, wie viele Punkte an Kunden vergeben wurden und wie viel sie Sie gekostet haben.",
+    "Point Income Report": "In diesem Abschnitt wird angezeigt, wie viele Punkte von Käufern verwendet wurden und wie viel Entschädigung Sie dafür erhalten haben.",
+    "edit_points": "Hier kannst du die Treuepunkte-Raten für jedes Produkt aktualisieren. Tippe auf ein Produkt, um seine Einstellungen anzupassen."
 }

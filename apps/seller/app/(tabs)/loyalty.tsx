@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,14 @@ import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import DropDownPicker from "react-native-dropdown-picker";
 import * as SecureStore from "expo-secure-store";
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot,
+  CopilotProvider,
+} from "react-native-copilot";
+
+const WalkthroughableView = walkthroughable(View);
 
 import {
   ProductLoyaltySetting,
@@ -28,7 +36,6 @@ import {
   apiFetchLoyaltyReport,
 } from "../api/loyaltyApi";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 const getPointRateOptions = (
@@ -40,7 +47,7 @@ const getPointRateOptions = (
   { label: t("triple_points_label"), value: 3 },
 ];
 
-export default function LoyaltyScreen() {
+function LoyaltyScreen() {
   const { t } = useTranslation();
   const POINT_RATE_OPTIONS = getPointRateOptions(t);
 
@@ -66,17 +73,6 @@ export default function LoyaltyScreen() {
   const [showToPicker, setShowToPicker] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
-  const { start, stop, copilotEvents } = useCopilot();
-
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (!isFocused) {
-      // Only stop when the screen actually loses focus
-      stop();
-    }
-    // No action on mount/focus
-  }, [isFocused, stop]);
 
   const WalkthroughableView = walkthroughable(View);
 
@@ -246,7 +242,7 @@ export default function LoyaltyScreen() {
       const isLastFewItems = index >= productsLoyalty.length - 1;
     }
 
-    return (
+    const itemContent = (
       <View
         style={[
           styles.productItemContainer,
@@ -294,6 +290,20 @@ export default function LoyaltyScreen() {
         </View>
       </View>
     );
+
+    if (index === 0) {
+      return (
+        <CopilotStep
+          text={t("edit_points")}
+          order={5}
+          name="edit-points"
+        >
+          <WalkthroughableView>{itemContent}</WalkthroughableView>
+        </CopilotStep>
+      );
+    }
+
+    return itemContent;
   };
 
   if (loadingReport || loadingProducts) {
@@ -316,34 +326,42 @@ export default function LoyaltyScreen() {
       >
         {/* 📅 Period Selection Section */}
         <Text style={styles.title}>{t("Loyalty Program Report")}</Text>
-        <View style={styles.dateFilterContainer}>
-          <View style={styles.dateRow}>
-            <TouchableOpacity
-              onPress={() => setShowFromPicker(true)}
-              style={styles.dateButton}
-            >
-              <Text>{fromDate.toLocaleDateString()}</Text>
-            </TouchableOpacity>
+        <CopilotStep
+          text={t("date_picker_loyalty")}
+          order={1}
+          name="date_range_selector"
+        >
+          <WalkthroughableView style={styles.dateRow}>
+            <View style={styles.dateFilterContainer}>
+              <View style={styles.dateRow}>
+                <TouchableOpacity
+                  onPress={() => setShowFromPicker(true)}
+                  style={styles.dateButton}
+                >
+                  <Text>{fromDate.toLocaleDateString()}</Text>
+                </TouchableOpacity>
 
-            <Text style={styles.toLabel}>to</Text>
+                <Text style={styles.toLabel}>to</Text>
 
-            <TouchableOpacity
-              onPress={() => setShowToPicker(true)}
-              style={styles.dateButton}
-            >
-              <Text>{toDate.toLocaleDateString()}</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowToPicker(true)}
+                  style={styles.dateButton}
+                >
+                  <Text>{toDate.toLocaleDateString()}</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.inlineApplyFilterButton}
-              onPress={fetchReportForPeriod}
-            >
-              <Text style={styles.inlineApplyFilterText}>
-                {t("Apply Filter")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+                <TouchableOpacity
+                  style={styles.inlineApplyFilterButton}
+                  onPress={fetchReportForPeriod}
+                >
+                  <Text style={styles.inlineApplyFilterText}>
+                    {t("Apply Filter")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </WalkthroughableView> 
+        </CopilotStep>
         {showFromPicker && (
           <DateTimePicker
             value={fromDate}
@@ -374,8 +392,8 @@ export default function LoyaltyScreen() {
             <View style={styles.sectionContainer}>
               {/* ⬜ Store Performance Section */}
               <CopilotStep
-                text={"Store performance"}
-                order={1}
+                text={t("Store Performance Report")}
+                order={2}
                 name="store_performance"
               >
                 <WalkthroughableView style={{ width: "100%" }}>
@@ -396,8 +414,8 @@ export default function LoyaltyScreen() {
               </CopilotStep>
               {/* 🔻 Point Expenditure Section */}
               <CopilotStep
-                text={"Generated points"}
-                order={2}
+                text={t("Generated Points Report")}
+                order={3}
                 name="generated_points"
               >
                 <WalkthroughableView style={{ width: "100%" }}>
@@ -428,27 +446,35 @@ export default function LoyaltyScreen() {
               </CopilotStep>
 
               {/* 🟢 Point Income Section */}
-              <View style={[styles.reportSection, styles.greenBorder]}>
-                <Text style={styles.sectionTitle}>{t("Point Income")}</Text>
+              <CopilotStep
+                text={t("Point Income Report")}
+                order={4}
+                name="point_income"
+              >
+                <WalkthroughableView style={{ width: "100%" }}>
+                  <View style={[styles.reportSection, styles.greenBorder]}>
+                    <Text style={styles.sectionTitle}>{t("Point Income")}</Text>
 
-                <View style={styles.reportCard}>
-                  <Text style={styles.reportLabel}>
-                    🔄 {t("Points Used in Orders")}
-                  </Text>
-                  <Text style={styles.reportValue}>
-                    {reportData.pointsUsed.toLocaleString()}
-                  </Text>
-                </View>
+                    <View style={styles.reportCard}>
+                      <Text style={styles.reportLabel}>
+                        🔄 {t("Points Used in Orders")}
+                      </Text>
+                      <Text style={styles.reportValue}>
+                        {reportData.pointsUsed.toLocaleString()}
+                      </Text>
+                    </View>
 
-                <View style={styles.reportCard}>
-                  <Text style={styles.reportLabel}>
-                    💵 {t("Compensation for Used Points")}
-                  </Text>
-                  <Text style={styles.reportValue}>
-                    {reportData.compensatedAmount.toFixed(2)} KM
-                  </Text>
-                </View>
-              </View>
+                    <View style={styles.reportCard}>
+                      <Text style={styles.reportLabel}>
+                        💵 {t("Compensation for Used Points")}
+                      </Text>
+                      <Text style={styles.reportValue}>
+                        {reportData.compensatedAmount.toFixed(2)} KM
+                      </Text>
+                    </View>
+                  </View>
+                </WalkthroughableView>
+              </CopilotStep>
             </View>
           </View>
         )}
@@ -490,6 +516,21 @@ export default function LoyaltyScreen() {
         )}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+export default function LoyaltyScreenContent() {
+  const { t } = useTranslation();
+  return (
+    <CopilotProvider
+      labels={{
+        finish: t("Finish"),
+        next: t("Next"),
+        skip: t("Skip"),
+        previous: t("Previous")
+      }}>
+      <LoyaltyScreen />
+    </CopilotProvider>
   );
 }
 

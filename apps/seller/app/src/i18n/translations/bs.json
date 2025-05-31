@@ -287,5 +287,16 @@
   "help_sorting": "Ovdje možete sortirati narudžbe po datumu - najnovije ili najstarije prvo.",
   "help_previous_route": "Pogledajte prethodno kreiranu rutu.",
   "help_sorting_toggle": "Klikom na dugme mijenjate redoslijed sortiranja narudžbi – od najnovijih ka najstarijim i obrnuto.",
-  "Store Details": "Klikom na ovo polje možete vidjeti detalje o Vašoj prodavnici, uključujući njene proizvode, te iste možete dodavati."
+  "Store Details": "Klikom na ovo polje možete vidjeti detalje o Vašoj prodavnici, uključujući njene proizvode, te iste možete dodavati.",
+  "Finish": "Završi",
+  "Next": "Dalje",
+  "Skip": "Preskoči",
+  "Previous": "Prethodni",
+  "adjust_quantity_tutorial": "Ovdje možete pregledati trenutne zalihe svojih proizvoda i po potrebi ih ručno mijenjati. Količinu možete povećati ili smanjiti pomoću dugmadi s desne strane, ili klikom na samu vrijednost i unosom nove brojke preko tastature.",
+  "SaveInventoryUpdate": "Klikom na ovo dugme će se sačuvati kreirane zamjene zaliha Vaših proizvoda.",
+  "date_picker_loyalty": "Koristite ovu sekciju da odaberete period izvještaja. Klikom na datume možete promijeniti raspon, a zatim pritisnite 'Primijeni' da biste vidjeli ažurirane podatke.",
+  "Store Performance Report": "Ova sekcija prikazuje ukupan prihod vaše prodavnice za odabrani period.",
+  "Generated Points Report": "Ovdje možete vidjeti koliko je bodova dodijeljeno kupcima i koliko su vas koštali.",
+  "Point Income Report": "Ova sekcija prikazuje koliko su bodova iskoristili kupci i koliku ste naknadu dobili zauzvrat.",
+  "edit_points": "Ovdje možete ažurirati stope poena lojalnosti za svaki proizvod. Pritisnite na padajuću listu proizvoda da prilagodite ove postavke."
 }

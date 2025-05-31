@@ -9,7 +9,13 @@ export default function CRUDLayout() {
   const { t } = useTranslation();
 const router = useRouter();
   return (
-    <CopilotProvider>
+    <CopilotProvider
+      labels={{
+        finish: t("Finish"),
+        next: t("Next"),
+        skip: t("Skip"),
+        previous: t("Previous")
+      }}>
     <Stack
       screenOptions={{
         headerShown: true,

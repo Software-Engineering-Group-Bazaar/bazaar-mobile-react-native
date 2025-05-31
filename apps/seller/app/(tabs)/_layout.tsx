@@ -223,9 +223,7 @@ export default function TabLayout() {
         }}
       >
         {() => (
-          <CopilotProvider>
-            <StoresScreen />
-          </CopilotProvider>
+          <StoresScreen />
         )}
       </Tab.Screen>
       <Tab.Screen name="zalihe"
@@ -237,9 +235,7 @@ export default function TabLayout() {
         }}
       >
         {() => (
-          <CopilotProvider>
-            <ZaliheScreen />
-          </CopilotProvider>
+          <ZaliheScreen />
         )}
       </Tab.Screen>
       <Tab.Screen
@@ -252,9 +248,7 @@ export default function TabLayout() {
         }}
       >
         {() => (
-          <CopilotProvider>
-            <ChatListScreen />
-          </CopilotProvider>
+          <ChatListScreen />
         )}
       </Tab.Screen>
       <Tab.Screen name="loyalty"
@@ -266,9 +260,7 @@ export default function TabLayout() {
         }}
       >
         {() => (
-          <CopilotProvider>
-            <LoyaltyScreen />
-          </CopilotProvider>
+          <LoyaltyScreen />
         )}
       </Tab.Screen>
     </Tab.Navigator>

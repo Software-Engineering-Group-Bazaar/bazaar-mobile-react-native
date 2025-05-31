@@ -287,5 +287,16 @@
     "help_sorting": "Ordenar pedidos por fecha – más recientes o más antiguos primero.",
     "help_previous_route": "Ver la ruta creada anteriormente.",
     "help_sorting_toggle": "Pulse el botón para cambiar el orden de clasificación de los pedidos – de más nuevos a más antiguos y viceversa.",
-    "Store Details": "Al hacer clic en este campo, puede ver los detalles de su tienda, incluidos sus productos, y también puede agregar nuevos."
+    "Store Details": "Al hacer clic en este campo, puede ver los detalles de su tienda, incluidos sus productos, y también puede agregar nuevos.",
+    "Finish": "Finalizar",
+    "Next": "Siguiente",
+    "Skip": "Omitir",
+    "Previous": "Anterior",
+    "adjust_quantity_tutorial": "Aquí puedes ver el nivel actual de existencias de tus productos y ajustarlo manualmente si es necesario. Usa los botones a la derecha para aumentar o disminuir la cantidad, o toca el valor para editarlo directamente con el teclado.",
+    "SaveInventoryUpdate": "Al hacer clic en este botón se guardarán las cantidades actualizadas del inventario de sus productos.",
+    "date_picker_loyalty": "Utiliza esta sección para elegir el período del informe. Toca cada fecha para cambiar el rango y luego pulsa 'Aplicar filtro' para ver los datos actualizados.",
+    "Store Performance Report": "Esta sección muestra los ingresos totales de tu tienda para el período seleccionado.",
+    "Generated Points Report": "Aquí puedes ver cuántos puntos se distribuyeron a los clientes y cuánto te costaron.",
+    "Point Income Report": "Esta sección muestra cuántos puntos usaron los compradores y cuánta compensación recibiste a cambio.",
+    "edit_points": "Aquí puedes actualizar las tasas de puntos de fidelidad para cada producto. Toca un producto para ajustar su configuración."
   }

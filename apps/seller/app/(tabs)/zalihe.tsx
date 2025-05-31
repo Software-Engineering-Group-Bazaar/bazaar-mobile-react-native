@@ -22,8 +22,28 @@ import {
 import { useTranslation } from "react-i18next";
 import { InventoryItem } from "../types/InventoryItem";
 import SubmitButton from "@/components/ui/input/SubmitButton";
-import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
+import {
+  CopilotStep,
+  walkthroughable,
+  useCopilot,
+  CopilotProvider,
+} from "react-native-copilot";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
+
+function HiddenHelpStarter() {
+  const { start } = useCopilot();
+
+  useEffect(() => {
+    // @ts-ignore
+    global.triggerHelpTutorial = () => start();
+    return () => {
+      // @ts-ignore
+      delete global.triggerHelpTutorial;
+    };
+  }, [start]);
+
+  return null;
+}
 
 const ZaliheScreen = () => {
   const { t } = useTranslation();
@@ -127,7 +147,7 @@ const ZaliheScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <HelpAndLanguageButton />
+      <HelpAndLanguageButton showHelpButton={true} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -137,38 +157,54 @@ const ZaliheScreen = () => {
           onPress={Keyboard.dismiss}
           style={{ paddingBottom: "20%" }}
         >
-          <View style={styles.container}>
-            <Text style={styles.titleText}></Text>
-            {productInventories.length != 0 && (
-              <FlatList
-                style={{ width: "100%" }}
-                data={productInventories}
-                keyExtractor={(item) => item.product.id.toString()}
-                renderItem={({ item }) => {
-                  const isOutOfStock = item.inventory.quantity === 0;
+              <View style={styles.container}>
+                {productInventories.length != 0 && (
+                  <FlatList
+                    style={{ width: "100%" }}
+                    data={productInventories}
+                    keyExtractor={(item) => item.product.id.toString()}
+                    renderItem={({ item, index }) => {
+                      const isOutOfStock = item.inventory.quantity === 0;
 
-                  return (
-                    <ProductQuantityCard
-                      item={item.product}
-                      value={item.inventory.quantity}
-                      outOfStock={isOutOfStock}
-                      onChange={(newQuantity) =>
-                        handleQuantityChange(item.product.id, newQuantity)
+                      const card = (
+                        <ProductQuantityCard
+                          item={item.product}
+                          value={item.inventory.quantity}
+                          outOfStock={isOutOfStock}
+                          onChange={(newQuantity) =>
+                            handleQuantityChange(item.product.id, newQuantity)
+                          }
+                        />
+                      );
+                      if (index === 0) {
+                        return (
+                          <CopilotStep
+                            text={t("adjust_quantity_tutorial")}
+                            order={1}
+                            name="inventoryItem"
+                          >
+                            <WalkthroughableView>
+                              <View>
+                                {card}
+                              </View>
+                            </WalkthroughableView>
+                          </CopilotStep>
+                        );
                       }
-                    />
-                  );
-                }}
-              />
-            )}
-          </View>
+
+                      return card;
+                    }}
+                  />
+                )}
+              </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
 
       <View style={styles.buttonWrapper}>
         <CopilotStep
-          text="Klikom na ovo dugme će se sačuvati napravljene promjene."
-          order={1}
-          name="save_button_product_list"
+          text={t("SaveInventoryUpdate")}
+          order={2}
+          name="SaveInventoryUpdate"
         >
           <WalkthroughableView>
             <SubmitButton
@@ -182,21 +218,34 @@ const ZaliheScreen = () => {
   );
 };
 
-export default ZaliheScreen;
+export default function ZaliheScreenContent() {
+  const { t } = useTranslation();
+  return (
+    <CopilotProvider
+      labels={{
+        finish: t("Finish"),
+        next: t("Next"),
+        skip: t("Skip"),
+        previous: t("Previous")
+      }}>
+      <ZaliheScreen />
+    </CopilotProvider>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
+    paddingTop: 80
   },
   titleText: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
     color: "#4E8D7C",
-    paddingTop: 50,
-    marginVertical: 0,
+    marginVertical: 50,
+    marginHorizontal: 30
   },
   buttonWrapper: {
     position: "absolute",

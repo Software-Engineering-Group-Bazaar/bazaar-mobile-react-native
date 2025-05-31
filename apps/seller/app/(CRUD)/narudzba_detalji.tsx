@@ -282,8 +282,15 @@ function NarudzbaDetaljiContent() {
 }
 
 export default function NarudzbaDetalji() {
-  return (
-    <CopilotProvider>
+  const { t } = useTranslation();
+    return (
+      <CopilotProvider
+        labels={{
+          finish: t("Finish"),
+          next: t("Next"),
+          skip: t("Skip"),
+          previous: t("Previous")
+        }}>
       <NarudzbaDetaljiContent />
     </CopilotProvider>
   );

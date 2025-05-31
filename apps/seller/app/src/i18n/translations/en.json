@@ -287,5 +287,16 @@
   "help_sorting": "Sort orders by date – newest or oldest first.",
   "help_previous_route": "View the previously created route.",
   "help_sorting_toggle": "Tap the button to switch the order sorting direction – from newest to oldest and vice versa.",
-  "Store Details": "By clicking this field, you can view details about your store, including its products, and you can also add new ones."
+  "Store Details": "By clicking this field, you can view details about your store, including its products, and you can also add new ones.",
+  "Finish": "Finish",
+  "Next": "Next",
+  "Skip": "Skip",
+  "Previous": "Previous",
+  "adjust_quantity_tutorial": "Here you can view the current stock levels of your products and manually adjust them if needed. Use the buttons on the right to increase or decrease the quantity, or tap on the value itself to edit it directly using the keyboard.",
+  "SaveInventoryUpdate": "Clicking this button will save the updated stock quantities for your products.",
+  "date_picker_loyalty": "Use this section to choose the report period. Tap each date to change the range and then press 'Apply Filter' to see updated data.",
+  "Store Performance Report": "This section shows your total store income for the selected period.",
+  "Generated Points Report": "Here you see how many points were distributed to customers and how much they cost you.",
+  "Point Income Report": "This section shows how many points were used by buyers and how much compensation you received in return.",
+  "edit_points": "Here you can update the loyalty point rates for each product. Tap a product to adjust its settings."
 }
