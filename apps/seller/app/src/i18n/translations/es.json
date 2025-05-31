@@ -306,5 +306,8 @@
   "help_retail_price": "Aquí puede editar el precio minorista.",
   "help_wholesale_price": "Aquí puede editar el precio mayorista.",
   "help_availability_togle": "Aquí puede cambiar la disponibilidad del producto.",
-  "help_save_product_details": "Al hacer clic en este botón, guarda los cambios."
+  "help_save_product_details": "Al hacer clic en este botón, guarda los cambios.",
+  "Status of this order": "Estado de este pedido",
+  "Buyer information and messaging option": "Información del comprador y opción de mensaje",
+  "You can change the status of the order here": "Aquí puedes cambiar el estado del pedido"
 }

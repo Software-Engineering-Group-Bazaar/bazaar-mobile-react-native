@@ -306,5 +306,8 @@
   "help_retail_price": "Here you can edit the retail price.",
   "help_wholesale_price": "Here you can edit the wholesale price.",
   "help_availability_togle": "Here you can change the product availability.",
-  "help_save_product_details": "By clicking this button, you save the changes."
+  "help_save_product_details": "By clicking this button, you save the changes.",
+  "Status of this order": "Status of this order",
+  "Buyer information and messaging option": "Buyer information and messaging option",
+  "You can change the status of the order here": "You can change the status of the order here"
 }

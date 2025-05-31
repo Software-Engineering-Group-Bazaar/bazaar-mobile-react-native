@@ -306,5 +306,8 @@
   "help_retail_price": "Ovdje možete izmijeniti maloprodajnu cijenu.",
   "help_wholesale_price": "Ovdje možete izmijeniti veleprodajnu cijenu.",
   "help_availability_togle": "Ovjde možete izmijeniti dostupnost proizvoda.",
-  "help_save_product_details": "Klikom na ovo dugme spašavate izmjene."
+  "help_save_product_details": "Klikom na ovo dugme spašavate izmjene.",
+  "Status of this order": "Status ove narudžbe",
+  "Buyer information and messaging option": "Informacije o kupcu i mogućnost slanja poruke",
+  "You can change the status of the order here": "Ovdje možete promijeniti status narudžbe"
 }

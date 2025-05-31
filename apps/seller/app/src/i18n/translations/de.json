@@ -306,5 +306,8 @@
     "help_retail_price": "Hier können Sie den Einzelhandelspreis bearbeiten.",
     "help_wholesale_price": "Hier können Sie den Großhandelspreis bearbeiten.",
     "help_availability_togle": "Hier können Sie die Verfügbarkeit des Produkts ändern.",
-    "help_save_product_details": "Durch Klicken auf diese Schaltfläche speichern Sie die Änderungen."
+    "help_save_product_details": "Durch Klicken auf diese Schaltfläche speichern Sie die Änderungen.",
+    "Status of this order": "Status dieser Bestellung",
+  "Buyer information and messaging option": "Käuferinformationen und Nachrichtenoption",
+  "You can change the status of the order here": "Hier können Sie den Bestellstatus ändern"
 }
