@@ -5,9 +5,26 @@ import { useCopilot } from "react-native-copilot";
 
 type HelpButtonProps = {
   onStepChange?: (step: any) => void;
+  delay?: number;
+  beforeStart?: () => void;
 };
 
-const HelpButton: React.FC<HelpButtonProps> = ({ onStepChange }) => {
+const HelpButton: React.FC<HelpButtonProps> = ({
+  onStepChange,
+  delay,
+  beforeStart,
+}) => {
+  const handleStart = (delay: number | undefined) => {
+    beforeStart && beforeStart();
+    if (delay) {
+      setTimeout(() => {
+        start();
+      }, delay);
+    } else {
+      start();
+    }
+  };
+
   const { start, copilotEvents } = useCopilot();
   useEffect(() => {
     onStepChange && copilotEvents.on("stepChange", onStepChange);
@@ -18,7 +35,12 @@ const HelpButton: React.FC<HelpButtonProps> = ({ onStepChange }) => {
   }, []);
 
   return (
-    <TouchableOpacity onPress={() => start()} style={styles.helpButton}>
+    <TouchableOpacity
+      onPress={() => {
+        handleStart(delay);
+      }}
+      style={styles.helpButton}
+    >
       <Ionicons name="help-circle-outline" size={36} color="#4E8D7C" />
     </TouchableOpacity>
   );

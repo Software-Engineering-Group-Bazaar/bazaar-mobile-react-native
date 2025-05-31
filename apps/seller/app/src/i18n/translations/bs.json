@@ -290,5 +290,9 @@
   "help_product_name_and_price": "Ovdje možete unijeti naziv i cijenu proizvoda.",
   "help_product_weight": "Ovdje možete unijeti težinu i/ili zapreminu vašeg proizvoda.",
   "help_add_product_button": "Pritiskom na ovo dugme možete dodati novi proizvod.",
-  "help_products_list": "Svi proizvodi registrovani za vašu prodavnicu će se pojaviti ovdje."
+  "help_products_list": "Svi proizvodi registrovani za vašu prodavnicu će se pojaviti ovdje.",
+  "help_retail_price": "Ovdje možete izmijeniti maloprodajnu cijenu.",
+  "help_wholesale_price": "Ovdje možete izmijeniti veleprodajnu cijenu.",
+  "help_availability_togle": "Ovjde možete izmijeniti dostupnost proizvoda.",
+  "help_save_product_details": "Klikom na ovo dugme spašavate izmjene."
 }

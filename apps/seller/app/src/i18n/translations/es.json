@@ -290,5 +290,9 @@
   "help_product_name_and_price": "Aquí puede ingresar el nombre y el precio del producto.",
   "help_product_weight": "Aquí puede ingresar el peso y/o el volumen de su producto.",
   "help_add_product_button": "Al presionar este botón, puede agregar un nuevo producto.",
-  "help_products_list": "Todos los productos registrados para su tienda aparecerán aquí."
+  "help_products_list": "Todos los productos registrados para su tienda aparecerán aquí.",
+  "help_retail_price": "Aquí puede editar el precio minorista.",
+  "help_wholesale_price": "Aquí puede editar el precio mayorista.",
+  "help_availability_togle": "Aquí puede cambiar la disponibilidad del producto.",
+  "help_save_product_details": "Al hacer clic en este botón, guarda los cambios."
 }
