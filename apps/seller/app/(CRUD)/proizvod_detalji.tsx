@@ -83,6 +83,7 @@ export default function ProductScreen() {
 
   const updatePrices = async () => {
     console.log(wholesaleThreshold);
+    updateAvailability(isActive); // Call the function that handles the update
     if (!retailPrice || !wholesalePrice || !wholesaleThreshold) {
       Alert.alert(t("Missing_Fields"), t("fill_in_all_fields"));
       return;
@@ -269,7 +270,6 @@ export default function ProductScreen() {
                   value={isActive}
                   onValueChange={(newValue) => {
                     setIsActive(newValue); // Update local state
-                    updateAvailability(newValue); // Call the function that handles the update
                   }}
                 />
               </View>
