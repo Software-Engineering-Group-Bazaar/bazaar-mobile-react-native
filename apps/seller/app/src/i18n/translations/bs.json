@@ -286,5 +286,9 @@
   "help_send_orders": "Klikom ovdje ulazite u režim selektovanja i slanja narudžbi.",
   "help_sorting": "Ovdje možete sortirati narudžbe po datumu - najnovije ili najstarije prvo.",
   "help_previous_route": "Pogledajte prethodno kreiranu rutu.",
-  "help_sorting_toggle": "Klikom na dugme mijenjate redoslijed sortiranja narudžbi – od najnovijih ka najstarijim i obrnuto."
+  "help_sorting_toggle": "Klikom na dugme mijenjate redoslijed sortiranja narudžbi – od najnovijih ka najstarijim i obrnuto.",
+  "help_product_name_and_price": "Ovdje možete unijeti naziv i cijenu proizvoda.",
+  "help_product_weight": "Ovdje možete unijeti težinu i/ili zapreminu vašeg proizvoda.",
+  "help_add_product_button": "Pritiskom na ovo dugme možete dodati novi proizvod.",
+  "help_products_list": "Svi proizvodi registrovani za vašu prodavnicu će se pojaviti ovdje."
 }

@@ -15,14 +15,12 @@ import { Product } from "../types/proizvod";
 import ProductCard from "@/components/ui/cards/ProductCard";
 import CreateButton from "@/components/ui/buttons/CreateButton";
 
-import { CopilotStep, walkthroughable, useCopilot } from "react-native-copilot";
+import { CopilotStep, walkthroughable } from "react-native-copilot";
 
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 const COLUMN_GAP = 16;
-const NUM_COLUMNS = 2;
-const ITEM_WIDTH = (width - COLUMN_GAP * 3) / 2;
 
 export default function ProductsScreen() {
   const router = useRouter();
@@ -32,7 +30,6 @@ export default function ProductsScreen() {
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const { start } = useCopilot();
 
   const WalkthroughableView = walkthroughable(View);
 
@@ -64,7 +61,7 @@ export default function ProductsScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <CopilotStep
-          text={t("click_here_to_add_a_product")}
+          text={t("help_add_product_button")}
           order={1}
           name="add_product_button"
         >
@@ -80,7 +77,7 @@ export default function ProductsScreen() {
         </CopilotStep>
 
         <CopilotStep
-          text="All products registered for your store will appear here."
+          text={t("help_products_list")}
           order={2}
           name="product_list"
         >

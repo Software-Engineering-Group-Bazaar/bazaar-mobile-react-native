@@ -286,5 +286,9 @@
   "help_send_orders": "Tap here to enter selection and submission mode for orders.",
   "help_sorting": "Sort orders by date – newest or oldest first.",
   "help_previous_route": "View the previously created route.",
-  "help_sorting_toggle": "Tap the button to switch the order sorting direction – from newest to oldest and vice versa."
+  "help_sorting_toggle": "Tap the button to switch the order sorting direction – from newest to oldest and vice versa.",
+  "help_product_name_and_price": "Here you can input the price and name of your product.",
+  "help_product_weight": "Here you can enter the weight and/or volume of your product.",
+  "help_add_product_button": "By pressing this button, you can add a new product.",
+  "help_products_list": "All products registered for your store will appear here."
 }
