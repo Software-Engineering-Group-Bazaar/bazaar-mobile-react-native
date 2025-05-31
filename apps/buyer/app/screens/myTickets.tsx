@@ -1,5 +1,5 @@
 // app/myTickets.tsx (ili gde god je smešten)
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,11 +10,15 @@ import {
   Alert,
   RefreshControl,
   Platform, // Dodato za stilove dugmeta
+  Dimensions,
+  SafeAreaView
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package'; // Uvezeno
 import * as SecureStore from 'expo-secure-store'; // Uvezeno
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
 
 export interface Ticket {
   id: number;
@@ -62,6 +66,22 @@ export default function MyTicketsScreen() {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const chatButtonRef = useRef(null);
+
+  const closeWalkthrough = () => {
+        setShowWalkthrough(false);
+    };
+
+    // Funkcija za pokretanje walkthrough-a
+    const startWalkthrough = () => {
+        if (tickets.length > 0) {
+            setShowWalkthrough(true);
+        } else {
+            Alert.alert(t('no_tickets_for_tutorial_title'));
+        }
+    };
 
   const fetchTickets = useCallback(async (page: number, refreshing = false) => {
     if (refreshing) {
@@ -189,7 +209,7 @@ export default function MyTicketsScreen() {
     } catch (e) { return dateString; }
   };
 
-  const renderTicketItem = ({ item }: { item: Ticket }) => (
+  const renderTicketItem = ({ item, index }: { item: Ticket, index: number }) => (
     <View style={styles.ticketItem}>
       <View style={styles.ticketHeader}>
         <Text style={styles.ticketTitle} numberOfLines={1}>{item.title || t('untitled_ticket', 'Untitled Ticket')}</Text>
@@ -212,26 +232,94 @@ export default function MyTicketsScreen() {
         </Text>
         {item.orderId !== null && item.orderId !== undefined && <Text style={styles.ticketOrderId}>{t('order_id', 'Order ID')}: {item.orderId}</Text>}
       </View>
+
+      <Tooltip
+        isVisible={showWalkthrough && index===0}
+        content={
+          <View style={styles.tooltipContent}>
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              {t('tutorial_chat_ticket_button_explanation')}
+            </Text>
+            {/*dugme "Završi" unutar tooltipa */}
+            <TouchableOpacity
+              style={styles.tooltipCloseButton}
+              onPress={closeWalkthrough}
+            >
+              <Text style={styles.tooltipCloseButtonText}>
+                {t('finish')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
+        placement="bottom"
+        onClose={closeWalkthrough} 
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+      >
       <TouchableOpacity
         style={styles.chatButton} // Koristi stil prilagođenog dugmeta
         onPress={() => handleOpenChat(item)}
+        ref={index === 0 ? chatButtonRef : null}
       >
         <Text style={styles.chatButtonText}>{t('open_chat_button', 'Open Chat')}</Text>
       </TouchableOpacity>
+      </Tooltip>
     </View>
   );
 
   if (isLoading && pageNumber === 1 && !isRefreshing) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('my_tickets')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#4e8d7c" />
         <Text style={{ marginTop: 10, color: '#555' }}>{t('loading_tickets', 'Loading tickets...')}</Text>
       </View>
+      </SafeAreaView>
     );
   }
 
   if (error && tickets.length === 0) { // Prikazuje grešku samo ako nema tiketa
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('my_tickets')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.centered}>
         <Text style={styles.errorText}>{error}</Text>
         {!USE_DUMMY_DATA && ( // Ne prikazuj retry dugme za dummy data jer bi trebalo da radi
@@ -240,10 +328,31 @@ export default function MyTicketsScreen() {
             </TouchableOpacity>
         )}
       </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('my_tickets')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
       <FlatList
         data={tickets}
@@ -278,11 +387,85 @@ export default function MyTicketsScreen() {
         contentContainerStyle={tickets.length === 0 ? styles.emptyListContainer : {paddingBottom: 20}}
       />
     </View>
+    </SafeAreaView>
   );
 }
 
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+  tooltipContent: {
+    alignItems: 'center', 
+    padding: 5,
+  },
+  tooltipCloseButton: {
+    marginTop: 10,
+    backgroundColor: '#4E8D7C', // Boja dugmeta
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  tooltipCloseButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f7f7f7', // Malo svetlija pozadina
@@ -393,6 +576,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 5, // Mali razmak od footera ako su blizu
+    alignSelf:'stretch'
   },
   chatButtonText: {
     color: 'white',

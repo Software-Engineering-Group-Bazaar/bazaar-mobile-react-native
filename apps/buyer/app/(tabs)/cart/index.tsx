@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   Touchable,
   Alert,
   TouchableOpacity,
-  Switch
+  Switch,
+  Dimensions, SafeAreaView, Platform
 } from "react-native";
 import CartItem from "proba-package/cart-item/index";
 // Pretpostavka da ova putanja vodi do AŽURIRANE ProductItem komponente
@@ -20,6 +21,8 @@ import { useCart } from "@/context/CartContext";
 import { router } from "expo-router";
 import { baseURL, USE_DUMMY_DATA } from "proba-package";
 import { Picker } from '@react-native-picker/picker';
+import { Ionicons } from "@expo/vector-icons";
+import Tooltip from "react-native-walkthrough-tooltip";
 
 // Definicija za kategoriju proizvoda (ugniježđeni objekt) - mora biti ista kao u ProductItem
 interface ProductCategory {
@@ -62,6 +65,37 @@ const CartScreen = () => {
     latitude: number;
     longitude: number;
   }
+  //walkthrough
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0);
+  const flatListContainerRef = useRef(null); 
+  const usePointsSwitchRef = useRef(null);
+  const addressPickerRef = useRef(null); 
+  const submitOrderButtonRef = useRef(null);
+
+  //fje za help
+  const startWalkthrough = () => {
+    // Provjeri da li ima stavki u korpi prije pokretanja
+    if (cartItems.length > 0) {
+      setShowWalkthrough(true);
+      setWalkthroughStep(1); // Počni od prvog koraka
+    } else {
+      Alert.alert(t('no_items_for_tutorial_title'), t('no_items_for_tutorial_message'));
+    }
+  };
+
+  const goToNextStep = () => {
+    setWalkthroughStep(prevStep => prevStep + 1);
+  };
+
+  const goToPreviousStep = () => {
+    setWalkthroughStep(prevStep => prevStep - 1);
+  };
+
+  const finishWalkthrough = () => {
+    setShowWalkthrough(false);
+    setWalkthroughStep(0);
+  };
 
   const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
   const [selectedLocationId, setSelectedLocationId] = useState<string>('');
@@ -287,6 +321,26 @@ const CartScreen = () => {
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('cart')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
       {cartItems.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -298,13 +352,52 @@ const CartScreen = () => {
             data={cartItems}
             contentContainerStyle={styles.list}
             keyExtractor={(item) => item.product.id.toString()}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => {
+              if(index===0){
+                return(
+                  <Tooltip
+                  isVisible={showWalkthrough && walkthroughStep === 1}
+                  content={
+                  <View style={styles.tooltipContent}>
+                  <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                  {t('tutorial_cartitem_tutorial')}
+                  </Text>
+                <View style={styles.tooltipButtonContainer}>
+                <TouchableOpacity
+                  style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+                  onPress={goToNextStep}
+                >
+                  <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              }
+             placement="bottom"
+             onClose={finishWalkthrough}
+             tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+             useReactNativeModal={true}
+             arrowSize={{ width: 16, height: 8 }}
+             showChildInTooltip={true}
+             >
+          <View style={{ flexShrink: 1, width: '100%' }}>
+          <CartItem
+            product={item.product}
+            quantity={item.qty}
+            onPress={() => handleProductPress(item.product)}
+          />
+          </View>
+        </Tooltip>
+                );
+              } else {
+                return(
               <CartItem
                 product={item.product}
                 quantity={item.qty}
                 onPress={() => handleProductPress(item.product)}
               />
-            )}
+                );
+              }
+            }}
           />
           <View style={styles.summary}>
             <Text style={styles.totalText}>
@@ -313,11 +406,43 @@ const CartScreen = () => {
               {/* prikaz opcije za trošenje poena i detalja o tome */}
             <View style={styles.pointsOptionContainer}>
               <Text style={styles.summaryLabel}>{t('use_points')}</Text>
+              <Tooltip
+        isVisible={showWalkthrough && walkthroughStep === 2}
+        content={
+          <View style={styles.tooltipContent}>
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              {t('tutorial_use_points')}
+            </Text>
+            <View style={styles.tooltipButtonContainer}>
+              <TouchableOpacity
+                style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                onPress={goToPreviousStep}
+              >
+                <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+                onPress={goToNextStep}
+              >
+                <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        }
+        placement="left"
+        onClose={finishWalkthrough}
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+        showChildInTooltip={true}
+      >
               <Switch
                 onValueChange={(value) => setUsePoints(value)}
                 value={usePoints}
                 trackColor={{ false: "#767577", true: "green" }}
+                ref={usePointsSwitchRef}
               />
+              </Tooltip>
             </View>
 
             {usePoints && ( // ako cemo trositi poene
@@ -336,30 +461,204 @@ const CartScreen = () => {
                 <Text style={styles.summaryLabel}>{t('points_earned')}: {earnedPoints.toFixed(2)}</Text>
               </View>
             )}
+            <Tooltip
+        isVisible={showWalkthrough && walkthroughStep === 3}
+        content={
+          <View style={styles.tooltipContent}>
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              {t('tutorial_select_address')} 
+            </Text>
+            <View style={styles.tooltipButtonContainer}>
+              <TouchableOpacity
+                style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                onPress={goToPreviousStep}
+              >
+                <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+                onPress={goToNextStep}
+              >
+                <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        }
+        placement="center"
+        onClose={finishWalkthrough}
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+        showChildInTooltip={true}
+      >
               <Picker
                 selectedValue={selectedLocationId}
                 onValueChange={setSelectedLocationId}
+                style={styles.picker}
+                ref={addressPickerRef}
               >
                 <Picker.Item label={t("select_address")} value="" />
                 {savedLocations.map(loc => (
                   <Picker.Item key={loc.id} label={loc.address} value={loc.id} />
                 ))}
               </Picker>
+              </Tooltip>
 
+              <Tooltip
+        isVisible={showWalkthrough && walkthroughStep === 4}
+        content={
+          <View style={styles.tooltipContent}>
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              {t('tutorial_submit_order')}
+            </Text>
+            <View style={styles.tooltipButtonContainer}>
+              <TouchableOpacity
+                style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                onPress={goToPreviousStep}
+              >
+                <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                onPress={finishWalkthrough}
+              >
+                <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        }
+        placement="top"
+        onClose={finishWalkthrough}
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+        showChildInTooltip={true}
+      >
+        <View style={styles.submitButtonWrapper}>
               <Button
                 title={t('submit_order')}
                 onPress={checkoutOrder}
                 disabled={!selectedLocationId || cartItems.length === 0}
                 color={'#4e8d7c'}
+                ref={submitOrderButtonRef} 
               />
-          </View>
+              </View>
+            </Tooltip>
+        </View>
         </>
       )}
     </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+  submitButtonWrapper: {
+    width: '100%',
+    alignSelf: 'center', 
+  },
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipNextButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipPrevButton: {
+    backgroundColor: '#4E8D7C', 
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
   container: { flex: 1, backgroundColor: "#f3f4f6" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyText: { fontSize: 18, color: "#555" },

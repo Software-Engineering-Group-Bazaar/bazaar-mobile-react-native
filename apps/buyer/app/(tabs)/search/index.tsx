@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   TextInput,
+  SafeAreaView, Platform
 } from "react-native";
 import ProductItem from "proba-package/product-item/index";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,7 @@ import {
 import Checkbox from "expo-checkbox";
 import { baseURL, USE_DUMMY_DATA } from "proba-package";
 import { Ionicons } from "@expo/vector-icons";
+import Tooltip from "react-native-walkthrough-tooltip";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = screenWidth * 0.3; // 30% širine ekrana
@@ -290,6 +292,35 @@ const DUMMY_PRODUCTS: Product[] = [
   },
 ];
 
+//dummy podaci prodavnica 
+const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
+  {
+    id: 1, // Store ID for Supermarket A
+    name: "Supermarket A",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 1),
+  },
+  {
+    id: 2, // Store ID for Elektronika Centar (although dummy products are filtered for storeId 2)
+    name: "Elektronika Centar",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 2),
+  },
+  {
+    id: 3, // Assuming there's a store 3 in dummy data for Kafa Moka
+    name: "Kafeterija",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 3),
+  },
+  {
+    id: 4, // Store ID for Knjižara Z and Elektronika
+    name: "Elektronika Shop",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 4),
+  },
+  {
+    id: 5, // Store ID for Pekara Mlin and Alkoholna pića
+    name: "Pekara i Pića",
+    products: DUMMY_PRODUCTS.filter((product) => product.storeId === 5),
+  },
+];
+
 // const DUMMY_STORES_WITH_PRODUCTS: StoreWithProducts[] = [
 //   {
 //     Store: { id: 1, isActive: true, categoryid: 101, name: 'Supermarket A', address: 'Glavna ulica 10, Sarajevo', description: 'Veliki izbor prehrambenih proizvoda', logoUrl: 'https://via.placeholder.com/150/FFC107/000000?Text=LogoA',place:1 },
@@ -354,6 +385,33 @@ const SearchProductsScreen = () => {
   const closeFilterModal = () => {
     setIsFilterModalVisible(false);
   };
+
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0);
+
+  const storeDetailsButtonRef = useRef(null);
+  const firstProductRef=useRef(null)
+  const filterButtonRef=useRef(null)
+  const searchInputRef=useRef(null)
+
+  //fje za help
+    const startWalkthrough = () => {
+      setShowWalkthrough(true);
+      setWalkthroughStep(1); // Počni od prvog koraka
+    };
+  
+    const goToNextStep = () => {
+      setWalkthroughStep(prevStep => prevStep + 1);
+    };
+  
+    const goToPreviousStep = () => {
+      setWalkthroughStep(prevStep => prevStep - 1);
+    };
+  
+    const finishWalkthrough = () => {
+      setShowWalkthrough(false);
+      setWalkthroughStep(0);
+    };
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -532,6 +590,87 @@ const SearchProductsScreen = () => {
     setLoading(false);
     setError(null);
 
+    //namjestanje da radi i sa dummy podacima 
+    if (USE_DUMMY_DATA) {
+    let filteredProducts = DUMMY_PRODUCTS.filter((product) => {
+      const matchesSearch = product.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedCategory === null ||
+        product.productCategory.id === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    let filteredStoresWithProducts: StoreWithProducts[] = [];
+
+    if (selectedRegion || selectedMunicipalities.length > 0) {
+      filteredProducts = filteredProducts.filter((product) => {
+        const storeForProduct = DUMMY_STORES_WITH_PRODUCTS.find(
+          (store) => store.id === product.storeId
+        );
+
+        if (!storeForProduct) return false;
+
+        const dummyStore = {
+          id: storeForProduct.id,
+          name: storeForProduct.name,
+          address: "Dummy Adresa",
+          description: "Dummy Opis",
+          isActive: true,
+          categoryid: 1,
+          place: DUMMY_MUNICIPALITIES.find(
+            (m) => m.name === "Sarajevo Centar"
+          )?.id,
+        };
+
+        const storeMunicipality = DUMMY_MUNICIPALITIES.find(
+          (m) => m.id === dummyStore.place
+        );
+        const storeRegion = DUMMY_REGIONS.find((r) =>
+          DUMMY_MUNICIPALITIES.some(
+            (m) => m.id === dummyStore.place && r.name.includes("Sarajevski")
+          )
+        ); 
+
+        const matchesRegion =
+          selectedRegion === null ||
+          (storeRegion && storeRegion.id === selectedRegion);
+
+        const matchesMunicipalities =
+          selectedMunicipalities.length === 0 ||
+          selectedMunicipalities.includes(dummyStore.place as number); 
+
+        return matchesRegion && matchesMunicipalities;
+      });
+    }
+
+    const groupedProducts: { [storeId: number]: Product[] } = {};
+    filteredProducts.forEach((product) => {
+      if (!groupedProducts[product.storeId]) {
+        groupedProducts[product.storeId] = [];
+      }
+      groupedProducts[product.storeId].push(product);
+    });
+
+    for (const storeId in groupedProducts) {
+      const storeInfo = DUMMY_STORES_WITH_PRODUCTS.find(
+        (store) => store.id === parseInt(storeId)
+      );
+      if (storeInfo) {
+        filteredStoresWithProducts.push({
+          id: storeInfo.id,
+          name: storeInfo.name,
+          products: groupedProducts[storeId],
+        });
+      }
+    }
+
+    setStoresWithProducts(filteredStoresWithProducts);
+    setLoading(false);
+    return;
+  }
+
     // if (USE_DUMMY_DATA) {
     //   let filteredStores = DUMMY_STORES_WITH_PRODUCTS.map(storeWithProducts => ({
     //     ...storeWithProducts,
@@ -690,17 +829,83 @@ const SearchProductsScreen = () => {
 
   if (error) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('search')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.centered}>
         <Text style={styles.errorText}>
           {t("error_fetching_data")}: {error.message}
         </Text>
       </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('search')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
        {/* Search Bar with Icon */}
+
+       <Tooltip
+                isVisible={showWalkthrough && walkthroughStep === 1} 
+                content={
+                  <View style={styles.tooltipContent}>
+                    <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                      {t('tutorial_search_products')}
+                    </Text>
+                    <View style={styles.tooltipButtonContainer}>
+                      <TouchableOpacity
+                        style={styles.tooltipNextButton}
+                        onPress={goToNextStep}
+                      >
+                        <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                }
+                placement="bottom"
+                onClose={finishWalkthrough}
+                tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                useReactNativeModal={true}
+                arrowSize={{ width: 16, height: 8 }}
+                showChildInTooltip={true} 
+              >
     <View style={styles.searchContainer}>
       <Ionicons name="search-outline" size={20} color="#888" style={styles.searchIcon} />
       <TextInput
@@ -711,6 +916,7 @@ const SearchProductsScreen = () => {
         clearButtonMode="while-editing"
       />
     </View>
+    </Tooltip>
 
       <Modal
         animationType="slide"
@@ -929,9 +1135,37 @@ const SearchProductsScreen = () => {
       <FlatList
         data={storesWithProducts}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item, index: storeIndex }) => (
           <View style={styles.storeContainer}>
             <Text style={styles.storeName}>{item.name}</Text>
+            <Tooltip
+                isVisible={storeIndex===0 && showWalkthrough && walkthroughStep === 2} 
+               content={
+                   <View style={styles.tooltipContent}>
+                   <Text style={{ fontSize: 16, marginBottom: 10 }}>{t('tutorial_store_details_button')}</Text>
+                  <View style={styles.tooltipButtonContainer}>
+                  <TouchableOpacity
+                  style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                  onPress={goToPreviousStep}
+                  >
+                 <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity
+                 style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+                 onPress={goToNextStep}
+                >
+                <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+                </TouchableOpacity>
+               </View>
+              </View>
+               }
+                placement="left"
+                onClose={finishWalkthrough}
+                tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                useReactNativeModal={true}
+                arrowSize={{ width: 16, height: 8 }}
+                showChildInTooltip={true} 
+              >
            <TouchableOpacity
   style={styles.detailsButton}
   onPress={() =>
@@ -940,42 +1174,237 @@ const SearchProductsScreen = () => {
       params: { storeId: item.id },
     })
   }
+  ref={storeDetailsButtonRef}
 >
   <Ionicons name="storefront-outline" size={24} color="#fff" />
 </TouchableOpacity>
+</Tooltip>
             {item.products.length > 0 ? (
               <FlatList
                 data={item.products}
                 keyExtractor={(product) => product.id.toString()}
-                renderItem={({ item: product }) => (
+                renderItem={({ item: product, index: productIndex }) => (
+                  <Tooltip
+                   isVisible={storeIndex===0 && productIndex===0 && showWalkthrough && walkthroughStep === 3}
+                   content={
+                   <View style={styles.tooltipContent}>
+                   <Text style={{ fontSize: 16, marginBottom: 10 }}>{t('tutorial_first_product_description')}</Text>
+                  <View style={styles.tooltipButtonContainer}>
+                  <TouchableOpacity
+                  style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                  onPress={goToPreviousStep}
+                  >
+                 <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity
+                 style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+                 onPress={goToNextStep}
+                >
+                <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        }
+        placement="bottom"
+        onClose={finishWalkthrough}
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+        showChildInTooltip={true}
+      >
                   <View style={styles.productWrapper}>
                     <ProductItem
                       product={product}
                       onPress={() => handleProductPress(product)}
                     />
                   </View>
+                  </Tooltip>
                 )}
               />
             ) : (
+              <Tooltip
+                   isVisible={showWalkthrough && walkthroughStep === 3}
+                   content={
+                   <View style={styles.tooltipContent}>
+                   <Text style={{ fontSize: 16, marginBottom: 10 }}>{t('tutorial_no_products_in_store')}</Text>
+                  <View style={styles.tooltipButtonContainer}>
+                  <TouchableOpacity
+                  style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                  onPress={goToPreviousStep}
+                  >
+                 <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity
+                 style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+                 onPress={goToNextStep}
+                >
+                <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        }
+        placement="bottom"
+        onClose={finishWalkthrough}
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+        showChildInTooltip={true}
+      >
               <Text style={styles.noProductsInStore}>
                 {t("no_products_in_store")}
               </Text>
+              </Tooltip>
             )}
           </View>
         )}
       />
 
+       <Tooltip
+        isVisible={showWalkthrough && walkthroughStep === 4}
+        content={
+          <View style={styles.tooltipContent}>
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              {t('tutorial_filter_products_stores')} 
+            </Text>
+                <View style={styles.tooltipButtonContainer}>
+                  <TouchableOpacity
+                    style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                    onPress={goToPreviousStep}
+                  >
+                    <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                    onPress={finishWalkthrough}
+                  >
+                    <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                  </TouchableOpacity>
+                </View>
+          </View>
+        }
+        placement="left"
+        onClose={finishWalkthrough}
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+        showChildInTooltip={true}
+      >
       <TouchableOpacity
   style={styles.floatingFilterButton}
   onPress={openFilterModal}
+  ref={filterButtonRef}
 >
-  <Ionicons name="options-outline" size={24} color="#fff" />
+  <Ionicons name="options-outline" size={30} color="#fff" />
 </TouchableOpacity>
+</Tooltip>
     </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipNextButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipPrevButton: {
+    backgroundColor: '#4E8D7C', 
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
   storeButton: {
     backgroundColor: "#4e8d7c",
     padding: 7,
@@ -1174,6 +1603,8 @@ const styles = StyleSheet.create({
   },
   productWrapper: {
     marginRight: 10,
+    flexShrink:1,
+    width:'100%'
   },
   noProductsInStore: {
     fontStyle: "italic",
@@ -1202,7 +1633,7 @@ const styles = StyleSheet.create({
   },
   detailsButton: {
   position: 'absolute',
-  top: 6,
+  top: -40,
   right: 6,
   width: 36,
   height: 36,
@@ -1218,10 +1649,10 @@ const styles = StyleSheet.create({
 },
 floatingFilterButton: {
   position: 'absolute',
-  bottom: 24,
-  right: 24,
-  width: 56,
-  height: 56,
+  bottom: 30,
+  right: 30,
+  width: 60,
+  height: 60,
   borderRadius: 28,
   backgroundColor: '#4e8d7c',
   justifyContent: 'center',

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,12 +9,15 @@ import {
   Keyboard,
   Alert,
   Button,
+  SafeAreaView, Platform, Dimensions
 } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import * as SecureStore from 'expo-secure-store';
 import { t } from 'i18next';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Suggestion { place_id: string; description: string; }
 interface SavedLocation {
@@ -41,6 +44,18 @@ export default function MapScreen() {
   });
   const [markerCoord, setMarkerCoord] = useState<Region>(region);
   const [addressForRemoval, setAddressForRemoval] = useState<{id:number,address:string,latitude:number,longitude:number}>();
+
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  
+      // Funkcija za pokretanje walkthrough-a
+      const startWalkthrough = () => {
+          setShowWalkthrough(true);
+      };
+  
+      // Funkcija za završetak walkthrough-a
+      const finishWalkthrough = () => {
+          setShowWalkthrough(false);
+      };
 
   // State for saved locations
   const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
@@ -125,6 +140,50 @@ export default function MapScreen() {
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('my_addresses')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Tooltip
+                          isVisible={showWalkthrough}
+                          content={
+                            <View style={styles.tooltipContent}>
+                              <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                                {t('tutorial_my_addresses_screen')}
+                              </Text>
+                              <View style={styles.tooltipButtonContainer}>
+                                <TouchableOpacity
+                                  style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                                  onPress={finishWalkthrough}
+                                >
+                                  <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                          }
+                          placement="center" // Ili "bottom"
+                          onClose={finishWalkthrough}
+                          tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                          useReactNativeModal={true}
+                          arrowSize={{ width: 16, height: 8 }}
+                          showChildInTooltip={true}
+                        ></Tooltip>
     <View style={styles.container}>
       {/* Search Input */}
       <View style={styles.searchContainer}>
@@ -219,10 +278,90 @@ export default function MapScreen() {
         />
       </View>
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  tooltipButtonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      width: '100%',
+      marginTop: 10,
+    },
+     tooltipContent: {
+          alignItems: 'center',
+          padding: 10, 
+          backgroundColor: 'white',
+          borderRadius: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+      },
+      tooltipButtonBase: {
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+          borderRadius: 25,
+          marginHorizontal: 5,
+          elevation: 2,
+          minWidth: 80,
+          alignItems: 'center',
+      },
+      tooltipButtonText: {
+          color: '#fff',
+          fontSize: 14,
+          fontWeight: 'bold',
+      },
+      tooltipFinishButton: {
+          backgroundColor: '#4E8D7C', // Zelena boja
+          paddingVertical: 8,
+          paddingHorizontal: 20,
+          borderRadius: 20,
+          marginHorizontal: 5,
+      },
+    safeArea: {
+        backgroundColor: '#4e8d7c',
+        flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+        marginTop:30
+      },
+      headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#4e8d7c',
+        paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+        paddingHorizontal: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 4,
+      },
+      sideContainer: {
+        width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+        justifyContent: 'center',
+      },
+      rightSideContainer: {
+        alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+      },
+      titleContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 5,
+      },
+      headerText: {
+        color: '#fff',
+        fontSize: 22,
+        fontWeight: 'bold',
+        letterSpacing: 1,
+        textAlign: 'center',
+      },
+      iconButton: {
+        padding: 5, // Dodao padding za lakši klik
+      },
   container: { flex: 1 },
   searchContainer: { position: 'absolute', top: 40, width: '90%', alignSelf: 'center', zIndex: 10 },
   input: { height: 44, backgroundColor: 'white', paddingHorizontal: 12, borderRadius: 4 },
