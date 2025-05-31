@@ -14,6 +14,7 @@ import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import * as SecureStore from 'expo-secure-store';
+import { t } from 'i18next';
 
 interface Suggestion { place_id: string; description: string; }
 interface SavedLocation {
@@ -44,7 +45,7 @@ export default function MapScreen() {
   // State for saved locations
   const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
   const [buttonShouldRemove, setButtonShouldRemove] = useState(false);
-  let buttonTitle = buttonShouldRemove ? "Remove Address" : "Confirm Address";
+  let buttonTitle = buttonShouldRemove ? t('remove_address') : t('confirm_address');
 
   // Load saved locations
   useEffect(() => {
@@ -129,7 +130,7 @@ export default function MapScreen() {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Search address..."
+          placeholder={t('search_address')}
           value={query}
           onChangeText={setQuery}
         />

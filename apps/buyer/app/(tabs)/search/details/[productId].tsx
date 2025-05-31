@@ -346,9 +346,9 @@ const checkAndAddToCart = async () => {
   if (!product) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Product not found</Text>
+        <Text style={styles.errorText}>{t('product_not_found')}</Text>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Go Back</Text>
+          <Text style={styles.backButtonText}>{t('go_back')}</Text>
         </TouchableOpacity>
       </View>
     );

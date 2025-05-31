@@ -17,6 +17,7 @@ import {
   Profile,
   LoginManager,
 } from 'react-native-fbsdk-next';
+import i18next from "../src/i18n/i18n.config";
 
 // Import Google Sign-In functions
 import {
@@ -48,7 +49,25 @@ export default function SignUp() {
   }, []);
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'bs' : 'en');
+    let lang;
+    switch (i18next.language) {
+      case "en":
+        lang = "bs";
+        break;
+      case "bs":
+        lang = "de";
+        break;
+      case "de":
+        lang = "es";
+        break;
+      case "es":
+        lang = "en";
+        break;
+      default:
+        lang = "en";
+    }
+    i18next.changeLanguage(lang);
+    i18next.language = lang;
   };
 
   const loginWithFacebook = async () => {
