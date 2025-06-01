@@ -2,13 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import ConversationList from "proba-package/chat-components/ConversationList";
 import { ConversationDto } from "proba-package/chat-components/models";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import * as signalR from "@microsoft/signalr";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { apiFetchFormattedConversations } from "../api/messagingApi";
 import { useFocusEffect } from "@react-navigation/native";
 import { baseURL } from "../env";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 interface ExtendedConversationDto extends ConversationDto {
   buyerUserId: string;
@@ -137,7 +137,7 @@ const ChatListScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <LanguageButton />
+      <HelpAndLanguageButton showHelpButton={false} />
       <Text style={styles.header}></Text>
       <ConversationList
         conversations={conversations}
