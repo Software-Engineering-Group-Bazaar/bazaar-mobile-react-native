@@ -700,7 +700,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#eee',
   },
   picker: { 
-    height: 220,
+    height: Platform.OS === 'ios' ? 220 : 50,
     width: '100%',
     backgroundColor: '#f9f9f9',
     borderRadius: 8,
