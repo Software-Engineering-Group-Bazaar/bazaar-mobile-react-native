@@ -11,6 +11,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.buyer",
+      "config": {
+        "googleMapsApiKey":  "process.env.GOOGLE_MAPS_API_KEY"
+      },
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
         "SKAdNetworkItems": [
