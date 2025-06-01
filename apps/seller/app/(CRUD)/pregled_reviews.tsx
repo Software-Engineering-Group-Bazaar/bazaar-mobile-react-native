@@ -1,3 +1,4 @@
+// File: app/(CRUD)/pregled_reviews.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
@@ -15,9 +16,18 @@ import { Review } from "../types/review";
 import ReviewCard from "@/components/ui/cards/ReviewCard";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
-const { height } = Dimensions.get("window");
+// ------------- CO PILOT IMPORTS -------------
+import {
+  CopilotProvider,
+  CopilotStep,
+  walkthroughable,
+} from "react-native-copilot";
+// ------------------------------------------
 
-export default function StoreReviewsScreen() {
+const { height } = Dimensions.get("window");
+const WalkthroughableView = walkthroughable(View);
+
+function StoreReviewsScreenContent() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
@@ -74,7 +84,7 @@ export default function StoreReviewsScreen() {
   if (loading && !refreshing) {
     return (
       <View style={styles.centeredLoader}>
-        <HelpAndLanguageButton showHelpButton={false} />
+        <HelpAndLanguageButton showHelpButton={false} showLanguageButton={false} />
         <ActivityIndicator size="large" color="#4E8D7C" />
       </View>
     );
@@ -83,7 +93,7 @@ export default function StoreReviewsScreen() {
   if (!storeId) {
     return (
       <View style={styles.centeredLoader}>
-        <HelpAndLanguageButton showHelpButton={false} />
+        <HelpAndLanguageButton showHelpButton={false} showLanguageButton={false} />
         <Text style={styles.errorText}>{t("store_id_missing")}</Text>
       </View>
     );
@@ -91,25 +101,47 @@ export default function StoreReviewsScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <HelpAndLanguageButton showHelpButton={false} />
+      <HelpAndLanguageButton showLanguageButton={false} showHelpButton={true} />
       <FlatList
         data={reviews}
-        renderItem={({ item }) => (
-          <ReviewCard
-            review={item}
-            onResponseSubmitted={handleResponseSubmitted}
-          />
+        renderItem={({ item, index }) => (
+          index === 0 ? ( // CopilotStep samo za prvu recenziju
+            <CopilotStep
+              text={t("help_pregled_reviews_card") || "Ovo je prikaz jedne recenzije. Možete pročitati komentar i odgovoriti na njega."}
+              order={1} // Ako ima recenzija, ovo je prvi korak
+              name="firstReviewCard"
+            >
+              <WalkthroughableView>
+                <ReviewCard
+                  review={item}
+                  onResponseSubmitted={handleResponseSubmitted}
+                />
+              </WalkthroughableView>
+            </CopilotStep>
+          ) : (
+            <ReviewCard
+              review={item}
+              onResponseSubmitted={handleResponseSubmitted}
+            />
+          )
         )}
         keyExtractor={(item) => item.id.toString()}
         style={styles.scrollWrapper}
         contentContainerStyle={styles.listContainer}
-        ListHeaderComponent={<View style={{ height: height * 0.09 }} />} // Da content ne ide ispod LanguageButton-a i headera
+        ListHeaderComponent={<View style={{ height: height * 0.08 }} />}
         ListEmptyComponent={
-          !loading ? ( // Pokaži samo ako nije učitavanje i nema review-a
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t("no_reviews_yet")}</Text>{" "}
-              {/* Treba prevod */}
-            </View>
+          !loading ? (
+            <CopilotStep
+              text={t("help_pregled_reviews_no_reviews") || "Ako nema recenzija za vašu prodavnicu, prikazat će se ova poruka."}
+              order={1} // Ako nema recenzija, ovo je prvi korak
+              name="noReviewsMessage"
+            >
+              <WalkthroughableView>
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>{t("no_reviews_yet")}</Text>
+                </View>
+              </WalkthroughableView>
+            </CopilotStep>
           ) : null
         }
         refreshControl={
@@ -125,6 +157,31 @@ export default function StoreReviewsScreen() {
   );
 }
 
+export default function StoreReviewsScreen() {
+  const { t } = useTranslation();
+  return (
+    <CopilotProvider
+      labels={{
+        finish: t("Finish") || "Završi",
+        next: t("Next") || "Dalje",
+        skip: t("Skip") || "Preskoči",
+        previous: t("Previous") || "Nazad",
+      }}
+      overlay="svg"
+      animated
+      backdropColor="rgba(50, 50, 100, 0.7)"
+      tooltipStyle={{ borderRadius: 10 }}
+      stepNumberComponent={({currentStepNumber}) => (
+        <View style={styles.stepNumber}>
+          <Text style={styles.stepNumberText}>{currentStepNumber}</Text>
+        </View>
+      )}
+    >
+      <StoreReviewsScreenContent />
+    </CopilotProvider>
+  );
+}
+
 const styles = StyleSheet.create({
   scrollWrapper: {
     flex: 1,
@@ -132,8 +189,8 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 16,
-    paddingTop: 10,
     paddingBottom: height * 0.1,
+    flexGrow: 1,
   },
   centeredLoader: {
     flex: 1,
@@ -145,7 +202,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 50,
   },
   emptyText: {
     fontSize: 16,
@@ -156,5 +212,17 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     marginTop: 20,
+  },
+  stepNumber: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#4E8D7C",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  stepNumberText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });

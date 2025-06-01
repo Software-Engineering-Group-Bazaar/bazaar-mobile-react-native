@@ -309,5 +309,17 @@
   "help_save_product_details": "Klikom na ovo dugme spašavate izmjene.",
   "Status of this order": "Status ove narudžbe",
   "Buyer information and messaging option": "Informacije o kupcu i mogućnost slanja poruke",
-  "You can change the status of the order here": "Ovdje možete promijeniti status narudžbe"
+  "You can change the status of the order here": "Ovdje možete promijeniti status narudžbe",
+  "help_pregled_ticketa_add_button": "Kliknite ovdje da kreirate novi tiket za podršku.",
+  "help_pregled_ticketa_no_tickets": "Ako nemate tiketa, prikazat će se ova poruka. Možete povući listu za osvježavanje ili kreirati novi tiket koristeći '+' dugme.",
+  "help_pregled_ticketa_card": "Ovo je prikaz jednog od vaših tiketa. Kliknite na karticu za više detalja i komunikaciju.",
+
+  "help_kreiraj_ticket_select_order": "U ovom polju odaberite ID narudžbe za koju Vam treba korisnička podrška.",
+  "help_kreiraj_ticket_subject": "Unesite naslov (predmet) vašeg problema ili upita.",
+  "help_kreiraj_ticket_description": "Detaljno opišite problem ili pitanje koje imate.",
+  "help_kreiraj_ticket_submit_button": "Kada popunite sva polja, kliknite ovdje da pošaljete tiket.",
+
+  "help_pregled_reviews_card": "Ovo je prikaz jedne recenzije. Možete pročitati komentar i odgovoriti na njega.",
+  "help_pregled_reviews_no_reviews": "Ako nema recenzija za vašu prodavnicu, prikazat će se ova poruka.",
+  "help_pregled_reviews_refresh": "Povucite listu prema dole da biste osvježili recenzije."
 }

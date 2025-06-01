@@ -309,5 +309,17 @@
   "help_save_product_details": "By clicking this button, you save the changes.",
   "Status of this order": "Status of this order",
   "Buyer information and messaging option": "Buyer information and messaging option",
-  "You can change the status of the order here": "You can change the status of the order here"
+  "You can change the status of the order here": "You can change the status of the order here",
+  "help_pregled_ticketa_add_button": "Click here to create a new support ticket.",
+  "help_pregled_ticketa_no_tickets": "If you have no tickets, this message will be displayed. You can pull the list to refresh or create a new ticket using the '+' button.",
+  "help_pregled_ticketa_card": "This is a display of one of your tickets. Click on the card for more details and communication.",
+
+  "help_kreiraj_ticket_select_order": "In this field, select the order ID for which you need customer support.",
+  "help_kreiraj_ticket_subject": "Enter the subject (topic) of your problem or query.",
+  "help_kreiraj_ticket_description": "Describe in detail the problem or question you have.",
+  "help_kreiraj_ticket_submit_button": "When you have filled all the fields, click here to send the ticket.",
+
+  "help_pregled_reviews_card": "This is a display of a review. You can read the comment and respond to it.",
+  "help_pregled_reviews_no_reviews": "If there are no reviews for your store, this message will be displayed.",
+  "help_pregled_reviews_refresh": "Pull the list down to refresh the reviews."
 }
