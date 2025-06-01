@@ -118,7 +118,7 @@ function KreirajTicketContent() {
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
     >
-      <HelpAndLanguageButton showLanguageButton={false} showHelpButton={true} />
+      <HelpAndLanguageButton showLanguageButton={true} showHelpButton={true} />
       <View style={styles.container}>
         <View style={{height: 60}}/> {/* Spacer za HelpAndLanguageButton */}
         {loadingOrders && (

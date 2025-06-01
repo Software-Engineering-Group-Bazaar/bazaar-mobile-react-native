@@ -115,7 +115,7 @@ function PregledTicketaScreenContent() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <HelpAndLanguageButton showLanguageButton={false} showHelpButton={true} />
+      <HelpAndLanguageButton showLanguageButton={true} showHelpButton={true} />
 
       <View style={styles.headerContainer}>
         {/* "+" dugme sada lijevo */}

@@ -96,7 +96,7 @@ function StoreReviewsScreenContent() {
 
   return (
     <View style={{ flex: 1 }}>
-      <HelpAndLanguageButton showLanguageButton={false} showHelpButton={true} />
+      <HelpAndLanguageButton showLanguageButton={true} showHelpButton={true} />
       <FlatList
         data={reviews}
         renderItem={({ item, index }) => (
