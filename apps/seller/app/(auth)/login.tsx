@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   languageButtonWrapper: {
     position: "absolute",
     top: 80,        // Push it lower
-    right: 30,      // Shift it more left
+    right: 10,      // Shift it more left
     zIndex: 9999,
   },
   titleContainer: {

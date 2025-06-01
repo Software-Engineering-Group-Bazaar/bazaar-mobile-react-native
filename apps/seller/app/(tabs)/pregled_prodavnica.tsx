@@ -103,7 +103,11 @@ function StoresScreen() {
       <HiddenHelpStarter />
       <HelpAndLanguageButton showHelpButton={true} />
       <View style={styles.topBar}>
-        <LogoutButton onPress={handleLogout} />
+        <CopilotStep text={t("Loggout Button") } order={1} name="logoutButton">
+          <WalkthroughableView>
+            <LogoutButton onPress={handleLogout} />
+          </WalkthroughableView>
+        </CopilotStep>
       </View>
 
       <ScrollView
@@ -120,7 +124,7 @@ function StoresScreen() {
             />
           ) : (
             <View style={styles.cardsContainer}>
-              <CopilotStep text={t("Store Details") } order={1} name="storeInfo">
+              <CopilotStep text={t("Store Details") } order={2} name="storeInfo">
                 <WalkthroughableView>
                   <TouchableCard
                     title={store.name}

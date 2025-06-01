@@ -308,18 +308,17 @@
   "help_availability_togle": "Aquí puede cambiar la disponibilidad del producto.",
   "help_save_product_details": "Al hacer clic en este botón, guarda los cambios.",
   "Status of this order": "Estado de este pedido",
-  "Buyer information and messaging option": "Información del comprador y opción de mensaje",
-  "You can change the status of the order here": "Aquí puedes cambiar el estado del pedido",
+  "Buyer information and messaging option": "Información del comprador y opción de mensaje.",
+  "You can change the status of the order here": "Aquí puedes cambiar el estado del pedido.",
   "help_pregled_ticketa_add_button": "Haga clic aquí para crear un nuevo ticket de soporte.",
   "help_pregled_ticketa_no_tickets": "Si no tiene tickets, se mostrará este mensaje. Puede deslizar la lista para actualizar o crear un nuevo ticket usando el botón '+'.",
   "help_pregled_ticketa_card": "Esta es la visualización de uno de sus tickets. Haga clic en la tarjeta para más detalles y comunicación.",
-
   "help_kreiraj_ticket_select_order": "En este campo, seleccione el ID del pedido para el cual necesita soporte al cliente.",
   "help_kreiraj_ticket_subject": "Ingrese el asunto (tema) de su problema o consulta.",
   "help_kreiraj_ticket_description": "Describa en detalle el problema o pregunta que tiene.",
   "help_kreiraj_ticket_submit_button": "Cuando haya completado todos los campos, haga clic aquí para enviar el ticket.",
-
   "help_pregled_reviews_card": "Esta es la visualización de una reseña. Puede leer el comentario y responderlo.",
   "help_pregled_reviews_no_reviews": "Si no hay reseñas para su tienda, se mostrará este mensaje.",
-  "help_pregled_reviews_refresh": "Deslice la lista hacia abajo para actualizar las reseñas."
+  "help_pregled_reviews_refresh": "Deslice la lista hacia abajo para actualizar las reseñas.",
+  "Logout Button": "Al hacer clic en este botón, cerrarás sesión en la aplicación y serás redirigido a la pantalla de inicio de sesión."
 }

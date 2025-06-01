@@ -12,7 +12,6 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { registerApi } from "../api/auth/registerApi";
 import { fbLoginApi } from "../api/auth/loginApi";
-import LanguageButton from "../../components/ui/buttons/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import { baseURL } from "../env";
@@ -128,8 +127,10 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
-      <HelpAndLanguageButton showHelpButton={false} />
-
+      <View style={styles.languageButtonWrapper}>
+        <HelpAndLanguageButton showHelpButton={false} />
+      </View>
+      
       <View style={styles.titleContainer}>
         <Image
           source={require("../../assets/images/logo.png")}
@@ -236,5 +237,11 @@ const styles = StyleSheet.create({
     color: "#4E8D7C",
     fontWeight: "bold",
     marginTop: 10,
+  },
+    languageButtonWrapper: {
+    position: "absolute",
+    top: 80,        // Push it lower
+    right: 10,      // Shift it more left
+    zIndex: 9999,
   },
 });

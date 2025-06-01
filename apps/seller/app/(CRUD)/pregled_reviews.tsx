@@ -164,13 +164,6 @@ export default function StoreReviewsScreen() {
       }}
       overlay="svg"
       animated
-      backdropColor="rgba(50, 50, 100, 0.7)"
-      tooltipStyle={{ borderRadius: 10 }}
-      stepNumberComponent={({currentStepNumber}) => (
-        <View style={styles.stepNumber}>
-          <Text style={styles.stepNumberText}>{currentStepNumber}</Text>
-        </View>
-      )}
     >
       <StoreReviewsScreenContent />
     </CopilotProvider>

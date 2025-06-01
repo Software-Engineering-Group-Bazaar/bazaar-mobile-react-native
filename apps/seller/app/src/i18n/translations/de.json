@@ -308,18 +308,17 @@
     "help_availability_togle": "Hier können Sie die Verfügbarkeit des Produkts ändern.",
     "help_save_product_details": "Durch Klicken auf diese Schaltfläche speichern Sie die Änderungen.",
     "Status of this order": "Status dieser Bestellung",
-  "Buyer information and messaging option": "Käuferinformationen und Nachrichtenoption",
-  "You can change the status of the order here": "Hier können Sie den Bestellstatus ändern",
+  "Buyer information and messaging option": "Käuferinformationen und Nachrichtenoption.",
+  "You can change the status of the order here": "Hier können Sie den Bestellstatus ändern.",
   "help_pregled_ticketa_add_button": "Klicken Sie hier, um ein neues Support-Ticket zu erstellen.",
   "help_pregled_ticketa_no_tickets": "Wenn Sie keine Tickets haben, wird diese Nachricht angezeigt. Sie können die Liste aktualisieren oder mit der '+' Taste ein neues Ticket erstellen.",
   "help_pregled_ticketa_card": "Dies ist die Anzeige eines Ihrer Tickets. Klicken Sie auf die Karte für weitere Details und Kommunikation.",
-
   "help_kreiraj_ticket_select_order": "Wählen Sie in diesem Feld die Bestell-ID aus, für die Sie Kundensupport benötigen.",
   "help_kreiraj_ticket_subject": "Geben Sie den Betreff (Thema) Ihres Problems oder Ihrer Anfrage ein.",
   "help_kreiraj_ticket_description": "Beschreiben Sie detailliert das Problem oder die Frage, die Sie haben.",
   "help_kreiraj_ticket_submit_button": "Wenn Sie alle Felder ausgefüllt haben, klicken Sie hier, um das Ticket zu senden.",
-
   "help_pregled_reviews_card": "Dies ist die Anzeige einer Bewertung. Sie können den Kommentar lesen und darauf antworten.",
   "help_pregled_reviews_no_reviews": "Wenn es keine Bewertungen für Ihren Shop gibt, wird diese Nachricht angezeigt.",
-  "help_pregled_reviews_refresh": "Ziehen Sie die Liste nach unten, um die Bewertungen zu aktualisieren."
+  "help_pregled_reviews_refresh": "Ziehen Sie die Liste nach unten, um die Bewertungen zu aktualisieren.",
+  "Logout Button": "Wenn Sie auf diese Schaltfläche klicken, werden Sie von der Anwendung abgemeldet und zum Anmeldebildschirm zurückgeleitet."
 }
