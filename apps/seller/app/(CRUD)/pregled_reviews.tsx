@@ -16,13 +16,11 @@ import { Review } from "../types/review";
 import ReviewCard from "@/components/ui/cards/ReviewCard";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
-// ------------- CO PILOT IMPORTS -------------
 import {
   CopilotProvider,
   CopilotStep,
   walkthroughable,
 } from "react-native-copilot";
-// ------------------------------------------
 
 const { height } = Dimensions.get("window");
 const WalkthroughableView = walkthroughable(View);
@@ -32,17 +30,14 @@ function StoreReviewsScreenContent() {
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const storeId = params.storeId ? Number(params.storeId) : null;
-  const storeName = params.storeName
-    ? decodeURIComponent(params.storeName as string)
-    : t("store_reviews");
-
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    navigation.setOptions({ title: storeName });
-  }, [navigation, storeName]);
+    // Postavi generički naslov za ekran s recenzijama
+    navigation.setOptions({ title: t("store_reviews_title") || "Recenzije prodavnice" });
+  }, [navigation, t]);
 
   const fetchReviews = useCallback(async () => {
     if (!storeId) {
@@ -84,7 +79,7 @@ function StoreReviewsScreenContent() {
   if (loading && !refreshing) {
     return (
       <View style={styles.centeredLoader}>
-        <HelpAndLanguageButton showHelpButton={false} showLanguageButton={false} />
+        {/* Ne prikazujemo HelpAndLanguageButton dok se učitava */}
         <ActivityIndicator size="large" color="#4E8D7C" />
       </View>
     );
@@ -93,7 +88,7 @@ function StoreReviewsScreenContent() {
   if (!storeId) {
     return (
       <View style={styles.centeredLoader}>
-        <HelpAndLanguageButton showHelpButton={false} showLanguageButton={false} />
+        {/* Ne prikazujemo HelpAndLanguageButton ako postoji greška */}
         <Text style={styles.errorText}>{t("store_id_missing")}</Text>
       </View>
     );
@@ -105,10 +100,10 @@ function StoreReviewsScreenContent() {
       <FlatList
         data={reviews}
         renderItem={({ item, index }) => (
-          index === 0 ? ( // CopilotStep samo za prvu recenziju
+          index === 0 ? (
             <CopilotStep
               text={t("help_pregled_reviews_card") || "Ovo je prikaz jedne recenzije. Možete pročitati komentar i odgovoriti na njega."}
-              order={1} // Ako ima recenzija, ovo je prvi korak
+              order={1}
               name="firstReviewCard"
             >
               <WalkthroughableView>
@@ -133,7 +128,7 @@ function StoreReviewsScreenContent() {
           !loading ? (
             <CopilotStep
               text={t("help_pregled_reviews_no_reviews") || "Ako nema recenzija za vašu prodavnicu, prikazat će se ova poruka."}
-              order={1} // Ako nema recenzija, ovo je prvi korak
+              order={1}
               name="noReviewsMessage"
             >
               <WalkthroughableView>
