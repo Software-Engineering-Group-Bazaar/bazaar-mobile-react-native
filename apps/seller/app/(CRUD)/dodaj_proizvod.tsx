@@ -14,18 +14,12 @@ import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import api from "../api/defaultApi";
-//-------------------Route Explorer---------------------------------
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
 import { apiFetchCategories } from "../api/productApi";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
-import {
-  CopilotProvider,
-  CopilotStep,
-  walkthroughable,
-} from "react-native-copilot";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -34,10 +28,6 @@ export default function AddProductScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams();
   const router = useRouter(); // Premesti ovde
-  const scrollViewRef = useRef<KeyboardAwareScrollView>(null);
-  const productName = useRef(null);
-  const productWeight = useRef(null);
-  const step3 = useRef(null);
   const storeId = params.storeId ? Number(params.storeId) : null; // Dodaj i storeId ovde
   const [name, setName] = useState("");
   const [price, setPrice] = useState(""); // Ovo će biti Maloprodajna
@@ -65,8 +55,6 @@ export default function AddProductScreen() {
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
 
   const [isActive, setIsActive] = useState(true);
-
-  const WalkthroughableView = walkthroughable(View);
 
   const pickImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -111,24 +99,6 @@ export default function AddProductScreen() {
       },
       (error: any) => {
         console.error("measureLayout failed:", error);
-      }
-    );
-  };
-
-  const onStepChange = (step: any) => {
-    const stepName = step.name;
-    const ref = productName;
-    console.log(JSON.stringify(ref, null, 2));
-
-    if (!ref?.current || !scrollViewRef.current) return;
-
-    getElementPositionMethod1(ref, scrollViewRef);
-
-    ref.current.measureLayout(
-      scrollViewRef.current as any, // Cast to any to avoid type issues
-      (x, y) => {
-        // KeyboardAwareScrollView uses scrollToPosition method
-        scrollViewRef.current?.scrollToPosition(0, y, true);
       }
     );
   };
@@ -213,153 +183,126 @@ export default function AddProductScreen() {
   };
 
   return (
-    <CopilotProvider
-      labels={{
-        finish: t("Finish"),
-        next: t("Next"),
-        skip: t("Skip"),
-        previous: t("Previous")
-      }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={{ flex: 1 }}
+    >
+      <HelpAndLanguageButton showHelpButton={false} />
+
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === "ios" ? 20 : 150}
+        showsVerticalScrollIndicator={false}
       >
-        <HelpAndLanguageButton onStepChange={onStepChange} />
+        <Text style={styles.title}>{t("add_a_product")}</Text>
 
-        <KeyboardAwareScrollView
-          ref={scrollViewRef}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          enableOnAndroid={true}
-          extraScrollHeight={Platform.OS === "ios" ? 20 : 150}
-          showsVerticalScrollIndicator={false}
-        >
-          <Text style={styles.title}>{t("add_a_product")}</Text>
+        <View style={[styles.form, { zIndex: 0 }]}>
+          <InputField
+            label={t("product_name")}
+            value={name}
+            onChangeText={setName}
+            placeholder={t("enter_product_name")}
+          />
+          <InputField
+            label={t("retail_price")}
+            value={price}
+            onChangeText={setPrice}
+            placeholder={t("enter_retail_price")}
+            keyboardType="decimal-pad"
+          />
+          {/* Veleprodajna Cijena */}
+          <InputField
+            label={t("wholesale_price")}
+            value={wholesalePrice}
+            onChangeText={setWholesalePrice}
+            placeholder={t("enter_wholesale_price")}
+            keyboardType="decimal-pad"
+          />
+          {/* Threshold za veleprodajnu cijena */}
+          <InputField
+            label={t("wholesale_threshold")}
+            value={wholesaleThreshold}
+            onChangeText={setWholesaleThreshold}
+            placeholder={t("enter_wholesale_threshold")}
+            keyboardType="decimal-pad"
+          />
 
-          <View style={[styles.form, { zIndex: 0 }]}>
-            <CopilotStep
-              text={t("help_product_name_and_price")}
-              order={1}
-              name="productName"
-            >
-              <WalkthroughableView>
-                <InputField
-                  ref={productName}
-                  label={t("product_name")}
-                  value={name}
-                  onChangeText={setName}
-                  placeholder={t("enter_product_name")}
-                />
-                <InputField
-                  label={t("retail_price")}
-                  value={price}
-                  onChangeText={setPrice}
-                  placeholder={t("enter_retail_price")}
-                  keyboardType="decimal-pad"
-                />
-                {/* Veleprodajna Cijena */}
-                <InputField
-                  label={t("wholesale_price")}
-                  value={wholesalePrice}
-                  onChangeText={setWholesalePrice}
-                  placeholder={t("enter_wholesale_price")}
-                  keyboardType="decimal-pad"
-                />
-                {/* Threshold za veleprodajnu cijena */}
-                <InputField
-                  label={t("wholesale_threshold")}
-                  value={wholesaleThreshold}
-                  onChangeText={setWholesaleThreshold}
-                  placeholder={t("enter_wholesale_threshold")}
-                  keyboardType="decimal-pad"
-                />
-              </WalkthroughableView>
-            </CopilotStep>
+          <InputField
+            label={t("weight")}
+            value={weight}
+            onChangeText={setWeight}
+            placeholder={t("enter_weight")}
+            keyboardType="decimal-pad"
+          />
 
-            <CopilotStep
-              text={t("help_product_weight")}
-              order={2}
-              name="productWeight"
-            >
-              <WalkthroughableView>
-                <InputField
-                  ref={productWeight}
-                  label={t("weight")}
-                  value={weight}
-                  onChangeText={setWeight}
-                  placeholder={t("enter_weight")}
-                  keyboardType="decimal-pad"
-                />
+          <DropdownPicker
+            open={weightOpen}
+            value={weightUnit}
+            items={weightItems}
+            setOpen={setWeightOpen}
+            setValue={setWeightUnit}
+            setItems={setWeightItems}
+            placeholder={t("select-unit")}
+          />
 
-                <DropdownPicker
-                  open={weightOpen}
-                  value={weightUnit}
-                  items={weightItems}
-                  setOpen={setWeightOpen}
-                  setValue={setWeightUnit}
-                  setItems={setWeightItems}
-                  placeholder={t("select-unit")}
-                />
+          <InputField
+            label={t("volume")}
+            value={volume}
+            onChangeText={setVolume}
+            placeholder={t("enter_volume")}
+            keyboardType="decimal-pad"
+          />
 
-                <InputField
-                  label={t("volume")}
-                  value={volume}
-                  onChangeText={setVolume}
-                  placeholder={t("enter_volume")}
-                  keyboardType="decimal-pad"
-                />
+          <DropdownPicker
+            open={volumeOpen}
+            value={volumeUnit}
+            items={volumeItems}
+            setOpen={setVolumeOpen}
+            setValue={setVolumeUnit}
+            setItems={setVolumeItems}
+            placeholder={t("select-unit")}
+          />
 
-                <DropdownPicker
-                  open={volumeOpen}
-                  value={volumeUnit}
-                  items={volumeItems}
-                  setOpen={setVolumeOpen}
-                  setValue={setVolumeUnit}
-                  setItems={setVolumeItems}
-                  placeholder={t("select-unit")}
-                />
-              </WalkthroughableView>
-            </CopilotStep>
+          <DropdownPicker
+            open={categoryOpen}
+            value={category}
+            items={categories}
+            setOpen={setCategoryOpen}
+            setValue={setCategory}
+            setItems={setCategories}
+            placeholder={t("select_category")}
+          />
 
-            <DropdownPicker
-              open={categoryOpen}
-              value={category}
-              items={categories}
-              setOpen={setCategoryOpen}
-              setValue={setCategory}
-              setItems={setCategories}
-              placeholder={t("select_category")}
-            />
-
-            {/* << NOVO: Switch za IsAvailable >> */}
-            <View style={styles.switchContainer}>
-              <Text style={styles.label}>{t("is_available")}</Text>
-              <Switch
-                trackColor={{ false: "#d1d5db", true: "#a7f3d0" }} // Svetlije boje
-                thumbColor={isActive ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
-                ios_backgroundColor="#e5e7eb"
-                onValueChange={setIsActive}
-                value={isActive}
-              />
-            </View>
-
-            <SubmitButton
-              label={t("images")}
-              onPress={pickImages}
-              buttonText={t("select_images")}
-            />
-
-            <ImagePreviewList images={images} />
-
-            <SubmitButton
-              onPress={handleSave}
-              loading={loading}
-              buttonText={t("save_changes")}
+          {/* << NOVO: Switch za IsAvailable >> */}
+          <View style={styles.switchContainer}>
+            <Text style={styles.label}>{t("is_available")}</Text>
+            <Switch
+              trackColor={{ false: "#d1d5db", true: "#a7f3d0" }} // Svetlije boje
+              thumbColor={isActive ? "#10b981" : "#f9fafb"} // Zelena/Svetlo siva
+              ios_backgroundColor="#e5e7eb"
+              onValueChange={setIsActive}
+              value={isActive}
             />
           </View>
-        </KeyboardAwareScrollView>
-      </KeyboardAvoidingView>
-    </CopilotProvider>
+
+          <SubmitButton
+            label={t("images")}
+            onPress={pickImages}
+            buttonText={t("select_images")}
+          />
+
+          <ImagePreviewList images={images} />
+
+          <SubmitButton
+            onPress={handleSave}
+            loading={loading}
+            buttonText={t("save_changes")}
+          />
+        </View>
+      </KeyboardAwareScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
