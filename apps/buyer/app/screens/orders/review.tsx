@@ -5,9 +5,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import Tooltip from 'react-native-walkthrough-tooltip'; // Import Tooltip
 import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 // const USE_DUMMY_DATA = true;
 

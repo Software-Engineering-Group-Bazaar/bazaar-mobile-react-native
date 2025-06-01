@@ -18,10 +18,15 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { t } from 'i18next'; // Ako koristite i18next za prevod
 // Pretpostavka: importujte baseURL i USE_DUMMY_DATA ako ih koristite za slanje podataka
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import * as SecureStore from 'expo-secure-store';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {Ionicons} from '@expo/vector-icons'
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface TicketFormData {
     title: string;

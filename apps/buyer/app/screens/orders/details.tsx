@@ -10,10 +10,15 @@ import { t } from 'i18next';
 import CartItem from 'proba-package/cart-item/index';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import { setParams } from 'expo-router/build/global-state/routing';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface Store {
   id: number;

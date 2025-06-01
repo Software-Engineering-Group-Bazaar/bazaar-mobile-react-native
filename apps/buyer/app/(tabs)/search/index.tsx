@@ -21,9 +21,14 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Checkbox from "expo-checkbox";
-import { baseURL, USE_DUMMY_DATA } from "proba-package";
 import { Ionicons } from "@expo/vector-icons";
 import Tooltip from "react-native-walkthrough-tooltip";
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = screenWidth * 0.3; // 30% širine ekrana

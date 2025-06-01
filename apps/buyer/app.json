@@ -107,7 +107,12 @@
       },
       "eas": {
         "projectId": "1081b26e-b6e5-4538-a5ec-9cbfb02ffde3"
-      }
+      },
+      "apiBaseUrl": "https://bazaar-system.duckdns.org",
+      "useDummyData": false,
+      "googleIosClientId": "792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com",
+      "googleWebClientId": "792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com",
+      "googleMapsApiKey": "AIzaSyCr2UAxBSN0eZxa5ahJKokuzJZy9Em203Q"
     }
   }
 }

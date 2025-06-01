@@ -9,9 +9,14 @@ import StoreItem from 'proba-package/store-item/index';
 import AdItem, { AdData, Advertisement } from 'proba-package/ad-item/index';
 import { t } from 'i18next';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package'; // Assuming baseURL is correctly imported
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 
 // --- API Response Types ---
@@ -427,7 +432,7 @@ const StoresScreen = () => {
 
     // Pass the necessary ad details as params
     router.push({
-       pathname: navigationPath,
+       pathname: navigationPath as any,
        params: {
            productId: firstAdData.productId, // This is the dynamic segment
            adId: ad.id, // Pass the ad ID

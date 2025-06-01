@@ -8,9 +8,14 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface ProductCategory {
   id: number;
@@ -114,7 +119,7 @@ const ProductDetailsScreen = () => {
         // Params passed here will be available in ChatScreen via `useLocalSearchParams`
     
           router.push({
-          pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+          pathname: `(tabs)/chat/${data.id}` as any, // Dynamic route using conversation ID
           params: {
             // conversationId is already part of the path, but you can pass it explicitly if needed
             // or if your ChatScreen expects it as a query param rather than a path segment.

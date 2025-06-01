@@ -15,8 +15,13 @@ import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import Tooltip from 'react-native-walkthrough-tooltip';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface Store {
   id: number;

@@ -31,7 +31,11 @@ import {
 
 import * as SecureStore from "expo-secure-store";
 
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import Constants from 'expo-constants';
+// import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
 
 export default function SignIn() {
   const router = useRouter();
@@ -43,10 +47,10 @@ export default function SignIn() {
 
   useEffect(() => {
     GoogleSignin.configure({
-      iosClientId:
-        "792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com",
-      webClientId:
-        "792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com",
+      iosClientId: Constants.expoConfig!.extra!.googleIosClientId as string,
+        // "792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com",
+      webClientId: Constants.expoConfig!.extra!.googleWebClientId as string,
+        // "792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com",
       profileImageSize: 150,
     });
   }, []);

@@ -15,10 +15,15 @@ import {
 } from 'react-native';
 import { useRouter, useFocusEffect, Stack } from 'expo-router'; // Import useRouter and useFocusEffect from expo-router
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import { Ionicons } from '@expo/vector-icons';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { useTranslation } from "react-i18next";
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig.extra.apiBaseUrl;
+const USE_DUMMY_DATA = Constants.expoConfig.extra.useDummyData;
+
 
 
 // --- CONFIGURATION & MOCKS ---

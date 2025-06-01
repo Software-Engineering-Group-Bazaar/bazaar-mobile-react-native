@@ -3,6 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ActivityInd
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
+
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -18,7 +24,7 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       // const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/resetpassword', {
-      const response = await fetch('https://bazaar-system.duckdns.org/api/PasswordReset/request-reset', {
+      const response = await fetch(baseURL + '/api/PasswordReset/request-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

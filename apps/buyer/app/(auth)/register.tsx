@@ -29,6 +29,12 @@ import {
 
 import * as SecureStore from 'expo-secure-store';
 
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
+
 export default function SignUp() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
@@ -42,8 +48,8 @@ export default function SignUp() {
   // Configure Google Signin on mount
   useEffect(() => {
     GoogleSignin.configure({
-      iosClientId: '792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com',
-      webClientId: '792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com',
+      iosClientId:  Constants.expoConfig!.extra!.googleIosClientId as string,
+      webClientId: Constants.expoConfig!.extra!.googleWebClientId as string,
       profileImageSize: 150,
     });
   }, []);
@@ -85,7 +91,7 @@ export default function SignUp() {
       if (data?.accessToken) {
         // call your backend
         const response = await fetch(
-          'https://bazaar-system.duckdns.org/api/Auth/login/facebook',
+          baseURL + '/api/Auth/login/facebook',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -96,7 +102,7 @@ export default function SignUp() {
         const apiData = await response.json();
         console.log("API response:", apiData);
   
-        await SecureStore.setItemAsync("accessToken", apiData.token);
+        await SecureStore.setItemAsync("auth_token", apiData.token);
         router.replace("/(tabs)/home");
         getUserFBData();
       }
@@ -124,7 +130,7 @@ export default function SignUp() {
     try {
       console.log("Udje?")
       // const response = await fetch('http://192.168.0.25:5054/api/Auth/register', {
-      const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/register', {
+      const response = await fetch(baseURL + '/api/Auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password, app: "buyer"}),
@@ -161,7 +167,7 @@ export default function SignUp() {
         console.log('Google Sign-Up User Info:', { idToken });
 
         // OPTIONAL: Call your backend register endpoint with the Google idToken
-         const apiResponse = await fetch('https://bazaar-system.duckdns.org/api/Auth/login/google', {
+         const apiResponse = await fetch(baseURL + '/api/Auth/login/google', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
            body: JSON.stringify({ idToken: idToken, app: "buyer" }),
@@ -171,7 +177,7 @@ export default function SignUp() {
            Alert.alert(t('signup_failed'), token || t('signup_failed_fallback'));
            return;
          }
-         await SecureStore.setItemAsync('accessToken', token);
+         await SecureStore.setItemAsync('auth_token', token);
 
         // Navigate to home screen or any other page as needed
         router.replace('/(tabs)/home');

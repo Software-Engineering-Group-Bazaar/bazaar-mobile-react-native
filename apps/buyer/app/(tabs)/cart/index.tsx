@@ -20,10 +20,15 @@ import { useTranslation } from "react-i18next";
 import * as SecureStore from "expo-secure-store";
 import { useCart } from "@/context/CartContext";
 import { router } from "expo-router";
-import { baseURL, USE_DUMMY_DATA } from "proba-package";
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from "@expo/vector-icons";
 import Tooltip from "react-native-walkthrough-tooltip";
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface ProductCategory {
   id: number;

@@ -13,11 +13,16 @@ import {
 } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { useRouter } from 'expo-router';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import * as SecureStore from 'expo-secure-store';
 import { t } from 'i18next';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface Suggestion { place_id: string; description: string; }
 interface SavedLocation {
@@ -27,7 +32,7 @@ interface SavedLocation {
   longitude: number;
 }
 
-const GOOGLE_API_KEY = 'AIzaSyCr2UAxBSN0eZxa5ahJKokuzJZy9Em203Q';
+const GOOGLE_API_KEY = Constants.expoConfig!.extra!.googleMapsApiKey as string;
 
 export default function MapScreen() {
   const router = useRouter();
