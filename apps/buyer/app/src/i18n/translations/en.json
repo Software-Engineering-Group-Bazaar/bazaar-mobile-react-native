@@ -433,7 +433,7 @@
    "next":"Next",
    "previous":"Previous",
    "tutorial_search_input_stores": "Here you can search for stores by name",
-   "tutorial_first_store_description": "By clicking on this store, you can view its products and start shopping.",
+   "tutorial_first_store_description": "By clicking on some store, you can view its products and start shopping.",
    "tutorial_store_details_button": "This button takes you to the detailed information page about the store.",
    "tutorial_first_product_description": "By clicking on this product you can view its full details and add it to your cart.",
    "tutorial_chat_button_explanation": "This button lets you chat directly with the seller about the product.",
@@ -475,5 +475,8 @@
     "tutorial_remove_address_screen": "Here you can confirm the removal of the selected address from your profile. Carefully review the address and then press 'Remove' to delete it, or 'Cancel' if you've changed your mind.",
     "tutorial_order_route_screen": "This map shows the delivery route for your order, from the seller's location to your selected address. You can track your order's progress here.",
     "tutorial_my_addresses_screen": "Here you can add, view, and manage your saved delivery addresses. Use the search bar to find a new address or drag the marker on the map, then confirm it. You can also remove existing addresses.",
-    "tutorial_ads_product": "This is the Product Details screen. Here you can view all product information, such as images, prices, availability, and options for adding to your cart. You can also directly chat with the seller for any questions."
+    "tutorial_ads_product": "This is the Product Details screen. Here you can view all product information, such as images, prices, availability, and options for adding to your cart. You can also directly chat with the seller for any questions.",
+    "product_add_error": "Product cannot be added to cart",
+    "no_info_quantity": "We currently do not have information about the quantity of this product in stock. Please try again later.",
+    "different_store_products_in_cart": "You already have products from another store in your cart. Finalize the order or clear the cart to add this product."
 }

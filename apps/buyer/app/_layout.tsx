@@ -65,7 +65,7 @@ export default function RootLayout() {
 
       notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
         console.log('RootLayout: Notification Received (Foreground):', notification);
-        Alert.alert(notification.request.content.title ?? "Obavijest", notification.request.content.body ?? "");
+        // Alert.alert(notification.request.content.title ?? "Obavijest", notification.request.content.body ?? "");
       });
 
       responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {

@@ -8,9 +8,14 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 // --- Existing Types (Product, ProductCategory) ---
 interface ProductCategory {
@@ -186,7 +191,7 @@ try {
             // Assuming data.id is the conversation ID
             if (data && data.id) {
                  router.push({
-                  pathname: `(tabs)/chat/${data.id}`, // Use conversation ID for the path
+                  pathname: `(tabs)/chat/${data.id}` as any, // Use conversation ID for the path
                   params: {
                      // Pass other relevant data for the chat screen
                      sellerUsername: data.sellerUsername,

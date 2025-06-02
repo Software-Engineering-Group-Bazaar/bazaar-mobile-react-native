@@ -15,10 +15,15 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package'; // Uvezeno
 import * as SecureStore from 'expo-secure-store'; // Uvezeno
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 export interface Ticket {
   id: number;

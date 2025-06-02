@@ -4,13 +4,18 @@ import { StyleSheet, View, ActivityIndicator, Alert, Button, TouchableOpacity, T
 import Icon from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE, LatLng } from 'react-native-maps';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import * as SecureStore from 'expo-secure-store';
 import { t } from 'i18next';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { Ionicons } from '@expo/vector-icons';
 
-const GOOGLE_API_KEY = 'AIzaSyCr2UAxBSN0eZxa5ahJKokuzJZy9Em203Q';
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
+
+const GOOGLE_API_KEY = Constants.expoConfig!.extra!.googleMapsApiKey as string;
 
 export default function RouteScreen() {
   const params = useLocalSearchParams();

@@ -15,11 +15,16 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { t } from 'i18next';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import { Icon } from 'react-native-vector-icons/Icon';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 import Tooltip from 'react-native-walkthrough-tooltip';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 export default function RemoveAddressScreen() {
   const params = useLocalSearchParams();

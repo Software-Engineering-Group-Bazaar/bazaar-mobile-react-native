@@ -16,8 +16,13 @@ import { HubConnectionBuilder, LogLevel, HubConnectionState } from '@microsoft/s
 import { useLocalSearchParams, Stack, useRouter } // Import from expo-router
 from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import { useTranslation } from "react-i18next";
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig.extra.apiBaseUrl;
+const USE_DUMMY_DATA = Constants.expoConfig.extra.useDummyData;
+
 
 // --- CONFIGURATION & MOCKS ---
 // const USE_DUMMY_DATA = true; // SET TO false TO USE LIVE API/SIGNALR

@@ -3,6 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ActivityInd
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
+
 export default function NewPasswordScreen() {
   const router = useRouter();
   // Removed useLocalSearchParams as token (code) is now entered manually
@@ -43,7 +49,7 @@ export default function NewPasswordScreen() {
     try {
       // Verify this endpoint and method with your backend API documentation
       // const response = await fetch('https://bazaar-system.duckdns.org/api/Auth/newpassword', {
-      const response = await fetch('https://bazaar-system.duckdns.org/api/PasswordReset/reset-password', {
+      const response = await fetch(baseURL + '/api/PasswordReset/reset-password', {
         method: 'POST', // Or 'POST' if required by the backend for this payload
         headers: {
           'Content-Type': 'application/json',
