@@ -6,7 +6,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react'; // <<< Dodaj useState
 import 'react-native-reanimated';
 import * as Notifications from 'expo-notifications';
-import { CopilotProvider } from 'react-native-copilot';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
