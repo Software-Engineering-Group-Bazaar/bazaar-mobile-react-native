@@ -1,33 +1,76 @@
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { Modal, TouchableOpacity, Text, StyleSheet, View, FlatList } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 
-const LanguageButton: React.FC = () => {
-  const { t, i18n } = useTranslation();
 
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
-      }}
-      style={styles.languageButton}
-    >
-      <FontAwesome name="language" size={18} color="#4E8D7C" />
-      <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
-    </TouchableOpacity>
-  );
+const LANGUAGES = [
+ { code: "bs", label: "Bosanski", flag: "🇧🇦" },
+ { code: "en", label: "English", flag: "🇬🇧" },
+ { code: "de", label: "Deutsch", flag: "🇩🇪" },
+ { code: "es", label: "Español", flag: "🇪🇸" },
+];
+
+
+const LanguageButton: React.FC = () => {
+ const { t, i18n } = useTranslation();
+ const [modalVisible, setModalVisible] = useState(false);
+ 
+ const changeLanguage = (code: string) => {
+   i18n.changeLanguage(code);
+   setModalVisible(false);
+ };
+
+
+ return (
+   <>
+     <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.languageButton}>
+       <FontAwesome name="language" size={13} color="#4E8D7C" />
+       <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
+     </TouchableOpacity>
+
+
+     <Modal
+       animationType="fade"
+       transparent
+       visible={modalVisible}
+       onRequestClose={() => setModalVisible(false)}
+     >
+       <TouchableOpacity
+         style={styles.modalOverlay}
+         activeOpacity={1}
+         onPressOut={() => setModalVisible(false)}
+       >
+         <View style={styles.modalContent}>
+           <Text style={styles.modalTitle}>{t('Select Language')}</Text>
+           {LANGUAGES.map((lang) => (
+             <TouchableOpacity
+               key={lang.code}
+               style={[
+                 styles.languageOption,
+                 i18n.language === lang.code && styles.selectedLanguageOption,
+               ]}
+               onPress={() => changeLanguage(lang.code)}
+             >
+               <Text style={styles.flag}>{lang.flag}</Text>
+               <Text style={styles.label}>{lang.label}</Text>
+             </TouchableOpacity>
+           ))}
+         </View>
+       </TouchableOpacity>
+     </Modal>
+   </>
+ );
 };
+
 
 const styles = StyleSheet.create({
   languageButton: {
-    position: "absolute",
-    top: "5%",
-    right: "5%",
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     backgroundColor: "#f1f5f9",
-    zIndex: 100,
+    zIndex: 10,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -35,14 +78,52 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "column",
-  },
-  languageText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: "#4E8D7C",
-    marginTop: 2,
-  },
+  },  
+ languageText: {
+   fontSize: 8,
+   fontWeight: "600",
+   color: "#4E8D7C",
+   marginTop: 2,
+ },
+ modalOverlay: {
+   flex: 1,
+   backgroundColor: "rgba(0,0,0,0.4)",
+   justifyContent: "center",
+   alignItems: "center",
+ },
+ modalContent: {
+   backgroundColor: "#fff",
+   width: "80%",
+   borderRadius: 16,
+   padding: 20,
+   alignItems: "center",
+ },
+ modalTitle: {
+   fontSize: 16,
+   fontWeight: "600",
+   marginBottom: 16,
+ },
+ languageOption: {
+   flexDirection: "row",
+   alignItems: "center",
+   paddingVertical: 10,
+   width: "100%",
+   justifyContent: "flex-start",
+   paddingHorizontal: 10,
+   borderBottomWidth: 0.5,
+   borderBottomColor: "#ccc",
+ },
+ selectedLanguageOption: {
+   backgroundColor: "#e0f2f1",
+   borderRadius: 8,
+ },
+ flag: {
+   fontSize: 20,
+   marginRight: 10,
+ },
+ label: {
+   fontSize: 16,
+ },
 });
 
 export default LanguageButton;

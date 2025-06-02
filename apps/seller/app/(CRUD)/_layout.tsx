@@ -3,13 +3,22 @@ import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { CopilotProvider } from "react-native-copilot";
 
 export default function CRUDLayout() {
   const { t } = useTranslation();
 const router = useRouter();
   return (
+    <CopilotProvider
+      labels={{
+        finish: t("Finish"),
+        next: t("Next"),
+        skip: t("Skip"),
+        previous: t("Previous")
+      }}>
     <Stack
       screenOptions={{
+        headerShown: true,
         headerRight: () => <NotificationIcon />,
       }}
     >
@@ -76,5 +85,6 @@ const router = useRouter();
         }}
       />
     </Stack>
+    </CopilotProvider>
   );
 }
