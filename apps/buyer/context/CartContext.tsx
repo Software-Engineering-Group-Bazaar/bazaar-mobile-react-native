@@ -20,6 +20,7 @@ interface Product {
   photos: string[];                // Promijenjeno iz imageUrl u niz stringova
   isActive: boolean;
   wholesaleThreshold?: number;
+  pointRate?: number;
 }
 
 interface CartContextType {

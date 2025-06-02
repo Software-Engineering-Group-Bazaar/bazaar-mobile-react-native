@@ -6,7 +6,6 @@ import CustomHeader from 'proba-package/custom-header/index';
 export default function OrdersLayout() {
   return (
     <>
-      <CustomHeader />
       <Stack>
         <Stack.Screen
           name="index"

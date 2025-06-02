@@ -4,62 +4,39 @@ import { useTranslation } from "react-i18next";
 import React, { useState, useEffect } from "react";
 import { apiFetchActiveStore } from "../api/storeApi";
 import { Store } from "../types/prodavnica";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import CreateButton from "@/components/ui/buttons/CreateButton";
 import TouchableCard from "@/components/ui/cards/TouchableCard";
 import * as SecureStore from "expo-secure-store";
 import LogoutButton from "@/components/ui/buttons/LogoutButton";
 import { logoutApi } from "../api/auth/logoutApi";
-import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
-import {
-  CopilotStep,
-  walkthroughable,
-  useCopilot,
-  CopilotProvider,
-} from "react-native-copilot";
 
-const WalkthroughableView = walkthroughable(View);
-
-function HiddenHelpStarter() {
-  const { start } = useCopilot();
-
-  useEffect(() => {
-    // @ts-ignore
-    global.triggerHelpTutorial = () => start();
-    return () => {
-      // @ts-ignore
-      delete global.triggerHelpTutorial;
-    };
-  }, [start]);
-
-  return null;
-}
-
-function StoresScreen() {
+export default function StoresScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [store, setStore] = useState<Store>();
 
   const handleLogout = async () => {
-    try {
-      const token = await SecureStore.getItemAsync("accessToken");
-
-      const response = await logoutApi(token);
-
-      if (response === 200) {
-        await SecureStore.deleteItemAsync("accessToken");
-        Alert.alert(t("logout_title"), t("logout_message"));
+      try {
+        const token = await SecureStore.getItemAsync("accessToken");
+  
+        const response = await logoutApi(token);
+  
+        if (response === 200) {
+          await SecureStore.deleteItemAsync("accessToken");
+          Alert.alert(t("logout_title"), t("logout_message"));
+          router.replace("/(auth)/login");
+        } else {
+          Alert.alert(t("error"), t("logout_failed"));
+          return;
+        }
         router.replace("/(auth)/login");
-      } else {
-        Alert.alert(t("error"), t("logout_failed"));
-        return;
+      } catch (error) {
+        console.error("Logout error:", error);
+        Alert.alert(t("error"), t("something_went_wrong"));
       }
-      router.replace("/(auth)/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-      Alert.alert(t("error"), t("something_went_wrong"));
-    }
-  };
+    };
 
   useEffect(() => {
     async function getStore() {
@@ -100,14 +77,9 @@ function StoresScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <HiddenHelpStarter />
-      <HelpAndLanguageButton showHelpButton={true} />
       <View style={styles.topBar}>
-        <CopilotStep text={t("Logout Button") } order={1} name="logoutButton">
-          <WalkthroughableView>
-            <LogoutButton onPress={handleLogout} />
-          </WalkthroughableView>
-        </CopilotStep>
+        <LogoutButton onPress={handleLogout} />
+        <LanguageButton />
       </View>
 
       <ScrollView
@@ -124,19 +96,15 @@ function StoresScreen() {
             />
           ) : (
             <View style={styles.cardsContainer}>
-              <CopilotStep text={t("Store Details") } order={2} name="storeInfo">
-                <WalkthroughableView>
-                  <TouchableCard
-                    title={store.name}
-                    textRows={[store.categoryName, store.description]}
-                    onPress={() =>
-                      router.push(
-                        `/(CRUD)/prodavnica_detalji?store=${JSON.stringify(store)}`
-                      )
-                    }
-                  />
-                </WalkthroughableView>
-              </CopilotStep>
+              <TouchableCard
+                title={store.name}
+                textRows={[store.categoryName, store.description]}
+                onPress={() =>
+                  router.push(
+                    `/(CRUD)/prodavnica_detalji?store=${JSON.stringify(store)}`
+                  )
+                }
+              />
               <TouchableCard
                 title={t("view_orders")}
                 textRows={[
@@ -167,21 +135,6 @@ function StoresScreen() {
   );
 }
 
-export default function StoresScreenContent() {
-  const { t } = useTranslation();
-  return (
-    <CopilotProvider
-      labels={{
-        finish: t("Finish"),
-        next: t("Next"),
-        skip: t("Skip"),
-        previous: t("Previous")
-      }}>
-      <StoresScreen />
-    </CopilotProvider>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -195,7 +148,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 12,
     paddingHorizontal: 16,
-    height: 55, // fixed height to match typical navbar size
+    height: 55,      // fixed height to match typical navbar size
     backgroundColor: "#fff",
   },
 });

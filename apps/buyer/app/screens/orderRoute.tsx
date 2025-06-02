@@ -1,13 +1,21 @@
 // RouteScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ActivityIndicator, Alert, Button, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Alert, Button, TouchableOpacity, Text, SafeAreaView, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE, LatLng } from 'react-native-maps';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
 import * as SecureStore from 'expo-secure-store';
+import { t } from 'i18next';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
 
-const GOOGLE_API_KEY = 'AIzaSyCr2UAxBSN0eZxa5ahJKokuzJZy9Em203Q';
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
+
+const GOOGLE_API_KEY = Constants.expoConfig!.extra!.googleMapsApiKey as string;
 
 export default function RouteScreen() {
   const params = useLocalSearchParams();
@@ -15,6 +23,18 @@ export default function RouteScreen() {
   const orderId = params.orderId as string;
   const ownerId = params.ownerId as string; // if needed
   const addressId = parseInt(params.addressId as string);
+
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  
+      // Funkcija za pokretanje walkthrough-a
+      const startWalkthrough = () => {
+          setShowWalkthrough(true);
+      };
+  
+      // Funkcija za završetak walkthrough-a
+      const finishWalkthrough = () => {
+          setShowWalkthrough(false);
+      };
 
   const [loading, setLoading] = useState(true);
   const [coords, setCoords] = useState<{ seller: LatLng; buyer: LatLng; route: LatLng[] } | null>(null);
@@ -133,6 +153,50 @@ export default function RouteScreen() {
   const midLng = (seller.longitude + buyer.longitude) / 2;
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('order_route')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Tooltip
+                          isVisible={showWalkthrough}
+                          content={
+                            <View style={styles.tooltipContent}>
+                              <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                                {t('tutorial_order_route_screen')}
+                              </Text>
+                              <View style={styles.tooltipButtonContainer}>
+                                <TouchableOpacity
+                                  style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                                  onPress={finishWalkthrough}
+                                >
+                                  <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                          }
+                          placement="center" // Ili "bottom"
+                          onClose={finishWalkthrough}
+                          tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                          useReactNativeModal={true}
+                          arrowSize={{ width: 16, height: 8 }}
+                          showChildInTooltip={true}
+                        ></Tooltip>
     <View style={{ flex: 1 }}>
       <MapView
         provider={PROVIDER_GOOGLE}
@@ -144,8 +208,8 @@ export default function RouteScreen() {
           longitudeDelta: Math.abs(seller.longitude - buyer.longitude) * 2,
         }}
       >
-        <Marker coordinate={seller} title="Seller" pinColor="blue" />
-        <Marker coordinate={buyer} title="Buyer" pinColor="green" />
+        <Marker coordinate={seller} title={t("seller")} pinColor="blue" />
+        <Marker coordinate={buyer} title={t("buyer")} pinColor="green" />
         <Polyline coordinates={route} strokeWidth={3} />
       </MapView>
       <View style={styles.button}>
@@ -154,10 +218,90 @@ export default function RouteScreen() {
         </TouchableOpacity>
       </View>
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+    tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+   tooltipContent: {
+        alignItems: 'center',
+        padding: 10, 
+        backgroundColor: 'white',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    tooltipButtonBase: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        marginHorizontal: 5,
+        elevation: 2,
+        minWidth: 80,
+        alignItems: 'center',
+    },
+    tooltipButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    tooltipFinishButton: {
+        backgroundColor: '#4E8D7C', // Zelena boja
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        marginHorizontal: 5,
+    },
   map: { flex: 1 },
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   button: { position: 'absolute', 

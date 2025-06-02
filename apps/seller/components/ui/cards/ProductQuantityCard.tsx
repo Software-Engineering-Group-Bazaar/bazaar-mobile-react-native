@@ -51,16 +51,15 @@ export default ProductQuantityCard;
 
 const styles = StyleSheet.create({
   cardBody: {
-    marginVertical: 5,
+    marginVertical: 20,
     width: "100%",
-    paddingTop: 5,
+    height: 20,
   },
   cardInnerBody: {
-    flexDirection: "row",
-    alignItems: "center",
+    paddingRight: 10,
     justifyContent: "space-between",
+    flexDirection: "row",
     backgroundColor: "#fff",
-    paddingRight: 15,
   },
   productImage: {
     height: "100%",
@@ -76,20 +75,16 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#ccc",
     marginHorizontal: 16, // makes the line not reach the edges
-    marginVertical: 15,
+    marginVertical: 5,
   },
   imageAdnTextContainer: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1, // Take up remaining space
   },
   titleText: {
     fontWeight: "bold",
     fontSize: 20,
     color: "#333",
-    flexShrink: 1, // allow text to wrap if too long
-    flexWrap: "wrap",
-    marginRight: 10,
   },
   categoryText: {
     fontWeight: "200",

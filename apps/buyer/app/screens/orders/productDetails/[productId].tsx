@@ -1,12 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity , TextInput, Alert} from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity , TextInput, Alert, Dimensions,
+  SafeAreaView, Platform
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface ProductCategory {
   id: number;
@@ -42,6 +51,19 @@ const ProductDetailsScreen = () => {
   const { productId, quantity } = useLocalSearchParams();
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
+
+   const buttonRef = useRef(null); 
+   const [showButtonTooltip, setShowButtonTooltip] = useState(false);
+  
+    // funkcija za pokretanje walkthrougha
+    const startWalkthrough = () => {
+      setShowButtonTooltip(true);
+    };
+  
+    // funkcija za zatvaranje tooltipa
+    const closeWalkthrough = () => {
+      setShowButtonTooltip(false);
+    };
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,7 +119,7 @@ const ProductDetailsScreen = () => {
         // Params passed here will be available in ChatScreen via `useLocalSearchParams`
     
           router.push({
-          pathname: `(tabs)/chat/${data.id}`, // Dynamic route using conversation ID
+          pathname: `(tabs)/chat/${data.id}` as any, // Dynamic route using conversation ID
           params: {
             // conversationId is already part of the path, but you can pass it explicitly if needed
             // or if your ChatScreen expects it as a query param rather than a path segment.
@@ -170,16 +192,58 @@ const ProductDetailsScreen = () => {
 
   if (!product) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('product_details')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Product not found</Text>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Text style={styles.backButtonText}>Go Back</Text>
         </TouchableOpacity>
       </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('product_details')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+    <View style={styles.outerContainer}>
     <ScrollView style={styles.container}>
 
       {/* sekcija sa slikama i strelicama */}
@@ -251,15 +315,119 @@ const ProductDetailsScreen = () => {
   )}
 
       </View>
-          {/* Chat button */}
-          <TouchableOpacity style={styles.chatButton} onPress={handleConversationPress}>
+         
+    </ScrollView>
+     {/* Chat button */}
+          <Tooltip
+        isVisible={showButtonTooltip}
+        content={
+          <View style={styles.tooltipContent}>
+            <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              {t('tutorial_chat_button_explanation')}
+            </Text>
+            {/*dugme "Završi" unutar tooltipa */}
+            <TouchableOpacity
+              style={styles.tooltipCloseButton}
+              onPress={closeWalkthrough}
+            >
+              <Text style={styles.tooltipCloseButtonText}>
+                {t('finish')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
+        placement="left"
+        onClose={closeWalkthrough} 
+        tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+        useReactNativeModal={true}
+        arrowSize={{ width: 16, height: 8 }}
+      >
+          <TouchableOpacity style={styles.chatButton} ref={buttonRef} onPress={handleConversationPress}>
             <FontAwesome name="comments" size={24} color="white" />
           </TouchableOpacity>
-    </ScrollView>
+          </Tooltip>
+    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+    outerContainer: {
+   flex: 1,
+   position: 'relative',} ,
+  tooltipContent: {
+    alignItems: 'center', 
+    padding: 5,
+  },
+  tooltipCloseButton: {
+    marginTop: 10,
+    backgroundColor: '#4E8D7C', // Boja dugmeta
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  tooltipCloseButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    top: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
   quantityInput: {
     width: 100,
     height: 40,
@@ -457,18 +625,18 @@ const styles = StyleSheet.create({
       fontWeight: '600',
     },
         chatButton: {
-        position: 'absolute',
-        marginTop:450,
-        right: 30,
-        backgroundColor: '#4E8D7C',
-        padding: 15,
-        borderRadius: 50,
-        shadowColor: '#000',
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-        zIndex: 999
-        },
+    position: 'absolute', // KLJUČNO: Dugme je fiksno u odnosu na outerContainer
+    bottom: 150,          // Podesi vertikalnu poziciju po potrebi
+    right: 30,           // Podesi horizontalnu poziciju po potrebi
+    backgroundColor: '#4E8D7C',
+    padding: 15,
+    borderRadius: 50,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 999 // Osiguraj da je iznad ostalog sadržaja
+  },
    });
 
    export default ProductDetailsScreen;

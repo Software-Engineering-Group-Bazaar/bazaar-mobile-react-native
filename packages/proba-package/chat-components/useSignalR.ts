@@ -40,7 +40,7 @@ export const useSignalR = (conversationId?: number) => {
       }
 
       const connection = new signalR.HubConnectionBuilder()
-        .withUrl('https://bazaar-system.duckdns.org/chathub', {
+        .withUrl(`${baseURL}/chathub`, {
           accessTokenFactory: async () => storedToken,
         })
         .withAutomaticReconnect()

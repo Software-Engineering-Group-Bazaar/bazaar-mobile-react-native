@@ -15,6 +15,23 @@ prepare_react_native_project!
 
 target 'buyer' do
   use_expo_modules!
+  pod 'GoogleUtilities',              :modular_headers => true
+  pod 'FirebaseCoreInternal',         :modular_headers => true
+  pod 'FirebaseABTesting',            :modular_headers => true
+  pod 'FirebaseRemoteConfig',         :modular_headers => true
+  pod 'FirebaseCoreExtension',        :modular_headers => true
+  pod 'GoogleDataTransport',          :modular_headers => true
+  pod 'nanopb',                       :modular_headers => true
+  pod 'FirebaseSessions',             :modular_headers => true
+  pod 'FirebaseCore',                 :modular_headers => true
+  pod 'FirebaseInstallations',        :modular_headers => true
+
+  rn_maps_path = '../node_modules/react-native-maps'
+  pod 'react-native-maps', path: rn_maps_path
+  pod 'react-native-google-maps', path: "../node_modules/react-native-maps/react-native-google-maps.podspec"   # AirGoogleMaps
+  pod 'GoogleMaps'                                                  # GoogleMaps SDK
+  pod 'Google-Maps-iOS-Utils'
+
 
   if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
     config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];

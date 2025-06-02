@@ -19,6 +19,7 @@ import {
   Profile,
   LoginManager,
 } from "react-native-fbsdk-next";
+import i18next from "../src/i18n/i18n.config";
 
 // Add Google Sign-In import
 import {
@@ -30,7 +31,11 @@ import {
 
 import * as SecureStore from "expo-secure-store";
 
-import { baseURL } from 'proba-package';
+import Constants from 'expo-constants';
+// import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
 
 export default function SignIn() {
   const router = useRouter();
@@ -42,16 +47,34 @@ export default function SignIn() {
 
   useEffect(() => {
     GoogleSignin.configure({
-      iosClientId:
-        "792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com",
-      webClientId:
-        "792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com",
+      iosClientId: Constants.expoConfig!.extra!.googleIosClientId as string,
+        // "792696522665-dvhgjia0avus08gcni5rbvift7eki3qt.apps.googleusercontent.com",
+      webClientId: Constants.expoConfig!.extra!.googleWebClientId as string,
+        // "792696522665-mba0jlupiik9gk97q1qb6q3ctv33vk7t.apps.googleusercontent.com",
       profileImageSize: 150,
     });
   }, []);
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "en" ? "bs" : "en");
+    let lang;
+    switch (i18next.language) {
+      case "en":
+        lang = "bs";
+        break;
+      case "bs":
+        lang = "de";
+        break;
+      case "de":
+        lang = "es";
+        break;
+      case "es":
+        lang = "en";
+        break;
+      default:
+        lang = "en";
+    }
+    i18next.changeLanguage(lang);
+    i18next.language = lang;
   };
 
   const loginWithGoogle = async () => {
@@ -75,7 +98,26 @@ export default function SignIn() {
          });
   
          if (!apiResponse.ok) {
-           throw new Error("Failed to login with Google");
+           let errorData = { message: "Došlo je do greške." };
+
+          const contentType = apiResponse.headers.get("Content-Type") || "";
+          if (contentType.includes("application/json")) {
+            errorData = await apiResponse.json();
+          } else {
+            const text = await apiResponse.text();
+            errorData.message = text;
+          }
+
+          console.log("Error response:", errorData);
+
+          if (errorData.message.includes("unapproved")) {
+            Alert.alert(t("access_denied"), t("account_not_approved"));
+          } else if (errorData.message.includes("inactive")) {
+            Alert.alert(t("access_denied"), t("account_not_active"));
+          } else {
+            Alert.alert(t("login_failed"), t("unexpected_error"));
+          }
+          return;
          }
   
          const result = await apiResponse.text();
@@ -154,6 +196,11 @@ export default function SignIn() {
   };
 
   const onSignInPress = async () => {
+    if(USE_DUMMY_DATA){
+      router.replace('/(tabs)/home');
+      return;
+    }
+
     if (!email.trim() || !password.trim()) {
       Alert.alert(t('error'), t('fill_all_fields'));
       return;
@@ -170,23 +217,38 @@ export default function SignIn() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, app:"buyer" }) 
       });
+
+      if(!loginRes.ok){
+        let errorData = { message: "Došlo je do greške." };
+
+          const contentType = loginRes.headers.get("Content-Type") || "";
+          if (contentType.includes("application/json")) {
+            errorData = await loginRes.json();
+          } else {
+            const text = await loginRes.text();
+            errorData.message = text;
+          }
+
+          console.log("Error response:", errorData);
+
+          if (errorData.message.includes("unapproved")) {
+            Alert.alert(t("access_denied"), t("account_not_approved"));
+          } else if (errorData.message.includes("inactive")) {
+            Alert.alert(t("access_denied"), t("account_not_active"));
+          } else {
+            Alert.alert(t("login_failed"), t("unexpected_error"));
+          }
+          return;
+      }
   
       const loginData: any = await loginRes.json();
   
-      if (loginRes.status != 200) {
-        Alert.alert(t('login_failed'), t('invalid_credentials'));
-        return;
-      }
+      //if (loginRes.status != 200) {
+        //Alert.alert(t('login_failed'), t('invalid_credentials'));
+        //return;
+      //}
 
-  
-      // Step 3: Destructure the token and approval status from loginData
       const { token, mail } = loginData;
-
-      // Step 4: Check if the account is approved
-      if (mail === false) {
-        Alert.alert(t('access_denied'), t('account_not_approved'));
-        return;
-      }
 
       // Step 5: Store the token securely
       await SecureStore.setItemAsync('auth_token', token);
@@ -205,7 +267,7 @@ export default function SignIn() {
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
         <FontAwesome name="language" size={18} color="#4E8D7C" />
-        <Text style={styles.languageText}>{i18n.language.toUpperCase()}</Text>
+        <Text style={styles.languageText}>{i18next.language.toUpperCase()}</Text>
       </TouchableOpacity>
 
       <View style={styles.titleContainer}>

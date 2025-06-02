@@ -3,9 +3,9 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import React from "react";
 
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import { InfoCard } from "@/components/ui/cards/InfoCard";
-import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 export default function PregledProdavnice() {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ export default function PregledProdavnice() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
-        <HelpAndLanguageButton showHelpButton={false} />
+        <LanguageButton />
 
         <InfoCard icon="store" title={t("store_name")} text={store.name} />
 

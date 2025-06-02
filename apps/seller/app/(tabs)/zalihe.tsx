@@ -9,8 +9,8 @@ import {
   FlatList,
   Text,
 } from "react-native";
-import React, { useCallback, useState, useEffect } from "react";
-import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import ProductQuantityCard from "@/components/ui/cards/ProductQuantityCard";
 import { apiFetchAllProductsForStore } from "../api/productApi";
 import { Product } from "../types/proizvod";
@@ -22,31 +22,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { InventoryItem } from "../types/InventoryItem";
 import SubmitButton from "@/components/ui/input/SubmitButton";
-import {
-  CopilotStep,
-  walkthroughable,
-  useCopilot,
-  CopilotProvider,
-} from "react-native-copilot";
-import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
-
-function HiddenHelpStarter() {
-  const { start } = useCopilot();
-
-  useEffect(() => {
-    // @ts-ignore
-    global.triggerHelpTutorial = () => {
-      console.log("Tutorial triggered from global method"); // ✅ ADD THIS
-      start();
-    };
-    return () => {
-      // @ts-ignore
-      delete global.triggerHelpTutorial;
-    };
-  }, [start]);
-
-  return null;
-}
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 
 const ZaliheScreen = () => {
   const { t } = useTranslation();
@@ -54,8 +30,6 @@ const ZaliheScreen = () => {
   const [productInventories, setProductInventories] = useState<
     { product: Product; inventory: InventoryItem }[]
   >([]);
-
-  const WalkthroughableView = walkthroughable(View);
 
   useFocusEffect(
     useCallback(() => {
@@ -140,7 +114,7 @@ const ZaliheScreen = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <HelpAndLanguageButton showHelpButton={true} />
+      <LanguageButton />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -151,86 +125,53 @@ const ZaliheScreen = () => {
           style={{ paddingBottom: "20%" }}
         >
           <View style={styles.container}>
-            {productInventories.length > 0 && (
-            <CopilotStep
-              text={t("adjust_quantity_tutorial")}
-              order={1}
-              name="inventoryList"
-            >
-              <WalkthroughableView>
-                <FlatList
-                  style={{ width: "100%" }}
-                  data={productInventories}
-                  keyExtractor={(item: any) => item.product.id.toString()}
-                  renderItem={({ item, index }) => {
-                    const isOutOfStock = item.inventory.quantity === 0;
+            <Text style={styles.titleText}>{t("inventory_title")}</Text>
+            {productInventories.length != 0 && (
+              <FlatList
+                style={{ width: "100%" }}
+                data={productInventories}
+                keyExtractor={(item) => item.product.id.toString()}
+                renderItem={({ item }) => {
+                  const isOutOfStock = item.inventory.quantity === 0;
 
-                    return (
-                      <ProductQuantityCard
-                        item={item.product}
-                        value={item.inventory.quantity}
-                        outOfStock={isOutOfStock}
-                        onChange={(newQuantity) =>
-                          handleQuantityChange(item.product.id, newQuantity)
-                        }
-                      />
-                    );
-                  }}
-                />
-              </WalkthroughableView>
-            </CopilotStep>
-          )}
+                  return (
+                    <ProductQuantityCard
+                      item={item.product}
+                      value={item.inventory.quantity}
+                      outOfStock={isOutOfStock} 
+                      onChange={(newQuantity) =>
+                        handleQuantityChange(item.product.id, newQuantity)
+                      }
+                    />
+                  );
+                }}
+              />
+            )}
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-
       <View style={styles.buttonWrapper}>
-        <CopilotStep
-          text={t("SaveInventoryUpdate")}
-          order={2}
-          name="SaveInventoryUpdate"
-        >
-          <WalkthroughableView>
-            <SubmitButton
-              buttonText={t("save_changes")}
-              onPress={handleSubmit}
-            />
-          </WalkthroughableView>
-        </CopilotStep>
+        <SubmitButton buttonText={t("save_changes")} onPress={handleSubmit} />
       </View>
     </View>
   );
 };
 
-export default function ZaliheScreenContent() {
-  const { t } = useTranslation();
-  return (
-    <CopilotProvider
-      labels={{
-        finish: t("Finish"),
-        next: t("Next"),
-        skip: t("Skip"),
-        previous: t("Previous")
-      }}>
-      <HiddenHelpStarter />
-      <ZaliheScreen />
-    </CopilotProvider>
-  );
-}
+export default ZaliheScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 80
+    alignItems: "center",
   },
   titleText: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
     color: "#4E8D7C",
-    marginVertical: 50,
-    marginHorizontal: 30
+    paddingTop: 50,
+    marginVertical: 0,
   },
   buttonWrapper: {
     position: "absolute",

@@ -25,7 +25,7 @@ const NotificationIcon = () => {
   return (
     <View style={{ paddingRight: 16 }}>
       <TouchableOpacity
-        onPressIn={() => setVisible(true)}
+        onPress={() => setVisible(true)}
         style={{ position: "relative" }}
       >
         <Text style={{ fontSize: 24 }}>🔔</Text>

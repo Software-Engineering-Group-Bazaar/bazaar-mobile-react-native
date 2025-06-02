@@ -14,7 +14,12 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import * as SecureStore from 'expo-secure-store'; // Treba SecureStore ovdje
 import { Platform, Alert } from 'react-native';
-import { baseURL } from 'proba-package';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 const AUTH_TOKEN_KEY = 'auth_token'; // Koristite konstantu
 const SENT_PUSH_TOKEN_KEY = 'sentPushToken'; // Koristite konstantu
@@ -170,7 +175,7 @@ export default function TabLayout() {
       },
       tabBarActiveTintColor: '#4e8d7c',
       tabBarInactiveTintColor: '#6B7280',
-      header: () => <CustomHeader />
+      headerShown:false
     }}>
       <Tabs.Screen
         name="home"
