@@ -320,5 +320,6 @@
   "help_pregled_reviews_card": "This is a display of a review. You can read the comment and respond to it.",
   "help_pregled_reviews_no_reviews": "If there are no reviews for your store, this message will be displayed.",
   "help_pregled_reviews_refresh": "Pull the list down to refresh the reviews.",
-  "Logout Button": "Clicking this button will log you out of the application and return you to the Login screen."
+  "Logout Button": "Clicking this button will log you out of the application and return you to the Login screen.",
+  "Select Language": "Select Language"
 }

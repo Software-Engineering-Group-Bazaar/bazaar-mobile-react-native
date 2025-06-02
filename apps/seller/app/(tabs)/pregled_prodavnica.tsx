@@ -103,7 +103,7 @@ function StoresScreen() {
       <HiddenHelpStarter />
       <HelpAndLanguageButton showHelpButton={true} />
       <View style={styles.topBar}>
-        <CopilotStep text={t("Loggout Button") } order={1} name="logoutButton">
+        <CopilotStep text={t("Logout Button") } order={1} name="logoutButton">
           <WalkthroughableView>
             <LogoutButton onPress={handleLogout} />
           </WalkthroughableView>

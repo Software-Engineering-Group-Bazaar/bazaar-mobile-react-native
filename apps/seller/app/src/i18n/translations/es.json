@@ -320,5 +320,6 @@
   "help_pregled_reviews_card": "Esta es la visualización de una reseña. Puede leer el comentario y responderlo.",
   "help_pregled_reviews_no_reviews": "Si no hay reseñas para su tienda, se mostrará este mensaje.",
   "help_pregled_reviews_refresh": "Deslice la lista hacia abajo para actualizar las reseñas.",
-  "Logout Button": "Al hacer clic en este botón, cerrarás sesión en la aplicación y serás redirigido a la pantalla de inicio de sesión."
+  "Logout Button": "Al hacer clic en este botón, cerrarás sesión en la aplicación y serás redirigido a la pantalla de inicio de sesión.",
+  "Select Language": "Seleccionar idioma"
 }

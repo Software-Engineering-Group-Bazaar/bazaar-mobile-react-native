@@ -13,10 +13,9 @@ const LANGUAGES = [
 
 
 const LanguageButton: React.FC = () => {
- const { i18n } = useTranslation();
+ const { t, i18n } = useTranslation();
  const [modalVisible, setModalVisible] = useState(false);
-
-
+ 
  const changeLanguage = (code: string) => {
    i18n.changeLanguage(code);
    setModalVisible(false);
@@ -43,7 +42,7 @@ const LanguageButton: React.FC = () => {
          onPressOut={() => setModalVisible(false)}
        >
          <View style={styles.modalContent}>
-           <Text style={styles.modalTitle}>Select Language</Text>
+           <Text style={styles.modalTitle}>{t('Select Language')}</Text>
            {LANGUAGES.map((lang) => (
              <TouchableOpacity
                key={lang.code}

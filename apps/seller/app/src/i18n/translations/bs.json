@@ -320,5 +320,6 @@
   "help_pregled_reviews_card": "Ovo je prikaz jedne recenzije. Možete pročitati komentar i odgovoriti na njega.",
   "help_pregled_reviews_no_reviews": "Ako nema recenzija za vašu prodavnicu, prikazat će se ova poruka.",
   "help_pregled_reviews_refresh": "Povucite listu prema dole da biste osvježili recenzije.",
-  "Loggout Button": "Klikom na ovo dugme ćete biti odjavljeni s aplikacije i vraćeni na ekran za Prijavu."
+  "Logout Button": "Klikom na ovo dugme ćete biti odjavljeni s aplikacije i vraćeni na ekran za Prijavu.",
+  "Select Language": "Odaberite jezik"
 }
