@@ -1,5 +1,5 @@
 // app/(tabs)/orders/index.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,21 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  Dimensions,
+  SafeAreaView,
+  Platform
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import Tooltip from 'react-native-walkthrough-tooltip';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface Store {
   id: number;
@@ -64,6 +73,32 @@ export default function OrdersScreen() {
   const [stores, setStores] = useState<Record<string, string>>({});
   const router = useRouter();
 
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [walkthroughStep, setWalkthroughStep] = useState(0);
+  const firstOrderDetailsButtonRef = useRef(null);
+  const firstOrderReviewButtonRef = useRef(null);
+
+  //fje za walkthrough 
+  const startWalkthrough = () => {
+    if (orders.length > 0) {
+      setShowWalkthrough(true);
+      setWalkthroughStep(1); 
+    }
+  };
+
+  const goToNextStep = () => {
+    setWalkthroughStep(prevStep => prevStep + 1);
+  };
+
+  const goToPreviousStep = () => {
+    setWalkthroughStep(prevStep => prevStep - 1);
+  };
+
+  const finishWalkthrough = () => {
+    setShowWalkthrough(false);
+    setWalkthroughStep(0);
+  };
+
   useEffect(() => {
     const loadOrders = async () => {
       setLoading(true);
@@ -102,6 +137,26 @@ export default function OrdersScreen() {
   }, []);
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('my_orders')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
       {loading ? (
         <ActivityIndicator size="large" color="#3B82F6" />
@@ -109,8 +164,9 @@ export default function OrdersScreen() {
         <FlatList
           data={orders}
           keyExtractor={o => o.id}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             const color = statusColors[item.status] || '#000';
+            const isFirstOrder = index === 0;
             return (
               <View style={styles.card}>
                 <View style={styles.infoContainer}>
@@ -128,19 +184,32 @@ export default function OrdersScreen() {
                   </Text>
                 </View>
 
-                {/* Review Button */}
-                <TouchableOpacity
-                  style={styles.reviewButton}
-                  onPress={() =>
-                    router.push({
-                      pathname: './orders/review',
-                      params: { orderId: item.id, storeId: item.storeId },
-                    })
-                  }
-                >
-                  <Ionicons name="star" size={20} color="#fff" />
-                </TouchableOpacity>
-
+                <View style={styles.buttonContainer}>
+                  {/* --- Tooltip za Details Button --- */}
+                  <Tooltip
+                    isVisible={showWalkthrough && walkthroughStep === 1 && isFirstOrder}
+                    content={
+                      <View style={styles.tooltipContent}>
+                        <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                          {t('tutorial_order_details_button')}
+                        </Text>
+                        <View style={styles.tooltipButtonContainer}>
+                          <TouchableOpacity
+                            style={[styles.tooltipButtonBase, styles.tooltipNextButton]}
+                            onPress={goToNextStep}
+                          >
+                            <Text style={styles.tooltipButtonText}>{t('next')}</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    }
+                    placement="left" // Ili "bottom" ovisno o poziciji
+                    onClose={finishWalkthrough}
+                    tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                    useReactNativeModal={true}
+                    arrowSize={{ width: 16, height: 8 }}
+                    showChildInTooltip={true}
+                  >
                 {/* Fully‐rounded Details Icon */}
                 <TouchableOpacity
                   style={styles.detailsButton}
@@ -150,9 +219,59 @@ export default function OrdersScreen() {
                       params: { orderId: item.id, storeId: item.storeId },
                     })
                   }
+                  ref={isFirstOrder ? firstOrderDetailsButtonRef : null}
                 >
-                  <Ionicons name="help-circle-outline" size={20} color="#fff" />
+                  <Ionicons name="information-circle-outline" size={20} color="#fff" />
                 </TouchableOpacity>
+                </Tooltip>
+
+                {/* --- Tooltip za Review Button --- */}
+                  <Tooltip
+                    isVisible={showWalkthrough && walkthroughStep === 2 && isFirstOrder}
+                    content={
+                      <View style={styles.tooltipContent}>
+                        <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                          {t('tutorial_order_review_button')}
+                        </Text>
+                        <View style={styles.tooltipButtonContainer}>
+                          <TouchableOpacity
+                            style={[styles.tooltipButtonBase, styles.tooltipPrevButton]}
+                            onPress={goToPreviousStep}
+                          >
+                            <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                            onPress={finishWalkthrough}
+                          >
+                            <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    }
+                    placement="bottom" 
+                    onClose={finishWalkthrough}
+                    tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                    useReactNativeModal={true}
+                    arrowSize={{ width: 16, height: 8 }}
+                    showChildInTooltip={true}
+                  >
+                {/* Review Button */}
+                <TouchableOpacity
+                  style={styles.reviewButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: './orders/review',
+                      params: { orderId: item.id, storeId: item.storeId },
+                    })
+                  }
+                  ref={isFirstOrder ? firstOrderReviewButtonRef : null}
+                >
+                  <Ionicons name="star" size={20} color="#fff" />
+                </TouchableOpacity>
+                </Tooltip>
+
+               </View>
               </View>
             );
           }}
@@ -160,22 +279,128 @@ export default function OrdersScreen() {
         />
       )}
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+  tooltipButtonBase: { 
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25, // Više zaobljeno
+        marginHorizontal: 5,
+        elevation: 2, // Mala sjena
+        minWidth: 80, // Minimalna širina
+        alignItems: 'center', // Centriraj tekst
+    },
+  tooltipContent: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  tooltipNextButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipPrevButton: {
+    backgroundColor: '#4E8D7C', 
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipFinishButton: {
+    backgroundColor: '#4E8D7C',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  tooltipButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#4E8D7C',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
   container: { flex: 1, backgroundColor: '#F3F4F6', padding: 16 },
   card: {
     backgroundColor: '#FFF',
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
-    position: 'relative',           // needed for absolute children
+    //position: 'relative',           // needed for absolute children
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 3 },
     elevation: 5,
+    flexDirection: 'row', // Align children (infoContainer and buttonContainer) in a row
+    justifyContent: 'space-between', // infoContainer to left, buttonContainer to right
+    alignItems: 'center',
   },
   infoContainer: { marginBottom: 8 },
   smallText: { fontSize: 12, color: '#6B7280', marginBottom: 4 },
@@ -184,10 +409,6 @@ const styles = StyleSheet.create({
   empty: { textAlign: 'center', color: '#6B7280', marginTop: 40 },
 
   reviewButton: {
-    
-   position: 'absolute',
-    top: 50,
-    right: 10,
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -201,10 +422,14 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
+  buttonContainer: {
+    flexDirection: 'column', 
+    alignItems:'flex-end',
+    marginRight:10
+  },
+
   detailsButton: {
-    position: 'absolute',
-    top: 8,
-    right: 10,
+
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -216,6 +441,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3,
     elevation: 4,
+    marginBottom: 10
   },
 
   buttonText: { color: '#FFF', fontSize: 14, fontWeight: '500' },

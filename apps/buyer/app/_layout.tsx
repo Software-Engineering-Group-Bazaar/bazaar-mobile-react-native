@@ -13,6 +13,9 @@ import { Alert } from 'react-native'; // Keep Alert
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CartProvider } from '@/context/CartContext';
 import CustomHeader from 'proba-package/custom-header';
+import { useTranslation } from 'react-i18next';
+// Importing i18n configuration
+import i18next from './src/i18n/i18n.config';
 // Ne treba SecureStore ovdje ako ne provjeravate token za registraciju
 // Ne trebaju funkcije registerForPushNotificationsAsync, sendTokenToBackend, getAuthTokenFromStorage ovdje
 
@@ -35,6 +38,23 @@ export default function RootLayout() {
   const router = useRouter(); // Keep for handling taps
   const notificationListener = useRef<Notifications.EventSubscription>();
   const responseListener = useRef<Notifications.EventSubscription>();
+  const {t,ready} = useTranslation();
+  // Ensure i18n is ready before rendering
+  useEffect(() => {
+    const initI18n = async () => {
+      await i18next.init({
+        lng: 'en', // Set your default language
+        fallbackLng: 'en',
+        resources: {
+          en: { translation: require('./src/i18n/translations/en.json') },
+          bs: { translation: require('./src/i18n/translations/bs.json') },
+          de: { translation: require('./src/i18n/translations/de.json') },
+          es: { translation: require('./src/i18n/translations/es.json') },
+        },
+      });
+    };
+    initI18n();
+  }, []);
 
   useEffect(() => {
     if (loaded) {
@@ -45,7 +65,7 @@ export default function RootLayout() {
 
       notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
         console.log('RootLayout: Notification Received (Foreground):', notification);
-        Alert.alert(notification.request.content.title ?? "Obavijest", notification.request.content.body ?? "");
+        // Alert.alert(notification.request.content.title ?? "Obavijest", notification.request.content.body ?? "");
       });
 
       responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
@@ -73,7 +93,7 @@ export default function RootLayout() {
     }
   }, [loaded, router]); // Add router to dependency array if used inside effect
 
-  if (!loaded) {
+  if (!loaded || !ready) {
     return null;
   }
 
@@ -88,6 +108,8 @@ export default function RootLayout() {
             <Stack.Screen name="screens/store/[storeId]" options={{ headerShown: false }} />
             <Stack.Screen name="screens/addresses" options={{ headerShown: false }} />
             <Stack.Screen name="screens/orderRoute" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/orders/ticketCreate" options={{ headerShown: false }} />
+            <Stack.Screen name="screens/myTickets" options={{ headerShown: false }}/>
             <Stack.Screen name="+not-found" />
           </Stack>
         </CartProvider>

@@ -11,10 +11,19 @@ import {
   Image,
   RefreshControl,
   Alert,
+  Dimensions, SafeAreaView, Platform
 } from 'react-native';
 import { useRouter, useFocusEffect, Stack } from 'expo-router'; // Import useRouter and useFocusEffect from expo-router
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import { Ionicons } from '@expo/vector-icons';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { useTranslation } from "react-i18next";
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig.extra.apiBaseUrl;
+const USE_DUMMY_DATA = Constants.expoConfig.extra.useDummyData;
+
 
 
 // --- CONFIGURATION & MOCKS ---
@@ -190,11 +199,24 @@ const formatConversationTimestamp = (dateString) => {
 
 
 const ConversationsListScreen = () => {
+  const { t } = useTranslation();
   const router = useRouter(); // Use useRouter from expo-router
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+
+    // Funkcija za pokretanje walkthrough-a
+    const startWalkthrough = () => {
+        setShowWalkthrough(true);
+    };
+
+    // Funkcija za završetak walkthrough-a
+    const finishWalkthrough = () => {
+        setShowWalkthrough(false);
+    };
 
   const loadConversations = useCallback(async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
@@ -300,8 +322,8 @@ const ConversationsListScreen = () => {
           )}
         </View>
         {item.ticketId && <Text style={styles.conversationTitle} numberOfLines={1}>Ticket: {item.ticketId}</Text>}
-        {item.productId && <Text style={styles.conversationTitle} numberOfLines={1}>Proizvod: {item.productName}</Text>}
-        {item.orderId && <Text style={styles.conversationTitle} numberOfLines={1}>Narudžba: {item.orderId}</Text>}
+        {item.productId && <Text style={styles.conversationTitle} numberOfLines={1}>{t('product')}: {item.productName}</Text>}
+        {item.orderId && <Text style={styles.conversationTitle} numberOfLines={1}>{t('Order')}: {item.orderId}</Text>}
         {item.conversationTitle && <Text style={styles.conversationTitle} numberOfLines={1}>{item.conversationTitle}</Text>}
         <View style={styles.row}>
           <Text style={styles.lastMessage} numberOfLines={1}>
@@ -331,6 +353,26 @@ const ConversationsListScreen = () => {
 
   if (error && !conversations.length) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('chat')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.centered}>
         <Stack.Screen options={{ title: 'Error' }} />
         <Text style={styles.errorText}>{error}</Text>
@@ -341,11 +383,56 @@ const ConversationsListScreen = () => {
             <Text style={styles.retryButtonText}>Try Again</Text>
         </TouchableOpacity>
       </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('chat')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
     <View style={styles.container}>
+              <Tooltip
+                isVisible={showWalkthrough}
+                content={
+                  <View style={styles.tooltipContent}>
+                    <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                      {t('tutorial_conversations_intro')}
+                    </Text>
+                    <View style={styles.tooltipButtonContainer}>
+                      <TouchableOpacity
+                        style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                        onPress={finishWalkthrough}
+                      >
+                        <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                }
+                placement="center" // Ili "bottom"
+                onClose={finishWalkthrough}
+                tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                useReactNativeModal={true}
+                arrowSize={{ width: 16, height: 8 }}
+                showChildInTooltip={true}
+              ></Tooltip>
       {/* Expo Router: Screen options are typically set in _layout.tsx or via <Stack.Screen /> */}
       {/* If this is the 'index' screen of a stack, its options are set in _layout.tsx's <Stack.Screen name="index" /> */}
       {/* Or you can use <Stack.Screen options={{...}} /> here if it's not an index route of a layout */}
@@ -380,10 +467,107 @@ const ConversationsListScreen = () => {
         }
       />
     </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+  tooltipContent: {
+        alignItems: 'center',
+        padding: 10, 
+        backgroundColor: 'white',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    tooltipButtonBase: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        marginHorizontal: 5,
+        elevation: 2,
+        minWidth: 80,
+        alignItems: 'center',
+    },
+    tooltipButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    tooltipFinishButton: {
+        backgroundColor: '#4E8D7C', // Zelena boja
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        marginHorizontal: 5,
+    },
+   fab: {
+        position: 'absolute',
+        bottom: 30,
+        right: 30,
+        backgroundColor: '#4E8D7C', // Prilagodi boju ako želiš
+        borderRadius: 30,
+        width: 60,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 6,
+        zIndex: 1000, // Osiguraj da je iznad ostalog sadržaja
+    },
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5', // Svijetlo siva pozadina za eleganciju
