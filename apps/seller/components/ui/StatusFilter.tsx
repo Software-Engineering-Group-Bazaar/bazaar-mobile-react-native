@@ -19,6 +19,8 @@ interface StatusFilterProps {
   sortNewestFirst: boolean;
   setSortNewestFirst: (value: boolean) => void;
   setSelectedStatuses: (statuses: OrderStatus[]) => void;
+  showOnlyStatusFilter?: boolean;
+  showOnlySortToggle?: boolean;
 }
 
 const StatusFilter: React.FC<StatusFilterProps> = ({
@@ -27,54 +29,60 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
   sortNewestFirst,
   setSortNewestFirst,
   setSelectedStatuses,
+  showOnlyStatusFilter = false,
+  showOnlySortToggle = false,
 }) => {
   const { t } = useTranslation();
 
   return (
     <View style={styles.filterWrapper}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.statusFilterContainer}
-      >
-        <TouchableOpacity
-          style={[
-            styles.statusFilterButton,
-            selectedStatuses.length === 0 && styles.statusFilterButtonActive,
-          ]}
-          onPress={() => setSelectedStatuses([])}
+      {!showOnlySortToggle && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.statusFilterContainer}
         >
-          <Text style={styles.statusFilterText}>{t('All')}</Text>
-        </TouchableOpacity>
-
-        {OrderStatusEnum.map((status) => (
           <TouchableOpacity
-            key={status}
             style={[
               styles.statusFilterButton,
-              selectedStatuses.includes(status) && styles.statusFilterButtonActive,
-              { borderColor: STATUS_COLORS[status] },
+              selectedStatuses.length === 0 && styles.statusFilterButtonActive,
             ]}
-            onPress={() => toggleStatus(status)}
+            onPress={() => setSelectedStatuses([])}
           >
-            <Text style={styles.statusFilterText}>{t(status)}</Text>
+            <Text style={styles.statusFilterText}>{t('All')}</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
 
-      <TouchableOpacity
-        style={styles.sortToggleButton}
-        onPress={() => setSortNewestFirst(!sortNewestFirst)}
-      >
-        <FontAwesome
-          name={sortNewestFirst ? "sort-amount-desc" : "sort-amount-asc"}
-          size={16}
-          color="#4E8D7C"
-        />
-        <Text style={styles.sortToggleText}>
-          {sortNewestFirst ? t("Newest First") : t("Oldest First")}
-        </Text>
-      </TouchableOpacity>
+          {OrderStatusEnum.map((status) => (
+            <TouchableOpacity
+              key={status}
+              style={[
+                styles.statusFilterButton,
+                selectedStatuses.includes(status) && styles.statusFilterButtonActive,
+                { borderColor: STATUS_COLORS[status] },
+              ]}
+              onPress={() => toggleStatus(status)}
+            >
+              <Text style={styles.statusFilterText}>{t(status)}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+
+      {!showOnlyStatusFilter && (
+        <TouchableOpacity
+          style={styles.sortToggleButton}
+          onPress={() => setSortNewestFirst(!sortNewestFirst)}
+        >
+          <FontAwesome
+            name={sortNewestFirst ? 'sort-amount-desc' : 'sort-amount-asc'}
+            size={16}
+            color="#4E8D7C"
+          />
+          <Text style={styles.sortToggleText}>
+            {sortNewestFirst ? t('Newest First') : t('Oldest First')}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -104,22 +112,22 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   sortToggleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
     marginTop: 12,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#4E8D7C",
-    backgroundColor: "#FFFFFF",
+    borderColor: '#4E8D7C',
+    backgroundColor: '#FFFFFF',
   },
   sortToggleText: {
     marginLeft: 6,
-    color: "#4E8D7C",
+    color: '#4E8D7C',
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: '500',
   },
 });
 

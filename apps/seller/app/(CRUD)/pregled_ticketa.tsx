@@ -1,5 +1,5 @@
 // File: app/(CRUD)/pregled_ticketa.tsx
-import React, { useState, useCallback } from "react"; // Ukloni useEffect ako se ne koristi direktno
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,19 +9,24 @@ import {
   RefreshControl,
   Alert,
   TextStyle,
-  TouchableOpacity
-} from "react-native"; // Dodaj Alert
-import { useRouter, useFocusEffect } from "expo-router";
+  TouchableOpacity,
+} from "react-native";
+import { useRouter, useFocusEffect, useNavigation } from "expo-router"; // Dodaj useNavigation
 import { useTranslation } from "react-i18next";
-import { apiFetchSellerTickets } from "../api/ticketApi"; // Prilagodi putanju
-import { Ticket, TicketStatus } from "../types/ticket"; // Prilagodi putanju
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
+import { apiFetchSellerTickets } from "../api/ticketApi";
+import { Ticket, TicketStatus } from "../types/ticket";
 import TouchableCard from "@/components/ui/cards/TouchableCard";
 import { FontAwesome5 } from "@expo/vector-icons";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
+
+import {
+  CopilotProvider,
+  CopilotStep,
+  walkthroughable,
+} from "react-native-copilot";
 
 const boldWeight: TextStyle["fontWeight"] = "bold";
 
-// Helperi za status (ostaju isti ili ih premesti u utils)
 const statusTextMap: Record<TicketStatus, string> = {
   [TicketStatus.REQUESTED]: "ticket_status_requested",
   [TicketStatus.OPEN]: "ticket_status_open",
@@ -49,12 +54,20 @@ const getStatusStyle = (status: TicketStatus): TextStyle => {
   return statusStyleMap[status] || { color: "black" };
 };
 
-export default function PregledTicketaScreen() {
+const WalkthroughableView = walkthroughable(View);
+const WalkthroughableTouchableOpacity = walkthroughable(TouchableOpacity);
+
+function PregledTicketaScreenContent() {
   const router = useRouter();
   const { t } = useTranslation();
+  const navigation = useNavigation(); // Za postavljanje naslova
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({ title: t("my_support_tickets") || "Moji tiketi podrške" });
+  }, [navigation, t]);
 
   const fetchTickets = async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
@@ -87,12 +100,13 @@ export default function PregledTicketaScreen() {
   }, []);
 
   const handleViewTicketDetails = (ticketId: number) => {
-    router.push({ pathname: "/(CRUD)/ticket_detalji", params: { ticketId } });
+    router.push({ pathname: "/(CRUD)/ticket_detalji", params: { ticketId: ticketId.toString() } });
   };
 
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
+        {/* Ne prikazujemo HelpAndLanguageButton dok se učitava */}
         <ActivityIndicator size="large" color="#4E8D7C" />
         <Text>{t("loading_tickets") || "Učitavanje tiketa..."}</Text>
       </View>
@@ -101,19 +115,23 @@ export default function PregledTicketaScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ 
-        flexDirection: "row", 
-        justifyContent: "space-between", 
-        padding: 10, 
-        marginTop: 20 // Increase space above the buttons
-      }}>
-        <LanguageButton />
-        <TouchableOpacity
-          onPress={() => router.push("/(CRUD)/kreiraj_ticket")}
-          style={{ marginLeft: 15 }}
+      <HelpAndLanguageButton showLanguageButton={true} showHelpButton={true} />
+
+      <View style={styles.headerContainer}>
+        {/* "+" dugme sada lijevo */}
+        <CopilotStep
+          text={t("help_pregled_ticketa_add_button") || "Kliknite ovdje da kreirate novi tiket za podršku."}
+          order={1}
+          name="addTicketButton"
         >
-          <FontAwesome5 name="plus-circle" size={30} color="#4E8D7C" />
-        </TouchableOpacity>
+          <WalkthroughableTouchableOpacity
+            onPress={() => router.push("/(CRUD)/kreiraj_ticket")}
+            style={styles.addButton} // Koristi novi stil za pozicioniranje
+          >
+            <FontAwesome5 name="plus-circle" size={30} color="#4E8D7C" />
+          </WalkthroughableTouchableOpacity>
+        </CopilotStep>
+        <View style={{flex: 1}} /> {/* Spacer da gurne HelpAndLanguageButton (koji je apsolutan) na svoje mjesto */}
       </View>
 
       <ScrollView
@@ -128,44 +146,110 @@ export default function PregledTicketaScreen() {
         }
       >
         {tickets.length === 0 && !loading ? (
-          <View style={styles.centeredInfo}>
-            <Text style={styles.noTicketsText}>
-              {t("no_tickets_found") || "Nema aktivnih tiketa."}
-            </Text>
-            <Text style={styles.noTicketsSubText}>
-              {t("pull_to_refresh_or_create") ||
-                "PovuSvite nadole da osvežite ili kreirajte novi tiket koristeći '+' dugme u gornjem desnom uglu."}
-            </Text>
-          </View>
+          <CopilotStep
+            text={t("help_pregled_ticketa_no_tickets") || "Ako nemate tiketa, prikazat će se ova poruka. Možete povući listu za osvježavanje ili kreirati novi tiket koristeći '+' dugme."}
+            order={2}
+            name="noTicketsInfo"
+          >
+            <WalkthroughableView>
+                <View style={styles.centeredInfo}>
+                    <Text style={styles.noTicketsText}>
+                        {t("no_tickets_found") || "Nema aktivnih tiketa."}
+                    </Text>
+                    <Text style={styles.noTicketsSubText}>
+                        {t("pull_to_refresh_or_create") ||
+                        "Povucite nadole da osvežite ili kreirajte novi tiket koristeći '+' dugme u gornjem desnom uglu."}
+                    </Text>
+                </View>
+            </WalkthroughableView>
+          </CopilotStep>
         ) : (
-          tickets.map((ticket) => (
-            <TouchableCard
-              key={ticket.id}
-              title={ticket.title}
-              textRows={[
-                `${t("order_ref") || "Narudžba"}: ${
-                  ticket.orderId || ticket.orderId
-                }`,
-                <Text key={`status-${ticket.id}`}>
-                  {t("status") || "Status"}:{" "}
-                  <Text style={getStatusStyle(ticket.status)}>
-                    {getStatusText(ticket.status, t)}
-                  </Text>
-                </Text>,
-                `${t("created_at") || "Kreirano"}: ${new Date(
-                  ticket.createdAt
-                ).toLocaleDateString()}`,
-              ]}
-              onPress={() => handleViewTicketDetails(ticket.id)}
-            />
-          ))
+          tickets.map((ticket, index) =>
+            index === 0 ? (
+              <CopilotStep
+                key={`copilot-wrapper-${ticket.id}`}
+                text={t("help_pregled_ticketa_card") || "Ovo je prikaz jednog od vaših tiketa. Kliknite na karticu za više detalja i komunikaciju."}
+                order={2}
+                name="firstTicketCard"
+              >
+                <WalkthroughableView>
+                  <TouchableCard
+                    key={ticket.id}
+                    title={ticket.title}
+                    textRows={[
+                      `${t("order_ref") || "Narudžba"}: ${ticket.orderId}`,
+                      <Text key={`status-${ticket.id}`}>
+                        {t("status") || "Status"}:{" "}
+                        <Text style={getStatusStyle(ticket.status)}>
+                          {getStatusText(ticket.status, t)}
+                        </Text>
+                      </Text>,
+                      `${t("created_at") || "Kreirano"}: ${new Date(
+                        ticket.createdAt
+                      ).toLocaleDateString()}`,
+                    ]}
+                    onPress={() => handleViewTicketDetails(ticket.id)}
+                  />
+                </WalkthroughableView>
+              </CopilotStep>
+            ) : (
+              <TouchableCard
+                key={ticket.id}
+                title={ticket.title}
+                textRows={[
+                  `${t("order_ref") || "Narudžba"}: ${ticket.orderId}`,
+                  <Text key={`status-${ticket.id}`}>
+                    {t("status") || "Status"}:{" "}
+                    <Text style={getStatusStyle(ticket.status)}>
+                      {getStatusText(ticket.status, t)}
+                    </Text>
+                  </Text>,
+                  `${t("created_at") || "Kreirano"}: ${new Date(
+                    ticket.createdAt
+                  ).toLocaleDateString()}`,
+                ]}
+                onPress={() => handleViewTicketDetails(ticket.id)}
+              />
+            )
+          )
         )}
       </ScrollView>
     </View>
   );
 }
 
+export default function PregledTicketaScreen() {
+  const { t } = useTranslation();
+  return (
+    <CopilotProvider
+      labels={{
+        finish: t("Finish") || "Završi",
+        next: t("Next") || "Dalje",
+        skip: t("Skip") || "Preskoči",
+        previous: t("Previous") || "Nazad",
+      }}
+      overlay="svg"
+      animated
+    >
+      <PregledTicketaScreenContent />
+    </CopilotProvider>
+  );
+}
+
 const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Sada će "+" biti lijevo, a spacer će zauzeti prostor do HelpButtona
+    paddingHorizontal: 15,
+    paddingTop: 15,
+    paddingBottom: 5,
+    alignItems: "center",
+    marginTop: 45, // Dodaj marginTop da header ne ide ispod status bara i HelpButtona
+  },
+  addButton: { // Stil za TouchableOpacity oko FontAwesome5
+    padding: 5, // Malo veći klikabilni prostor
+    // Ne treba marginLeft jer je sada prvi element u redu
+  },
   centered: {
     flex: 1,
     justifyContent: "center",
@@ -174,19 +258,19 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   centeredInfo: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    marginTop: 50, // Da ne bude skroz na vrhu
   },
   scrollContent: {
     paddingHorizontal: 16,
     paddingBottom: 20,
-    paddingTop: 10, // Dodaj malo prostora na vrhu ako LanguageButton smeta
+    // paddingTop: 10, // Uklonjeno, jer header ima svoj padding
+    flexGrow: 1,
   },
   noTicketsText: {
-    fontSize: 18, // Povećaj font
+    fontSize: 18,
     color: "#6B7280",
     textAlign: "center",
     marginBottom: 10,
@@ -195,5 +279,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#6B7280",
     textAlign: "center",
+  },
+  stepNumber: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#4E8D7C",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  stepNumberText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
-import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
@@ -12,6 +11,7 @@ import {
   apiGetRegionsAsync,
   apiGetPlacesAsync, // New function for places
 } from "../api/storeApi";
+import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 export default function PostavkeProdavnice() {
   const { t } = useTranslation();
@@ -113,7 +113,7 @@ export default function PostavkeProdavnice() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-      <LanguageButton />
+      <HelpAndLanguageButton showHelpButton={false} />
       <View style={styles.container}>
         <Text style={styles.title}>{t("store_settings")}</Text>
 
