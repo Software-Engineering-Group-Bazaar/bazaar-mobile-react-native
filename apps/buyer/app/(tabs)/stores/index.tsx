@@ -483,6 +483,30 @@ const StoresScreen = () => {
               </TouchableOpacity>
             </View>
           </View>
+          <Tooltip
+                          isVisible={showWalkthrough && walkthroughStep===2}
+                          content={
+                            <View style={styles.tooltipContent}>
+                              <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                                {t('tutorial_first_store_description')}
+                              </Text>
+                              <View style={styles.tooltipButtonContainer}>
+                                  <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipPrevButton]} onPress={goToPreviousStep}>
+                                    <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
+                                  </TouchableOpacity>
+                                  <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipFinishButton]} onPress={finishWalkthrough}>
+                                    <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                                  </TouchableOpacity>
+                               </View>
+                            </View>
+                          }
+                          placement="center" // Ili "bottom"
+                          onClose={finishWalkthrough}
+                          tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                          useReactNativeModal={true}
+                          arrowSize={{ width: 16, height: 8 }}
+                          showChildInTooltip={true}
+                        ></Tooltip>
     <View style={styles.container}>
       {/* Tooltip za Search Input */}
     <Tooltip
@@ -542,33 +566,8 @@ const StoresScreen = () => {
 
                         return (
                             <View style={styles.gridItem}>
-                                <Tooltip
-                                    isVisible={showStoreTooltip}
-                                    content={
-                                        <View style={styles.tooltipContent}>
-                                            <Text style={{ fontSize: 16, marginBottom: 10 }}>
-                                                {t('tutorial_first_store_description')}
-                                            </Text>
-                                            <View style={styles.tooltipButtonContainer}>
-                                                <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipPrevButton]} onPress={goToPreviousStep}>
-                                                    <Text style={styles.tooltipButtonText}>{t('previous')}</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity style={[styles.tooltipButtonBase, styles.tooltipFinishButton]} onPress={finishWalkthrough}>
-                                                    <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    }
-                                    placement="top"
-                                    onClose={finishWalkthrough}
-                                    tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
-                                    useReactNativeModal={true}
-                                    arrowSize={{ width: 16, height: 8 }}
-                                    showChildInTooltip={true} // Važno: Osigurava da je dijete uvijek renderovano
-                                >
                                     {/* StoreItem je sada direktno dijete Tooltipa */}
                                     <StoreItem store={item.data} onPress={handleStorePress} />
-                                </Tooltip>
                             </View>
                         );
             } else if (item.type === 'ad') {

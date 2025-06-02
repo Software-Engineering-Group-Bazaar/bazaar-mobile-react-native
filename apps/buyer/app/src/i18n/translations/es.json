@@ -439,7 +439,7 @@
   "next": "Siguiente",
   "previous": "Anterior",
   "tutorial_search_input_stores": "Aquí puedes buscar tiendas por nombre.",
-  "tutorial_first_store_description": "Al hacer clic en esta tienda, puedes ver sus productos y comenzar a comprar.",
+  "tutorial_first_store_description": "Al hacer clic en una de las tiendas, puedes ver sus productos y empezar a comprar.",
   "tutorial_store_details_button": "Este botón te lleva a la página de información detallada sobre la tienda.",
   "tutorial_first_product_description": "Al hacer clic en este producto, puedes ver sus detalles completos y agregarlo a tu carrito.",
   "tutorial_chat_button_explanation": "Este botón te permite chatear directamente con el vendedor sobre el producto.",
@@ -474,5 +474,8 @@
   "tutorial_conversations_intro": "Aquí puedes ver todas tus conversaciones activas con vendedores o soporte. Toca una conversación para abrirla.",
   "tutorial_no_products_in_store": "Actualmente no hay productos en esta tienda, pero cuando los haya, podrás ver sus detalles y agregarlos a tu carrito.",
   "tutorial_filter_products_stores": "Al hacer clic en este botón, puedes filtrar tiendas por regiones y municipios, y productos por categorías para facilitar la búsqueda.",
-  "tutorial_search_products": "Este campo te permite buscar productos por nombre."
+  "tutorial_search_products": "Este campo te permite buscar productos por nombre.",
+  "product_add_error": "No se puede añadir el producto al carrito",
+  "no_info_quantity": "Actualmente no tenemos información sobre la cantidad de este producto en stock. Por favor, inténtalo de nuevo más tarde.",
+    "different_store_products_in_cart": "Ya tienes productos de otra tienda en tu carrito. Finaliza el pedido o vacía el carrito para poder añadir este producto."
 }

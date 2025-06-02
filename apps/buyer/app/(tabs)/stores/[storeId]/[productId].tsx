@@ -274,7 +274,7 @@ const checkAndAddToCart = async () => {
       );      
     }
   } catch (error) {
-     Alert.alert(t('Greska'), t('Trenutno nemamo informaciju o količini na stanju ovog proizvoda. Molimo pokušajte kasnije.'));
+     Alert.alert(t('error'), t('no_info_quantity'));
     //console.error('Error checking inventory:', error);
   } finally {
     setLoading(false);
@@ -340,7 +340,7 @@ const checkAndAddToCart = async () => {
 
 
           if(cartStore != 0 && cartStore != data.storeId){
-            Alert.alert("Proizvod nije moguće dodati u korpu", "Već imate proizvode druge prodavnice u korpi. Finalizirajte narudžbu ili očistite korpu da biste mogli ovaj proizvod dodati u korpu.");
+            Alert.alert(t('product_add_error'), t('different_store_products_in_cart'));
             data.isActive = false;
           }
 

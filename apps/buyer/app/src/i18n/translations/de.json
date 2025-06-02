@@ -440,7 +440,7 @@
   "next": "Weiter",
   "previous": "Zurück",
   "tutorial_search_input_stores": "Hier können Sie nach Geschäften nach Namen suchen.",
-  "tutorial_first_store_description": "Indem Sie auf dieses Geschäft klicken, können Sie dessen Produkte ansehen und mit dem Einkaufen beginnen.",
+  "tutorial_first_store_description": "Durch Klicken auf eines der Geschäfte können Sie dessen Produkte sehen und mit dem Einkauf beginnen.",
   "tutorial_store_details_button": "Diese Schaltfläche führt Sie zur detaillierten Informationsseite über das Geschäft.",
   "tutorial_first_product_description": "Indem Sie auf dieses Produkt klicken, können Sie dessen vollständige Details einsehen und es Ihrem Warenkorb hinzufügen.",
   "tutorial_chat_button_explanation": "Mit dieser Schaltfläche können Sie direkt mit dem Verkäufer über das Produkt chatten.",
@@ -475,5 +475,8 @@
   "tutorial_conversations_intro": "Hier sehen Sie alle Ihre aktiven Gespräche mit Verkäufern oder dem Support. Tippen Sie auf ein Gespräch, um es zu öffnen.",
   "tutorial_no_products_in_store": "Derzeit gibt es keine Produkte in diesem Geschäft, aber wenn es welche gibt, können Sie deren Details ansehen und sie Ihrem Warenkorb hinzufügen.",
   "tutorial_filter_products_stores": "Durch Klicken auf diese Schaltfläche können Sie Geschäfte nach Regionen und Gemeinden sowie Produkte nach Kategorien filtern, um die Suche zu erleichtern.",
-  "tutorial_search_products": "Dieses Feld ermöglicht Ihnen die Suche nach Produkten nach Namen."
+  "tutorial_search_products": "Dieses Feld ermöglicht Ihnen die Suche nach Produkten nach Namen.",
+  "product_add_error": "Produkt kann nicht zum Warenkorb hinzugefügt werden",
+  "no_info_quantity": "Wir haben derzeit keine Informationen zur Lagermenge dieses Produkts. Bitte versuchen Sie es später erneut.",
+  "different_store_products_in_cart": "Sie haben bereits Produkte aus einem anderen Geschäft in Ihrem Warenkorb. Schließen Sie die Bestellung ab oder leeren Sie den Warenkorb, um dieses Produkt hinzufügen zu können."
 }

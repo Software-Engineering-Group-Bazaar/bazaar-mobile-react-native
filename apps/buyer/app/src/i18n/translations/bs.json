@@ -431,7 +431,7 @@
    "next":"Dalje",
    "previous":"Nazad",
    "tutorial_search_input_stores": "Ovdje možete da vršite pretragu prodavnica po nazivu",
-   "tutorial_first_store_description": "Klikom na ovu prodavnicu možete da vidite njene proizvode i započnete kupovinu.",
+   "tutorial_first_store_description": "Klikom na neku od prodavnica možete da vidite njene proizvode i započnete kupovinu.",
    "tutorial_store_details_button": "Ovo dugme vas vodi na stranicu s detaljnim informacijama o prodavnici.",
   "tutorial_first_product_description": "Klikom na ovaj proizvod možete vidjeti njegove pune detalje i dodati ga u korpu.",
   "tutorial_chat_button_explanation": "Ovo dugme vam omogućava direktan razgovor s prodavačem o proizvodu.",
@@ -477,6 +477,9 @@
   "tutorial_points_screen": "Ovaj ekran prikazuje stanje vaših lojaliti bodova i njihovu novčanu vrijednost. Ovdje možete pratiti koliko ste bodova skupili i kako ih možete iskoristiti. Svaki bod ima svoju vrijednost, a detalji su objašnjeni niže na stranici.",
   "tutorial_order_route_screen": "Ova mapa prikazuje rutu isporuke za vašu narudžbu, od lokacije prodavca do vaše odabrane adrese. Ovdje možete pratiti napredak vaše narudžbe.",
   "tutorial_ads_product": "Ovo je ekran sa detaljima proizvoda. Ovdje možete pregledati sve informacije o proizvodu, poput slika, cijena, dostupnosti i opcija za dodavanje u košaricu. Također možete direktno razgovarati s prodavačem za sva pitanja.",
-  "tutorial_my_addresses_screen": "Ovdje možete dodavati, pregledavati i upravljati svojim sačuvanim adresama za dostavu. Koristite pretragu da pronađete novu adresu ili pomjerite marker na mapi, a zatim je potvrdite. Također možete ukloniti postojeće adrese."
+  "tutorial_my_addresses_screen": "Ovdje možete dodavati, pregledavati i upravljati svojim sačuvanim adresama za dostavu. Koristite pretragu da pronađete novu adresu ili pomjerite marker na mapi, a zatim je potvrdite. Također možete ukloniti postojeće adrese.",
+  "no_info_quantity":"Trenutno nemamo informaciju o količini na stanju ovog proizvoda. Molimo pokušajte kasnije.",
+  "product_add_error": "Proizvod nije moguće dodati u korpu",
+    "different_store_products_in_cart": "Već imate proizvode druge prodavnice u korpi. Finalizirajte narudžbu ili očistite korpu da biste mogli ovaj proizvod dodati u korpu."
 }
   
