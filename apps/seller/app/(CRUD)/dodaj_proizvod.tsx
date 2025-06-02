@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,19 +7,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   Switch,
-  findNodeHandle,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import api from "../api/defaultApi";
+//-------------------Route Explorer---------------------------------
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import InputField from "@/components/ui/input/InputField";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 import ImagePreviewList from "@/components/ui/ImagePreviewList";
 import DropdownPicker from "@/components/ui/input/DropdownPicker";
 import { apiFetchCategories } from "../api/productApi";
-import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 const weightUnits = ["kg", "g", "lbs"];
 const volumeUnits = ["L", "ml", "oz"];
@@ -29,6 +29,7 @@ export default function AddProductScreen() {
   const params = useLocalSearchParams();
   const router = useRouter(); // Premesti ovde
   const storeId = params.storeId ? Number(params.storeId) : null; // Dodaj i storeId ovde
+  // const isEditing = productId !== null;
   const [name, setName] = useState("");
   const [price, setPrice] = useState(""); // Ovo će biti Maloprodajna
   const [wholesaleThreshold, setWholesaleThreshold] = useState(""); // NOVO: Prag
@@ -84,24 +85,6 @@ export default function AddProductScreen() {
 
     fetchCategories();
   }, []);
-
-  const getElementPositionMethod1 = (elementRef: any, scrollViewRef: any) => {
-    if (!elementRef.current || !scrollViewRef.current) return;
-
-    const scrollViewNode = findNodeHandle(scrollViewRef.current);
-    if (!scrollViewNode) return;
-
-    elementRef.current.measureLayout(
-      scrollViewNode,
-      (x: number, y: number, width: number, height: number) => {
-        console.log("Element Y position:", y);
-        // Use y position here
-      },
-      (error: any) => {
-        console.error("measureLayout failed:", error);
-      }
-    );
-  };
 
   const handleSave = async () => {
     if (
@@ -187,7 +170,7 @@ export default function AddProductScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
-      <HelpAndLanguageButton showHelpButton={false} />
+      <LanguageButton />
 
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}
@@ -205,6 +188,7 @@ export default function AddProductScreen() {
             onChangeText={setName}
             placeholder={t("enter_product_name")}
           />
+
           <InputField
             label={t("retail_price")}
             value={price}
@@ -212,6 +196,7 @@ export default function AddProductScreen() {
             placeholder={t("enter_retail_price")}
             keyboardType="decimal-pad"
           />
+
           {/* Veleprodajna Cijena */}
           <InputField
             label={t("wholesale_price")}
@@ -220,6 +205,7 @@ export default function AddProductScreen() {
             placeholder={t("enter_wholesale_price")}
             keyboardType="decimal-pad"
           />
+
           {/* Threshold za veleprodajnu cijena */}
           <InputField
             label={t("wholesale_threshold")}

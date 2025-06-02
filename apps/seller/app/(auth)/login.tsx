@@ -11,7 +11,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 import InputField from "@/components/ui/input/InputField";
-import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
 
 const isValidEmail = (email: string): boolean => {
@@ -63,11 +63,14 @@ export default function SignIn() {
         const { idToken } = response.data;
         console.log("User Info:", { idToken });
 
-        const apiResponse = await fetch("${baseURL}/api/Auth/login/google", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken: idToken, app: "seller" }),
-        });
+        const apiResponse = await fetch(
+          "${baseURL}/api/Auth/login/google",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken: idToken, app: "seller" }),
+          }
+        );
 
         console.log(apiResponse);
 
@@ -161,9 +164,7 @@ export default function SignIn() {
 
   return (
     <View style={styles.container}>
-       <View style={styles.languageButtonWrapper}>
-        <HelpAndLanguageButton showHelpButton={false} />
-      </View>
+      <LanguageButton />
 
       <View style={styles.titleContainer}>
         <Image
@@ -231,12 +232,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     paddingHorizontal: 20,
-  },
-  languageButtonWrapper: {
-    position: "absolute",
-    top: 80,        // Push it lower
-    right: 10,      // Shift it more left
-    zIndex: 9999,
   },
   titleContainer: {
     alignItems: "center",

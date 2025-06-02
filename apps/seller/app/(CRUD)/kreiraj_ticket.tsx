@@ -1,4 +1,3 @@
-// File: app/(CRUD)/kreiraj_ticket.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -10,33 +9,23 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
+import LanguageButton from "../../components/ui/buttons/LanguageButton";
 import InputField from "../../components/ui/input/InputField";
 import SubmitButton from "../../components/ui/input/SubmitButton";
-import DropdownPicker from "../../components/ui/input/DropdownPicker"; // Tvoja custom komponenta
+import DropdownPicker from "../../components/ui/input/DropdownPicker";
 import { apiCreateSellerTicket } from "../api/ticketApi";
 import { apiFetchSellerOrders } from "../api/orderApi";
 import { Order } from "../types/order";
 
-// ------------- CO PILOT IMPORTS -------------
-import {
-  CopilotProvider,
-  CopilotStep,
-  walkthroughable,
-} from "react-native-copilot";
-import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
-// ------------------------------------------
-
-const WalkthroughableView = walkthroughable(View);
-
-function KreirajTicketContent() {
+export default function KreirajTicketScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [ordersForDropdown, setOrdersForDropdown] = useState<
-    { label: string; value: number }[]
+    { label: number; value: number }[]
   >([]);
   const [openOrderDropdown, setOpenOrderDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -48,12 +37,10 @@ function KreirajTicketContent() {
       try {
         const fetchedOrders: Order[] = await apiFetchSellerOrders();
         setOrdersForDropdown(
-          fetchedOrders
-            .map((order) => ({
-              label: `ID: ${order.id.toString()}`,
-              value: order.id,
-            }))
-            .reverse()
+          fetchedOrders.map((order) => ({
+            label: order.id,
+            value: order.id,
+          })).reverse()
         );
       } catch (error: any) {
         console.error("Error fetching orders:", error);
@@ -89,15 +76,15 @@ function KreirajTicketContent() {
     setLoading(true);
     try {
       const payload = {
-        orderId: selectedOrderId.toString(), // API očekuje string
+        orderId: selectedOrderId,
         title: subject.trim(),
         description: description.trim(),
       };
       const newTicket = await apiCreateSellerTicket(payload);
       if (newTicket) {
-        router.push({
+        router.replace({
           pathname: "/(CRUD)/ticket_detalji",
-          params: { ticketId: newTicket.id.toString() },
+          params: { ticketId: newTicket.id },
         });
       }
     } catch (error: any) {
@@ -118,11 +105,11 @@ function KreirajTicketContent() {
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={{ paddingBottom: 16 }}>
-        <HelpAndLanguageButton showLanguageButton={true} showHelpButton={true} />
-      </View>
+      <LanguageButton />
+      <View style={{ height: 85 }} /> 
       <View style={styles.container}>
-        <View style={{height: 60}}/> {/* Spacer za HelpAndLanguageButton */}
+        {/* Naslov je uklonjen jer je u _layout.tsx */}
+
         {loadingOrders && (
           <ActivityIndicator
             size="small"
@@ -131,26 +118,17 @@ function KreirajTicketContent() {
           />
         )}
         {ordersForDropdown.length > 0 && !loadingOrders && (
-          <CopilotStep
-            text={t("help_kreiraj_ticket_select_order") || "U ovo polje odaberite ID narudžbe za koju Vam treba korisnička podrška."}
-            order={1}
-            name="orderDropdown"
-          >
-            <WalkthroughableView style={{ width: "100%", zIndex: openOrderDropdown ? 1000 : 1 }}>
-              <DropdownPicker // Koristi tvoju custom komponentu
-                open={openOrderDropdown}
-                value={selectedOrderId}
-                items={ordersForDropdown}
-                setOpen={setOpenOrderDropdown}
-                setValue={setSelectedOrderId}
-                setItems={setOrdersForDropdown}
-                placeholder={
-                  t("select_order_for_ticket") || "Izaberite narudžbu"
-                }
-                // listMode="MODAL" // << UKLONJEN OVAJ RED
-              />
-            </WalkthroughableView>
-          </CopilotStep>
+          // View omotač za DropdownPicker nije neophodan jer tvoja komponenta već ima View sa zIndex
+          <DropdownPicker
+            open={openOrderDropdown}
+            value={selectedOrderId}
+            items={ordersForDropdown} // Koristi state koji je namenjen za items
+            setOpen={setOpenOrderDropdown}
+            setValue={setSelectedOrderId}
+            setItems={setOrdersForDropdown} // Prosledi setItems
+            placeholder={t("select_order_for_ticket") || "Izaberite narudžbu"}
+            
+          />
         )}
         {ordersForDropdown.length === 0 && !loadingOrders && (
           <Text style={styles.noOrdersText}>
@@ -159,109 +137,56 @@ function KreirajTicketContent() {
           </Text>
         )}
 
-        <CopilotStep
-          text={t("help_kreiraj_ticket_subject") || "Unesite naslov (predmet) vašeg problema ili upita."}
-          order={2}
-          name="subjectInput"
-        >
-          <WalkthroughableView style={{ width: "100%" }}>
-            <InputField
-              label={t("ticket_subject") || "Naslov tiketa"}
-              placeholder={
-                t("ticket_subject_placeholder") || "Unesite naslov tiketa"
-              }
-              value={subject}
-              onChangeText={setSubject}
-              autoCapitalize="sentences"
-              editable={!(loadingOrders || ordersForDropdown.length === 0)}
-            />
-          </WalkthroughableView>
-        </CopilotStep>
-
-        <CopilotStep
-          text={t("help_kreiraj_ticket_description") || "Detaljno opišite problem ili pitanje koje imate."}
-          order={3}
-          name="descriptionInput"
-        >
-          <WalkthroughableView style={{ width: "100%" }}>
-            <InputField
-              label={t("ticket_description") || "Opis problema"}
-              placeholder={
-                t("ticket_description_placeholder") ||
-                "Unesite detaljan opis problema"
-              }
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={5}
-              textAlignVertical="top"
-              autoCapitalize="sentences"
-              editable={!(loadingOrders || ordersForDropdown.length === 0)}
-            />
-          </WalkthroughableView>
-        </CopilotStep>
-
-        <CopilotStep
-            text={t("help_kreiraj_ticket_submit_button") || "Kada popunite sva polja, kliknite ovdje da pošaljete tiket."}
-            order={4}
-            name="submitTicketButton"
-        >
-            <WalkthroughableView style={{width: "100%", marginTop: 10}}>
-                <SubmitButton
-                onPress={handleCreateTicket}
-                disabled={
-                    loading ||
-                    loadingOrders ||
-                    ordersForDropdown.length === 0 ||
-                    !selectedOrderId
-                }
-                buttonText={t("submit_ticket") || "Pošalji tiket"}
-                />
-            </WalkthroughableView>
-        </CopilotStep>
+        <InputField
+          label={t("ticket_subject") || "Naslov tiketa"}
+          placeholder={
+            t("ticket_subject_placeholder") || "Unesite naslov tiketa"
+          } 
+          value={subject}
+          onChangeText={setSubject}
+          multiline
+          numberOfLines={2}
+          autoCapitalize="sentences"
+          editable={!(loadingOrders || ordersForDropdown.length === 0)} // Koristi editable
+          // isValid i errorText nisu potrebni ovde za sada
+        />
+        <InputField
+          // icon="file-alt"
+          label={t("ticket_description") || "Opis problema"}
+          placeholder={
+            t("ticket_description_placeholder") ||
+            "Unesite detaljan opis problema"
+          }
+          value={description}
+          onChangeText={setDescription}
+          multiline // Ovo je standardni TextInput prop, tvoj InputField bi trebalo da ga prosledi
+          numberOfLines={5}
+          autoCapitalize="sentences"
+          editable={!(loadingOrders || ordersForDropdown.length === 0)}
+        />
+        <SubmitButton
+          onPress={handleCreateTicket}
+          disabled={
+            loading ||
+            loadingOrders ||
+            ordersForDropdown.length === 0 ||
+            !selectedOrderId
+          }
+          buttonText={t("submit_ticket") || "Pošalji tiket"}
+        />
       </View>
     </ScrollView>
   );
 }
 
-export default function KreirajTicketScreen() {
-  const { t } = useTranslation();
-  return (
-    <CopilotProvider
-      labels={{
-        finish: t("Finish") || "Završi",
-        next: t("Next") || "Dalje",
-        skip: t("Skip") || "Preskoči",
-        previous: t("Previous") || "Nazad",
-      }}
-      overlay="svg"
-      animated
-    >
-      <KreirajTicketContent />
-    </CopilotProvider>
-  );
-}
-
 const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, backgroundColor: "#fff", paddingBottom: 40 },
-  container: { paddingHorizontal: 20, paddingTop: 0, alignItems: "center" },
+  container: { paddingHorizontal: 20, paddingTop: 20, alignItems: "center" },
   noOrdersText: {
     marginTop: 20,
     marginBottom: 20,
     color: "gray",
     fontStyle: "italic",
     textAlign: "center",
-  },
-  stepNumber: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: "#4E8D7C",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  stepNumberText: {
-    color: "white",
-    fontWeight: "bold",
   },
 });

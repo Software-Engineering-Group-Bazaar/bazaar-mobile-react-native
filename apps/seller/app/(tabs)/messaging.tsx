@@ -2,13 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import ConversationList from "proba-package/chat-components/ConversationList";
 import { ConversationDto } from "proba-package/chat-components/models";
+import LanguageButton from "@/components/ui/buttons/LanguageButton";
 import * as signalR from "@microsoft/signalr";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { apiFetchFormattedConversations } from "../api/messagingApi";
 import { useFocusEffect } from "@react-navigation/native";
 import { baseURL } from "../env";
-import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 
 interface ExtendedConversationDto extends ConversationDto {
   buyerUserId: string;
@@ -73,7 +73,7 @@ const ChatListScreen: React.FC = () => {
 
         // Setup SignalR connection
         const connection = new signalR.HubConnectionBuilder()
-          .withUrl('https://bazaar-system.duckdns.org/chathub', {
+          .withUrl(`${baseURL}/chathub`, {
             accessTokenFactory: async () => storedToken, // Use token for auth
           })
           .withAutomaticReconnect()
@@ -137,7 +137,7 @@ const ChatListScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <HelpAndLanguageButton showHelpButton={false} />
+      <LanguageButton />
       <Text style={styles.header}></Text>
       <ConversationList
         conversations={conversations}
