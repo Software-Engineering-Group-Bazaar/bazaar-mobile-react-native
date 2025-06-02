@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity , TextInput, Alert} from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity , TextInput, Alert, SafeAreaView, Platform, Dimensions} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCart } from '@/context/CartContext';
 import * as SecureStore from 'expo-secure-store';
-import { baseURL, USE_DUMMY_DATA } from 'proba-package';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import { Ionicons } from '@expo/vector-icons';
+
+import Constants from 'expo-constants';
+
+const baseURL = Constants.expoConfig!.extra!.apiBaseUrl as string;
+const USE_DUMMY_DATA = Constants.expoConfig!.extra!.useDummyData as boolean;
+
 
 interface ProductCategory {
   id: number;
@@ -28,6 +35,7 @@ interface Product {
   isActive: boolean;
   wholesaleThreshold?: number;
   quantity: number
+  pointRate?: number;
 }
 
 interface Inventory {
@@ -43,7 +51,7 @@ interface Inventory {
 // const USE_DUMMY_DATA = true;
 
 const DUMMY_PRODUCTS: Product[] = [
-  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15 },
+  { id: 101, name: 'Mlijeko 1L', productCategory: { id: 1, name: 'Mliječni proizvodi' }, retailPrice: 2.50, wholesalePrice: 2.20, storeId: 123, photos: ['https://via.placeholder.com/300/ADD8E6/000000?Text=Mlijeko'], isActive: true, wholesaleThreshold: 10, quantity: 15, pointRate:0.5 },
   { id: 102, name: 'Hljeb', productCategory: { id: 2, name: 'Pekarski proizvodi' }, retailPrice: 1.20, wholesalePrice: 1.00, storeId: 123, photos: ['https://via.placeholder.com/300/F0E68C/000000?Text=Hljeb'], isActive: true, quantity: 10 },
   { id: 103, name: 'Jabuke 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 1.80, wholesalePrice: 1.50, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/90EE90/000000?Text=Jabuke'], isActive: true, wholesaleThreshold: 50, quantity: 20 },
   { id: 104, name: 'Banane 1kg', productCategory: { id: 3, name: 'Voće' }, retailPrice: 2.00, wholesalePrice: 1.70, weight: 1, weightUnit: 'kg', storeId: 123, photos: ['https://via.placeholder.com/300/FFFF00/000000?Text=Banane'], isActive: false, quantity: 40 },
@@ -70,6 +78,18 @@ const ProductDetailsScreen = () => {
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
 
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
+
+    // Funkcija za pokretanje walkthrough-a
+    const startWalkthrough = () => {
+        setShowWalkthrough(true);
+    };
+
+    // Funkcija za završetak walkthrough-a
+    const finishWalkthrough = () => {
+        setShowWalkthrough(false);
+    };
+
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -77,6 +97,7 @@ const ProductDetailsScreen = () => {
   const [quantity, setQuantity] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty || 1);
   const [quantityInput, setQuantityInput] = useState(cartItems.find(item => item.product.id.toString() === productId.toString())?.qty?.toString() || '1');
   const [quantitySuggestion, setQuantitySuggestion] = useState<string | null>(null);
+  const [ pointsEarned, setPointsEarned ] = useState(0);
 
   const nextImage = () => {
     if (product && currentImageIndex < product.photos.length - 1) {
@@ -156,6 +177,31 @@ const ProductDetailsScreen = () => {
   }, [product, navigation]);
 
   useEffect(() => {
+        if (product) {
+          calculatePoints(parseInt(quantityInput));
+        }
+      }, [product, quantityInput]);
+    
+      //fja za racunanje poena na osnovu odabrane kolicine i cijene
+      const calculatePoints = (currentQuantity: number) => {
+        if (!product || product.pointRate === undefined) {
+          setPointsEarned(0);
+          return;
+        }
+    
+        let priceToUse = product.retailPrice;
+        if (product.wholesaleThreshold !== undefined && product.wholesalePrice !== undefined) {
+          if (currentQuantity > product.wholesaleThreshold) {
+            priceToUse = product.wholesalePrice;
+          } else {
+            priceToUse = product.retailPrice;
+          }
+        }
+        const calculatedPoints = priceToUse * product.pointRate * currentQuantity;
+        setPointsEarned(Math.floor(calculatedPoints));
+    };
+
+  useEffect(() => {
     const fetchProductDetails = async () => {
       setLoading(true);
 
@@ -196,16 +242,81 @@ const ProductDetailsScreen = () => {
 
   if (!product) {
     return (
+      <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('product_details')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Product not found</Text>
+        <Text style={styles.errorText}>{t('product_not_found')}</Text>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Go Back</Text>
+          <Text style={styles.backButtonText}>{t('go_back')}</Text>
         </TouchableOpacity>
       </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            {/* Lijeva strana - prazna ili za back dugme */}
+            <View style={styles.sideContainer} /> 
+            
+            {/* Naslov headera */}
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerText} numberOfLines={1} ellipsizeMode="tail">
+                {t('product_details')}
+              </Text>
+            </View>
+            
+            {/* Desna strana - dugme za pomoć */}
+            <View style={[styles.sideContainer, styles.rightSideContainer]}>
+              <TouchableOpacity onPress={startWalkthrough} style={styles.iconButton}>
+                <Ionicons name="help-circle-outline" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Tooltip
+                          isVisible={showWalkthrough}
+                          content={
+                            <View style={styles.tooltipContent}>
+                              <Text style={{ fontSize: 16, marginBottom: 10 }}>
+                                {t('tutorial_product_details_cart')}
+                              </Text>
+                              <View style={styles.tooltipButtonContainer}>
+                                <TouchableOpacity
+                                  style={[styles.tooltipButtonBase, styles.tooltipFinishButton]}
+                                  onPress={finishWalkthrough}
+                                >
+                                  <Text style={styles.tooltipButtonText}>{t('finish')}</Text>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
+                          }
+                          placement="center" // Ili "bottom"
+                          onClose={finishWalkthrough}
+                          tooltipStyle={{ width: Dimensions.get('window').width * 0.8 }}
+                          useReactNativeModal={true}
+                          arrowSize={{ width: 16, height: 8 }}
+                          showChildInTooltip={true}
+                        ></Tooltip>
     <ScrollView style={styles.container}>
 
       {/* sekcija sa slikama i strelicama */}
@@ -268,6 +379,13 @@ const ProductDetailsScreen = () => {
           </>
         ) : (
           <Text style={styles.price}>{product.retailPrice.toFixed(2)} KM</Text>
+        )}
+
+        {/* Prikaz broja poena */}
+        {pointsEarned > 0 && (
+        <Text style={styles.pointsDisplay}>
+        {t('You earn: {{points}} points', { points: pointsEarned.toFixed(2) })}
+        </Text>
         )}
 
         {product.isActive ? (
@@ -368,10 +486,97 @@ const ProductDetailsScreen = () => {
         )}
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  tooltipButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+   tooltipContent: {
+        alignItems: 'center',
+        padding: 10, 
+        backgroundColor: 'white',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    tooltipButtonBase: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        marginHorizontal: 5,
+        elevation: 2,
+        minWidth: 80,
+        alignItems: 'center',
+    },
+    tooltipButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    tooltipFinishButton: {
+        backgroundColor: '#4E8D7C', // Zelena boja
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        marginHorizontal: 5,
+    },
+  safeArea: {
+      backgroundColor: '#4e8d7c',
+      flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
+      marginTop:30
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: '#4e8d7c',
+      paddingVertical: Platform.OS === 'ios' ? 12 : 18, // Prilagođeno za iOS/Android
+      paddingHorizontal: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 4,
+    },
+    sideContainer: {
+      width: 40, // Održava razmak na lijevoj strani za potencijalno dugme nazad
+      justifyContent: 'center',
+    },
+    rightSideContainer: {
+      alignItems: 'flex-end', // Poravnava dugme za pomoć desno
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 22,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+      textAlign: 'center',
+    },
+    iconButton: {
+      padding: 5, // Dodao padding za lakši klik
+    },
+  pointsDisplay: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    marginTop: 5,
+    marginBottom: 10,
+  },
   quantitySuggestionText: {
     fontSize: 16,
     marginBottom: 10,
