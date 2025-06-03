@@ -55,9 +55,9 @@ eas credentials
 4. Build the app using EAS:
 ```bash
 
-eas build --profile development --platform android (For the development build)
+eas build --profile development --platform android 
 
-eas build --profile development --platform ios (For the development build)
+eas build --profile development --platform ios
 
 ```
 5. To run the project locally, use the following command: `npx expo start`
