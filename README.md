@@ -44,7 +44,23 @@ cd  bazaar-mobile-react-native
 
 1. Open the specific app folder
 2. First run `npm install` to install the required dependencies.
-3. To run the project locally, use the following command: `npx expo start`
+3. Set up EAS credentials if you plan to build the app:
+```bash
+
+npx eas login
+
+eas credentials
+
+```
+4. Build the app using EAS:
+```bash
+
+eas build --profile development --platform android 
+
+eas build --profile development --platform ios
+
+```
+5. To run the project locally, use the following command: `npx expo start`
 
 ## Create and add package
 

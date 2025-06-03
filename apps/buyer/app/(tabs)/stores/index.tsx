@@ -146,7 +146,7 @@ const StoresScreen = () => {
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [walkthroughStep, setWalkthroughStep] = useState(0);
   const searchInputRef = useRef(null);
-  const flatListRef = useRef<FlatList<CombinedDataItem>>(null)
+  const flatListRef = useRef<FlatList<Store>>(null)
 
   const startWalkthrough = () => {
   setShowWalkthrough(true);
@@ -155,7 +155,7 @@ const StoresScreen = () => {
 
   const goToNextStep = () => {
     if (walkthroughStep === 1) { // Trenutno objašnjavamo pretragu
-        if (combinedData.length > 0) { // Provjeri da li lista ima elemenata
+        if (stores.length > 0) { // Provjeri da li lista ima elemenata
             setWalkthroughStep(2); // Ako ima, pređi na korak 2 (prvi element liste)
         } else {
             finishWalkthrough(); // Ako nema, završi walkthrough
@@ -325,35 +325,6 @@ const StoresScreen = () => {
     fetchAds();
   }, []); // Empty dependency array means this runs once on mount
 
-  // --- Combine Stores and Ads for FlatList (Ads first) ---
-  const combinedData: CombinedDataItem[] = React.useMemo(() => {
-      const data: CombinedDataItem[] = [];
-
-      // Add all valid ProcessedAds first
-      // Filtering for adData[0] & productId is done in fetchAds,
-      // but an extra check here doesn't hurt.
-      ads.forEach(processedAd => {
-        if (processedAd.advertisement.adData && processedAd.advertisement.adData.length > 0) {
-          data.push({ type: 'ad', data: processedAd }); // Push the entire ProcessedAd object
-      } else {
-          console.warn("Skipping ad with no adData:", processedAd.advertisement.id);
-      }
-      });
-
-      // Then add all stores
-      stores.forEach(store => {
-          data.push({ type: 'store', data: store });
-      });
-
-      return data;
-  }, [stores, ads]); // Recompute when stores or ads state changes
-
-  // Pronalazi indeks prvog 'store' elementa u combinedData
-    const firstStoreIndex = React.useMemo(() =>
-        combinedData.findIndex(item => item.type === 'store'),
-        [combinedData]
-    );
-
   const handleStorePress = (store: Store) => {
     router.push(`/stores/${store.id}`);
   };
@@ -444,7 +415,7 @@ const StoresScreen = () => {
 
 
   // Show main loader if stores are loading and no combined data exists yet
-  if (loading && combinedData.length === 0) {
+  if (loading && stores.length === 0) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#4e8d7c" />
@@ -454,13 +425,50 @@ const StoresScreen = () => {
   }
 
    // Show error if stores failed to load and no combined data exists
-  if (error && combinedData.length === 0) {
+  if (error && stores.length === 0) {
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>{t('fetch-error')}: {error.message}</Text>
       </View>
     );
   }
+
+const renderAdsHeader = () => {
+  if (ads.length === 0) {
+    return null; 
+  }
+  return (
+    <View style={styles.adsHeaderContainer}>
+      <FlatList
+        data={ads}
+        keyExtractor={(item) => `ad-${item.advertisement.id}`}
+        renderItem={({ item }) => {
+          const processedAd = item;
+          const ad = processedAd.advertisement;
+          const firstAdData = ad.adData && ad.adData.length > 0 ? ad.adData[0] : null;
+
+          if (!firstAdData || !firstAdData.productId) {
+            console.warn("Ad item in ads list has no adData[0] or productId, skipping render:", ad.id);
+            return null;
+          }
+
+          return (
+            <View style={styles.adItemContainer}>
+              <AdItem
+                adData={firstAdData}
+                ad={ad}
+                onPress={() => handleAdPress(processedAd)}
+              />
+            </View>
+          );
+        }}
+        horizontal // Reklame se redaju vodoravno
+        showsHorizontalScrollIndicator={false} 
+        pagingEnabled={true}
+      />
+    </View>
+  );
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -543,69 +551,37 @@ const StoresScreen = () => {
       />
       </Tooltip>
 
-      {combinedData.length === 0 && !loading && !adsLoading && (
+      {stores.length === 0 && !loading && !adsLoading && (
         <Text style={styles.emptyListText}>
           {t('no_results_found')}
         </Text>
       )}
 
-      {/* We need to ensure that if numColumns is 2, ad items take full width */}
       <FlatList ref={flatListRef}
-        data={combinedData}
-        keyExtractor={(item, index) =>
-             item.type === 'store'
-                ? `store-${item.data.id}`
-                 // For ads, use a combination of type, ad ID, and index
-                 // item.data is ProcessedAd, item.data.advertisement.id is the ad ID
-                : `ad-${item.data.advertisement.id}-${index}`
-        }
-        renderItem={({ item, index}) => {
-            if (item.type === 'store') {
-                        const isFirstStore = index === firstStoreIndex;
-                        const showStoreTooltip = isFirstStore && showWalkthrough && walkthroughStep === 2;
-
-                        return (
-                            <View style={styles.gridItem}>
-                                    {/* StoreItem je sada direktno dijete Tooltipa */}
-                                    <StoreItem store={item.data} onPress={handleStorePress} />
-                            </View>
-                        );
-            } else if (item.type === 'ad') {
-                 // Render AdItem - these must take full width
-                 const processedAd = item.data; // item.data is ProcessedAd
-                 const ad = processedAd.advertisement; // Get the Advertisement object
-                 // Pass the first adData item for display
-                const firstAdData = ad.adData && ad.adData.length > 0 ? ad.adData[0] : null;
-
-                 // Ensure we have display data and a productId before rendering the AdItem
-                 if (!firstAdData || !firstAdData.productId) {
-                    console.warn("Ad item in combinedData has no adData[0] or productId, skipping render:", ad.id);
-                    return null; // Don't render if no valid data to display or navigate
-                 }
-
-                return (
-                     // This wrapper is essential for a full-width item in a multi-column FlatList
-                    <View style={styles.adItemContainer}>
-                        {/* Use the imported AdItem component */}
-                        <AdItem
-                           adData={firstAdData} // Pass AdData for rendering
-                           ad={ad} // Pass the Advertisement object to the AdItem component (for its internal access if needed, though handlePress gets it directly)
-                           onPress={() => handleAdPress(processedAd)} // Pass the entire ProcessedAd object to the handler
-                         />
-                    </View>
-                );
-            }
-             return null; // Should not happen
-        }}
-        numColumns={2} // Still render stores in 2 columns
-        columnWrapperStyle={styles.row} // Used to style the rows (space between columns etc.)
-      />
+        data={stores}
+        keyExtractor={(item) => `store-${item.id}`}
+            renderItem={({ item}) => {
+              return (
+                <View style={styles.gridItem}>
+                    <StoreItem store={item} onPress={handleStorePress} />
+                </View>
+              );
+            }}
+            numColumns={2}
+            columnWrapperStyle={styles.row}
+            ListHeaderComponent={renderAdsHeader} //reklame kao zaglavlje
+            ListFooterComponent={loading ? <ActivityIndicator size="small" color="#4e8d7c" /> : null}
+        />
     </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  adsHeaderContainer: {
+    paddingVertical: 5,
+    marginBottom: 5,
+  },
   safeArea: {
       backgroundColor: '#4e8d7c',
       flex: 1, // Omogućava da SafeAreaView zauzme cijeli ekran
@@ -743,12 +719,9 @@ const styles = StyleSheet.create({
     flex: 0.5, // Takes up half the row width (for numColumns=2)
     padding: 5,
   },
-   adItemContainer: {
-    // This wrapper must span the entire row in a multi-column layout.
-    flexBasis: '100%',
-    maxWidth: '100%', // Ensure it doesn't exceed parent width
-    padding: 5, // Add padding around the ad item
-    overflow: 'hidden',
+  adItemContainer: {
+    width: Dimensions.get('window').width - 20, // Reklama zauzima cijelu širinu ekrana minus padding sa strane
+    paddingHorizontal: 5,
   },
    row: {
      // Add spacing between store items horizontally if needed

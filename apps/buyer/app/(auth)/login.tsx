@@ -256,7 +256,7 @@ export default function SignIn() {
       router.replace('/(tabs)/home');
   
     } catch (error) {
-      console.error("Login error:", error);
+      console.log("Login error:", error);
       Alert.alert(t('error'), t('something_went_wrong'));
     } finally {
       setLoading(false);
