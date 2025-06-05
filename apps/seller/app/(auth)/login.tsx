@@ -13,6 +13,7 @@ import { apiLogin, fbLoginApi } from "../api/auth/loginApi";
 import InputField from "@/components/ui/input/InputField";
 import HelpAndLanguageButton from "@/components/ui/buttons/HelpAndLanguageButton";
 import SubmitButton from "@/components/ui/input/SubmitButton";
+import { baseURL } from "../env";
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -63,7 +64,7 @@ export default function SignIn() {
         const { idToken } = response.data;
         console.log("User Info:", { idToken });
 
-        const apiResponse = await fetch("${baseURL}/api/Auth/login/google", {
+        const apiResponse = await fetch(`${baseURL}/api/Auth/login/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idToken: idToken, app: "seller" }),

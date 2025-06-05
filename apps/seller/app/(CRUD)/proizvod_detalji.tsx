@@ -174,7 +174,7 @@ export default function ProductScreen() {
         {/* Podaci o proizvodu */}
         <View style={styles.infoSection}>
           <Text style={styles.productName}>{product.name}</Text>
-          <Text style={styles.price}>{product.wholesalePrice} KM</Text>
+          <Text style={styles.price}>{retailPrice} KM</Text>
         </View>
 
         <View style={styles.detailsSection}>
